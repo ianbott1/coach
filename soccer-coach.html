@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="538e48b";
+<script>const BUILD_ID="17d5415";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -8202,7 +8202,7 @@ function setPlanMidGame(p){
 function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
   const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
-  return `<div class="liveplan" style="margin:8px 16px 2px">${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
+  return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
     <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
@@ -9355,7 +9355,7 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way. Below: the box score, every player's line from this game, and Rewatch, the game again from the start.")}
     ${typeof boxHTML==="function"?boxHTML(g,false,flash&&flash.step):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
@@ -9933,6 +9933,15 @@ const GUIDE_CALL={
   goalie:"Is your goalie having a bad night, or just unlucky? Soft goals tell you he's off; goals over the expected number can be bad luck on their own.",
   fourth:"The percentages are the play's own odds. Afterwards the call is graded on what wins the game, by replaying the rest of it many times with each option: a likely conversion can still be the wrong choice."
 };
+/* round 76: the rest of a first season's screens (Ian: a tutorial an experienced player can drop at once; "Skip the
+   guide" on any note turns every note off, in all seven games, and Help's "Coach's notes" turns them back on) */
+function guideWelcome(){ const nx=typeof advLabel==="function"?String(advLabel()).replace(/<[^>]+>/g,"").trim():"Play";
+  return `Welcome, Coach. Each game: choose a gameplan on its card below, then <b>${esc(nx)}</b> to coach it yourself (it stops for your calls) or <b>Sim game</b> to leave the calls to your assistant, who makes them the way the computer's coaches do. <b>Sim ahead</b> runs several at once. These notes walk you through your first games, one per screen, each gone when you tap Got it. Know the game? <b>Skip the guide</b> turns them all off, here and in the other games; Help (the ? at the top) turns them back on.` }
+const GUIDE_LIVE="The game plays out a piece at a time. Change your game plan from here at any moment; Highlights sets how much of it you watch play out. Pause, step on, or skip to your next call: when a decision is yours, the game stops and asks.";
+const GUIDE_OFF="The offseason, all on one page. Your staff has a plan for every section, and each says what it's doing; change what you like, or nothing, and begin the new season when you're ready.";
+const GUIDE_TABS={scores:"Every result in the league so far, and what's still to play. Tap a team for its page.",
+  stand:"The standings, and the league's leaders under Leaders. Tap a player for his page: his season and every game he's played.",
+  dyn:"Your career. The Film Room keeps your best and costliest calls, graded against what your assistant would have done; History is the league's record book; Coaches and Teams follow everyone else."};
 const GUIDE_SITUATION="A situation call: only asked while the game is still in the balance. After the game it's graded by replaying the rest of the game many times with each option, against leaving it to your assistant.";
 function bindGuide(){
   document.querySelectorAll(".guide[data-mark]").forEach(b=>b.onclick=e=>{ if(e&&e.target&&e.target.dataset&&e.target.dataset.guideoff){ S.guide=false; guideMark(null,true) }
@@ -11370,11 +11379,11 @@ function render0(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+LEAGUE.ui.offseasonScreen():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (playerSel?playerView():view==="team"?myTeamView():view==="scores"?scoresView():
-       view==="poll"?LEAGUE.ui.rankingView():view==="stand"?standingsView():dynastyView())}</main>
+      (playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
+       view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
       ${simTargets().length>1&&!(live&&!live.done)?`<button class="skip" id="skip">Sim ahead&hellip;</button>`:""}
