@@ -794,6 +794,13 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 @keyframes tnfall{to{transform:translateY(420px) rotate(540deg)}}
 @keyframes tnpop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
 @keyframes tnin{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.momentcard{margin:12px 0 4px;padding:12px 14px;border:1px solid var(--sodium);border-left-width:4px;background:rgba(244,166,58,.08);text-align:left}
+.mhead{font-family:var(--cond);font-weight:700;font-size:26px;letter-spacing:.06em;text-transform:uppercase;color:var(--sodium);margin-bottom:4px;animation:tnpop .7s ease-out both}
+.mline{font-size:13.5px;line-height:1.5;color:var(--bone);animation:tnin .5s ease-out .2s both}
+.mline.more{margin-top:4px;color:var(--muted)}.mline.more b{color:var(--bone)}
+.momentsay{margin:0 0 8px;text-align:left}
+.boxscore{margin:10px 0 4px;text-align:left}.boxscore summary{cursor:pointer;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:6px 0}
+.boxhead{margin:6px 0 0;font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .ident{margin:6px 16px 10px;font-size:13.5px;line-height:1.5;color:var(--bone)}
 .ident b{color:var(--sodium)}
 .filmlab{margin:10px 16px 4px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
@@ -996,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="7aab25a";
+<script>const BUILD_ID="5cc23b7";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -3282,7 +3289,16 @@ function staffAside(kind, data){
            ["capy",`I did rather have a feeling. I didn't want to say.`]],
     title:[["bears",`THE TROPHY. We are drinking from THE TROPHY.`],
            ["pearl",`Look at them all crying. It's the loveliest thing.`],
-           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]]
+           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]],
+    m_walkoff:[["bears",`WALK-OFF. Everybody out of the dugout. ON HIM.`],
+           ["pearl",`Everyone's jumping on him! Is he okay? He's laughing. He's okay!`],
+           ["capy",`The last inning is never restful. Still, there are worse ways to end it.`]],
+    m_comeback:[["bears",`Four down is nothing. We knew it. We said it. Quietly.`],
+           ["pearl",`They came back! I knew they would! I hoped they would!`],
+           ["capy",`I had the bus warmed up. I shall have to let it idle.`]],
+    m_shutout:[["bears",`ZERO. Their bats are FOR DECORATION.`],
+           ["pearl",`Nobody scored on us! Not one run! Good pitchers!`],
+           ["capy",`A shutout. One feels the pitchers will now expect it every night.`]]
   };
   const set=L[kind]; if(!set)return null;
   const i=Math.abs((data|0))%set.length;
@@ -3499,6 +3515,29 @@ const HL_SPORT=(function(){
   const headClock=c=>c&&c.inn&&c.half?`${c.half} of the ${ordw(c.inn)}`:null;
   return {reveal:0.72, collapseIdle:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, goalsLabel:"Big home runs"};
 })();
+/* Baseball's big moments (round 73, core 96_moments): the walk-off. From the game's own innings: the home side, not
+   ahead going into its last time up, wins it there; the hitter is the one the run of play names. */
+function sportMoments(g,my,meHome){
+  const out=[], D=g.drives||[], last=D[D.length-1], pv=D[D.length-2];
+  if(!meHome||g.winner!==my||!last||last.seg<SEGS-1)return out;
+  const before=pv?pv.sh||0:0;   // home's runs before this inning; the visitors bat first
+  if(before>last.sa||!(last.sh>last.sa))return out;
+  const e=(last.ev||[]).filter(x=>x.side==="home"&&(x.k==="hr"||x.k==="rbi")).slice(-1)[0], inn=last.seg+1;
+  const nm=e&&e.nm?e.nm:null, ord=typeof ordw==="function"?ordw(inn):inn+"th";
+  out.push({k:"walkoff", h:e&&e.k==="hr"?"Walk-off home run":"Walk-off", who:nm,
+    l:`${nm?esc(nm)+(e.k==="hr"?" homered":" drove in the winning run")+" in the bottom of the "+ord:"The winning run came home in the bottom of the "+ord}, and that was the game.`});
+  return out;
+}
+/* Baseball's box score (round 73, core 96_moments): the line score (runs by inning, hits), the home runs and the runs
+   batted in, by the hitters the run of play names. */
+function sportBox(g){
+  const D=g.drives||[]; if(!D.length)return "";
+  const last=D[D.length-1], hits=last.hits||[null,null];
+  const line=statTable(["Inning"].concat(D.map((d,i)=>String(i+1))).concat(["R","H"]),[g.away,g.home].map((t,k)=>({c:[esc(tAb(t))].concat(D.map((d,i)=>{ const v=k?d.h:d.a; return k&&i===D.length-1&&i>=SEGS-1&&!v&&!(d.ev||[]).some(e=>e.side==="home")&&d.sh>d.sa?"x":String(v||0) })).concat(["<b>"+(k?last.sh:last.sa)+"</b>",hits[k?0:1]!=null?String(hits[k?0:1]):"-"])})),1);
+  const hr=[]; D.forEach((d,i)=>(d.ev||[]).forEach(e=>{ if(e.k==="hr"&&e.nm)hr.push({c:[ordw(i+1),esc(tAb(e.side==="home"?g.home:g.away)),esc(e.nm)+` <span style="color:var(--muted)">(${e.n===4?"grand slam":e.n>1?e.n+" runs":"solo"})</span>`]}) }));
+  const rbi=[]; ["away","home"].forEach(sd=>{ const C=bsLogCredit(sd==="home"?g.home:g.away,sd,D); Object.keys(C).filter(n=>C[n].rbi>0).sort((a,b)=>C[b].rbi-C[a].rbi).forEach(n=>rbi.push({c:[esc(tAb(sd==="home"?g.home:g.away)),esc(n),String(C[n].rbi)]})) });
+  return line+(hr.length?`<div class="boxhead">Home runs</div>`+statTable(["","",""],hr,3):"")+(rbi.length?`<div class="boxhead">Runs batted in</div>`+statTable(["","","RBI"],rbi,2):"");
+}
 /* ============ game screens: baseball ============ */
 /* The line score (visitors first), the run of play an inning at a time with names, the evidence each call is made
    from, the call screen with the staff's advice, and the replay view. */
@@ -3706,11 +3745,11 @@ function watchView(){
   const H=cur?cur.h:0, A=cur?cur.a:0, done=watch.i>=watch.script.length, tip=watch.i<0;
   const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
   const lab=done?`FINAL${g.ot?" / "+(SEGS+g.ot):""} &middot; ${mine>theirs?"WIN":"LOSS"}`
-        :tip?`<span class="live"></span>FIRST PITCH &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:tip?`<span class="live"></span>FIRST PITCH &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`;
   const rows=upto.filter(e=>e.text);
   return `<div class="watchwrap">
-    ${scoreTop(g,H,A,lab,done?(mine>theirs?'win':'loss'):'')}
+    ${scoreTop(g,H,A,lab,done?(mine>theirs?'win':'loss'):'')}${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Run of play</div>
     <div class="plays">${rows.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''} ${/HR|SLAM|RUN/.test(e.outcome||"")?'goalrow':''} ${e.cue?'cue':''}">
       <span class="pq">${esc(e.clock)}</span>
@@ -6297,6 +6336,49 @@ function cabinetHTML(){
     got.concat(not).map(a=>`<div class="ach ${have[a.id]?'got':''}"><span class="achstar">${have[a.id]?"&#9733;":"&#9734;"}</span>
       <div><b>${esc(a.l)}</b><span>${esc(achD(a))}${have[a.id]?" &middot; "+have[a.id]:""}</span></div></div>`).join("")}</div>`;
 }
+/* ============ big moments (round 73) ============
+   Instinct (Nov 12): "He had a hat-trick and the game said nothing ... hat-tricks, shut-outs, comebacks, walk-offs each
+   get a banner and a staff reaction." A game you played says, on its result card, the night's big moment: each sport
+   reads its own (sportMoments: a hat-trick, a walk-off, the last shot); every sport has the comeback and the shutout.
+   Read from the game's own record, after it is played. Nothing here moves a game. */
+const MOMENTS_ON=true;
+const MOMENT_COMEBACK={football:14,basketball:15,hockey:3,soccer:2,baseball:4};   // down this many, and won
+const MOMENT_SHUTOUT={football:1,hockey:1,baseball:1};                              // the sports where nil is rare
+const MOMENT_ORDER=["walkoff","buzzer","winner","ot","late","hattrick","comeback","shutout","so"];
+function momentsOf(g,my){
+  if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||!my)return [];
+  const meHome=g.home===my, sp=(typeof SPORT!=="undefined"&&SPORT.id)||"football", opp=meHome?g.away:g.home;
+  let out=[]; try{ out=typeof sportMoments==="function"?sportMoments(g,my,meHome)||[]:[] }catch(e){ out=[] }
+  const mine=meHome?g.hp:g.ap, theirs=meHome?g.ap:g.hp;
+  if(g.winner===my){
+    // the comeback: the deepest the game had you behind
+    let down=0; g.drives.forEach(d=>{ const s=d.sh!==undefined?[d.sh,d.sa]:[d.h,d.a]; if(s[0]===undefined)return; const m=meHome?s[0]-s[1]:s[1]-s[0]; if(-m>down)down=-m });
+    const th=MOMENT_COMEBACK[sp]||10;
+    if(down>=th)out.push({k:"comeback", h:"Comeback", l:`${down} down against ${esc(opp)}, and you won ${mine}&ndash;${theirs}.`});
+    if(MOMENT_SHUTOUT[sp]&&theirs===0)out.push({k:"shutout", h:"Shutout", l:`${esc(opp)} didn't score.`}) }
+  return out.sort((a,b)=>MOMENT_ORDER.indexOf(a.k)-MOMENT_ORDER.indexOf(b.k));
+}
+/* on the result card: the biggest moment as the banner, any others as a line under it, and one of the staff on it */
+function momentHTML(g,my,seed){
+  const M=momentsOf(g,my); if(!M.length)return "";
+  const top=M[0], more=M.slice(1);
+  const s=typeof staffAside==="function"?staffAside("m_"+top.k,(seed|0)+(g.hp|0)*7+(g.ap|0)*3):null;
+  return `<div class="momentcard"><div class="mhead">${esc(top.h)}</div><div class="mline">${top.l}</div>${more.map(x=>`<div class="mline more"><b>${esc(x.h)}.</b> ${x.l}</div>`).join("")}</div>`
+    +(s?`<div class="say tight momentsay"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
+      <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span><span class="saytext">${esc(s.line)}</span></div></div>`:"");
+}
+
+/* ============ the box score (round 73) ============
+   From the game's own record only: the team numbers the engine counted and the scorers the run of play named. Every
+   number here adds up to the score (test/boxscore.js). A sport's player-by-player lines are kept out where they are
+   drawn per player rather than counted in the game (they would not add up). Each sport: sportBox(g) -> HTML. */
+function boxHTML(g,open){
+  if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
+  let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";
+  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}</details>` }
+/* a team table: first column the label, then a column per side */
+function boxTeams(g,rows,homeFirst){ const A=tAb(g.away), H=tAb(g.home);
+  return statTable(["",homeFirst?H:A,homeFirst?A:H],rows.filter(Boolean).map(r=>({c:[esc(r[0]),homeFirst?r[2]:r[1],homeFirst?r[1]:r[2]].map(String)}))) }
 /* ============ feel: sound, touch, motion ============ */
 /* Everything here is a flourish on top of the game: nothing in it changes a
    result, and every part of it fails quietly where it isn't available (no
@@ -6583,10 +6665,39 @@ function hlPlay(L,drive){
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
+/* round 73: which goal of the game this is for its scorer (Instinct: "He had a hat-trick and the game said nothing");
+   name(x) names a goal's scorer as the run of play does. The third is a hat-trick on the banner. */
+function hlGoalNo(L,e,name){ const n=name(e); if(!n)return 1; let k=0;
+  for(const d of (L&&L.drives)||[])for(const x of d.ev||[]){ if(x.k==="goal"&&x.side===e.side&&name(x)===n)k++; if(x===e)return k } return k+1 }
+function hlGoalWord(k,nm){ return k===3?`HAT-TRICK! ${nm}`:k===4?`FOUR GOALS! ${nm}`:k>4?`${k} GOALS! ${nm}`:`GOAL! ${nm}` }
+/* ---- round 73: Rewatch plays the clips on the pitch (Instinct: "Rewatch is text only ... the pitch is the best thing
+   in the game"). The rewatch reads the run of play row by row; a drive's clips play as its first row comes up, and the
+   row waits for them, as the live game's stretch does. Which rows are whose: the script of the first k drives is the
+   first rows of the whole script, so the rows drive k adds are where that prefix grows. A sport whose rows don't
+   build that way gets no clips, and the text rewatch is as it was. */
+function hlWatchPlan(w){
+  const g=w&&w.g, drives=g&&g.drives;
+  if(!hlCan()||hlMode()==="off"||!drives||!drives.length||typeof driveScript!=="function")return null;
+  const full=w.script.map(r=>JSON.stringify(r)), end=[];
+  try{ for(let k=1;k<=drives.length;k++){ const s=driveScript(g,drives.slice(0,k)); let n=0; while(n<s.length&&n<full.length&&JSON.stringify(s[n])===full[n])n++; end.push(n) } }catch(e){ return null }
+  for(let k=1;k<end.length;k++)if(end[k]<end[k-1])return null;
+  if(end[end.length-1]!==full.length)return null;
+  return {end:end, next:0} }
+/* the row r is about to show: the clips of every drive up to the one it belongs to, not yet played; ms they take */
+function hlWatchAt(r){
+  if(typeof watch==="undefined"||!watch||!watch.hl||hlMode()==="off")return 0;
+  const P=watch.hl, g=watch.g, L={g:g, drives:g.drives}; let own=P.end.findIndex(e=>e>r); if(own<0)own=P.end.length-1;
+  if(P.next>own)return 0;
+  let clips=[]; for(let k=P.next;k<=own;k++){ try{ clips=clips.concat(HL_SPORT.clips(L,g.drives[k],hlMode())||[]) }catch(e){} }
+  const d=g.drives[P.next]; P.next=own+1;
+  if(!clips.length)return 0;
+  HL.pending={drive:d,clips:clips}; return hlPlay(L,d) }
 /* round 72: one clock (Instinct: the clip said 74' while the header said 70'). While a clip plays, the header shows the
    clip's own time, as the held score moves on with its goals (round 70); each sport says it in the header's words */
 function hlHeadClock(c){ try{ return c&&HL_SPORT.headClock?HL_SPORT.headClock(c)||null:null }catch(e){ return null } }
 function hlStart(c){ { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k; if(!first&&typeof render==="function")render() } }
+  // the rewatch's header follows the clip's time too (round 73)
+  if(typeof watch!=="undefined"&&watch&&watch.hl&&(typeof live==="undefined"||!live||live.done)){ const k=hlHeadClock(c); if(watch.hlClock!==k){ watch.hlClock=k; HL.cur=c; if(typeof render==="function")render() } }
   HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
 function hlFrame(){
   const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
@@ -6609,6 +6720,8 @@ function hlSkip(){
   if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount(); hlRelease();
   // the next stretch was waiting for the clips: it comes now
   if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
+  // a rewatch waiting on them goes on (round 73)
+  if(typeof watch!=="undefined"&&watch&&watch.hlWait&&watch.timer){ clearTimeout(watch.timer); watch.timer=setTimeout(()=>{ watch.hlWait=false; watch.i++; tickWatch() },300) }
 }
 function hlDraw(c,t){
   const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
@@ -8514,14 +8627,21 @@ const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],
 function tickWatch(){
   if(!watch)return;
   if(watch.timer){clearTimeout(watch.timer);watch.timer=null}
+  if(watch.hl===undefined)watch.hl=typeof hlWatchPlan==="function"?hlWatchPlan(watch):null;   // round 73: the clips on the pitch
+  watch.hlWait=false;
   render();
   if(!watch.paused && watch.i<watch.script.length){
-    watch.timer=setTimeout(()=>{watch.i++;tickWatch()},watch.i<0?650:watchGap());
+    watch.timer=setTimeout(()=>{
+      // the next row's drive plays its clips first, and the row waits for them (round 73)
+      const ms=watch.i+1<watch.script.length&&typeof hlWatchAt==="function"?hlWatchAt(watch.i+1):0;
+      if(ms){ watch.hlWait=true; watch.timer=setTimeout(()=>{ watch.hlWait=false; watch.i++; tickWatch() },ms) }
+      else { watch.i++; tickWatch() } },watch.i<0?650:watchGap());
   }
 }
 function stepWatch(){
   if(!watch)return;
-  if(watch.i<watch.script.length){watch.i++;}
+  if(typeof hlSkip==="function"&&HL.cur&&(!live||live.done)){ watch.hlWait=false; hlSkip() }
+  if(watch.i<watch.script.length){ if(watch.i+1<watch.script.length&&typeof hlWatchAt==="function")hlWatchAt(watch.i+1); watch.i++;}
   tickWatch();
 }
 const PRESS_AT={};
@@ -8533,6 +8653,7 @@ function togglePause(){
 }
 function stopWatch(finish){
   if(watch&&watch.timer)clearTimeout(watch.timer);
+  if(watch&&(!live||live.done)&&typeof hlSkip==="function"&&HL.cur){ watch.hlWait=false; hlSkip() }
   if(finish&&watch){watch.i=watch.script.length;watch.timer=null;render();return}
   watch=null; render();
 }
@@ -8655,7 +8776,8 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    ${typeof boxHTML==="function"?boxHTML(g):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -10581,6 +10703,7 @@ function render0(){
   }
   if(watch&&S.myTeam){
     el("app").innerHTML=watchView();
+    if(typeof hlMount==="function")hlMount();
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
     const st=el("wstep"); if(st)st.onclick=()=>{watch.paused=true;S.watchStep=true;stepWatch()};
