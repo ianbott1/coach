@@ -1,5 +1,5 @@
 {
- "fp": "634aab467f165d80",
+ "fp": "48e49d5a02ce9042",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -470,6 +470,11 @@
    "fp": "634aab467f165d80",
    "from": "40547a44669ca610",
    "note": "Round 75: engine 5 (baseball's players by their own ratings; basketball's star scoring)"
+  },
+  {
+   "fp": "48e49d5a02ce9042",
+   "from": "634aab467f165d80",
+   "note": "Round 76: the coach's notes for a first season, screens only"
   }
  ],
  "result": {
@@ -484,7 +489,7 @@
     "heis": "cfe20ccef66d802e",
     "history": "1fbe5ef43177b585",
     "universe": "f90cea416ece396a",
-    "screens": "c046064c04f97414"
+    "screens": "8237e2e9ed5afe61"
    },
    {
     "year": 2027,
@@ -496,7 +501,7 @@
     "heis": "14296f363e4f0ac2",
     "history": "2cad91fa5ff3d989",
     "universe": "8cb76d75aa16805e",
-    "screens": "d83038efd8b0ce65"
+    "screens": "694ef8bffa11ad1e"
    }
   ],
   "Coppin State#2024": [
@@ -510,7 +515,7 @@
     "heis": "9ba6edc9ae61a85c",
     "history": "8dbabb2feff151b6",
     "universe": "e82417eed575863f",
-    "screens": "7f26999c4765bfe7"
+    "screens": "5c99caf5ced37199"
    },
    {
     "year": 2027,
@@ -522,7 +527,7 @@
     "heis": "67855648984d675a",
     "history": "66ca5bdfbcd4a41e",
     "universe": "bffcfa525e1d1783",
-    "screens": "4674bd8ba71c53f3"
+    "screens": "83e95217f5c8767b"
    }
   ],
   "Gonzaga#777": [
@@ -536,7 +541,7 @@
     "heis": "60f6da3b75371a99",
     "history": "5af1d42a0d303f34",
     "universe": "8e6ed19a9a997308",
-    "screens": "306c40d59859de76"
+    "screens": "5ca79c39b363b507"
    },
    {
     "year": 2027,
@@ -548,7 +553,7 @@
     "heis": "849597a592c233be",
     "history": "764af54597ebcf2c",
     "universe": "2450d1f7552f6a16",
-    "screens": "9bf1cf90e2aff743"
+    "screens": "4bac80827c8250ea"
    }
   ],
   "schedules#60": [

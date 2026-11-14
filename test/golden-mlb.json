@@ -1,5 +1,5 @@
 {
- "fp": "f9f80edafc7417bc",
+ "fp": "594172b7f35b1db5",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -100,6 +100,11 @@
    "fp": "f9f80edafc7417bc",
    "from": "ddb30dd3ae0f121a",
    "note": "Round 75: engine 5 (baseball's players by their own ratings; basketball's star scoring)"
+  },
+  {
+   "fp": "594172b7f35b1db5",
+   "from": "f9f80edafc7417bc",
+   "note": "Round 76: the coach's notes for a first season, screens only"
   }
  ],
  "result": {
@@ -114,7 +119,7 @@
     "heis": "4bef92a5da6f0d4e",
     "history": "df41e496dd360c2e",
     "universe": "b8fea5d57f9d3568",
-    "screens": "2ec8b98875fc5dbe"
+    "screens": "55c5aeae58e289cc"
    },
    {
     "year": 2027,
@@ -126,7 +131,7 @@
     "heis": "1badb10b1d126da1",
     "history": "b161b53f8ba66c92",
     "universe": "629a5e03f87856ba",
-    "screens": "dc3da5d5381944cb"
+    "screens": "83ea89d2efede31a"
    }
   ],
   "Colorado#777": [
@@ -140,7 +145,7 @@
     "heis": "32a9d67e2ee8ad6d",
     "history": "4e16ff8aeae43875",
     "universe": "5184bf94b60dbb08",
-    "screens": "01303e1882f3dd8f"
+    "screens": "15dc5efba8fcec43"
    },
    {
     "year": 2027,
@@ -152,7 +157,7 @@
     "heis": "b958db9951b8d0fd",
     "history": "003f4e0ee0e5237b",
     "universe": "d3907028d57dd4a1",
-    "screens": "a7126c3d827cfe15"
+    "screens": "d811ad4bae81420e"
    }
   ],
   "schedules#60": [

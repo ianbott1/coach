@@ -1,5 +1,5 @@
 {
- "fp": "e8f904629487d529",
+ "fp": "cbec1011c953d140",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -430,6 +430,11 @@
    "fp": "e8f904629487d529",
    "from": "58944de909aade92",
    "note": "Round 75: engine number 5 in the season settings only (games and screens unchanged)"
+  },
+  {
+   "fp": "cbec1011c953d140",
+   "from": "e8f904629487d529",
+   "note": "Round 76: the coach's notes for a first season, screens only"
   }
  ],
  "result": {
@@ -444,7 +449,7 @@
     "heis": "95efb282beb2b16c",
     "history": "9c83b384bb87e07e",
     "universe": "11229b3686354c6a",
-    "screens": "dad924608b83cef4"
+    "screens": "a0ce4abcb0d1ba44"
    },
    {
     "year": 2027,
@@ -456,7 +461,7 @@
     "heis": "d63de9aad16e90be",
     "history": "0b8d14311862a525",
     "universe": "359c6bce51dbdf06",
-    "screens": "299a06c5bc59570c"
+    "screens": "0a0b561773c898dc"
    }
   ],
   "Wrexham#777": [
@@ -470,7 +475,7 @@
     "heis": "1c65ec2264b022a0",
     "history": "ed5265d673f940fb",
     "universe": "4de592f4436d9eb6",
-    "screens": "7237b26d1cc05431"
+    "screens": "80268c95f78604db"
    },
    {
     "year": 2027,
@@ -482,7 +487,7 @@
     "heis": "6c62922cdeac8984",
     "history": "b9b742b66f61704b",
     "universe": "14b2e4bfab3ab990",
-    "screens": "f99183c9095007ff"
+    "screens": "5106ebce1935f9c2"
    }
   ],
   "schedules#60": [

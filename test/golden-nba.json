@@ -1,5 +1,5 @@
 {
- "fp": "3cd5a28a515090ac",
+ "fp": "b9fd28ad3f294963",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -440,6 +440,11 @@
    "fp": "3cd5a28a515090ac",
    "from": "a69b76fd1e62f383",
    "note": "Round 75: engine 5 (baseball's players by their own ratings; basketball's star scoring)"
+  },
+  {
+   "fp": "b9fd28ad3f294963",
+   "from": "3cd5a28a515090ac",
+   "note": "Round 76: the coach's notes for a first season, screens only"
   }
  ],
  "result": {
@@ -454,7 +459,7 @@
     "heis": "b0d3643fe51f45b0",
     "history": "11e26240f996104f",
     "universe": "22cdccb1bf36ed02",
-    "screens": "de45da6bb5574f68"
+    "screens": "6af67816ddf779b1"
    },
    {
     "year": 2027,
@@ -466,7 +471,7 @@
     "heis": "9b52fd1a0f4ab380",
     "history": "4b0cac710915f705",
     "universe": "643b2acfc6aada33",
-    "screens": "4495b95105d6370c"
+    "screens": "62a3ddebafaef20c"
    }
   ],
   "Detroit#777": [
@@ -480,7 +485,7 @@
     "heis": "7ce35292c0cefdbc",
     "history": "35d3573cfa5d992d",
     "universe": "cb30b52f297f64db",
-    "screens": "77fd5aaeece32ca2"
+    "screens": "2f7a748b6362eff0"
    },
    {
     "year": 2027,
@@ -492,7 +497,7 @@
     "heis": "b33dc7f0c33ee345",
     "history": "6cba2ceb938a56c1",
     "universe": "bc4527b270446f64",
-    "screens": "47a831704a78ccd7"
+    "screens": "f1ada39f780169f6"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "f20b8bffe1693141",
+ "fp": "df609e136a33b41f",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -489,6 +489,11 @@
    "fp": "f20b8bffe1693141",
    "from": "2ca3a13703bc4c84",
    "note": "Round 75: engine number 5 in the season settings only (games and screens unchanged)"
+  },
+  {
+   "fp": "df609e136a33b41f",
+   "from": "f20b8bffe1693141",
+   "note": "Round 76: the coach's notes for a first season, screens only"
   }
  ],
  "result": {
@@ -503,7 +508,7 @@
     "heis": "3278a7e6531f92ec",
     "history": "64c3fbc63761051e",
     "universe": "d72fa2bc28f880ad",
-    "screens": "e1f77de6cb7e9e2c"
+    "screens": "8ed1b5fe3015b3a3"
    },
    {
     "year": 2027,
@@ -515,7 +520,7 @@
     "heis": "2ef26707df16afb4",
     "history": "0a1a818ccc9be9b7",
     "universe": "025bd77609adfab7",
-    "screens": "a3319b97e53154ad"
+    "screens": "299a090e7200b6ec"
    },
    {
     "year": 2028,
@@ -527,7 +532,7 @@
     "heis": "c92a91a7b6db8279",
     "history": "6ba56f031edc93cf",
     "universe": "663792c8ec65f15d",
-    "screens": "481b6a2cf0587358"
+    "screens": "c33ddbe82ae7e019"
    },
    {
     "year": 2029,
@@ -539,7 +544,7 @@
     "heis": "3211ee54480a137f",
     "history": "d9c4c5b191e80498",
     "universe": "3b84885bc73f2d05",
-    "screens": "36cd83a495fd6458"
+    "screens": "0404bb9857ceefaf"
    }
   ],
   "Rice#2024": [
@@ -553,7 +558,7 @@
     "heis": "bd4a2e7fd9fb2bb9",
     "history": "fd852d4c1e4778ec",
     "universe": "7490b06a2eb4fb05",
-    "screens": "4cd77c3ddc2f00f0"
+    "screens": "160a46895ddbd9af"
    },
    {
     "year": 2027,
@@ -565,7 +570,7 @@
     "heis": "6b0b95e170759ae2",
     "history": "5d2b4a36f2717d90",
     "universe": "d2700c450ffbad01",
-    "screens": "dda27fe179a3d896"
+    "screens": "3005bed941d30934"
    },
    {
     "year": 2028,
@@ -577,7 +582,7 @@
     "heis": "6f4cc33f25f807cb",
     "history": "42f4576eb02721a2",
     "universe": "de6af3d130c6cf15",
-    "screens": "7df23bee336fed8f"
+    "screens": "d7fe4ca51d840385"
    },
    {
     "year": 2029,
@@ -589,7 +594,7 @@
     "heis": "702c3b27d64a8b19",
     "history": "df0e89901e8172e3",
     "universe": "dbbd368bfcca5b8e",
-    "screens": "5ec781b8d566b021"
+    "screens": "4130e2c5e43431f8"
    }
   ],
   "Oregon#777": [
@@ -603,7 +608,7 @@
     "heis": "05b214126c8a48fc",
     "history": "9d9b2cdb1a747488",
     "universe": "c775cbc5e53fd917",
-    "screens": "c9a70a1ccf6815ca"
+    "screens": "382ddcd90fafe986"
    },
    {
     "year": 2027,
@@ -615,7 +620,7 @@
     "heis": "d43cc73e0876c40d",
     "history": "8af303f56ff11f02",
     "universe": "3845c8fd4ecd5937",
-    "screens": "8b167e8c7bc2616d"
+    "screens": "03483a09581cb393"
    },
    {
     "year": 2028,
@@ -627,7 +632,7 @@
     "heis": "3b536139be4a4976",
     "history": "fcdedbef68b5e17f",
     "universe": "293ae2ca51901b32",
-    "screens": "972c4640d6eb1ce0"
+    "screens": "520741acec86a78c"
    }
   ],
   "Kent State#31337": [
@@ -641,7 +646,7 @@
     "heis": "d4fe543bf5402473",
     "history": "cb5d00f6ad10c125",
     "universe": "1e295cdb4054d116",
-    "screens": "35e3998c15bc0fb8"
+    "screens": "9bd5597c227c1e2c"
    },
    {
     "year": 2027,
@@ -653,7 +658,7 @@
     "heis": "be07c9970348e173",
     "history": "034aeed5a5dd2248",
     "universe": "8e8ff7a075627788",
-    "screens": "7eb494f429383f6e"
+    "screens": "ec493e15a8673c67"
    },
    {
     "year": 2028,
@@ -665,7 +670,7 @@
     "heis": "3a9e9894324012d0",
     "history": "a10bc249cde3f129",
     "universe": "a558cdd06ce3d393",
-    "screens": "8b66fd6bd25bde79"
+    "screens": "06ea2269dd580139"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "a7c2cfafbec80466",
+ "fp": "cf0a5680f8726277",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -445,6 +445,11 @@
    "fp": "a7c2cfafbec80466",
    "from": "8a0945cc7ed8ec70",
    "note": "Round 75: engine number 5 in the season settings only (games and screens unchanged)"
+  },
+  {
+   "fp": "cf0a5680f8726277",
+   "from": "a7c2cfafbec80466",
+   "note": "Round 76: the coach's notes for a first season, screens only"
   }
  ],
  "result": {
@@ -459,7 +464,7 @@
     "heis": "d51c9d0a44f4d257",
     "history": "bd9b6fef6652f8a2",
     "universe": "708189b13c8e31e3",
-    "screens": "33631292dc6e3bfb"
+    "screens": "3be702d0cef6ccbb"
    },
    {
     "year": 2027,
@@ -471,7 +476,7 @@
     "heis": "d1fdb803b5057b06",
     "history": "22201acf6615b881",
     "universe": "746725b7f1a1fd3a",
-    "screens": "f7c37375ae3ff3cb"
+    "screens": "7a40c75a6f5fd9ba"
    }
   ],
   "Edmonton#777": [
@@ -485,7 +490,7 @@
     "heis": "3736f327dd14c2f7",
     "history": "3bbd33116075645d",
     "universe": "de9a466750138760",
-    "screens": "f69402c59fe23bf6"
+    "screens": "3f0f05a9aa5c9b8a"
    },
    {
     "year": 2027,
@@ -497,7 +502,7 @@
     "heis": "9cf823451da811f1",
     "history": "fd614c26996f05b2",
     "universe": "bc8327ebb3b11b10",
-    "screens": "5a7f0700de235606"
+    "screens": "fa1d3e48df9ec96d"
    }
   ],
   "schedules#60": [
