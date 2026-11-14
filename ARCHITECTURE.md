@@ -358,6 +358,32 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 75: baseball's players by their own ratings (engine 5). Round 74's leaders were read over seasons with
+playoffs; over the regular season alone (test/bs-players.js, suite) the runs and wins leaders were inside MLB's
+range (124-128 runs, 20 wins). What was off: a hitter's rating never touched his at-bats (the team's strength and his
+slot did: rating against production 0.16-0.21, the home run leader 31-39), the lineup batted by position (the catcher
+led off every game), the best starters ran 1.4-1.5 ERAs over 220+ innings, the bullpen's ERA 4.56 and starters took
+66% of the wins.
+- BS5 (baseball 50_game, engine 5 only): a hitter's edge is his rating against his day lineup's average (x0.013,
+  zero-sum within the nine), split across his line: home runs x2.6, walks x1.6, doubles x1.4, strikeouts x1.0 (fewer),
+  singles x0.5 (it was all singles at first: a .385 leader); the pinch hitter's edge is now just his rating. The nine
+  bat in order of ability (the third best leads off, the best second); the catcher for the steal is named, not slot 1.
+  A starter's rotation edge per rating point 0.012 -> 0.005; the bullpen -0.10 -> -0.07 from a fresh starter; the
+  closer rests one night in four (by the day's seed, no draw), a set-up man taking that save (one closer had every
+  chance, 57 a season); the league's offence +0.01 holds the runs at 4.41 a side (bs-calibrate) and 4.40-4.53 in the
+  app's seasons.
+- Measured (three regular seasons, test/bs-players.js): starter innings a start 5.3, 6+ innings 47%, 7+ 21%;
+  starters take 61% of the wins; home run leaders 42-47 (rated 66-69); runs leaders 141-149; RBI 130-141; best ERA
+  1.88-2.35; wins leaders 19-22; saves leaders 38-48; innings leaders 215-222; rating against production 0.75-0.78.
+  The leaders' ranges are real seasons from 2015-24 (Acuna's 149 runs, Verlander's 1.75, Arrieta's 22 wins).
+- Basketball (engine 5): a star's share of the scoring grows as rating^2.2 (was 1.6): college's scoring leader ran
+  22 (the real one ~25), now ~23-24; pro's 30 -> ~32.
+- Old seasons replay: test/engine-replay.js now plays part of a season on round 73's pages (engine 3) and on round
+  74's (engine 4, git 422d434), reloads here and compares: all fourteen match. Football, hockey and soccer play
+  exactly as before (their goldens differ only in the season's stored engine number; their hot-seat checks match).
+- Still open: steals (leaders 6-10; MLB's 40-70: the computer sends a runner only when he's 80% likely to make it),
+  and the bullpen beyond the closer is one "bullpen" line, not named relievers.
+
 Round 74: players' lines add up to the game (engine 4). Round 73 found the player stat lines drawn per player from
 rating and score, not counted: basketball starters' points 87 of 115, receiving yards over passing yards, more runs
 scored than the score. Measured over a whole league season (test/statsum.js, every team-game, yours and the
