@@ -358,6 +358,63 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 74: players' lines add up to the game (engine 4). Round 73 found the player stat lines drawn per player from
+rating and score, not counted: basketball starters' points 87 of 115, receiving yards over passing yards, more runs
+scored than the score. Measured over a whole league season (test/statsum.js, every team-game, yours and the
+computer's), before: 7,450 team-games off across six games; after: none.
+- Season._creditV4 (core 80_season): a team's lines come from the sport's teamLines(rng, game record), on numbers of
+  their own (seeded by year, step, teams, side), never the season's: a change to how lines are drawn moves no result.
+  Players who didn't appear get no line. ENGINE_NOW 4; a season begun before keeps the old gameStats lines on the
+  season's numbers, and the old play-by-play names (hockey's scorers, soccer's injured, football's receivers), so a
+  save replays as played: test/engine-replay.js (suite) plays part of a season on round 73's pages (git 787c225),
+  reloads it here and compares every game, the standings and every line, 4 steps on: all seven match. New seasons'
+  results move once (the lines had drawn on the season's numbers): goldens and hot-seat re-recorded.
+- Baseball counts its box score at bat by at bat in the engine (bsCount, no draws): each batter's AB, H, HR, BB, K,
+  RBI, runs (the lead runners score first; the batter on a homer), steals; each pitcher's outs, strikeouts, walks and
+  runs charged to the pitcher who put the runner on (inherited runners are the starter's; the extra-inning runner is
+  unearned), "bullpen" for relievers the roster doesn't carry; decisions at the end (the starter's win: five innings,
+  left ahead, the lead held; his loss: left behind, never caught; the closer's save: in with one to three, finished).
+  300 games: runs scored = the score, hits = the line score, every time. A hitter who sat gets no line.
+- Football: touchdowns and picks are the play-by-play's (driveScript now says who: the passer and receiver, the
+  runner, the defender; the season stamps who played, d.by, so an injured starter's backup is named). A touchdown
+  pass goes to the top receiver 42%, the second 26%, the backups (a tight end, the slot) 32% (one receiver had caught
+  30 in a season); a pick to the corner, the safety or their backups. The quarterback's interceptions are the game's
+  INT drives. Catches and yards are a split of his completions and yards, the rest to receivers the roster doesn't
+  carry. Attempts, carries, tackles, sacks: drawn as before.
+- Basketball: the team's made twos, threes and free throws (the engine's count) go one by one to the players on the
+  floor by position and rating (a star's scoring share grows as rating^1.6), the bench's share to the bench; the man
+  the log named for a three or an and-one has it. Rebounds from the misses (theirs less their offensive boards, and
+  ours; nine in ten to a player), assists 0.6 a made shot, steals half their turnovers, blocks a sixth of their missed
+  twos.
+- Hockey: the scorer and assist are drawn from the ten skaters dressed by position, rating and ice time (hkDressed:
+  it was by position alone, the top centre one goal in five at any rating), and about one goal in six goes to the men
+  the roster doesn't carry ("The fourth line ..."; no line for them): naming all of a team's goals among ten skaters
+  put a first-line centre at 77 points. Assists one a goal (named). Shots on goal (goals plus the other goalie's
+  saves) shared among the ten; each goalie his spell's saves and goals against, an empty-net goal nobody's. Depth men
+  get lines every game now (they had none in computer games).
+- Soccer: goals to the man the log names (scScorer, an injured man no longer), assists on 72% to a team-mate by
+  position and rating, the game's shots shared, the keeper's saves and goals against. The scorer is stamped on the
+  goal (e.nm), so moments, highlights and the box name him after a transfer.
+- Levels, a season with playoffs (before -> after; the real game): pro basketball ppg 28 -> 30, rpg 12 -> 13, apg 8.5
+  -> 9.3, bpg 1.7 -> 2.0; college ppg 26 -> 22 (low: the real leader is ~25), rpg 14 -> 10. Pro football pass TD 36
+  -> 43, rec TD 21 -> 22, INT (defender) 7 -> 8; college pass TD 49 -> 39. Hockey (targets above): goals 55 -> 62,
+  points 128 -> 111, first-line C 66 -> 73, first-pair D 32 -> 37, top scorers rated 64+. Soccer: top scorer 55 -> 41
+  (the Man City 55 is gone), assists 30 -> 24. Baseball: HR 28 -> 36, RBI 139 -> 137, runs 118 -> 158 (high: MLB's
+  leader is ~130), W 17 -> 25 (high), SV 37 -> 52, best ERA 3.2 -> 1.6 (low): these last are the engine's own innings
+  now, not a draw, and are worth a look in the engine (starters go deep and leads hold).
+- Box scores show the players' lines (engine 4 games only; sportBoxPlayers, from the game logs): basketball with the
+  rest of the bench's points, football passing, rushing, receiving and the other receivers, the defenders who made a
+  play; hockey skaters and goalies; soccer the men who scored, assisted or shot, and the keeper; baseball hitters and
+  pitchers with the bullpen and decisions. test/boxscore.js checks they add up to the game (TDs caught = thrown, picks
+  = the game's, runs and hits = the line score, goals = the score less the fourth line's).
+- Basketball's moments: won in overtime (and "you tied it with the last shot of regulation"), and "won it late"
+  (behind or level going into the last stretch, won by a possession); college basketball had none in a season.
+- Fixed on the way: a squad-filler drawn with a veteran's name took it and the veteran was renamed (a keeper you'd
+  sold showed up at Birmingham as Isaiah Salinger): a man who has played a season keeps his name (engine 4).
+  test/live-wp.js: twice the games for basketball (a quarter of football's states a game; 200 college games read
+  15.9 on one seed, 3 to 8 on three others, 4.6 over 600).
+- Not this round: the "what if" replay and the tutorial.
+
 Round 73: big moments, the rewatch on the pitch, box scores (Instinct's 12 November "next best ideas" 1 and 2, and
 box scores). Nothing here moves a game: all seven goldens differ in screens only, all seven hot-seat checks match.
 - Rewatch plays the clips (Instinct: "Rewatch is text only ... the pitch is the best thing in the game"). The rewatch
