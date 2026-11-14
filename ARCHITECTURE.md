@@ -358,6 +358,24 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 76: the coach's notes cover a first season (the tutorial). The guide already existed (round 39: "Coach's
+notes", one per kind of call plus the home screen and the result card; "Skip the guide" off for good in every game in
+this browser, Help's "Coach's notes" back on; none in a hot seat). Walked in a browser at phone width, a new player met
+notes on three screens and nothing on the live game, the tabs or the offseason. Added, all inside the same guide (so one
+"Skip the guide" still clears everything, in all seven games):
+- A welcome on the home screen before the first game: what a game is (a gameplan, then Play to coach it or Sim game to
+  leave the calls to your assistant, who makes them as the computer's coaches do; Sim ahead), how the notes go, and how
+  to turn them off and back on.
+- The live game (livePlanBarHTML): it plays out a piece at a time; the game plan from here; Highlights; pause, step, or
+  skip to the next call.
+- Scores, Standings (the leaders, a player's page), Dynasty (the Film Room, History, Coaches and Teams): a line each.
+  None on the ranking tab (Poll, Rankings, Table mean different things by league).
+- The first offseason: all on one page, the staff's plan in every section, change what you like or nothing.
+- The result card's note now points at the box score and Rewatch.
+- test/guide.js (suite, browser, all seven): the welcome, the tab notes and the live note show for a new career; Got
+  it clears one; Skip the guide clears all, and a new career afterwards, here and in another game, has none; back on,
+  the first offseason shows its note; a hot seat has none. Goldens: screens only.
+
 Round 75: baseball's players by their own ratings (engine 5). Round 74's leaders were read over seasons with
 playoffs; over the regular season alone (test/bs-players.js, suite) the runs and wins leaders were inside MLB's
 range (124-128 runs, 20 wins). What was off: a hitter's rating never touched his at-bats (the team's strength and his
