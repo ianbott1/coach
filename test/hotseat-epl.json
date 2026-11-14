@@ -1,5 +1,5 @@
 {
- "fp": "e00f56f6e2d82aca",
+ "fp": "669884a99c385884",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -280,6 +280,11 @@
    "fp": "e00f56f6e2d82aca",
    "from": "99d646e7bd195c00",
    "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
+  },
+  {
+   "fp": "669884a99c385884",
+   "from": "e00f56f6e2d82aca",
+   "note": "Round 74: engine 4 (players' lines from the game's record)"
   }
  ],
  "out": [
@@ -289,20 +294,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "17-8-13",
+      "rec": "17-9-12",
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "1ba8a9131893b215"
+     "book": "06c3cc3869e46cde"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "16-8-14",
-      "result": "Finished 9th in the Premier League",
-      "grade": "B"
+      "rec": "17-7-14",
+      "result": "Finished 7th in the Premier League",
+      "grade": "B+"
      },
-     "book": "e19623514129040d"
+     "book": "e8ff4d184d77fa7b"
     }
    ]
   },
@@ -312,20 +317,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-10-12",
+      "rec": "17-10-11",
       "result": "Finished 7th in the Premier League",
       "grade": "C+"
      },
-     "book": "bcee6ee168d40dd8"
+     "book": "727d3d71e6cf2190"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-8-19",
-      "result": "Finished 15th in the Premier League",
-      "grade": "C"
+      "rec": "10-10-18",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "a88ef2e504a20158"
+     "book": "2cb412dd5fb4e488"
     }
    ]
   },
@@ -335,20 +340,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "21-9-8",
-      "result": "Finished 3rd in the Premier League",
-      "grade": "B"
+      "rec": "15-10-13",
+      "result": "Finished 6th in the Premier League",
+      "grade": "C+"
      },
-     "book": "40a2bfbc2f2164d1"
+     "book": "aff34790bef2cb4c"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "13-8-17",
-      "result": "Finished 12th in the Premier League",
+      "rec": "12-10-16",
+      "result": "Finished 13th in the Premier League",
       "grade": "C+"
      },
-     "book": "22ab4c4b6bbe69b2"
+     "book": "bebfbf55df9afe8c"
     }
    ]
   }

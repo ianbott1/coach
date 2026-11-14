@@ -1,5 +1,5 @@
 {
- "fp": "8cf8cfbfe8943e8d",
+ "fp": "8a0945cc7ed8ec70",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -435,59 +435,64 @@
    "fp": "8cf8cfbfe8943e8d",
    "from": "9f1bdddead0df06b",
    "note": "Round 73: the result card shows the box score and the night's big moment (screens only; every simulation fingerprint unchanged against round 72)"
+  },
+  {
+   "fp": "8a0945cc7ed8ec70",
+   "from": "8cf8cfbfe8943e8d",
+   "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "9dd024b4e9951f72",
-    "post": "b7222a5d64b337d8",
-    "champion": "Toronto",
-    "rec": "f9020a56150ef5d5",
-    "poll": "a2a8fd59eb06bc7e",
-    "heis": "f7337173c9ac3cbc",
-    "history": "0f694af7c616cdb6",
-    "universe": "639c3b8475847112",
-    "screens": "2b2a539efc99a280"
+    "games": "93ec3829af2af484",
+    "post": "069f03be48f6481c",
+    "champion": "Los Angeles",
+    "rec": "d601cb8345b59261",
+    "poll": "e3747dc9606f9bbb",
+    "heis": "d51c9d0a44f4d257",
+    "history": "bd9b6fef6652f8a2",
+    "universe": "41d27269fa2b1757",
+    "screens": "33631292dc6e3bfb"
    },
    {
     "year": 2027,
-    "games": "4c6a478e9907af82",
-    "post": "f606ef3d67808b90",
-    "champion": "Carolina",
-    "rec": "60103394e3e98849",
-    "poll": "c9753790022ba148",
-    "heis": "691a4bb931a90959",
-    "history": "670ba08c2a8eb51e",
-    "universe": "bf81541bcc4ca8fa",
-    "screens": "b3e3994c2959190e"
+    "games": "f0eb7e55558acbe5",
+    "post": "0deb8494e988d69a",
+    "champion": "Winnipeg",
+    "rec": "956ecb96aa5644fd",
+    "poll": "e00a2cb2c68e4b55",
+    "heis": "d1fdb803b5057b06",
+    "history": "22201acf6615b881",
+    "universe": "dc0bfb5f08b4a4e5",
+    "screens": "f7c37375ae3ff3cb"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "a5d98c5fe530c9f5",
-    "post": "60ce9109fd322579",
-    "champion": "Florida",
-    "rec": "06b8fc2d762baf11",
-    "poll": "ca365ee99e40831b",
-    "heis": "7e0393dbb3be6f97",
-    "history": "593bc47098ef93b8",
-    "universe": "556f70c863a6b4fb",
-    "screens": "12c388bff7cd0dcf"
+    "games": "ddea645c52997b49",
+    "post": "485630c3285b86e2",
+    "champion": "Calgary",
+    "rec": "0821186290baa32f",
+    "poll": "ce192d6ab471baa0",
+    "heis": "3736f327dd14c2f7",
+    "history": "3bbd33116075645d",
+    "universe": "cad0c05bb12f9a75",
+    "screens": "f69402c59fe23bf6"
    },
    {
     "year": 2027,
-    "games": "fe3d44f0dcf1e115",
-    "post": "ed8e377756a678d2",
-    "champion": "Colorado",
-    "rec": "325a0d8b78d76b9c",
-    "poll": "033d0a716cd7422d",
-    "heis": "06ef8269a7dcc9d2",
-    "history": "8b13f2127ac9b9a1",
-    "universe": "481702d442a5dff7",
-    "screens": "2c8446ee675a8308"
+    "games": "dff86dcaa54b6a97",
+    "post": "737093357eb8a465",
+    "champion": "Vegas",
+    "rec": "fcfb85d3934b7007",
+    "poll": "4843de1a770205f9",
+    "heis": "9cf823451da811f1",
+    "history": "fd614c26996f05b2",
+    "universe": "653c4a5d1dae3c61",
+    "screens": "5a7f0700de235606"
    }
   ],
   "schedules#60": [

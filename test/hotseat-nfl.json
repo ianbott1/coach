@@ -1,5 +1,5 @@
 {
- "fp": "2a4e08a5d6e36048",
+ "fp": "61dbdcd8eeb22c37",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -325,6 +325,11 @@
    "fp": "2a4e08a5d6e36048",
    "from": "3c450e1c2b6a13dc",
    "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
+  },
+  {
+   "fp": "61dbdcd8eeb22c37",
+   "from": "2a4e08a5d6e36048",
+   "note": "Round 74: engine 4 (players' lines from the game's record)"
   }
  ],
  "out": [
@@ -334,11 +339,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the divisional round",
-      "grade": "B"
+      "rec": "12-5",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "5a6304d740b776f2"
+     "book": "abbed84c692a0b31"
     },
     {
      "team": "Tennessee",
@@ -347,7 +352,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "87445be352626d79"
+     "book": "627f385f34d161f5"
     }
    ]
   },
@@ -357,20 +362,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost in the wild card round",
-      "grade": "B+"
+      "rec": "4-13",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "33383417d9f1fac5"
+     "book": "5b52bb25e272c648"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "11-6",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "089f7980f5872c69"
+     "book": "9df99c688457543d"
     }
    ]
   },
@@ -380,20 +385,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost in the divisional round",
-      "grade": "B+"
+      "rec": "12-5",
+      "result": "Lost the conference championship",
+      "grade": "A"
      },
-     "book": "e37ad95a87b6b6fb"
+     "book": "91d2b1eadcbcd3b6"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "13-4",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "B-"
      },
-     "book": "6591cc12f20389a0"
+     "book": "897dc888bd05984b"
     }
    ]
   }

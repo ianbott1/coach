@@ -1,5 +1,5 @@
 {
- "fp": "c20c77d1dcf9f010",
+ "fp": "0ad9858b7743c0b2",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -85,59 +85,64 @@
    "fp": "c20c77d1dcf9f010",
    "from": "7ec4e150246d35d2",
    "note": "Round 73: the result card shows the box score and the night's big moment (screens only; every simulation fingerprint unchanged against round 72)"
+  },
+  {
+   "fp": "0ad9858b7743c0b2",
+   "from": "c20c77d1dcf9f010",
+   "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "8c28f90484d42bf9",
-    "post": "95bf5a84bb1a6351",
-    "champion": "St. Louis",
-    "rec": "642096e4c553751c",
-    "poll": "db8cb424775b5817",
-    "heis": "7e458a513b8da670",
-    "history": "b66dd1551cbeb44c",
-    "universe": "e2c73e3efef4f1ec",
-    "screens": "fb67917f532a9ac5"
+    "games": "be98c596c4a26952",
+    "post": "aac9e0e50433fe96",
+    "champion": "Philadelphia",
+    "rec": "862ff28d5d61cf0e",
+    "poll": "cb7556da91dfb982",
+    "heis": "15d314e22f952e91",
+    "history": "f97d199575dc7ac3",
+    "universe": "a8080b965184b857",
+    "screens": "e2ba6ebb946aad26"
    },
    {
     "year": 2027,
-    "games": "f54ef777e057714c",
-    "post": "706c6948dee700dd",
-    "champion": "Cleveland",
-    "rec": "ac84ff4a838b929b",
-    "poll": "8bb61937a7180def",
-    "heis": "51f30f07e7e70cfb",
-    "history": "a226a33a119570be",
-    "universe": "e6603cbb8770c4ad",
-    "screens": "4a543b6553c1f529"
+    "games": "f81a9d5dae772056",
+    "post": "0632d4390c70f44a",
+    "champion": "Chicago Cubs",
+    "rec": "5e6ac919ce8739c8",
+    "poll": "b094eefa1d71bda7",
+    "heis": "e4c3f12acb8483d6",
+    "history": "337648eb33e2baec",
+    "universe": "e0be60e2a7b6ed09",
+    "screens": "7d06d33e20f04782"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "b5ba464da7c9ee87",
-    "post": "99cc6191e01edfe9",
-    "champion": "Toronto",
-    "rec": "f02a7deca839c723",
-    "poll": "b285a0e961383e80",
-    "heis": "519ef29b2a1613db",
-    "history": "77e444e898800447",
-    "universe": "9fdaf4801a03be42",
-    "screens": "e0e5d6579abeeb23"
+    "games": "b33eff1e5ee1f79a",
+    "post": "0b5ea6f3e895ad99",
+    "champion": "Chicago Cubs",
+    "rec": "26f7fa6c9bf2efa7",
+    "poll": "212199e8f6494419",
+    "heis": "06c516318c9d71d9",
+    "history": "b786030a20f17db0",
+    "universe": "006b0c2bc8d74e71",
+    "screens": "99562a2bb7580e8e"
    },
    {
     "year": 2027,
-    "games": "0bef5d0d8c8ec788",
-    "post": "7be73e0a67c4bf6b",
-    "champion": "Texas",
-    "rec": "70823b64707d7ef8",
-    "poll": "f266c88e5e2ba6b7",
-    "heis": "171c0f281862b7be",
-    "history": "bb3f2cfcb0a77c55",
-    "universe": "a775bc9a7b3d672b",
-    "screens": "474daa0262099bf2"
+    "games": "7bb09f1ebe643e82",
+    "post": "8586789bb20fc170",
+    "champion": "Cincinnati",
+    "rec": "ec0c08812ffbefeb",
+    "poll": "7e9f44fb11a69a2b",
+    "heis": "76af782122466704",
+    "history": "d7fe08b7629f446d",
+    "universe": "c06f9b18b45a5eca",
+    "screens": "e8ee2c4b54108b58"
    }
   ],
   "schedules#60": [

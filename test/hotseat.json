@@ -1,5 +1,5 @@
 {
- "fp": "78e80f48c9dc2aee",
+ "fp": "0db891be8c7c18a1",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -305,6 +305,11 @@
    "fp": "78e80f48c9dc2aee",
    "from": "9b3cc12590ee605c",
    "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
+  },
+  {
+   "fp": "0db891be8c7c18a1",
+   "from": "78e80f48c9dc2aee",
+   "note": "Round 74: engine 4 (players' lines from the game's record)"
   }
  ],
  "out": [
@@ -314,20 +319,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Liberty Bowl",
-      "grade": "F"
+      "rec": "7-6",
+      "result": "Lost the Duke's Mayo Bowl",
+      "grade": "D"
      },
-     "book": "36a8d1f6818878d9"
+     "book": "8c5b8d201188a98d"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "7-7",
+      "result": "Lost the Frisco Bowl",
+      "grade": "A"
      },
-     "book": "fd80181bdf89f913"
+     "book": "2a63fc1075c51065"
     }
    ]
   },
@@ -337,20 +342,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Texas Bowl",
-      "grade": "B-"
+      "rec": "12-2",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A"
      },
-     "book": "e976f5edc4aa5574"
+     "book": "3afad2e4bbb9b827"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
-      "result": "No bowl game",
-      "grade": "C+"
+      "rec": "7-6",
+      "result": "Lost the Camellia Bowl",
+      "grade": "A"
      },
-     "book": "9282fcbbf6e524c0"
+     "book": "daca8c48ebeebcf6"
     }
    ]
   },
@@ -360,20 +365,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-4",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A"
+      "rec": "13-3",
+      "result": "Eliminated in the national title game",
+      "grade": "A+"
      },
-     "book": "60755dacb12b4f61"
+     "book": "1d549c534272e275"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Sun Bowl",
+      "rec": "10-3",
+      "result": "Won the Music City Bowl",
       "grade": "A+"
      },
-     "book": "abf28172f7aca9ab"
+     "book": "c78dd9a61c144810"
     }
    ]
   }

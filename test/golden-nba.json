@@ -1,5 +1,5 @@
 {
- "fp": "9c85c21a7d2550c4",
+ "fp": "6eaa11aff1d44ec0",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -425,59 +425,64 @@
    "fp": "9c85c21a7d2550c4",
    "from": "fc5827c5d548ac8e",
    "note": "Round 73: basketball box row labelled FG, screens only"
+  },
+  {
+   "fp": "6eaa11aff1d44ec0",
+   "from": "9c85c21a7d2550c4",
+   "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "93f9c91185a16ff5",
-    "post": "34190ea6adb23e64",
-    "champion": "Minnesota",
-    "rec": "ae6fb96806bdfb20",
-    "poll": "6af13d268d521663",
-    "heis": "3a7b49abf4084dcc",
-    "history": "8b18fe09a62077ce",
-    "universe": "eff40ed501d15973",
-    "screens": "65ce29a777d80083"
+    "games": "e0e086261ba22831",
+    "post": "a57be48f38981355",
+    "champion": "Boston",
+    "rec": "7cf56586281e6707",
+    "poll": "c59e0f03e33ee607",
+    "heis": "683a05b99261a069",
+    "history": "d300188ae0b96085",
+    "universe": "9a40601deae12b50",
+    "screens": "bf85869ca1d2ba69"
    },
    {
     "year": 2027,
-    "games": "4bee53d542626960",
-    "post": "a25689d0b81d69f2",
+    "games": "dcd5bc23564f302c",
+    "post": "4d99ef68ae687181",
     "champion": "Minnesota",
-    "rec": "ffdecf0db471e68c",
-    "poll": "7738575915d47e47",
-    "heis": "d66b1d30effd6687",
-    "history": "e8d864fae0209a19",
-    "universe": "a0898df77053aabf",
-    "screens": "79b1e61ca848b645"
+    "rec": "5fea15af50425ac8",
+    "poll": "9a7e04392147ca1c",
+    "heis": "c2a7e6c5073d5d14",
+    "history": "db8f218c85bc28aa",
+    "universe": "c85c2ee8d1c4fab2",
+    "screens": "c517c186300545a5"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "d9e6bbf100b8f5d0",
-    "post": "85ebb303a8581991",
-    "champion": "New York",
-    "rec": "e4a77ccd9053a31a",
-    "poll": "22557692c1976234",
-    "heis": "69bdfbf7d9c30ffc",
-    "history": "4986b474384e4625",
-    "universe": "f87b8ae53bc970c3",
-    "screens": "eff5132101220b9a"
+    "games": "ba1ac86991514c4f",
+    "post": "194727b00c757f93",
+    "champion": "Golden State",
+    "rec": "86366a27040f99f8",
+    "poll": "bf00d73c5c30aec1",
+    "heis": "32d43c15eb6cbec1",
+    "history": "7456cbd3b79944bd",
+    "universe": "2227187bdc73bec1",
+    "screens": "2356ac1de8f3526f"
    },
    {
     "year": 2027,
-    "games": "b0efb95f3bcda9f7",
-    "post": "087115545560066b",
-    "champion": "Oklahoma City",
-    "rec": "77c38e5d1151aa64",
-    "poll": "9d452f504472b650",
-    "heis": "a8f75591d60ec99b",
-    "history": "dcc54f9d7f068900",
-    "universe": "85338152e67bde04",
-    "screens": "d312a213d20ee68e"
+    "games": "ed6e6715ea0045f0",
+    "post": "429f12b4d5596980",
+    "champion": "Houston",
+    "rec": "ff2425a7dab123cf",
+    "poll": "a56a7ec192ee0a12",
+    "heis": "0e7893614a123ce2",
+    "history": "5a784d727dc3fd8b",
+    "universe": "b535a2da2b18cd7e",
+    "screens": "1cc371441be6edc8"
    }
   ],
   "schedules#60": [

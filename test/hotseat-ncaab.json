@@ -1,5 +1,5 @@
 {
- "fp": "8870255cb1124968",
+ "fp": "24616a5a81fd561b",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -280,6 +280,11 @@
    "fp": "8870255cb1124968",
    "from": "a0d9cf35ff6ca4c9",
    "note": "round 71: engV 2 and schedV 3 in the universe (new careers on the new engine and schedules), the late-call floor, reads left to the assistant or set up as the report said not counted"
+  },
+  {
+   "fp": "24616a5a81fd561b",
+   "from": "8870255cb1124968",
+   "note": "Round 74: engine 4 (players' lines from the game's record)"
   }
  ],
  "out": [
@@ -289,20 +294,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "31-5",
+      "rec": "31-3",
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "5f4e4773b039ef07"
+     "book": "84f43f2fa6617992"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "34-3",
+      "rec": "34-4",
       "result": "Lost in the Elite Eight",
       "grade": "A+"
      },
-     "book": "9e32ff074d5415b6"
+     "book": "138c6128ecd89623"
     }
    ]
   },
@@ -312,20 +317,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-8",
+      "rec": "27-7",
       "result": "Lost in the Second Round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "4c53f6fbc62ccd83"
+     "book": "895de1baa6fa57c0"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "25-9",
-      "result": "Lost in the Sweet 16",
-      "grade": "B"
+      "rec": "33-5",
+      "result": "Lost the national championship",
+      "grade": "A+"
      },
-     "book": "7fe11998d9f529d6"
+     "book": "f3a93dd18d03b438"
     }
    ]
   },
@@ -335,20 +340,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "32-5",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "24-9",
+      "result": "Lost in the First Round",
+      "grade": "C+"
      },
-     "book": "1fa2915f4335b134"
+     "book": "ec8bcaab89a197d5"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "25-10",
-      "result": "Lost in the Second Round",
-      "grade": "B-"
+      "rec": "33-6",
+      "result": "Lost the national championship",
+      "grade": "A+"
      },
-     "book": "6a431f70d3d3572f"
+     "book": "af164490f362124f"
     }
    ]
   }

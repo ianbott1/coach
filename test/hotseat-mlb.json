@@ -1,5 +1,5 @@
 {
- "fp": "ebe76644be68cfa3",
+ "fp": "f9ad08b20920b9c1",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -60,6 +60,11 @@
    "fp": "ebe76644be68cfa3",
    "from": "12f991d94fa7f350",
    "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
+  },
+  {
+   "fp": "f9ad08b20920b9c1",
+   "from": "ebe76644be68cfa3",
+   "note": "Round 74: engine 4 (players' lines from the game's record)"
   }
  ],
  "out": [
@@ -69,20 +74,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "101-61",
-      "result": "Lost in the division series",
-      "grade": "A-"
+      "rec": "87-75",
+      "result": "Lost in the wild-card series",
+      "grade": "B-"
      },
-     "book": "50f6a23074e51227"
+     "book": "9e4b22e158d23eca"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "77-85",
+      "rec": "78-84",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "9b06908b7d0c07f2"
+     "book": "a408e80fb7092e40"
     }
    ]
   },
@@ -92,20 +97,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "70-92",
+      "rec": "77-85",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "D"
      },
-     "book": "2204d1d7ba63ee83"
+     "book": "32dce57f7125978f"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "76-86",
+      "rec": "66-96",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "766125a434bafddf"
+     "book": "c93bb5bf4255494f"
     }
    ]
   },
@@ -115,20 +120,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "74-88",
+      "rec": "81-81",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "4dd1ef5691342caa"
+     "book": "9c9fce250f642202"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "88-74",
-      "result": "Missed the postseason",
-      "grade": "B"
+      "rec": "96-66",
+      "result": "Lost in the division series",
+      "grade": "A"
      },
-     "book": "d0f94eac17cba0f4"
+     "book": "701fb581bdef451b"
     }
    ]
   }
