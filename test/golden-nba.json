@@ -1,5 +1,5 @@
 {
- "fp": "6eaa11aff1d44ec0",
+ "fp": "a69b76fd1e62f383",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -430,6 +430,11 @@
    "fp": "6eaa11aff1d44ec0",
    "from": "9c85c21a7d2550c4",
    "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
+  },
+  {
+   "fp": "a69b76fd1e62f383",
+   "from": "6eaa11aff1d44ec0",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "result": {
@@ -455,8 +460,8 @@
     "poll": "9a7e04392147ca1c",
     "heis": "c2a7e6c5073d5d14",
     "history": "db8f218c85bc28aa",
-    "universe": "c85c2ee8d1c4fab2",
-    "screens": "c517c186300545a5"
+    "universe": "6236d6238e84c00a",
+    "screens": "02e6e02f606dfd88"
    }
   ],
   "Detroit#777": [

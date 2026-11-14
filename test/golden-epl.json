@@ -1,5 +1,5 @@
 {
- "fp": "f9fa89f586cf0abb",
+ "fp": "58944de909aade92",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -420,6 +420,11 @@
    "fp": "f9fa89f586cf0abb",
    "from": "60c8e910359feaa6",
    "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
+  },
+  {
+   "fp": "58944de909aade92",
+   "from": "f9fa89f586cf0abb",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "result": {
@@ -433,7 +438,7 @@
     "poll": "7b7f3d8727aeca30",
     "heis": "95efb282beb2b16c",
     "history": "9c83b384bb87e07e",
-    "universe": "e6c10b4ed2991312",
+    "universe": "ff54f82bc9d9c2df",
     "screens": "dad924608b83cef4"
    },
    {
@@ -445,7 +450,7 @@
     "poll": "b61baffad62021dd",
     "heis": "d63de9aad16e90be",
     "history": "0b8d14311862a525",
-    "universe": "ee3b4c78dbf3a62d",
+    "universe": "493cafad9f932897",
     "screens": "299a06c5bc59570c"
    }
   ],
@@ -459,7 +464,7 @@
     "poll": "84fd0765d46bc8aa",
     "heis": "1c65ec2264b022a0",
     "history": "ed5265d673f940fb",
-    "universe": "a028267d672cd5b3",
+    "universe": "b0362781d573ee60",
     "screens": "7237b26d1cc05431"
    },
    {
@@ -470,9 +475,9 @@
     "rec": "4043573bf6444aa4",
     "poll": "f13122060fec7347",
     "heis": "6c62922cdeac8984",
-    "history": "063cfb273808dac0",
-    "universe": "d1863d807812759d",
-    "screens": "5b0b3193105f1b2c"
+    "history": "b9b742b66f61704b",
+    "universe": "6460423c6d155e77",
+    "screens": "f99183c9095007ff"
    }
   ],
   "schedules#60": [

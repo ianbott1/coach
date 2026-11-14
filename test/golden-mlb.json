@@ -1,5 +1,5 @@
 {
- "fp": "0ad9858b7743c0b2",
+ "fp": "ddb30dd3ae0f121a",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -90,6 +90,11 @@
    "fp": "0ad9858b7743c0b2",
    "from": "c20c77d1dcf9f010",
    "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
+  },
+  {
+   "fp": "ddb30dd3ae0f121a",
+   "from": "0ad9858b7743c0b2",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "result": {
@@ -103,7 +108,7 @@
     "poll": "cb7556da91dfb982",
     "heis": "15d314e22f952e91",
     "history": "f97d199575dc7ac3",
-    "universe": "a8080b965184b857",
+    "universe": "c3f64f721ef658f4",
     "screens": "e2ba6ebb946aad26"
    },
    {
@@ -114,9 +119,9 @@
     "rec": "5e6ac919ce8739c8",
     "poll": "b094eefa1d71bda7",
     "heis": "e4c3f12acb8483d6",
-    "history": "337648eb33e2baec",
-    "universe": "e0be60e2a7b6ed09",
-    "screens": "7d06d33e20f04782"
+    "history": "17201eea49d14dbe",
+    "universe": "291e6ef7f2e1925e",
+    "screens": "6d06aaefae3035e6"
    }
   ],
   "Colorado#777": [
@@ -129,20 +134,20 @@
     "poll": "212199e8f6494419",
     "heis": "06c516318c9d71d9",
     "history": "b786030a20f17db0",
-    "universe": "006b0c2bc8d74e71",
-    "screens": "99562a2bb7580e8e"
+    "universe": "960c3b857d81ad92",
+    "screens": "f134a85bee40d4d0"
    },
    {
     "year": 2027,
-    "games": "7bb09f1ebe643e82",
-    "post": "8586789bb20fc170",
-    "champion": "Cincinnati",
-    "rec": "ec0c08812ffbefeb",
-    "poll": "7e9f44fb11a69a2b",
-    "heis": "76af782122466704",
-    "history": "d7fe08b7629f446d",
-    "universe": "c06f9b18b45a5eca",
-    "screens": "e8ee2c4b54108b58"
+    "games": "d60063aa00eccabb",
+    "post": "d163eceaa61879d7",
+    "champion": "Atlanta",
+    "rec": "7600e474dc572238",
+    "poll": "6df448661f274272",
+    "heis": "bfafdfc8b5debc15",
+    "history": "6b4b1e3e6cb3edee",
+    "universe": "46d3bbb351645e5d",
+    "screens": "1189656b8fc5098d"
    }
   ],
   "schedules#60": [

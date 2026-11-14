@@ -1,5 +1,5 @@
 {
- "fp": "61dbdcd8eeb22c37",
+ "fp": "c734f78561504f84",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -330,6 +330,11 @@
    "fp": "61dbdcd8eeb22c37",
    "from": "2a4e08a5d6e36048",
    "note": "Round 74: engine 4 (players' lines from the game's record)"
+  },
+  {
+   "fp": "c734f78561504f84",
+   "from": "61dbdcd8eeb22c37",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "out": [
@@ -375,7 +380,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "9df99c688457543d"
+     "book": "87f6189186906d79"
     }
    ]
   },
@@ -389,7 +394,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "91d2b1eadcbcd3b6"
+     "book": "24872c3ff511b820"
     },
     {
      "team": "Tennessee",
@@ -398,7 +403,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "897dc888bd05984b"
+     "book": "208bfd2e6fdc1641"
     }
    ]
   }

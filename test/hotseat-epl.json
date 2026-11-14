@@ -1,5 +1,5 @@
 {
- "fp": "669884a99c385884",
+ "fp": "93f75655da47f3f5",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -285,6 +285,11 @@
    "fp": "669884a99c385884",
    "from": "e00f56f6e2d82aca",
    "note": "Round 74: engine 4 (players' lines from the game's record)"
+  },
+  {
+   "fp": "93f75655da47f3f5",
+   "from": "669884a99c385884",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "out": [
@@ -321,7 +326,7 @@
       "result": "Finished 7th in the Premier League",
       "grade": "C+"
      },
-     "book": "727d3d71e6cf2190"
+     "book": "e3fc4ed08459eae8"
     },
     {
      "team": "Tottenham Hotspur",
@@ -344,7 +349,7 @@
       "result": "Finished 6th in the Premier League",
       "grade": "C+"
      },
-     "book": "aff34790bef2cb4c"
+     "book": "1401210aa5d9117f"
     },
     {
      "team": "Tottenham Hotspur",

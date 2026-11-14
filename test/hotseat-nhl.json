@@ -1,5 +1,5 @@
 {
- "fp": "3bc2c15b9bd91d58",
+ "fp": "baa65abb4c4a6017",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -300,6 +300,11 @@
    "fp": "3bc2c15b9bd91d58",
    "from": "7718b76f92cab949",
    "note": "Round 74: engine 4 (players' lines from the game's record)"
+  },
+  {
+   "fp": "baa65abb4c4a6017",
+   "from": "3bc2c15b9bd91d58",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "out": [
@@ -336,7 +341,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "1f438bbca09357b3"
+     "book": "5d7e8e4106f4013d"
     },
     {
      "team": "Montreal",
@@ -345,7 +350,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "00bddff566e67cd0"
+     "book": "338bd002cf3ae115"
     }
    ]
   },
@@ -359,7 +364,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "71dbba6c018919b5"
+     "book": "ee8639eb0c5a3985"
     },
     {
      "team": "Montreal",
@@ -368,7 +373,7 @@
       "result": "Missed the playoffs",
       "grade": "B+"
      },
-     "book": "fe239624d86e909a"
+     "book": "5ec27a2c80520b08"
     }
    ]
   }

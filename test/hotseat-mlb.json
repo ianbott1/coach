@@ -1,5 +1,5 @@
 {
- "fp": "f9ad08b20920b9c1",
+ "fp": "6e96b28bf9c236e1",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -65,6 +65,11 @@
    "fp": "f9ad08b20920b9c1",
    "from": "ebe76644be68cfa3",
    "note": "Round 74: engine 4 (players' lines from the game's record)"
+  },
+  {
+   "fp": "6e96b28bf9c236e1",
+   "from": "f9ad08b20920b9c1",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "out": [
@@ -97,20 +102,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "77-85",
+      "rec": "81-81",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "32dce57f7125978f"
+     "book": "f4a2d179a34a1d5e"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "66-96",
+      "rec": "60-102",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "c93bb5bf4255494f"
+     "book": "1bde07b7dd29f81c"
     }
    ]
   },
@@ -120,11 +125,11 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
+      "rec": "72-90",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "9c9fce250f642202"
+     "book": "f81e16d6d8e9643a"
     },
     {
      "team": "Boston",
@@ -133,7 +138,7 @@
       "result": "Lost in the division series",
       "grade": "A"
      },
-     "book": "701fb581bdef451b"
+     "book": "85ac3baa4055a875"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "b219a6b3fb786518",
+ "fp": "11020bac7682689c",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -495,6 +495,11 @@
    "fp": "b219a6b3fb786518",
    "from": "bfbaf5b54b0a9ce5",
    "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
+  },
+  {
+   "fp": "11020bac7682689c",
+   "from": "b219a6b3fb786518",
+   "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
   }
  ],
  "result": {
@@ -508,7 +513,7 @@
     "poll": "4fc18b2790d24ba9",
     "heis": "ecd155e11cba5c1a",
     "history": "130c18bfb6eee69d",
-    "universe": "b96ea9431340bbf5",
+    "universe": "ef0a3add39c8e414",
     "screens": "c0044c01891fa6ee"
    },
    {
@@ -520,8 +525,8 @@
     "poll": "c8c3dc944e565db0",
     "heis": "40c5bc6ff495d1ed",
     "history": "1ecdd0635c8c1855",
-    "universe": "21ad4a90cef0e800",
-    "screens": "c974c2c97a4bd478"
+    "universe": "d6d6c44856dc8be2",
+    "screens": "c3ea1db867849f9a"
    },
    {
     "year": 2028,
@@ -531,9 +536,9 @@
     "rec": "66402eb111d4e008",
     "poll": "0174417a893155af",
     "heis": "7b4640654e35b531",
-    "history": "8cdb70ee545a338b",
-    "universe": "460341318e02009f",
-    "screens": "67a8698e54abc9e6"
+    "history": "feb095bb34330aea",
+    "universe": "099a4624ce0ecb25",
+    "screens": "26bc55173c4052a7"
    },
    {
     "year": 2029,
@@ -543,9 +548,9 @@
     "rec": "abbfe33e81d73489",
     "poll": "9fb8a20999aa99ad",
     "heis": "05213fc79d022a3c",
-    "history": "4b6e14f25a8a2157",
-    "universe": "1db7e5c30a2ba773",
-    "screens": "a3843bad3ca1b4ad"
+    "history": "d44bf62cb913ea8e",
+    "universe": "bbc8bf4831043e83",
+    "screens": "6d715f05af83d139"
    }
   ],
   "Tennessee#2024": [
@@ -570,8 +575,8 @@
     "poll": "36569c1aca01467a",
     "heis": "38036bb6c62e2dac",
     "history": "f0f13779058a46a5",
-    "universe": "801bd4b3f7ea0635",
-    "screens": "9899e03ab3fd395a"
+    "universe": "8b095d6c6a58dc5a",
+    "screens": "fc37a53edc17c78a"
    },
    {
     "year": 2028,
@@ -582,8 +587,8 @@
     "poll": "3df041d952e044cd",
     "heis": "ee8e9fb22d238645",
     "history": "d07f55b02417440d",
-    "universe": "29f47c21f594d16b",
-    "screens": "ca828f43329c08d7"
+    "universe": "9016132026cf8dcc",
+    "screens": "491d5248f55b69fa"
    },
    {
     "year": 2029,
@@ -594,8 +599,8 @@
     "poll": "aba2c4d9d3404e0b",
     "heis": "346a59eeedb615cd",
     "history": "8f21562f5b9ad2c0",
-    "universe": "f14e4dd7a0c29404",
-    "screens": "cfa5e47768913fdb"
+    "universe": "f5e048b8e0751917",
+    "screens": "01f69c8dad608333"
    }
   ],
   "Detroit#777": [
@@ -608,7 +613,7 @@
     "poll": "3dd385d73672398c",
     "heis": "10ceb5dd20bb3499",
     "history": "28cffc021fc5497e",
-    "universe": "c35a6ffe624da279",
+    "universe": "abd96842bfe041a4",
     "screens": "676ff5e4797fcfab"
    },
    {
@@ -619,9 +624,9 @@
     "rec": "7c5ea2a7983614d4",
     "poll": "5b455cef4f72a23c",
     "heis": "8a5161c22b9f9a8d",
-    "history": "934504cf6b7aa6ce",
-    "universe": "9625c74da24a91bd",
-    "screens": "de16eb45818f9413"
+    "history": "fd81c0521fc92cb5",
+    "universe": "0ff965ebb6010635",
+    "screens": "c6ef4a895a90fc2b"
    },
    {
     "year": 2028,
@@ -632,7 +637,7 @@
     "poll": "7e89997b63c7f12d",
     "heis": "f269c206516f3649",
     "history": "b5091089a3b782d7",
-    "universe": "0739208f7f356906",
+    "universe": "64b71750e92624e8",
     "screens": "834131472bbb4908"
    }
   ],
@@ -646,7 +651,7 @@
     "poll": "2ed941e4b86f0373",
     "heis": "477cf883dd7bc72e",
     "history": "6c1cba3aaf36ce9b",
-    "universe": "cbc6a62bb30f211a",
+    "universe": "e6c7a2844ff3dc5e",
     "screens": "5d332d19b79d089c"
    },
    {
@@ -658,8 +663,8 @@
     "poll": "b750048545142fc7",
     "heis": "2c1b0557a8de640c",
     "history": "6916b10edad89c21",
-    "universe": "39b873e3119a0948",
-    "screens": "e8f562d2a94bc948"
+    "universe": "1e3037de35c9241e",
+    "screens": "395442fb08cbaa40"
    },
    {
     "year": 2028,
@@ -669,9 +674,9 @@
     "rec": "7ac55cbe9b1eaee0",
     "poll": "893e2ed240ff96a0",
     "heis": "e22a956d4ed7052e",
-    "history": "90e61bb8685335f7",
-    "universe": "945322f789e38687",
-    "screens": "21bcdffeb0eba20b"
+    "history": "162f6a47226aaf3e",
+    "universe": "fe42877b63480e44",
+    "screens": "b775c5e0a1112d5b"
    }
   ],
   "schedules#60": [
