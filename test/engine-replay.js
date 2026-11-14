@@ -6,10 +6,12 @@ const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
 // the older build: OLD=dir, or the pages of the last engine-3 release (round 73, 787c225) out of the repository's history
-const OLD_REV='787c225';
-const OLD=process.env.OLD||(()=>{ const d=path.join(require('os').tmpdir(),'engine-replay-'+OLD_REV); try{ fs.mkdirSync(d,{recursive:true});
+// (round 75: and engine 4's, round 74 at 422d434: a season begun there replays too)
+const OLD_REVS=['787c225','422d434'];
+const pages=rev=>{ const d=path.join(require('os').tmpdir(),'engine-replay-'+rev); try{ fs.mkdirSync(d,{recursive:true});
   for(const c of ['football-coach','football-coach-pro','basketball-coach','basketball-coach-pro','hockey-coach-pro','soccer-coach','baseball-coach-pro']){ const f=path.join(d,c+'.html');
-    if(!fs.existsSync(f))fs.writeFileSync(f,require('child_process').execSync(`git show ${OLD_REV}:${c}.html`,{cwd:path.join(__dirname,'..'),maxBuffer:64<<20})) } }catch(e){ return path.join(d,'missing') } return d })();
+    if(!fs.existsSync(f))fs.writeFileSync(f,require('child_process').execSync(`git show ${rev}:${c}.html`,{cwd:path.join(__dirname,'..'),maxBuffer:64<<20})) } }catch(e){ return path.join(d,'missing') } return d };
+const OLDS=process.env.OLD?[process.env.OLD]:OLD_REVS.map(pages);
 const NEW=process.env.DIST||path.join(__dirname,'..','dist');
 const only=process.argv.slice(2).find(a=>!a.startsWith('--'));
 const h=o=>crypto.createHash('md5').update(JSON.stringify(o)??'undefined').digest('hex').slice(0,8);
@@ -20,7 +22,7 @@ const state=api=>{ const E=api.SEA, lines={};
   Object.keys(E.roster||{}).forEach(t=>(E.roster[t]||[]).forEach(p=>{ if(p&&p.st2)lines[t+'|'+p.n]=p.st2 }));
   return {games:E.weeks.map(w=>w.games.map(g=>[g.home,g.away,g.hp,g.ap])),rec:E.rec,lines:lines} };
 (async()=>{ let bad=0;
-  if(!fs.existsSync(OLD)){ console.log(`  no older build at ${OLD}`); console.log('MISMATCH no older build'); process.exit(1) }
+  for(const OLD of OLDS){ if(!fs.existsSync(OLD)){ console.log(`  no older build at ${OLD}`); bad++; continue } console.log(`  from ${path.basename(OLD)}`);
   for(const [f,team,steps] of CASES.filter(c=>!only||c[0].startsWith(only))){
     const A=mk()(path.join(OLD,f)); A.newDynasty(team,3,'T'); for(let i=0;i<steps;i++)step(A);
     const B=mk()(path.join(NEW,f)); await B.loadSave(JSON.stringify(A.S));
@@ -30,5 +32,5 @@ const state=api=>{ const E=api.SEA, lines={};
     const a2=state(A), b2=state(B), d2=Object.keys(a2).filter(k=>h(a2[k])!==h(b2[k]));
     const ok=!diffs.length&&!d2.length; if(!ok)bad++;
     console.log(`  ${ok?'ok  ':'FAIL'} ${f}: ${steps} steps on the older build, reloaded here${diffs.length?' ('+diffs.join(', ')+' differ)':''}; 4 more on each${d2.length?' ('+d2.join(', ')+' differ)':''}`);
-  }
+  } }
   console.log(bad?`MISMATCH ${bad}`:'MATCH an older season replays as it was played'); process.exit(bad?1:0) })();
