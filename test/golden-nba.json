@@ -1,5 +1,5 @@
 {
- "fp": "fc5827c5d548ac8e",
+ "fp": "9c85c21a7d2550c4",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -420,6 +420,11 @@
    "fp": "fc5827c5d548ac8e",
    "from": "939059c9a4941002",
    "note": "Round 73: the result card shows the box score and the night's big moment (screens only; every simulation fingerprint unchanged against round 72)"
+  },
+  {
+   "fp": "9c85c21a7d2550c4",
+   "from": "fc5827c5d548ac8e",
+   "note": "Round 73: basketball box row labelled FG, screens only"
   }
  ],
  "result": {
@@ -434,7 +439,7 @@
     "heis": "3a7b49abf4084dcc",
     "history": "8b18fe09a62077ce",
     "universe": "eff40ed501d15973",
-    "screens": "f36e389dc603a9b8"
+    "screens": "65ce29a777d80083"
    },
    {
     "year": 2027,
@@ -446,7 +451,7 @@
     "heis": "d66b1d30effd6687",
     "history": "e8d864fae0209a19",
     "universe": "a0898df77053aabf",
-    "screens": "0d8362956e736485"
+    "screens": "79b1e61ca848b645"
    }
   ],
   "Detroit#777": [
@@ -472,7 +477,7 @@
     "heis": "a8f75591d60ec99b",
     "history": "dcc54f9d7f068900",
     "universe": "85338152e67bde04",
-    "screens": "2e73263b57a5f80b"
+    "screens": "d312a213d20ee68e"
    }
   ],
   "schedules#60": [
