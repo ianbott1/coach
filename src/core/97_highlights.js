@@ -91,6 +91,9 @@ function hlWatchPlan(w){
 function hlWatchAt(r){
   if(typeof watch==="undefined"||!watch||!watch.hl||hlMode()==="off")return 0;
   const P=watch.hl, g=watch.g, L={g:g, drives:g.drives}; let own=P.end.findIndex(e=>e>r); if(own<0)own=P.end.length-1;
+  // a drive that adds no rows of its own goes with the one before it (round 75: a last inning with no new row, the home
+  // side not batting in the ninth, never played its clips)
+  while(own+1<P.end.length&&P.end[own+1]===P.end[own])own++;
   if(P.next>own)return 0;
   let clips=[]; for(let k=P.next;k<=own;k++){ try{ clips=clips.concat(HL_SPORT.clips(L,g.drives[k],hlMode())||[]) }catch(e){} }
   const d=g.drives[P.next]; P.next=own+1;
