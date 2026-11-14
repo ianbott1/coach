@@ -1,5 +1,5 @@
 {
- "fp": "ddb30dd3ae0f121a",
+ "fp": "f9f80edafc7417bc",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -95,59 +95,64 @@
    "fp": "ddb30dd3ae0f121a",
    "from": "0ad9858b7743c0b2",
    "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
+  },
+  {
+   "fp": "f9f80edafc7417bc",
+   "from": "ddb30dd3ae0f121a",
+   "note": "Round 75: engine 5 (baseball's players by their own ratings; basketball's star scoring)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "be98c596c4a26952",
-    "post": "aac9e0e50433fe96",
-    "champion": "Philadelphia",
-    "rec": "862ff28d5d61cf0e",
-    "poll": "cb7556da91dfb982",
-    "heis": "15d314e22f952e91",
-    "history": "f97d199575dc7ac3",
-    "universe": "c3f64f721ef658f4",
-    "screens": "e2ba6ebb946aad26"
+    "games": "e734b416db9d6aab",
+    "post": "3c9631118986e3b0",
+    "champion": "Texas",
+    "rec": "d56b7641ce963c81",
+    "poll": "097ff6404397d1e4",
+    "heis": "4bef92a5da6f0d4e",
+    "history": "df41e496dd360c2e",
+    "universe": "b8fea5d57f9d3568",
+    "screens": "2ec8b98875fc5dbe"
    },
    {
     "year": 2027,
-    "games": "f81a9d5dae772056",
-    "post": "0632d4390c70f44a",
-    "champion": "Chicago Cubs",
-    "rec": "5e6ac919ce8739c8",
-    "poll": "b094eefa1d71bda7",
-    "heis": "e4c3f12acb8483d6",
-    "history": "17201eea49d14dbe",
-    "universe": "291e6ef7f2e1925e",
-    "screens": "6d06aaefae3035e6"
+    "games": "56dbdcd85bd94c94",
+    "post": "1d0cd59d50c5f5ae",
+    "champion": "Washington",
+    "rec": "70547204eb4797d7",
+    "poll": "8e1c723bd94018f5",
+    "heis": "1badb10b1d126da1",
+    "history": "b161b53f8ba66c92",
+    "universe": "629a5e03f87856ba",
+    "screens": "dc3da5d5381944cb"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "b33eff1e5ee1f79a",
-    "post": "0b5ea6f3e895ad99",
-    "champion": "Chicago Cubs",
-    "rec": "26f7fa6c9bf2efa7",
-    "poll": "212199e8f6494419",
-    "heis": "06c516318c9d71d9",
-    "history": "b786030a20f17db0",
-    "universe": "960c3b857d81ad92",
-    "screens": "f134a85bee40d4d0"
+    "games": "4166afb202b90c2a",
+    "post": "cd08a0fff3857a7f",
+    "champion": "Boston",
+    "rec": "7e44e1e9d06eabe2",
+    "poll": "40dc2b8cf2c7b9e5",
+    "heis": "32a9d67e2ee8ad6d",
+    "history": "4e16ff8aeae43875",
+    "universe": "5184bf94b60dbb08",
+    "screens": "01303e1882f3dd8f"
    },
    {
     "year": 2027,
-    "games": "d60063aa00eccabb",
-    "post": "d163eceaa61879d7",
-    "champion": "Atlanta",
-    "rec": "7600e474dc572238",
-    "poll": "6df448661f274272",
-    "heis": "bfafdfc8b5debc15",
-    "history": "6b4b1e3e6cb3edee",
-    "universe": "46d3bbb351645e5d",
-    "screens": "1189656b8fc5098d"
+    "games": "574dd489f9baa425",
+    "post": "69599f7dbdd2fe27",
+    "champion": "NY Mets",
+    "rec": "e1690f912f9a4945",
+    "poll": "0e4d35bb9955354b",
+    "heis": "b958db9951b8d0fd",
+    "history": "003f4e0ee0e5237b",
+    "universe": "d3907028d57dd4a1",
+    "screens": "a7126c3d827cfe15"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "8a0945cc7ed8ec70",
+ "fp": "a7c2cfafbec80466",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -440,6 +440,11 @@
    "fp": "8a0945cc7ed8ec70",
    "from": "8cf8cfbfe8943e8d",
    "note": "Round 74: engine 4, players' lines from the game's own record; new seasons' results move (the lines no longer draw on the season's numbers)"
+  },
+  {
+   "fp": "a7c2cfafbec80466",
+   "from": "8a0945cc7ed8ec70",
+   "note": "Round 75: engine number 5 in the season settings only (games and screens unchanged)"
   }
  ],
  "result": {
@@ -453,7 +458,7 @@
     "poll": "e3747dc9606f9bbb",
     "heis": "d51c9d0a44f4d257",
     "history": "bd9b6fef6652f8a2",
-    "universe": "41d27269fa2b1757",
+    "universe": "708189b13c8e31e3",
     "screens": "33631292dc6e3bfb"
    },
    {
@@ -465,7 +470,7 @@
     "poll": "e00a2cb2c68e4b55",
     "heis": "d1fdb803b5057b06",
     "history": "22201acf6615b881",
-    "universe": "dc0bfb5f08b4a4e5",
+    "universe": "746725b7f1a1fd3a",
     "screens": "f7c37375ae3ff3cb"
    }
   ],
@@ -479,7 +484,7 @@
     "poll": "ce192d6ab471baa0",
     "heis": "3736f327dd14c2f7",
     "history": "3bbd33116075645d",
-    "universe": "cad0c05bb12f9a75",
+    "universe": "de9a466750138760",
     "screens": "f69402c59fe23bf6"
    },
    {
@@ -491,7 +496,7 @@
     "poll": "4843de1a770205f9",
     "heis": "9cf823451da811f1",
     "history": "fd614c26996f05b2",
-    "universe": "653c4a5d1dae3c61",
+    "universe": "bc8327ebb3b11b10",
     "screens": "5a7f0700de235606"
    }
   ],

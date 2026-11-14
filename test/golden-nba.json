@@ -1,5 +1,5 @@
 {
- "fp": "a69b76fd1e62f383",
+ "fp": "3cd5a28a515090ac",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -435,6 +435,11 @@
    "fp": "a69b76fd1e62f383",
    "from": "6eaa11aff1d44ec0",
    "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
+  },
+  {
+   "fp": "3cd5a28a515090ac",
+   "from": "a69b76fd1e62f383",
+   "note": "Round 75: engine 5 (baseball's players by their own ratings; basketball's star scoring)"
   }
  ],
  "result": {
@@ -446,10 +451,10 @@
     "champion": "Boston",
     "rec": "7cf56586281e6707",
     "poll": "c59e0f03e33ee607",
-    "heis": "683a05b99261a069",
-    "history": "d300188ae0b96085",
-    "universe": "9a40601deae12b50",
-    "screens": "bf85869ca1d2ba69"
+    "heis": "b0d3643fe51f45b0",
+    "history": "11e26240f996104f",
+    "universe": "22cdccb1bf36ed02",
+    "screens": "de45da6bb5574f68"
    },
    {
     "year": 2027,
@@ -458,10 +463,10 @@
     "champion": "Minnesota",
     "rec": "5fea15af50425ac8",
     "poll": "9a7e04392147ca1c",
-    "heis": "c2a7e6c5073d5d14",
-    "history": "db8f218c85bc28aa",
-    "universe": "6236d6238e84c00a",
-    "screens": "02e6e02f606dfd88"
+    "heis": "9b52fd1a0f4ab380",
+    "history": "4b0cac710915f705",
+    "universe": "643b2acfc6aada33",
+    "screens": "4495b95105d6370c"
    }
   ],
   "Detroit#777": [
@@ -472,10 +477,10 @@
     "champion": "Golden State",
     "rec": "86366a27040f99f8",
     "poll": "bf00d73c5c30aec1",
-    "heis": "32d43c15eb6cbec1",
-    "history": "7456cbd3b79944bd",
-    "universe": "2227187bdc73bec1",
-    "screens": "2356ac1de8f3526f"
+    "heis": "7ce35292c0cefdbc",
+    "history": "35d3573cfa5d992d",
+    "universe": "cb30b52f297f64db",
+    "screens": "77fd5aaeece32ca2"
    },
    {
     "year": 2027,
@@ -484,10 +489,10 @@
     "champion": "Houston",
     "rec": "ff2425a7dab123cf",
     "poll": "a56a7ec192ee0a12",
-    "heis": "0e7893614a123ce2",
-    "history": "5a784d727dc3fd8b",
-    "universe": "b535a2da2b18cd7e",
-    "screens": "1cc371441be6edc8"
+    "heis": "b33dc7f0c33ee345",
+    "history": "6cba2ceb938a56c1",
+    "universe": "bc4527b270446f64",
+    "screens": "47a831704a78ccd7"
    }
   ],
   "schedules#60": [

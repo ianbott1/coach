@@ -1,5 +1,5 @@
 {
- "fp": "11020bac7682689c",
+ "fp": "df9c5302a3618438",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -500,6 +500,11 @@
    "fp": "11020bac7682689c",
    "from": "b219a6b3fb786518",
    "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
+  },
+  {
+   "fp": "df9c5302a3618438",
+   "from": "11020bac7682689c",
+   "note": "Round 75: engine number 5 in the season settings only (games and screens unchanged)"
   }
  ],
  "result": {
@@ -513,7 +518,7 @@
     "poll": "4fc18b2790d24ba9",
     "heis": "ecd155e11cba5c1a",
     "history": "130c18bfb6eee69d",
-    "universe": "ef0a3add39c8e414",
+    "universe": "115aeb4dd82a0ee2",
     "screens": "c0044c01891fa6ee"
    },
    {
@@ -525,7 +530,7 @@
     "poll": "c8c3dc944e565db0",
     "heis": "40c5bc6ff495d1ed",
     "history": "1ecdd0635c8c1855",
-    "universe": "d6d6c44856dc8be2",
+    "universe": "499e2b8e6f8d5381",
     "screens": "c3ea1db867849f9a"
    },
    {
@@ -537,7 +542,7 @@
     "poll": "0174417a893155af",
     "heis": "7b4640654e35b531",
     "history": "feb095bb34330aea",
-    "universe": "099a4624ce0ecb25",
+    "universe": "2cffb9d1bd24e521",
     "screens": "26bc55173c4052a7"
    },
    {
@@ -549,7 +554,7 @@
     "poll": "9fb8a20999aa99ad",
     "heis": "05213fc79d022a3c",
     "history": "d44bf62cb913ea8e",
-    "universe": "bbc8bf4831043e83",
+    "universe": "96c7b2c5c1d8a933",
     "screens": "6d715f05af83d139"
    }
   ],
@@ -563,7 +568,7 @@
     "poll": "31d255e610cec5f1",
     "heis": "41c2b7bd9f8955ce",
     "history": "a7cbb5d9c598aebc",
-    "universe": "d6980232ba113ef5",
+    "universe": "7f74205ac8ab84d3",
     "screens": "0260705a47b22865"
    },
    {
@@ -575,7 +580,7 @@
     "poll": "36569c1aca01467a",
     "heis": "38036bb6c62e2dac",
     "history": "f0f13779058a46a5",
-    "universe": "8b095d6c6a58dc5a",
+    "universe": "6ee5d1499dd79fe6",
     "screens": "fc37a53edc17c78a"
    },
    {
@@ -587,7 +592,7 @@
     "poll": "3df041d952e044cd",
     "heis": "ee8e9fb22d238645",
     "history": "d07f55b02417440d",
-    "universe": "9016132026cf8dcc",
+    "universe": "41728233d1e5c880",
     "screens": "491d5248f55b69fa"
    },
    {
@@ -599,7 +604,7 @@
     "poll": "aba2c4d9d3404e0b",
     "heis": "346a59eeedb615cd",
     "history": "8f21562f5b9ad2c0",
-    "universe": "f5e048b8e0751917",
+    "universe": "ec6ba13fd351324c",
     "screens": "01f69c8dad608333"
    }
   ],
@@ -613,7 +618,7 @@
     "poll": "3dd385d73672398c",
     "heis": "10ceb5dd20bb3499",
     "history": "28cffc021fc5497e",
-    "universe": "abd96842bfe041a4",
+    "universe": "6359732920ad48b0",
     "screens": "676ff5e4797fcfab"
    },
    {
@@ -625,7 +630,7 @@
     "poll": "5b455cef4f72a23c",
     "heis": "8a5161c22b9f9a8d",
     "history": "fd81c0521fc92cb5",
-    "universe": "0ff965ebb6010635",
+    "universe": "4e8d3219d12c8e46",
     "screens": "c6ef4a895a90fc2b"
    },
    {
@@ -637,7 +642,7 @@
     "poll": "7e89997b63c7f12d",
     "heis": "f269c206516f3649",
     "history": "b5091089a3b782d7",
-    "universe": "64b71750e92624e8",
+    "universe": "6c93be1a060474e4",
     "screens": "834131472bbb4908"
    }
   ],
@@ -651,7 +656,7 @@
     "poll": "2ed941e4b86f0373",
     "heis": "477cf883dd7bc72e",
     "history": "6c1cba3aaf36ce9b",
-    "universe": "e6c7a2844ff3dc5e",
+    "universe": "97c441c13ac10dda",
     "screens": "5d332d19b79d089c"
    },
    {
@@ -663,7 +668,7 @@
     "poll": "b750048545142fc7",
     "heis": "2c1b0557a8de640c",
     "history": "6916b10edad89c21",
-    "universe": "1e3037de35c9241e",
+    "universe": "624219b9f1902bca",
     "screens": "395442fb08cbaa40"
    },
    {
@@ -675,7 +680,7 @@
     "poll": "893e2ed240ff96a0",
     "heis": "e22a956d4ed7052e",
     "history": "162f6a47226aaf3e",
-    "universe": "fe42877b63480e44",
+    "universe": "13b22ee557ca147c",
     "screens": "b775c5e0a1112d5b"
    }
   ],

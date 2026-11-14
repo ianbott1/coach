@@ -1,5 +1,5 @@
 {
- "fp": "8893fe593448382d",
+ "fp": "d166e7a0a29da288",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -280,6 +280,11 @@
    "fp": "8893fe593448382d",
    "from": "3e5d4d3dd6a6c9a9",
    "note": "Round 74: engine 4 (players' lines from the game's record)"
+  },
+  {
+   "fp": "d166e7a0a29da288",
+   "from": "8893fe593448382d",
+   "note": "Round 75: engine 5 (baseball's players; basketball's star scoring)"
   }
  ],
  "out": [
@@ -293,7 +298,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "cabf410792d0f9c8"
+     "book": "0557e7ce7749b769"
     },
     {
      "team": "New York",
@@ -302,7 +307,7 @@
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "c44d05added785ea"
+     "book": "4ba190870ec7621d"
     }
    ]
   },
@@ -316,7 +321,7 @@
       "result": "Lost in the play-in",
       "grade": "D"
      },
-     "book": "4dcd60b26671e84d"
+     "book": "dba8bf6e05d4b6a9"
     },
     {
      "team": "New York",
@@ -325,7 +330,7 @@
       "result": "Lost in the first round",
       "grade": "C-"
      },
-     "book": "617258188ae0a085"
+     "book": "0916fe3a67229138"
     }
    ]
   },
@@ -339,7 +344,7 @@
       "result": "Lost in the play-in",
       "grade": "D"
      },
-     "book": "7971698382deeec1"
+     "book": "b92be39f6aab6e70"
     },
     {
      "team": "New York",
@@ -348,7 +353,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "B"
      },
-     "book": "e5df6ae9a30459d6"
+     "book": "a03dca4d0c11c5a6"
     }
    ]
   }

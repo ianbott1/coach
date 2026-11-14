@@ -1,5 +1,5 @@
 {
- "fp": "6e96b28bf9c236e1",
+ "fp": "6b1c25643e6d3cd2",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -70,6 +70,11 @@
    "fp": "6e96b28bf9c236e1",
    "from": "f9ad08b20920b9c1",
    "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
+  },
+  {
+   "fp": "6b1c25643e6d3cd2",
+   "from": "6e96b28bf9c236e1",
+   "note": "Round 75: engine 5 (baseball's players; basketball's star scoring)"
   }
  ],
  "out": [
@@ -79,20 +84,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "87-75",
-      "result": "Lost in the wild-card series",
-      "grade": "B-"
+      "rec": "81-81",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "9e4b22e158d23eca"
+     "book": "cf67d055ccce5c1d"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "78-84",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "87-75",
+      "result": "Lost in the division series",
+      "grade": "B"
      },
-     "book": "a408e80fb7092e40"
+     "book": "68e9f8aee1abcf34"
     }
    ]
   },
@@ -102,20 +107,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
+      "rec": "79-83",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "D"
      },
-     "book": "f4a2d179a34a1d5e"
+     "book": "d48508b5012c6a6a"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "60-102",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "96-66",
+      "result": "Lost in the wild-card series",
+      "grade": "B"
      },
-     "book": "1bde07b7dd29f81c"
+     "book": "905c1578830805bc"
     }
    ]
   },
@@ -125,20 +130,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "72-90",
+      "rec": "76-86",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "D"
      },
-     "book": "f81e16d6d8e9643a"
+     "book": "6f5912b4212d8dd2"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "96-66",
-      "result": "Lost in the division series",
+      "rec": "90-72",
+      "result": "Lost in the championship series",
       "grade": "A"
      },
-     "book": "85ac3baa4055a875"
+     "book": "7ecba4b9615f70ad"
     }
    ]
   }
