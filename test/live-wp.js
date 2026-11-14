@@ -8,11 +8,14 @@ const NG=+(process.argv[2]||200);
 const FILES=process.argv.slice(3).length?process.argv.slice(3):['football-coach.html','football-coach-pro.html','basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html','baseball-coach-pro.html'];
 let bad=0;
 for(const f of FILES){
+  // basketball has a quarter of football's states a game: twice the games (round 74: 200 college games read 15.9 on one
+  // seed, 3 to 8 on three others, 4.6 over 600)
+  const NGf=process.argv[2]?NG:/basketball/.test(f)?NG*2:NG;
   const rows=[]; let games=0, tries=0, A=null;
-  for(let t=0;games<NG&&t<40;t++){
+  for(let t=0;games<NGf&&t<80;t++){
     A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','NAMES','newDynasty','doAdvance','live','liveTick','answerLive','liveChance','liveTau','liveScore','LEAGUE','LIVE_SIG','LIVE_MU','winProb','withPlan']});
     A.newDynasty(A.NAMES[(t*7+3+(+process.env.SEED||0))%A.NAMES.length],100+t+(+process.env.SEED||0)*1000,'T'); let g=0;
-    while(games<NG&&g++<40&&A.SEA.phase==='week'){ A.doAdvance(); const L0=A.live; if(!L0)continue; let n=0;
+    while(games<NGf&&g++<40&&A.SEA.phase==='week'){ A.doAdvance(); const L0=A.live; if(!L0)continue; let n=0;
       const meH=L0.g.home===A.S.myTeam, opp=meH?L0.g.away:L0.g.home;
       const pre=A.LEAGUE.wdl?A.withPlan('balanced',()=>A.LEAGUE.wdl(A.S.myTeam,opp,meH,!!L0.g.neutral)):[A.winProb(A.S.myTeam,opp,meH,!!L0.g.neutral),0];
       const ko=!!(L0.g.cup||L0.g.title||A.SEA.phase!=='week'); const st=[];
