@@ -358,6 +358,42 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 73: big moments, the rewatch on the pitch, box scores (Instinct's 12 November "next best ideas" 1 and 2, and
+box scores). Nothing here moves a game: all seven goldens differ in screens only, all seven hot-seat checks match.
+- Rewatch plays the clips (Instinct: "Rewatch is text only ... the pitch is the best thing in the game"). The rewatch
+  reads the run of play row by row; a drive's clips play as its first row comes up and the row waits for them, as the
+  live stretch does (hlWatchPlan/hlWatchAt, core 97_highlights). Which rows are whose: the script of the first k
+  drives is the first rows of the whole script in every sport, so the rows drive k adds are where that prefix grows; a
+  sport whose rows didn't build that way would get no clips and the old text rewatch. The header keeps the clip's
+  time (round 72's one clock). Highlights off: no pitch, as live. Tap the pitch to skip; Next skips and steps.
+  test/rewatch.js (suite, browser, all seven): clips play, every drive is covered, the header is never off the clip,
+  and in soccer and hockey every goal of the game is a clip (2-0: 2; 4-5: 9).
+- Big moments (core 96_moments, sport 73_moments): on the result card, the night's biggest moment as a banner, any
+  others under it, and one of the staff on it (staffAside "m_"+kind, three voices per kind per sport). Each sport
+  reads its own from the game's record: soccer the hat-trick (the scorer the log credits, so the box score and his
+  game log agree) and the late winner (85'+ or extra time, from level, standing); hockey the hat-trick, the overtime
+  winner, the shootout; basketball the last shot made to win; football the late drive that won it from behind or
+  level (in the drive chart's words); baseball the walk-off (home not ahead going into its last time up). Every sport:
+  the comeback (down 2 soccer, 3 hockey, 4 baseball, 14 football, 15 basketball, and won), and the shutout where nil is
+  rare (hockey, football, baseball). In a clip, a scorer's third goal is "HAT-TRICK!" (fourth "FOUR GOALS!").
+  Measured over a season of your games: soccer hat-tricks 1.9% across four clubs (Arsenal 4.8%, 2.0 goals a game; one
+  attacking Arsenal season 16%), hockey shutouts 8%, overtime winners 6%, shootouts 4%, hat-tricks 2%; baseball
+  shutouts 9%, walk-offs 2%; football game-winning drives 17-18%; pro basketball comebacks 2%; college basketball
+  none in 34 games (the last shot needs the "down 2, last possession" call and a three).
+- Box scores (core 96_moments boxHTML, sport 74_box), folded on the result card: only what the game itself counted.
+  Soccer: goals with scorers, shots and on target (the engine's ninety minutes), saves (shots on target less goals),
+  cards. Hockey: goals with scorer and assist, saves (each shot stopped), shots on goal (those saves and the goals:
+  the spell totals miss overtime's shots and ran one or two apart), power plays. Basketball: the team lines the
+  engine counted shot by shot (now kept on each stretch as d.ln, no draws): two-point and three-point makes and free
+  throws are the points. Football: the scoring summary in the drive chart's words, and each side's drives by how they
+  ended. Baseball: the line score with hits, home runs, runs batted in. Player-by-player lines are not shown where the
+  stats model draws them per player rather than counting them in the game: measured, basketball's starters' points
+  were 87 of 115 and 118 of 94; football's receiving yards and touchdowns didn't match the passing ones; baseball's
+  runs scored ran short of the score. test/boxscore.js (suite): every game you played over a season in all seven,
+  the numbers add up and every moment is true of its game (a hat-trick man has three in the box score, his game log
+  and his clips; a walk-off ended in the home half; a comeback's depth is the game's).
+- Not this round: the "what if" replay and the first-call tutorial (Instinct's ideas 3 and 5).
+
 Round 72: one clock, the score in sight, honest numbers (Instinct's and Muse's 12 November reviews, the rest).
 - One clock (Instinct: the clip said 74' while the header said 70', in all three live-highlight sports). While a clip
   plays, the page is drawn as it stood before its stretch (round 66), header clock included; now the hold carries the
