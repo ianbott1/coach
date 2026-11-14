@@ -69,10 +69,39 @@ function hlPlay(L,drive){
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
+/* round 73: which goal of the game this is for its scorer (Instinct: "He had a hat-trick and the game said nothing");
+   name(x) names a goal's scorer as the run of play does. The third is a hat-trick on the banner. */
+function hlGoalNo(L,e,name){ const n=name(e); if(!n)return 1; let k=0;
+  for(const d of (L&&L.drives)||[])for(const x of d.ev||[]){ if(x.k==="goal"&&x.side===e.side&&name(x)===n)k++; if(x===e)return k } return k+1 }
+function hlGoalWord(k,nm){ return k===3?`HAT-TRICK! ${nm}`:k===4?`FOUR GOALS! ${nm}`:k>4?`${k} GOALS! ${nm}`:`GOAL! ${nm}` }
+/* ---- round 73: Rewatch plays the clips on the pitch (Instinct: "Rewatch is text only ... the pitch is the best thing
+   in the game"). The rewatch reads the run of play row by row; a drive's clips play as its first row comes up, and the
+   row waits for them, as the live game's stretch does. Which rows are whose: the script of the first k drives is the
+   first rows of the whole script, so the rows drive k adds are where that prefix grows. A sport whose rows don't
+   build that way gets no clips, and the text rewatch is as it was. */
+function hlWatchPlan(w){
+  const g=w&&w.g, drives=g&&g.drives;
+  if(!hlCan()||hlMode()==="off"||!drives||!drives.length||typeof driveScript!=="function")return null;
+  const full=w.script.map(r=>JSON.stringify(r)), end=[];
+  try{ for(let k=1;k<=drives.length;k++){ const s=driveScript(g,drives.slice(0,k)); let n=0; while(n<s.length&&n<full.length&&JSON.stringify(s[n])===full[n])n++; end.push(n) } }catch(e){ return null }
+  for(let k=1;k<end.length;k++)if(end[k]<end[k-1])return null;
+  if(end[end.length-1]!==full.length)return null;
+  return {end:end, next:0} }
+/* the row r is about to show: the clips of every drive up to the one it belongs to, not yet played; ms they take */
+function hlWatchAt(r){
+  if(typeof watch==="undefined"||!watch||!watch.hl||hlMode()==="off")return 0;
+  const P=watch.hl, g=watch.g, L={g:g, drives:g.drives}; let own=P.end.findIndex(e=>e>r); if(own<0)own=P.end.length-1;
+  if(P.next>own)return 0;
+  let clips=[]; for(let k=P.next;k<=own;k++){ try{ clips=clips.concat(HL_SPORT.clips(L,g.drives[k],hlMode())||[]) }catch(e){} }
+  const d=g.drives[P.next]; P.next=own+1;
+  if(!clips.length)return 0;
+  HL.pending={drive:d,clips:clips}; return hlPlay(L,d) }
 /* round 72: one clock (Instinct: the clip said 74' while the header said 70'). While a clip plays, the header shows the
    clip's own time, as the held score moves on with its goals (round 70); each sport says it in the header's words */
 function hlHeadClock(c){ try{ return c&&HL_SPORT.headClock?HL_SPORT.headClock(c)||null:null }catch(e){ return null } }
 function hlStart(c){ { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k; if(!first&&typeof render==="function")render() } }
+  // the rewatch's header follows the clip's time too (round 73)
+  if(typeof watch!=="undefined"&&watch&&watch.hl&&(typeof live==="undefined"||!live||live.done)){ const k=hlHeadClock(c); if(watch.hlClock!==k){ watch.hlClock=k; HL.cur=c; if(typeof render==="function")render() } }
   HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
 function hlFrame(){
   const c=HL.cur; if(!c)return; const t=Math.min(1,(Date.now()-HL.t0)/c.dur);
@@ -95,6 +124,8 @@ function hlSkip(){
   if(!HL.cur)return; HL.cur=null; HL.clips=[]; cancelAnimationFrame(HL.raf); hlDraw(null,0); hlMount(); hlRelease();
   // the next stretch was waiting for the clips: it comes now
   if(typeof live!=="undefined"&&live&&!live.done&&!live.paused&&!live.ask&&live.timer){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.min(400,liveGap())) }
+  // a rewatch waiting on them goes on (round 73)
+  if(typeof watch!=="undefined"&&watch&&watch.hlWait&&watch.timer){ clearTimeout(watch.timer); watch.timer=setTimeout(()=>{ watch.hlWait=false; watch.i++; tickWatch() },300) }
 }
 function hlDraw(c,t){
   const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);

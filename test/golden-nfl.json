@@ -1,5 +1,5 @@
 {
- "fp": "f3cf353552a2c022",
+ "fp": "bfbaf5b54b0a9ce5",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -485,6 +485,11 @@
    "fp": "f3cf353552a2c022",
    "from": "b7f50eb1ee9ff5c3",
    "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
+  },
+  {
+   "fp": "bfbaf5b54b0a9ce5",
+   "from": "f3cf353552a2c022",
+   "note": "Round 73: the result card shows the box score and the night's big moment (screens only; every simulation fingerprint unchanged against round 72)"
   }
  ],
  "result": {
@@ -499,7 +504,7 @@
     "heis": "584e0fb092b62129",
     "history": "a801c8b2515d2e78",
     "universe": "e416f01bfdc41358",
-    "screens": "32470c1791d2bfc4"
+    "screens": "04ad49852b71d624"
    },
    {
     "year": 2027,
@@ -511,7 +516,7 @@
     "heis": "5eaaab4cda7b90cb",
     "history": "2ab48f780c43aa20",
     "universe": "5cb6bc00d7c92da8",
-    "screens": "f2dfadc1b350113a"
+    "screens": "abfcdb7f099c8764"
    },
    {
     "year": 2028,
@@ -561,7 +566,7 @@
     "heis": "e271fe9acc1f68f5",
     "history": "59b1ad3426bb3f01",
     "universe": "3af38673a36894ee",
-    "screens": "ac415aecfc769e57"
+    "screens": "c409feb1f200ed06"
    },
    {
     "year": 2028,
@@ -585,7 +590,7 @@
     "heis": "2e4bd277352a9136",
     "history": "233bad792113f40b",
     "universe": "fca636a310f3ac84",
-    "screens": "d77cfa15644eada7"
+    "screens": "a87925916f7ff600"
    }
   ],
   "Detroit#777": [
@@ -611,7 +616,7 @@
     "heis": "e506abbdae7b60dd",
     "history": "9c79c6bb291ccd3a",
     "universe": "126af3faeec580b5",
-    "screens": "14938cac79731c73"
+    "screens": "a2f76c396129b877"
    },
    {
     "year": 2028,
@@ -649,7 +654,7 @@
     "heis": "83747b3e44b9cb39",
     "history": "475fb0174d0ee69e",
     "universe": "4d95adf9935ffa7a",
-    "screens": "0380d24115d09901"
+    "screens": "1ea2ddfa8cd53aea"
    },
    {
     "year": 2028,

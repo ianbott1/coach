@@ -222,7 +222,22 @@ function staffAside(kind, data){
            ["capy",`I did rather have a feeling. I didn't want to say.`]],
     title:[["bears",`THE CUP. We are drinking from THE CUP.`],
            ["pearl",`Look at them all crying. It's the loveliest thing.`],
-           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]]
+           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]],
+    m_hattrick:[["bears",`HATS. THROW YOUR HATS. Throw OTHER PEOPLE'S hats.`],
+           ["pearl",`All those hats! Can I have one? I won't chew it. Much.`],
+           ["capy",`Three goals. Someone will have to collect all those hats, you know.`]],
+    m_ot:[["bears",`SUDDEN DEATH. Our favourite kind of death.`],
+           ["pearl",`It went in! It's over! Can everyone breathe now?`],
+           ["capy",`Overtime is very bad for my nerves. I'm glad it was short.`]],
+    m_so:[["bears",`The shootout is a test of courage. We passed. Obviously.`],
+           ["pearl",`I hid behind the couch for all of it. Did we win? We won!`],
+           ["capy",`A shootout seems a strange way to settle anything. I'll take it, mind.`]],
+    m_comeback:[["bears",`Three down is just a warm-up. We said that. Out loud.`],
+           ["pearl",`They never gave up! Not once! Good, good team.`],
+           ["capy",`I confess I'd started thinking about the drive home. Wrongly, it turns out.`]],
+    m_shutout:[["bears",`ZERO. They scored ZERO. Give the goalie a fish.`],
+           ["pearl",`The goalie was so brave. Every single shot!`],
+           ["capy",`Nothing conceded. One worries it can't last. It never does.`]]
   };
   const set=L[kind]; if(!set)return null;
   const i=Math.abs((data|0))%set.length;

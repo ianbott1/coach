@@ -194,7 +194,16 @@ function staffAside(kind, data){
            ["capy",`I did rather have a feeling. I didn't want to say.`]],
     title:[["bears",`THE TROPHY. We are lifting THE TROPHY.`],
            ["pearl",`Look at them all crying. It's the loveliest thing.`],
-           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]]
+           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]],
+    m_hattrick:[["bears",`THREE. Somebody get him the ball. Somebody get him A CROWN.`],
+           ["pearl",`He gets to keep the ball! That's the rule! I asked!`],
+           ["capy",`Three. I do hope nobody tells him; he'll want a new contract.`]],
+    m_late:[["bears",`LATE! We LOVE late! Late is when bears are strongest.`],
+           ["pearl",`I couldn't watch. Then I watched. Then I cried a bit.`],
+           ["capy",`I had already made my peace with the draw. I shall have to unmake it.`]],
+    m_comeback:[["bears",`Two down? TWO DOWN? Bears do not stay down.`],
+           ["pearl",`I knew they'd come back! I didn't know. But I hoped very hard.`],
+           ["capy",`I had the losing remarks ready. They were rather good, as it happens.`]]
   };
   const set=L[kind]; if(!set)return null;
   const i=Math.abs((data|0))%set.length;

@@ -52,7 +52,8 @@ const HL_SPORT=(function(){
     const gIn=sd=>!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd])), slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home, SL=slots(attSide), an=hlNamed(tm,SL), dn=hlNamed(opp,slots(defSide)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
-    return {an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
+    const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>hkGoalNames(x.side==="home"?g.home:g.away,x).n):0;
+    return {gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
   const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
@@ -118,7 +119,7 @@ const HL_SPORT=(function(){
     const tr=[]; for(let q=8;q>=1;q--)tr.push(pos(t-q*0.012));
     hlBall(x,qx,qy,r*0.55,0,t>0.1?tr:null,{kind:"puck"});
     const top=c.so?"Shoot-out":`${c.m}'${c.pp?" power play":""}`;   // round 66: whose chance it is waits for the outcome
-    const end=t>=ts?(c.so?`${c.nm} wins the shoot-out!`:c.kind==="goal"?(c.en?`EMPTY NET! ${c.nm}`:`GOAL! ${c.nm}`):"Saved!"):null;
+    const end=t>=ts?(c.so?`${c.nm} wins the shoot-out!`:c.kind==="goal"?(c.en&&(c.gno||1)<3?`EMPTY NET! ${c.nm}`:hlGoalWord(c.gno||1,c.nm)):"Saved!"):null;
     hlCaption(x,W,H,t>=ts&&c.text?`${c.m}' ${c.text}`:top,end,c.kind==="goal"?ink:null);
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute

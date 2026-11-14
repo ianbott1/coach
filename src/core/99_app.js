@@ -1211,14 +1211,21 @@ const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],
 function tickWatch(){
   if(!watch)return;
   if(watch.timer){clearTimeout(watch.timer);watch.timer=null}
+  if(watch.hl===undefined)watch.hl=typeof hlWatchPlan==="function"?hlWatchPlan(watch):null;   // round 73: the clips on the pitch
+  watch.hlWait=false;
   render();
   if(!watch.paused && watch.i<watch.script.length){
-    watch.timer=setTimeout(()=>{watch.i++;tickWatch()},watch.i<0?650:watchGap());
+    watch.timer=setTimeout(()=>{
+      // the next row's drive plays its clips first, and the row waits for them (round 73)
+      const ms=watch.i+1<watch.script.length&&typeof hlWatchAt==="function"?hlWatchAt(watch.i+1):0;
+      if(ms){ watch.hlWait=true; watch.timer=setTimeout(()=>{ watch.hlWait=false; watch.i++; tickWatch() },ms) }
+      else { watch.i++; tickWatch() } },watch.i<0?650:watchGap());
   }
 }
 function stepWatch(){
   if(!watch)return;
-  if(watch.i<watch.script.length){watch.i++;}
+  if(typeof hlSkip==="function"&&HL.cur&&(!live||live.done)){ watch.hlWait=false; hlSkip() }
+  if(watch.i<watch.script.length){ if(watch.i+1<watch.script.length&&typeof hlWatchAt==="function")hlWatchAt(watch.i+1); watch.i++;}
   tickWatch();
 }
 const PRESS_AT={};
@@ -1230,6 +1237,7 @@ function togglePause(){
 }
 function stopWatch(finish){
   if(watch&&watch.timer)clearTimeout(watch.timer);
+  if(watch&&(!live||live.done)&&typeof hlSkip==="function"&&HL.cur){ watch.hlWait=false; hlSkip() }
   if(finish&&watch){watch.i=watch.script.length;watch.timer=null;render();return}
   watch=null; render();
 }
@@ -1352,7 +1360,8 @@ function heroResult(){
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
-    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
+    ${typeof boxHTML==="function"?boxHTML(g):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
@@ -3278,6 +3287,7 @@ function render0(){
   }
   if(watch&&S.myTeam){
     el("app").innerHTML=watchView();
+    if(typeof hlMount==="function")hlMount();
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
     const st=el("wstep"); if(st)st.onclick=()=>{watch.paused=true;S.watchStep=true;stepWatch()};

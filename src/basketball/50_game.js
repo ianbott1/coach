@@ -337,7 +337,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     st.h+=dh; st.a+=da;
     const d={seg:s,h:dh,a:da,sh:st.h,sa:st.a,ot:s>=SEGS?s-SEGS+1:0,ev:ev,
       T:{home:Object.assign({},H.tell),away:Object.assign({},A.tell)}, star:{home:[H.f,onH,H.out],away:[A.f,onA,A.out]},
-      fouls:Object.assign({},st.fouls)};
+      fouls:Object.assign({},st.fouls), ln:{home:Object.assign({},st.lines.h),away:Object.assign({},st.lines.a)}};   // round 73: the box score's team lines, as they stand (no draws)
     st.drives.push(d); return d;
   };
   // the last possession, when a side trails by two: a three to win or a two to tie
@@ -349,7 +349,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(made){ if(three)L.tpm++; else L.fgm2++;
       if(side==="home")st.h+=three?3:2; else st.a+=three?3:2 }
     st.last={side:side,choice:choice,made:made};
-    st.drives.push({seg:"last",side:side,choice:choice,made:made,sh:st.h,sa:st.a});
+    st.drives.push({seg:"last",side:side,choice:choice,made:made,sh:st.h,sa:st.a,ln:{home:Object.assign({},st.lines.h),away:Object.assign({},st.lines.a)}});
   };
   // foul trouble: the computer (and your assistant) sits him, as most coaches do
   const troubleAt=(s,X)=>{ if(X.out||s<X.sitTo)return 0;

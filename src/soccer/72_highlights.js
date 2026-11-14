@@ -73,7 +73,8 @@ const HL_SPORT=(function(){
     // each shot its own flight (round 70, Ian: "all of the shots have a curve"): a low drive, a rising strike, a chip,
     // or one bent in from the side
     const shot=r(), lift=how==="over"?0.05:shot<0.35?0.003:shot<0.65?0.012:shot<0.82?0.028:0.008, bend=shot>=0.82?(r()<0.5?-1:1)*(0.03+r()*0.03):0;
-    const cl={lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
+    const gno=kind==="goal"?hlGoalNo(L,e,x=>scScorer(x.side==="home"?g.home:g.away,x.u||0).n):0;
+    const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     return cl;
   }
@@ -274,7 +275,7 @@ const HL_SPORT=(function(){
     if(said&&c.text)hlTicker(x,W,H,c.text,8+Math.max(10,Math.round(W/44))*1.7+6);
     if(c.red){ if(said)hlBanner(x,W,H,`RED CARD! ${c.nm||""}`.trim(),{fill:"#E3262F"},(t-c.pre-0.04)/(1-c.pre)); return }
     if(c.plan==="pen"&&c.pre&&t>=c.pre+0.03&&t<tb)hlBanner(x,W,H,"PENALTY!",null,(t-c.pre-0.03)/(tb-c.pre));
-    const end=t>=ts?({goal:`GOAL! ${c.nm}`,save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
+    const end=t>=ts?({goal:hlGoalWord(c.gno||1,c.nm),save:"Saved!",post:"Off the post!",over:"Over the bar!",blocked:"Cleared off the line!",wide:"Wide!"})[c.how]||"":null;
     if(end)hlBanner(x,W,H,end,c.kind==="goal"?kA:null,(t-ts)/(1-ts));
   }
   // round 72: the header's clock while a clip plays: the clip's minute

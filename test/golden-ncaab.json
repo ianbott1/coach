@@ -1,5 +1,5 @@
 {
- "fp": "d66dddce9181245d",
+ "fp": "28fc13287ec81a78",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -450,6 +450,11 @@
    "fp": "d66dddce9181245d",
    "from": "4093814bc78bb945",
    "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
+  },
+  {
+   "fp": "28fc13287ec81a78",
+   "from": "d66dddce9181245d",
+   "note": "Round 73: the result card shows the box score and the night's big moment (screens only; every simulation fingerprint unchanged against round 72)"
   }
  ],
  "result": {
@@ -464,7 +469,7 @@
     "heis": "f6683d8751e66879",
     "history": "3ca356b8c56b146e",
     "universe": "e0bf1242077b15a9",
-    "screens": "cf6effed6d03fafb"
+    "screens": "1113b57bea8e1b70"
    },
    {
     "year": 2027,
@@ -476,7 +481,7 @@
     "heis": "15b314288af6c478",
     "history": "4c3b2571ecc36021",
     "universe": "8d54d195e3ddc824",
-    "screens": "68c22c3a3c3e5554"
+    "screens": "68734888fb5199ac"
    }
   ],
   "Coppin State#2024": [
@@ -490,7 +495,7 @@
     "heis": "ed67545cb919d745",
     "history": "b65a10470d99101e",
     "universe": "bed8db9e397d2c0d",
-    "screens": "1595e1ac71da04ed"
+    "screens": "213cc41ac9764d0b"
    },
    {
     "year": 2027,

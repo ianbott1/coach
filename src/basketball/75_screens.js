@@ -205,10 +205,10 @@ function watchView(){
   const H=cur?cur.h:0, A=cur?cur.a:0, done=watch.i>=watch.script.length, tip=watch.i<0;
   const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
   const lab=done?`FINAL${g.ot?" / OT":""} &middot; ${mine>theirs?"WIN":"LOSS"}`
-        :tip?`<span class="live"></span>TIP-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:tip?`<span class="live"></span>TIP-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`;
   return `<div class="watchwrap">
-    ${scoreTop(g,H,A,lab,done?(mine>theirs?'win':'loss'):'')}
+    ${scoreTop(g,H,A,lab,done?(mine>theirs?'win':'loss'):'')}${typeof hlBox==="function"?hlBox():""}
     <div class="grouphead">Run of play</div>
     <div class="plays">${upto.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''} ${/RUN|GOOD/.test(e.outcome||"")?'goalrow':''} ${e.cue||(e.seg&&!e.outcome)?'cue':''}">
       <span class="pq">${esc(e.clock)}</span>

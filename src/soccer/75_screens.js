@@ -298,11 +298,11 @@ function watchView(){
   const pens=g.pens?(g.pens===my||(g.pens==="home"&&g.home===my)||(g.pens==="away"&&g.away===my)):null;
   const res=done?(mine>theirs||(mine===theirs&&pens===true)?"WIN":mine===theirs&&pens===null?"DRAW":"LOSS"):"";
   const lab=done?`FINAL &middot; ${res}`
-        :tip?`<span class="live"></span>KICK-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:tip?`<span class="live"></span>KICK-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`;
   const rows=upto.filter(e=>!e.quiet);
   return `<div class="watchwrap">
-    ${scoreTop(g,H,A,lab,done?(res==="WIN"?'win':res==="LOSS"?'loss':''):'')}</div>
+    ${scoreTop(g,H,A,lab,done?(res==="WIN"?'win':res==="LOSS"?'loss':''):'')}${typeof hlBox==="function"?hlBox():""}</div>
     <div class="grouphead">Run of play</div>
     <div class="plays">${rows.slice().reverse().map(e=>`<div class="play ${e.team===my?'mine':''} ${e.outcome==="GOAL"?'goalrow':''} ${e.cue?'cue':''}">
       <span class="pq">${esc(e.clock)}</span>

@@ -62,7 +62,7 @@ function watchView(){
   return `<div class="watchwrap">
     <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
       <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
-        :kick?`<span class="live"></span>KICKOFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
+        :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:kick?`<span class="live"></span>KICKOFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>Q${q} ${esc(cur.clock)} &middot; drive ${cur.n}`}</div>
       <div class="wscore">
         <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
@@ -71,6 +71,7 @@ function watchView(){
           <span class="wn">${H}</span></div>
       </div>
     </div>
+    ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,cur,teamColor(g.home),teamColor(g.away),venue)}
     ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started own ${cur.start}
       &middot; ${cur.yards} yards</div>`

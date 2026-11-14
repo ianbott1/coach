@@ -1,5 +1,5 @@
 {
- "fp": "7ec4e150246d35d2",
+ "fp": "c20c77d1dcf9f010",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -80,6 +80,11 @@
    "fp": "7ec4e150246d35d2",
    "from": "504593d9524c676a",
    "note": "r72: engV 3 (football scouting, baseball fatigue/bullpen) and screen text; control (engine 2) matched"
+  },
+  {
+   "fp": "c20c77d1dcf9f010",
+   "from": "7ec4e150246d35d2",
+   "note": "Round 73: the result card shows the box score and the night's big moment (screens only; every simulation fingerprint unchanged against round 72)"
   }
  ],
  "result": {
@@ -106,7 +111,7 @@
     "heis": "51f30f07e7e70cfb",
     "history": "a226a33a119570be",
     "universe": "e6603cbb8770c4ad",
-    "screens": "d63790404f051559"
+    "screens": "4a543b6553c1f529"
    }
   ],
   "Colorado#777": [

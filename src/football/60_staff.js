@@ -277,7 +277,16 @@ function staffAside(kind, data){
            ["capy",`I did rather have a feeling. I didn't want to say.`]],
     title:[["bears",`RINGS. RINGS FOR THE BEARS. We did most of it.`],
            ["pearl",`Look at them all crying. It's the loveliest thing.`],
-           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]]
+           ["capy",`Champions. I have, I should say, prepared some remarks. They are quite long.`]],
+    m_winner:[["bears",`FOURTH QUARTER. That's when bears wake up.`],
+           ["pearl",`That drive! I held my breath the whole way down the field!`],
+           ["capy",`I prefer winning by a lot, earlier. But this will do.`]],
+    m_comeback:[["bears",`Two scores down? We were just letting them feel good.`],
+           ["pearl",`They came all the way back! Every one of them!`],
+           ["capy",`I had begun composing the losing press conference. A waste of good sentences.`]],
+    m_shutout:[["bears",`ZERO POINTS. Their scoreboard is BROKEN. We broke it.`],
+           ["pearl",`The defense was so good! Nobody got past!`],
+           ["capy",`A shutout. I'd keep that quiet, or the defense will want more money.`]]
   };
   const set=L[kind]; if(!set)return null;
   const i=Math.abs((data|0))%set.length;
