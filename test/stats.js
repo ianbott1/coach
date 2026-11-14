@@ -33,8 +33,11 @@ for(const [f,team] of CASES){ if(pick.length&&pick.indexOf(f)<0)continue;
     const sea=A.NAMES.map(t=>(A.SEA.roster[t]||[]).map(p=>p&&p.st2?{n:p.n,g:p.st2.g}:null));
     A.openOffseason(); for(let c=0;c<6&&A.S.off;c++){ if(A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
     // a man who finished the season on a roster and is still on it: one more season in his history, its games his
-    let kept=0; A.NAMES.forEach((t,ti)=>(sea[ti]||[]).forEach(x=>{ if(!x)return; const p=(A.U.roster[t]||[]).find(q=>q&&q.n===x.n); if(!p||!p.hist||!p.hist.length)return;
-      const last=p.hist[p.hist.length-1]; if(last.y!==A.SEA.year-1&&last.y!==A.SEA.year)return; kept++; ok(last.s.g===x.g,`${f}: ${x.n}'s history has ${last.s.g} games for a ${x.g}-game season`) }));
+    // (a name twice on one roster, or a new man given a departed one's name, can't be told apart by name: skipped. Round
+    // 74 gave the bench lines of their own, which found a college roster holding two of one name.)
+    let kept=0; A.NAMES.forEach((t,ti)=>(sea[ti]||[]).forEach(x=>{ if(!x)return; const twice=(sea[ti]||[]).filter(y=>y&&y.n===x.n).length>1||(A.U.roster[t]||[]).filter(q=>q&&q.n===x.n).length>1; if(twice)return;
+      const p=(A.U.roster[t]||[]).find(q=>q&&q.n===x.n); if(!p||!p.hist||!p.hist.length)return;
+      const last=p.hist[p.hist.length-1]; if(last.y!==A.SEA.year-1&&last.y!==A.SEA.year)return; if(last.t&&last.t!==t)return;   /* a namesake who moved in (college: names are only distinct within a roster) */ kept++; ok(last.s.g===x.g,`${f}: ${x.n}'s history has ${last.s.g} games for a ${x.g}-game season`) }));
     hist+=kept }
   ok(rows>0&&hist>0&&boards>0,`${f}: nothing measured (rows ${rows}, histories ${hist}, boards ${boards})`);
   console.log(`  ${f}: ${rows} game rows, ${pages} pages, ${hist} seasons kept, ${boards} boards`) }

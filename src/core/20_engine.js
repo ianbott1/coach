@@ -426,7 +426,10 @@ function distinctLeague(u){
   byName.forEach(list=>{
     // a player on a team someone coaches keeps his name (the recaps name him), then the longest-serving
     const mine=new Set(typeof S!=="undefined"&&S?[S.myTeam].concat((S.coaches||[]).map(c=>c.myTeam)):[]);
-    list.sort((a,b)=>((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
+    // (round 74, engine 4: a man who has played a season keeps it over one who joined the league this summer: a keeper you
+    // sold was renamed at his new club because a squad-filler at yours was drawn with his name)
+    const vet=x=>ENGINE_V>=4&&x.p.peak!==undefined?1:0;
+    list.sort((a,b)=>(vet(b)-vet(a))||((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
     list.slice(1).forEach(x=>{ const p=x.p, sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):"", h=strHash(p.n+"|"+x.t+"|"+x.i);
       for(let k=0;k<F.length;k++){ const n=F[(h+k)%F.length]+last; if(!taken.has(n)){ p.n=n; taken.add(n); break } } });
   });
