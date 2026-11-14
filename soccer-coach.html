@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="3a457ea";
+<script>const BUILD_ID="25e9d90";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -1269,6 +1269,29 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const shots=Math.max(goals,Math.round(rng.gauss(12*R.shots*first*star,0.8)));
   const o={goals:goals, ast:ast, shots:shots}; if(P==="CB"||P==="FB")o.cs=oppPts===0?1:0; return o;
 }
+/* round 74 (engV 4): a team's lines from the game's own record. Every goal to the man the log names (scScorer), an
+   assist on about seven in ten to a team-mate (by position and rating), the shots the game had shared among the men on
+   the pitch (each scorer at least his goals), the keeper's saves (their shots on target less their goals) and goals
+   against as the game played them. Everyone who played gets a line, the bench too. */
+const SC_ASSISTED=0.72;
+function teamLines(rng,c){
+  const o=c.side==="home"?"away":"home", tm=c.tm, at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
+  const hurt=new Set(c.sea.talent?c.sea.talent.active(tm).map(x=>x.idx):[]), star=p=>Math.max(0.5,1+(p.r-60)/20*0.45);
+  const on=[]; POS.forEach((P,i)=>{ if(P.p==="GK")return; const st=hurt.has(i)?null:c.R[i], bk=hurt.has(BK(i))?null:c.R[BK(i)], b=P.bench;
+    if(st)on.push({p:st,i:i,P:P.p,m:bk?1-b:1}); if(bk)on.push({p:bk,i:BK(i),P:P.p,m:st?b:1}) });
+  const L=new Map(); on.forEach(x=>L.set(x.p.n,{goals:0,ast:0,shots:0}));
+  const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
+  ev.filter(e=>e.side===c.side).forEach(e=>{ const S=scGoalBy(tm,e), l=L.get(S.n); e.nm=S.n; e.un=S.unit; if(!l)return; l.goals++;
+    if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)), k=splitDraw(rng,1,w).indexOf(1); if(k>=0)L.get(on[k].p.n).ast++ } });
+  const sts=c.drives.filter(d=>d.st), st=sts.length?sts[sts.length-1].st:null;
+  const shots=st?st[c.side][0]:0, given=on.reduce((t,x)=>t+L.get(x.p.n).goals,0);
+  const n=splitDraw(rng,Math.max(0,shots-given),on.map(x=>ROLE[x.P].shots*x.m*star(x.p)));
+  on.forEach((x,j)=>{ const l=L.get(x.p.n); l.shots=l.goals+n[j] });
+  const ga=ev.filter(e=>e.side===o).length, reg=ev.filter(e=>e.side===o&&e.m<=90).length, cs=ga===0?1:0;
+  const out=on.map(x=>{ const l=L.get(x.p.n); if(x.P==="CB"||x.P==="FB")l.cs=cs; return {pl:x.p,pos:POS[x.i%POS.length].p,line:l} });
+  const gk=c.act.find(x=>x.P==="GK"); if(gk)out.push({pl:gk.pl,pos:"GK",line:{sv:st?Math.max(0,st[o][1]-reg):0,ga:ga,cs:cs}});
+  return out;
+}
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
 function statLine(pos,s){
   if(!s||!s.g)return "";
@@ -1467,7 +1490,8 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=3;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=4;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+                                      // 4: round 74, players' lines from the game's own record (Season._creditV4)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -1877,7 +1901,10 @@ function distinctLeague(u){
   byName.forEach(list=>{
     // a player on a team someone coaches keeps his name (the recaps name him), then the longest-serving
     const mine=new Set(typeof S!=="undefined"&&S?[S.myTeam].concat((S.coaches||[]).map(c=>c.myTeam)):[]);
-    list.sort((a,b)=>((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
+    // (round 74, engine 4: a man who has played a season keeps it over one who joined the league this summer: a keeper you
+    // sold was renamed at his new club because a squad-filler at yours was drawn with his name)
+    const vet=x=>ENGINE_V>=4&&x.p.peak!==undefined?1:0;
+    list.sort((a,b)=>(vet(b)-vet(a))||((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
     list.slice(1).forEach(x=>{ const p=x.p, sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):"", h=strHash(p.n+"|"+x.t+"|"+x.i);
       for(let k=0;k<F.length;k++){ const n=F[(h+k)%F.length]+last; if(!taken.has(n)){ p.n=n; taken.add(n); break } } });
   });
@@ -3551,7 +3578,7 @@ const HL_SPORT=(function(){
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
     const r=mulberry32(((e.m||0)*7919+u*131+(e.side==="home"?17:29))>>>0);
-    const shooter=kind==="goal"||kind==="miss"?scScorer(tm,u):scScorer(tm,u);
+    const shooter=kind==="goal"?scGoalBy(tm,e):scScorer(tm,u);
     let text=""; try{ text=scEventTextIn(g,L.drives,e).text }catch(er){}
     // the move follows the commentary's words where they say how ("heads in at the near post", "from the penalty spot",
     // "blazes over"), else the event's draw
@@ -3600,7 +3627,7 @@ const HL_SPORT=(function(){
     // each shot its own flight (round 70, Ian: "all of the shots have a curve"): a low drive, a rising strike, a chip,
     // or one bent in from the side
     const shot=r(), lift=how==="over"?0.05:shot<0.35?0.003:shot<0.65?0.012:shot<0.82?0.028:0.008, bend=shot>=0.82?(r()<0.5?-1:1)*(0.03+r()*0.03):0;
-    const gno=kind==="goal"?hlGoalNo(L,e,x=>scScorer(x.side==="home"?g.home:g.away,x.u||0).n):0;
+    const gno=kind==="goal"?hlGoalNo(L,e,x=>scGoalBy(x.side==="home"?g.home:g.away,x).n):0;
     const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     return cl;
@@ -3815,7 +3842,7 @@ function sportMoments(g,my,meHome){
   const out=[], side=meHome?"home":"away", D=g.drives||[];   // extra time before penalties has real goals too
   const goals=[]; D.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")goals.push(e) }));
   // a hat-trick (or more): the scorer the log credits
-  const by={}; goals.filter(e=>e.side===side).forEach(e=>{ const n=scScorer(my,e.u||0).n; if(!n||n==="a forward")return; (by[n]=by[n]||[]).push(e.m) });
+  const by={}; goals.filter(e=>e.side===side).forEach(e=>{ const n=scGoalBy(my,e).n; if(!n||n==="a forward")return; (by[n]=by[n]||[]).push(e.m) });
   Object.keys(by).filter(n=>by[n].length>=3).forEach(n=>{ const m=by[n];
     out.push({k:"hattrick", h:m.length>=4?(m.length===4?"Four goals":m.length+" goals"):"Hat-trick", who:n,
       l:`${esc(n)} scored ${m.length===3?"three":m.length===4?"four":m.length}: ${m.map(x=>x+"'").join(", ")}.`}) });
@@ -3824,7 +3851,7 @@ function sportMoments(g,my,meHome){
     goals.slice().sort((x,y)=>x.m-y.m).forEach(e=>{ const lv=h===a; if(e.side==="home")h++; else a++;
       if(lv&&e.side===side&&e.m>=85)win=e; else if(e.side!==side)win=null });
     const fin=meHome?h-a:a-h;
-    if(win&&fin===1){ const n=scScorer(my,win.u||0).n;
+    if(win&&fin===1){ const n=scGoalBy(my,win).n;
       out.push({k:"late", h:win.m>90?"Extra-time winner":"Late winner", who:n, l:`${esc(n)}, ${win.m}': ${esc(g.home===my?g.away:g.home)} had a point until then.`}) } }
   return out;
 }
@@ -3839,9 +3866,17 @@ function sportBox(g){
   const tot=sd=>goals.filter(e=>e.side===sd).length;
   const rows=[["Goals",tot("away"),tot("home")],["Shots",st.away[0],st.home[0]],["On target",st.away[1],st.home[1]],["Saves",saves("away"),saves("home")],
     ["Yellow cards",cards.away[0],cards.home[0]],cards.away[1]||cards.home[1]?["Red cards",cards.away[1],cards.home[1]]:null];
-  const list=goals.slice().sort((a,b)=>a.m-b.m).map(e=>{ const tm=e.side==="home"?g.home:g.away; return {c:[e.m+"'",esc(tAb(tm)),esc(scScorer(tm,e.u||0).n)]} });
+  const list=goals.slice().sort((a,b)=>a.m-b.m).map(e=>{ const tm=e.side==="home"?g.home:g.away; return {c:[e.m+"'",esc(tAb(tm)),esc(scGoalBy(tm,e).n)]} });
   return boxTeams(g,rows,true)+(list.length?`<div class="boxhead">Goals</div>`+statTable(["","",""],list,3):"")
     +(g.pens?`<div class="fnote">Level after extra time: ${esc(g.pens==="home"?g.home:g.pens==="away"?g.away:g.pens)} won on penalties.</div>`:"");
+}
+
+/* round 74: each side's men who scored, set one up or had a shot, and the keeper */
+function sportBoxPlayers(g,BL){
+  return ["away","home"].map(sd=>{ const R=BL[sd], out=R.filter(x=>x.pos!=="GK"&&(x.s.goals||x.s.ast||x.s.shots)), gk=R.filter(x=>x.pos==="GK");
+    const rows=out.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.goals,x.s.ast,x.s.shots].map(String)}))
+      .concat(gk.map(x=>({c:[esc(boxName(x.n))+' <span style="color:var(--muted)">GK</span>',`${x.s.sv} saves`,`${x.s.ga} conceded`,""]})));
+    return boxSide(g,sd,["","Goals","Assists","Shots"],rows) }).join("");
 }
 /* ============ game screens: soccer ============ */
 /* The scoreboard (home side first), the run of play in five-minute spells with
@@ -3852,9 +3887,10 @@ function sportBox(g){
 const SC_UNIT={GK:0,CB:1,FB:2,CM:3,W:4,ST:5};
 function scPlayer(team,unit,u){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
-  const i=SC_UNIT[unit]; const p=R[i]; const b=R[BK(i)];
+  const i=SC_UNIT[unit], hurt=new Set(typeof ENGINE_V!=="undefined"&&ENGINE_V<4?[]:SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);   // (a season begun before round 74: as it was)
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // round 74: an injured man isn't on the pitch (as in hockey)
   // the bench gets a game now and then (rotation, a knock)
-  const pick=(b&&(u%10)<2)?b:p; return pick?pick.n:null;
+  const pick=(b&&(u%10)<2)||!p?b:p; return pick?pick.n:null;
 }
 // a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
 const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
@@ -3863,9 +3899,12 @@ function scScorer(team,u){
   const x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
   return {n:scPlayer(team,unit,u)||"a forward", unit:unit};
 }
+/* a goal's scorer: the man the season stamped on it when the game was played (round 74: a rewatch after a knock or a
+   transfer names the same man), else the event's own draw */
+function scGoalBy(team,e){ return e&&e.nm?{n:e.nm,unit:e.un||"ST"}:scScorer(team,(e&&e.u)||0) }
 /* a game you watched: the goals go to the men the commentary named (core 80_season) */
 function scLogCredit(tm,side,drives){
-  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scScorer(tm,e.u||0); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
+  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scGoalBy(tm,e); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
   return C;
 }
 const FINISH={
@@ -3913,7 +3952,7 @@ function scEventTextIn(g,drives,e){ const used={}; for(const d of drives||[])for
 function scEventText(g,e,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
-  if(e.k==="goal"){ const s=scScorer(tm,u); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
+  if(e.k==="goal"){ const s=scGoalBy(tm,e); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
   if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";
     // round 72: the row is the keeper's, as its sentence is: "Fulham Orozco gets down to keep out Faulkner" put
     // Sunderland's keeper under Fulham (Instinct); every other row names the team of the man it starts with, as hockey's saves do
@@ -4212,6 +4251,11 @@ function logGame(pl,pos,line,step,tm,a,b,pa,pb){
   const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
   gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
   for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
+/* round 74: the old way, a line per player drawn from his rating and the score (a sport's fallback) */
+function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameStats(rng,x.pl,x.i,c.pf,c.pa,c.pf>c.pa)})) }
+/* a whole number split among weights, one unit at a time (a weight of "rest" takes what the tracked players don't) */
+function splitDraw(rng,n,w){ const out=w.map(()=>0), T=w.reduce((t,x)=>t+Math.max(0,x),0); if(!(T>0))return out;
+  for(let k=0;k<n;k++){ let u=rng.r()*T; for(let i=0;i<w.length;i++){ u-=Math.max(0,w[i]); if(u<0||i===w.length-1){ out[i]++; break } } } return out }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -4296,6 +4340,24 @@ class Season{
     const hfa=neutral?0:LEAGUE.tuning.hfa, exp=1/(1+Math.pow(10,-(this.elo[a]+hfa-this.elo[b])/400));
     const sh=K*0.9*(0.5-exp); this.elo[a]+=sh; this.elo[b]-=sh;
   }
+  /* round 74 (engV 4): the players' lines come from the game's own record, a team at a time, so they add up to it (the
+     sport's teamLines: who scored, who caught the touchdown, who drove the runs in). They draw on their own numbers
+     (seeded by the game), never the season's: a change to how lines are drawn moves no result. Players who didn't
+     appear get no line. Seasons begun before keep the old per-player lines (gameStats, on the season's numbers), so
+     a save replays as it was played. */
+  _creditV4(a,b,hp,ap,drives){
+    [[a,hp,ap,"home"],[b,ap,hp,"away"]].forEach(([tm,pf,pa,side])=>{
+      const R=this.roster[tm]; if(!R)return;
+      const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+      if(typeof statDeploy==="function")statDeploy(this,tm);
+      const act=POS.map((P,i)=>({pl:hurt.has(i)?R[BK(i)]:R[i], i:i, P:P.p})).filter(x=>x.pl);
+      const rng=new RNG(strHash(this.year+"|"+this.step+"|"+a+"|"+b+"|"+side));
+      let out=[]; try{ out=teamLines(rng,{tm:tm,side:side,pf:pf,pa:pa,drives:drives||[],R:R,act:act,home:a,away:b,sea:this})||[] }catch(e){ out=statLinesOld(rng,{pf:pf,pa:pa,act:act}) }
+      out.forEach(o=>{ const pl=o.pl, pos=o.pos; if(!pl||!pos)return; if(!pl.st2)pl.st2=blankStats(pos);
+        if(typeof noteGame==="function")noteGame(this,pl,pos,o.line,tm);
+        addStats(pl.st2,o.line); pl.last={line:o.line,pos:pos,week:this.step,team:tm}; logGame(pl,pos,o.line,this.step,tm,a,b,hp,ap) });
+    });
+  }
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
     // a cup tie: a knockout, and nothing to do with anyone's league record
@@ -4350,7 +4412,8 @@ class Season{
         if(!cup&&this.countsInRecord()){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-      if(this.roster){
+      if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,fh,fa,F.drives);   // round 74
+      else if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -4413,7 +4476,8 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-    if(this.roster){
+    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+    else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
         const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -6859,10 +6923,27 @@ function momentHTML(g,my,seed){
    From the game's own record only: the team numbers the engine counted and the scorers the run of play named. Every
    number here adds up to the score (test/boxscore.js). A sport's player-by-player lines are kept out where they are
    drawn per player rather than counted in the game (they would not add up). Each sport: sportBox(g) -> HTML. */
-function boxHTML(g,open){
+function boxHTML(g,open,step){
   if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
   let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";
-  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}</details>` }
+  // round 74: the players' lines, where they come from the game's own record (engine 4) and so add up to it
+  let p=""; try{ const L=boxLines(g,step); if(L&&typeof sportBoxPlayers==="function")p=sportBoxPlayers(g,L)||"" }catch(e){ p="" }
+  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}${p}</details>` }
+/* each side's players' lines for one game, from their game logs (round 74): [{n, i (roster place), pos, s (the line)}] */
+function boxLines(g,step){
+  if(typeof ENGINE_V==="undefined"||ENGINE_V<4||step===undefined||step===null||typeof SEA==="undefined"||!SEA||!SEA.roster)return null;
+  const out={home:[],away:[]}, w=glStride();
+  ["home","away"].forEach(sd=>{ const tm=g[sd], oi=NAMES.indexOf(sd==="home"?g.away:g.home), hf=sd==="home"?1:0;
+    (SEA.roster[tm]||[]).forEach((p,i)=>{ if(!p||!p.gl)return;
+      for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
+        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
+          out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
+  return out.home.length||out.away.length?out:null;
+}
+/* "J. Smith": a name short enough for a box score's column */
+function boxName(n){ const w=String(n||"").split(" "); return w.length>1?w[0][0]+". "+w.slice(1).join(" "):String(n||"") }
+/* one side's table under its name */
+function boxSide(g,sd,head,rows){ return rows.length?`<div class="boxhead">${esc(g[sd])}</div>`+statTable(head,rows,1):"" }
 /* a team table: first column the label, then a column per side */
 function boxTeams(g,rows,homeFirst){ const A=tAb(g.away), H=tAb(g.home);
   return statTable(["",homeFirst?H:A,homeFirst?A:H],rows.filter(Boolean).map(r=>({c:[esc(r[0]),homeFirst?r[2]:r[1],homeFirst?r[1]:r[2]].map(String)}))) }
@@ -9271,7 +9352,7 @@ function heroResult(){
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
-    ${typeof boxHTML==="function"?boxHTML(g):""}
+    ${typeof boxHTML==="function"?boxHTML(g,false,flash&&flash.step):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */

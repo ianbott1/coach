@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="bb60bea";
+<script>const BUILD_ID="8b5bfea";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1256,6 +1256,36 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   if(s.tpm*3>s.pts)s.tpm=Math.floor(s.pts/3);
   return s;
 }
+/* round 74 (engV 4): a team's lines from the game's own record. Its made twos, threes and free throws (the engine counts
+   them) go one by one to the players on the floor, by position and rating, with the bench's share to the bench; the man
+   the play-by-play named for a three or an and-one has it. So the points come to the score, less the bench's. Rebounds
+   are the misses the game had (their misses less their offensive boards, and ours), assists about three made shots in
+   five, steals about half their turnovers, blocks about one of their missed twos in six; nine misses in ten end in a player's rebound, shared the same way. */
+const BB_AST=0.60, BB_STL=0.52, BB_BLK=0.18, BB_REB=0.9, BB_STARP=1.6;   // a star's share of the scoring grows faster than his rating (1.6)
+function teamLines(rng,c){
+  const recs=c.drives.filter(d=>d.ln), last=recs[recs.length-1], o=c.side==="home"?"away":"home";
+  if(!last)return statLinesOld(rng,c);
+  const M=last.ln[c.side], O=last.ln[o], tm=c.tm;
+  const sl=c.act.map(x=>({x:x,R:ROLE[x.P],star:Math.max(0.55,1+(x.pl.r-60)/20*0.35+rng.gauss(0,0.22))}));
+  const at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
+  const line=()=>({pts:0,reb:0,ast:0,stl:0,blk:0,tpm:0,f2:0,ft:0}), L=sl.map(line), extra={};
+  // the play-by-play's men: a three, a bucket inside and its free throw
+  const named=(nm,k)=>{ if(!nm)return; const j=sl.findIndex(s=>s.x.pl.n===nm); const t=j>=0?L[j]:(at[nm]?(extra[nm]=extra[nm]||line()):null); if(t)t[k]++ };
+  let t3=M.tpm||0, t2=M.fgm2||0, t1=M.ftm||0;
+  c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0;
+    if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u),"tpm"); t3-- }
+    if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
+  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,BB_STARP):s.star)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
+  ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
+  const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
+  share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));
+  const fin=l=>({pts:2*l.f2+3*l.tpm+l.ft,reb:l.reb,ast:l.ast,stl:l.stl,blk:l.blk,tpm:l.tpm});
+  const out=sl.map((s,j)=>({pl:s.x.pl,pos:s.x.P,line:fin(L[j])}));
+  Object.keys(extra).forEach(nm=>{ const x=at[nm]; out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:fin(extra[nm])}) });
+  return out;
+}
+/* the shares of made twos and free throws: the scorers' share of points (pts2, pts1 read ROLE.pts) */
+function ROLE_FT(sl){ sl.forEach(s=>{ if(s.R.pts2===undefined){ s.R=Object.assign({},s.R,{pts2:s.R.pts,pts1:s.R.pts}) } }) }
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
 /* season line, per game */
 function statLine(pos,s){
@@ -1459,7 +1489,8 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=3;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=4;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+                                      // 4: round 74, players' lines from the game's own record (Season._creditV4)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -1869,7 +1900,10 @@ function distinctLeague(u){
   byName.forEach(list=>{
     // a player on a team someone coaches keeps his name (the recaps name him), then the longest-serving
     const mine=new Set(typeof S!=="undefined"&&S?[S.myTeam].concat((S.coaches||[]).map(c=>c.myTeam)):[]);
-    list.sort((a,b)=>((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
+    // (round 74, engine 4: a man who has played a season keeps it over one who joined the league this summer: a keeper you
+    // sold was renamed at his new club because a squad-filler at yours was drawn with his name)
+    const vet=x=>ENGINE_V>=4&&x.p.peak!==undefined?1:0;
+    list.sort((a,b)=>(vet(b)-vet(a))||((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
     list.slice(1).forEach(x=>{ const p=x.p, sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):"", h=strHash(p.n+"|"+x.t+"|"+x.i);
       for(let k=0;k<F.length;k++){ const n=F[(h+k)%F.length]+last; if(!taken.has(n)){ p.n=n; taken.add(n); break } } });
   });
@@ -3379,7 +3413,13 @@ function staffAside(kind, data){
            ["capy",`I couldn't look. I am told it was very good.`]],
     m_comeback:[["bears",`Fifteen down means nothing to a bear.`],
            ["pearl",`They kept going and going! I'm so proud.`],
-           ["capy",`I had quite given up, privately. Please don't tell them.`]]
+           ["capy",`I had quite given up, privately. Please don't tell them.`]],
+    m_ot:  [["bears",`Five more minutes was all we needed. We'd have taken fifty.`],
+           ["pearl",`Overtime! My heart can't do overtime. But we WON.`],
+           ["capy",`I find overtime rather a lot. I'm glad it's over, and gladder still of how.`]],
+    m_late:[["bears",`Behind with a few minutes left? Bears don't read the scoreboard.`],
+           ["pearl",`They saved the best for last! Didn't they?`],
+           ["capy",`I'd started composing something consoling. I shan't need it now.`]]
   };
   const set=L[kind]; if(!set)return null;
   const i=Math.abs((data|0))%set.length;
@@ -3559,6 +3599,14 @@ function sportMoments(g,my,meHome){
   const out=[], side=meHome?"home":"away", D=g.drives||[], last=D[D.length-1];
   if(g.winner===my&&last&&last.seg==="last"&&last.side===side&&last.made&&last.choice==="three")
     out.push({k:"buzzer", h:"At the buzzer", l:`Down two with the last possession, you went for the three, and it went in.`});
+  // round 74: won in overtime; or behind going into the last stretch of regulation and won by a possession (college
+  // basketball had no moment in a season: the buzzer-beater needs you to take the three, down two)
+  else if(g.winner===my){ const segs=D.filter(d=>typeof d.seg==="number"), mine=meHome?g.hp:g.ap, theirs=meHome?g.ap:g.hp;
+    const tied=last&&last.seg==="last"&&last.side===side&&last.made&&last.choice!=="three";
+    if(segs.some(d=>d.seg>=SEGS))out.push({k:"ot", h:"Overtime win", l:tied?`You tied it with the last shot of regulation, and won it in overtime, ${mine}&ndash;${theirs}.`:`Level after regulation, and you won it in overtime, ${mine}&ndash;${theirs}.`});
+    else { const pre=segs.filter(d=>d.seg===SEGS-2)[0];
+      if(pre&&mine-theirs<=3){ const was=meHome?pre.sh-pre.sa:pre.sa-pre.sh;
+        if(was<=0)out.push({k:"late", h:"Won it late", l:was<0?`${-was} down going into the last stretch, and you won by ${mine-theirs}.`:`Level going into the last stretch, and you won by ${mine-theirs}.`}) } } }
   return out;
 }
 /* Basketball's box score (round 73, core 96_moments): the team lines the engine counted, shot by shot. Two-point and
@@ -3571,6 +3619,17 @@ function sportBox(g){
     ["Threes",`${L.away.tpm}-${L.away.tpa}`,`${L.home.tpm}-${L.home.tpa}`],["Free throws",`${L.away.ftm}-${L.away.fta}`,`${L.home.ftm}-${L.home.fta}`],
     ["Offensive rebounds",L.away.oreb,L.home.oreb],["Turnovers",L.away.to,L.home.to],f?["Fouls",f.fouls.away,f.fouls.home]:null];
   return boxTeams(g,rows,false);
+}
+
+/* round 74: each side's players (the men on the floor, by the season's lines) and the bench's share, which come to the
+   team's points */
+function sportBoxPlayers(g,BL){
+  const last=(g.drives||[]).filter(d=>d.ln).slice(-1)[0]; if(!last)return "";
+  return ["away","home"].map(sd=>{ const L=last.ln[sd], pts=2*L.fgm2+3*L.tpm+L.ftm, R=BL[sd];
+    const rows=R.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.pts,x.s.reb,x.s.ast,x.s.tpm,x.s.stl,x.s.blk].map(String)}));
+    const rest=pts-R.reduce((t,x)=>t+x.s.pts,0), r3=L.tpm-R.reduce((t,x)=>t+x.s.tpm,0);
+    if(R.length)rows.push({c:[`<span style="color:var(--muted)">Rest of the bench</span>`,String(rest),"","",String(r3),"",""]});
+    return boxSide(g,sd,["","Pts","Reb","Ast","3PM","Stl","Blk"],rows) }).join("");
 }
 /* ============ game screens: basketball ============ */
 /* The scoreboard (visitors first, as on any arena's clock), the run of play
@@ -3847,6 +3906,11 @@ function logGame(pl,pos,line,step,tm,a,b,pa,pb){
   const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
   gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
   for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
+/* round 74: the old way, a line per player drawn from his rating and the score (a sport's fallback) */
+function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameStats(rng,x.pl,x.i,c.pf,c.pa,c.pf>c.pa)})) }
+/* a whole number split among weights, one unit at a time (a weight of "rest" takes what the tracked players don't) */
+function splitDraw(rng,n,w){ const out=w.map(()=>0), T=w.reduce((t,x)=>t+Math.max(0,x),0); if(!(T>0))return out;
+  for(let k=0;k<n;k++){ let u=rng.r()*T; for(let i=0;i<w.length;i++){ u-=Math.max(0,w[i]); if(u<0||i===w.length-1){ out[i]++; break } } } return out }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -3931,6 +3995,24 @@ class Season{
     const hfa=neutral?0:LEAGUE.tuning.hfa, exp=1/(1+Math.pow(10,-(this.elo[a]+hfa-this.elo[b])/400));
     const sh=K*0.9*(0.5-exp); this.elo[a]+=sh; this.elo[b]-=sh;
   }
+  /* round 74 (engV 4): the players' lines come from the game's own record, a team at a time, so they add up to it (the
+     sport's teamLines: who scored, who caught the touchdown, who drove the runs in). They draw on their own numbers
+     (seeded by the game), never the season's: a change to how lines are drawn moves no result. Players who didn't
+     appear get no line. Seasons begun before keep the old per-player lines (gameStats, on the season's numbers), so
+     a save replays as it was played. */
+  _creditV4(a,b,hp,ap,drives){
+    [[a,hp,ap,"home"],[b,ap,hp,"away"]].forEach(([tm,pf,pa,side])=>{
+      const R=this.roster[tm]; if(!R)return;
+      const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+      if(typeof statDeploy==="function")statDeploy(this,tm);
+      const act=POS.map((P,i)=>({pl:hurt.has(i)?R[BK(i)]:R[i], i:i, P:P.p})).filter(x=>x.pl);
+      const rng=new RNG(strHash(this.year+"|"+this.step+"|"+a+"|"+b+"|"+side));
+      let out=[]; try{ out=teamLines(rng,{tm:tm,side:side,pf:pf,pa:pa,drives:drives||[],R:R,act:act,home:a,away:b,sea:this})||[] }catch(e){ out=statLinesOld(rng,{pf:pf,pa:pa,act:act}) }
+      out.forEach(o=>{ const pl=o.pl, pos=o.pos; if(!pl||!pos)return; if(!pl.st2)pl.st2=blankStats(pos);
+        if(typeof noteGame==="function")noteGame(this,pl,pos,o.line,tm);
+        addStats(pl.st2,o.line); pl.last={line:o.line,pos:pos,week:this.step,team:tm}; logGame(pl,pos,o.line,this.step,tm,a,b,hp,ap) });
+    });
+  }
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
     // a cup tie: a knockout, and nothing to do with anyone's league record
@@ -3985,7 +4067,8 @@ class Season{
         if(!cup&&this.countsInRecord()){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-      if(this.roster){
+      if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,fh,fa,F.drives);   // round 74
+      else if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -4048,7 +4131,8 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-    if(this.roster){
+    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+    else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
         const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -6641,10 +6725,27 @@ function momentHTML(g,my,seed){
    From the game's own record only: the team numbers the engine counted and the scorers the run of play named. Every
    number here adds up to the score (test/boxscore.js). A sport's player-by-player lines are kept out where they are
    drawn per player rather than counted in the game (they would not add up). Each sport: sportBox(g) -> HTML. */
-function boxHTML(g,open){
+function boxHTML(g,open,step){
   if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
   let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";
-  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}</details>` }
+  // round 74: the players' lines, where they come from the game's own record (engine 4) and so add up to it
+  let p=""; try{ const L=boxLines(g,step); if(L&&typeof sportBoxPlayers==="function")p=sportBoxPlayers(g,L)||"" }catch(e){ p="" }
+  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}${p}</details>` }
+/* each side's players' lines for one game, from their game logs (round 74): [{n, i (roster place), pos, s (the line)}] */
+function boxLines(g,step){
+  if(typeof ENGINE_V==="undefined"||ENGINE_V<4||step===undefined||step===null||typeof SEA==="undefined"||!SEA||!SEA.roster)return null;
+  const out={home:[],away:[]}, w=glStride();
+  ["home","away"].forEach(sd=>{ const tm=g[sd], oi=NAMES.indexOf(sd==="home"?g.away:g.home), hf=sd==="home"?1:0;
+    (SEA.roster[tm]||[]).forEach((p,i)=>{ if(!p||!p.gl)return;
+      for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
+        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
+          out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
+  return out.home.length||out.away.length?out:null;
+}
+/* "J. Smith": a name short enough for a box score's column */
+function boxName(n){ const w=String(n||"").split(" "); return w.length>1?w[0][0]+". "+w.slice(1).join(" "):String(n||"") }
+/* one side's table under its name */
+function boxSide(g,sd,head,rows){ return rows.length?`<div class="boxhead">${esc(g[sd])}</div>`+statTable(head,rows,1):"" }
 /* a team table: first column the label, then a column per side */
 function boxTeams(g,rows,homeFirst){ const A=tAb(g.away), H=tAb(g.home);
   return statTable(["",homeFirst?H:A,homeFirst?A:H],rows.filter(Boolean).map(r=>({c:[esc(r[0]),homeFirst?r[2]:r[1],homeFirst?r[1]:r[2]].map(String)}))) }
@@ -8970,7 +9071,7 @@ function heroResult(){
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
-    ${typeof boxHTML==="function"?boxHTML(g):""}
+    ${typeof boxHTML==="function"?boxHTML(g,false,flash&&flash.step):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */

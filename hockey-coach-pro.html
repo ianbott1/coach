@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="ca134f4";
+<script>const BUILD_ID="27b84af";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1231,6 +1231,34 @@ function injuryCost(roster,idx){
   if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
   return -P.w*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
+}
+/* round 74 (engV 4): a team's lines from the game's own record. Every goal and assist to the men the log names
+   (hkGoalNames), the shots on goal the game had (its goals from shots and the other goalie's saves) shared among the
+   ten skaters dressed, the goalie's saves and goals against as the game played them (an empty-net goal isn't his).
+   Everyone dressed gets a line, the depth men too. */
+function teamLines(rng,c){
+  const o=c.side==="home"?"away":"home", tm=c.tm, at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
+  const dressed=hkDressed(tm,HK_SW); if(!dressed.length)return statLinesOld(rng,c);
+  const L={}; dressed.forEach(d=>L[d.n]={goals:0,ast:0,pts:0,sog:0});
+  const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
+  let mine=0;
+  ev.filter(e=>e.side===c.side).forEach(e=>{ const N=hkGoalNames(tm,e); e.nm=N.n; if(N.a)e.an=N.a; if(N.depth)e.dp=1;
+    if(L[N.n]){ L[N.n].goals++; if(!e.en&&!e.extra)mine++ } else if(!e.en&&!e.extra)mine++;
+    if(N.a&&L[N.a])L[N.a].ast++ });
+  const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
+  const sog=ev.filter(e=>e.side===c.side&&!e.en&&!e.extra).length+sv(o);
+  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited);
+  const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
+  dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]; l.pts=l.goals+l.ast });
+  const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
+  // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
+  // against; an empty-net goal is nobody's
+  const d0=c.drives[0]||{}, gi=POS.findIndex(P=>P.p==="G"), gAct=c.act.find(x=>x.i===gi), bkG=c.R[BK(gi)];
+  const start=d0.bk&&d0.bk[c.side]&&bkG?bkG:gAct?gAct.pl:null, other=start===bkG?(gAct?gAct.pl:null):bkG, G=new Map();
+  c.drives.forEach(d=>{ const inNet=(d.gIn&&d.gIn[c.side]&&other&&start!==bkG)?other:start; if(!inNet)return;
+    const l=G.get(inNet)||{sv:0,ga:0,so:0}; l.sv+=(d.sv||[]).filter(x=>x.side===c.side).length; l.ga+=(d.ev||[]).filter(e=>e.k==="goal"&&e.side===o&&!e.en).length; G.set(inNet,l) });
+  G.forEach((l,p)=>{ if(p!==start&&!l.sv&&!l.ga)return; l.so=p===start&&G.size===1&&l.ga===0&&c.pa===0?1:0; out.push({pl:p,pos:"G",line:l}) });
+  return out;
 }
 function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 
@@ -1549,7 +1577,8 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=3;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=4;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+                                      // 4: round 74, players' lines from the game's own record (Season._creditV4)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -1959,7 +1988,10 @@ function distinctLeague(u){
   byName.forEach(list=>{
     // a player on a team someone coaches keeps his name (the recaps name him), then the longest-serving
     const mine=new Set(typeof S!=="undefined"&&S?[S.myTeam].concat((S.coaches||[]).map(c=>c.myTeam)):[]);
-    list.sort((a,b)=>((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
+    // (round 74, engine 4: a man who has played a season keeps it over one who joined the league this summer: a keeper you
+    // sold was renamed at his new club because a squad-filler at yours was drawn with his name)
+    const vet=x=>ENGINE_V>=4&&x.p.peak!==undefined?1:0;
+    list.sort((a,b)=>(vet(b)-vet(a))||((mine.has(b.t)?1:0)-(mine.has(a.t)?1:0))||((b.p.yrsHere||0)-(a.p.yrsHere||0))||((b.p.age||0)-(a.p.age||0)));
     list.slice(1).forEach(x=>{ const p=x.p, sp=p.n.indexOf(" "), last=sp>0?p.n.slice(sp):"", h=strHash(p.n+"|"+x.t+"|"+x.i);
       for(let k=0;k<F.length;k++){ const n=F[(h+k)%F.length]+last; if(!taken.has(n)){ p.n=n; taken.add(n); break } } });
   });
@@ -3579,7 +3611,7 @@ const HL_SPORT=(function(){
     const gIn=sd=>!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd])), slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home, SL=slots(attSide), an=hlNamed(tm,SL), dn=hlNamed(opp,slots(defSide)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
-    const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>hkGoalNames(x.side==="home"?g.home:g.away,x).n):0;
+    const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>{ const N=hkGoalNames(x.side==="home"?g.home:g.away,x); return N.depth?null:N.n }):0;
     return {gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
@@ -3658,7 +3690,7 @@ const HL_SPORT=(function(){
 function sportMoments(g,my,meHome){
   const out=[], side=meHome?"home":"away", D=g.drives||[];
   const goals=[]; D.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")goals.push(e) }));
-  const by={}; goals.filter(e=>e.side===side).forEach(e=>{ const n=hkGoalNames(my,e).n; if(!n||n==="a forward")return; (by[n]=by[n]||[]).push(e.m) });
+  const by={}; goals.filter(e=>e.side===side).forEach(e=>{ const N=hkGoalNames(my,e), n=N.n; if(N.depth||!n||n==="a forward")return; (by[n]=by[n]||[]).push(e.m) });   // (the fourth line is nobody's hat-trick)
   Object.keys(by).filter(n=>by[n].length>=3).forEach(n=>{ const m=by[n];
     out.push({k:"hattrick", h:m.length===3?"Hat-trick":m.length===4?"Four goals":m.length+" goals", who:n,
       l:`${esc(n)} scored ${m.length===3?"three":m.length===4?"four":m.length}${m.length===3?", and the hats came down":""}: ${m.map(x=>x+"'").join(", ")}.`}) });
@@ -3688,6 +3720,15 @@ function sportBox(g){
   return boxTeams(g,rows,false)+(list.length?`<div class="boxhead">Goals</div>`+statTable(["","",""],list,3):"")
     +(g.so?`<div class="fnote">Level after overtime: ${esc(g.winner)} won the shootout.</div>`:"");
 }
+
+/* round 74: each side's skaters dressed and the goalie (his saves and goals against as the game played them); the
+   goals the roster's depth scored are listed above as the fourth line's */
+function sportBoxPlayers(g,BL){
+  return ["away","home"].map(sd=>{ const R=BL[sd], sk=R.filter(x=>x.pos!=="G"), gk=R.filter(x=>x.pos==="G");
+    const rows=sk.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos==="D2"?"D":x.pos)}</span>`,x.s.goals,x.s.ast,x.s.pts,x.s.sog].map(String)}))
+      .concat(gk.map(x=>({c:[esc(boxName(x.n))+' <span style="color:var(--muted)">G</span>',`${x.s.sv} sv`,`${x.s.ga} ga`,x.s.sv+x.s.ga?(x.s.sv/(x.s.sv+x.s.ga)).toFixed(3).replace(/^0/,""):"",""]})));
+    return boxSide(g,sd,["","G","A","Pts","SOG"],rows) }).join("");
+}
 /* ============ game screens: hockey ============ */
 /* The scoreboard (visitors first, as on any rink's clock), the run of play in
    five-minute spells with names, the evidence each call is made from, the
@@ -3708,8 +3749,35 @@ function hkSkater(team,u){
   return hkPlayer(team,unit,u)||"a forward";
 }
 /* who scored a goal and who set it up, from the event: the log says it and the box score credits it */
-function hkGoalNames(tm,e){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);
-  return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
+/* round 74: the scorer and the assist are drawn (from the event's own number, so the log, the box score and the season
+   agree) from the ten skaters dressed, by position, rating and ice time: the top line's centre about one goal in eight,
+   a depth man about one in eleven, a star more. (It was by position alone, the top centre one goal in five: with only
+   the log naming scorers, a top centre would score 50 at any rating.) The season stamps the names on the event, so a
+   rewatch names the same men after a trade. */
+const HK_GW={C:0.10,LW:0.10,RW:0.10,D:0.045,D2:0.035}, HK_AW={C:0.12,LW:0.11,RW:0.11,D:0.075,D2:0.06}, HK_SW={C:0.10,LW:0.10,RW:0.10,D:0.09,D2:0.07};
+const HK_DEPTHW=0.9, HK_PSTAR=0.55;
+function hkDressed(tm,W){
+  const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
+  const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
+  const star=p=>Math.max(0.3,1+(p.r-60)/20*HK_PSTAR);
+  ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
+    const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*HK_DEPTHW*b/0.3;
+    if(st&&bk){ out.push({n:st.n,w:top*star(st),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk),p:bk,i:BK(i)}) }
+    else if(st||bk){ const p=st||bk; out.push({n:p.n,w:(top+dp)*star(p),p:p,i:st?i:BK(i)}) } });
+  return out;
+}
+function hkWPick(L,x,not){ const T=L.reduce((t,o)=>t+(o.n===not?0:o.w),0); if(!(T>0))return null; let v=x*T;
+  for(const o of L){ if(o.n===not)continue; v-=o.w; if(v<0)return o.n } const r=L.filter(o=>o.n!==not); return r.length?r[r.length-1].n:null }
+/* the men the roster doesn't carry (the bottom six, the third pair) score about one goal in six: the log says which line */
+const HK_UNNAMED=0.17, HK_DEPTH_WHO=["The fourth line","The third line","A depth forward","The third pair"];
+function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
+  if(typeof ENGINE_V!=="undefined"&&ENGINE_V<4){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);   // a season begun before round 74 names as it did
+    return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
+  const u=e.u||0, D=hkDressed(tm,HK_GW), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
+  let n, depth=false;
+  if(x>=1-HK_UNNAMED||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-HK_UNNAMED))||"a forward";
+  const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW),(((u*7+3)%100)+0.5)/100,n);
+  return {n:n, a:a||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
 function hkLogCredit(tm,side,drives){
   const C={}, add=(nm,k)=>{ if(!nm||nm==="a forward")return; (C[nm]=C[nm]||{goals:0,ast:0})[k]++ };
@@ -4027,6 +4095,11 @@ function logGame(pl,pos,line,step,tm,a,b,pa,pb){
   const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
   gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
   for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
+/* round 74: the old way, a line per player drawn from his rating and the score (a sport's fallback) */
+function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameStats(rng,x.pl,x.i,c.pf,c.pa,c.pf>c.pa)})) }
+/* a whole number split among weights, one unit at a time (a weight of "rest" takes what the tracked players don't) */
+function splitDraw(rng,n,w){ const out=w.map(()=>0), T=w.reduce((t,x)=>t+Math.max(0,x),0); if(!(T>0))return out;
+  for(let k=0;k<n;k++){ let u=rng.r()*T; for(let i=0;i<w.length;i++){ u-=Math.max(0,w[i]); if(u<0||i===w.length-1){ out[i]++; break } } } return out }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -4111,6 +4184,24 @@ class Season{
     const hfa=neutral?0:LEAGUE.tuning.hfa, exp=1/(1+Math.pow(10,-(this.elo[a]+hfa-this.elo[b])/400));
     const sh=K*0.9*(0.5-exp); this.elo[a]+=sh; this.elo[b]-=sh;
   }
+  /* round 74 (engV 4): the players' lines come from the game's own record, a team at a time, so they add up to it (the
+     sport's teamLines: who scored, who caught the touchdown, who drove the runs in). They draw on their own numbers
+     (seeded by the game), never the season's: a change to how lines are drawn moves no result. Players who didn't
+     appear get no line. Seasons begun before keep the old per-player lines (gameStats, on the season's numbers), so
+     a save replays as it was played. */
+  _creditV4(a,b,hp,ap,drives){
+    [[a,hp,ap,"home"],[b,ap,hp,"away"]].forEach(([tm,pf,pa,side])=>{
+      const R=this.roster[tm]; if(!R)return;
+      const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+      if(typeof statDeploy==="function")statDeploy(this,tm);
+      const act=POS.map((P,i)=>({pl:hurt.has(i)?R[BK(i)]:R[i], i:i, P:P.p})).filter(x=>x.pl);
+      const rng=new RNG(strHash(this.year+"|"+this.step+"|"+a+"|"+b+"|"+side));
+      let out=[]; try{ out=teamLines(rng,{tm:tm,side:side,pf:pf,pa:pa,drives:drives||[],R:R,act:act,home:a,away:b,sea:this})||[] }catch(e){ out=statLinesOld(rng,{pf:pf,pa:pa,act:act}) }
+      out.forEach(o=>{ const pl=o.pl, pos=o.pos; if(!pl||!pos)return; if(!pl.st2)pl.st2=blankStats(pos);
+        if(typeof noteGame==="function")noteGame(this,pl,pos,o.line,tm);
+        addStats(pl.st2,o.line); pl.last={line:o.line,pos:pos,week:this.step,team:tm}; logGame(pl,pos,o.line,this.step,tm,a,b,hp,ap) });
+    });
+  }
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
     // a cup tie: a knockout, and nothing to do with anyone's league record
@@ -4165,7 +4256,8 @@ class Season{
         if(!cup&&this.countsInRecord()){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-      if(this.roster){
+      if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,fh,fa,F.drives);   // round 74
+      else if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -4228,7 +4320,8 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-    if(this.roster){
+    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+    else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
         const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -6620,10 +6713,27 @@ function momentHTML(g,my,seed){
    From the game's own record only: the team numbers the engine counted and the scorers the run of play named. Every
    number here adds up to the score (test/boxscore.js). A sport's player-by-player lines are kept out where they are
    drawn per player rather than counted in the game (they would not add up). Each sport: sportBox(g) -> HTML. */
-function boxHTML(g,open){
+function boxHTML(g,open,step){
   if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
   let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";
-  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}</details>` }
+  // round 74: the players' lines, where they come from the game's own record (engine 4) and so add up to it
+  let p=""; try{ const L=boxLines(g,step); if(L&&typeof sportBoxPlayers==="function")p=sportBoxPlayers(g,L)||"" }catch(e){ p="" }
+  return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}${p}</details>` }
+/* each side's players' lines for one game, from their game logs (round 74): [{n, i (roster place), pos, s (the line)}] */
+function boxLines(g,step){
+  if(typeof ENGINE_V==="undefined"||ENGINE_V<4||step===undefined||step===null||typeof SEA==="undefined"||!SEA||!SEA.roster)return null;
+  const out={home:[],away:[]}, w=glStride();
+  ["home","away"].forEach(sd=>{ const tm=g[sd], oi=NAMES.indexOf(sd==="home"?g.away:g.home), hf=sd==="home"?1:0;
+    (SEA.roster[tm]||[]).forEach((p,i)=>{ if(!p||!p.gl)return;
+      for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
+        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
+          out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
+  return out.home.length||out.away.length?out:null;
+}
+/* "J. Smith": a name short enough for a box score's column */
+function boxName(n){ const w=String(n||"").split(" "); return w.length>1?w[0][0]+". "+w.slice(1).join(" "):String(n||"") }
+/* one side's table under its name */
+function boxSide(g,sd,head,rows){ return rows.length?`<div class="boxhead">${esc(g[sd])}</div>`+statTable(head,rows,1):"" }
 /* a team table: first column the label, then a column per side */
 function boxTeams(g,rows,homeFirst){ const A=tAb(g.away), H=tAb(g.home);
   return statTable(["",homeFirst?H:A,homeFirst?A:H],rows.filter(Boolean).map(r=>({c:[esc(r[0]),homeFirst?r[2]:r[1],homeFirst?r[1]:r[2]].map(String)}))) }
@@ -8954,7 +9064,7 @@ function heroResult(){
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
     <div class="hopp">${haWord(g,my)} ${esc(opp)}</div>${typeof momentHTML==="function"?momentHTML(g,my,flash&&flash.step):""}${move}${moment?"":banner}${cupG?cupLineHTML(cupG,my):""}${moment&&audit?`<details class="audit"${!won&&/Season over|Out of the|out of the|beaten in the|eliminated/i.test(move||"")?" open":""}><summary>Your calls tonight, graded</summary>${audit}</details>`:audit}${guideNote("result","Each call you made is graded here: a read against what they really did, a situation call against what your assistant would have done, replayed many times from that moment. Calls too close to separate aren't graded either way.")}
-    ${typeof boxHTML==="function"?boxHTML(g):""}
+    ${typeof boxHTML==="function"?boxHTML(g,false,flash&&flash.step):""}
     ${SEA.roster?`<button class="rewatch" data-rewatch="1">Rewatch</button>`:""}</div>`;
 }
 /* the first few reads: how to read the panel */
