@@ -67,6 +67,29 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const shots=Math.max(goals,Math.round(rng.gauss(12*R.shots*first*star,0.8)));
   const o={goals:goals, ast:ast, shots:shots}; if(P==="CB"||P==="FB")o.cs=oppPts===0?1:0; return o;
 }
+/* round 74 (engV 4): a team's lines from the game's own record. Every goal to the man the log names (scScorer), an
+   assist on about seven in ten to a team-mate (by position and rating), the shots the game had shared among the men on
+   the pitch (each scorer at least his goals), the keeper's saves (their shots on target less their goals) and goals
+   against as the game played them. Everyone who played gets a line, the bench too. */
+const SC_ASSISTED=0.72;
+function teamLines(rng,c){
+  const o=c.side==="home"?"away":"home", tm=c.tm, at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
+  const hurt=new Set(c.sea.talent?c.sea.talent.active(tm).map(x=>x.idx):[]), star=p=>Math.max(0.5,1+(p.r-60)/20*0.45);
+  const on=[]; POS.forEach((P,i)=>{ if(P.p==="GK")return; const st=hurt.has(i)?null:c.R[i], bk=hurt.has(BK(i))?null:c.R[BK(i)], b=P.bench;
+    if(st)on.push({p:st,i:i,P:P.p,m:bk?1-b:1}); if(bk)on.push({p:bk,i:BK(i),P:P.p,m:st?b:1}) });
+  const L=new Map(); on.forEach(x=>L.set(x.p.n,{goals:0,ast:0,shots:0}));
+  const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
+  ev.filter(e=>e.side===c.side).forEach(e=>{ const S=scGoalBy(tm,e), l=L.get(S.n); e.nm=S.n; e.un=S.unit; if(!l)return; l.goals++;
+    if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)), k=splitDraw(rng,1,w).indexOf(1); if(k>=0)L.get(on[k].p.n).ast++ } });
+  const sts=c.drives.filter(d=>d.st), st=sts.length?sts[sts.length-1].st:null;
+  const shots=st?st[c.side][0]:0, given=on.reduce((t,x)=>t+L.get(x.p.n).goals,0);
+  const n=splitDraw(rng,Math.max(0,shots-given),on.map(x=>ROLE[x.P].shots*x.m*star(x.p)));
+  on.forEach((x,j)=>{ const l=L.get(x.p.n); l.shots=l.goals+n[j] });
+  const ga=ev.filter(e=>e.side===o).length, reg=ev.filter(e=>e.side===o&&e.m<=90).length, cs=ga===0?1:0;
+  const out=on.map(x=>{ const l=L.get(x.p.n); if(x.P==="CB"||x.P==="FB")l.cs=cs; return {pl:x.p,pos:POS[x.i%POS.length].p,line:l} });
+  const gk=c.act.find(x=>x.P==="GK"); if(gk)out.push({pl:gk.pl,pos:"GK",line:{sv:st?Math.max(0,st[o][1]-reg):0,ga:ga,cs:cs}});
+  return out;
+}
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
 function statLine(pos,s){
   if(!s||!s.g)return "";

@@ -9,3 +9,14 @@ function sportBox(g){
     ["Offensive rebounds",L.away.oreb,L.home.oreb],["Turnovers",L.away.to,L.home.to],f?["Fouls",f.fouls.away,f.fouls.home]:null];
   return boxTeams(g,rows,false);
 }
+
+/* round 74: each side's players (the men on the floor, by the season's lines) and the bench's share, which come to the
+   team's points */
+function sportBoxPlayers(g,BL){
+  const last=(g.drives||[]).filter(d=>d.ln).slice(-1)[0]; if(!last)return "";
+  return ["away","home"].map(sd=>{ const L=last.ln[sd], pts=2*L.fgm2+3*L.tpm+L.ftm, R=BL[sd];
+    const rows=R.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.pts,x.s.reb,x.s.ast,x.s.tpm,x.s.stl,x.s.blk].map(String)}));
+    const rest=pts-R.reduce((t,x)=>t+x.s.pts,0), r3=L.tpm-R.reduce((t,x)=>t+x.s.tpm,0);
+    if(R.length)rows.push({c:[`<span style="color:var(--muted)">Rest of the bench</span>`,String(rest),"","",String(r3),"",""]});
+    return boxSide(g,sd,["","Pts","Reb","Ast","3PM","Stl","Blk"],rows) }).join("");
+}

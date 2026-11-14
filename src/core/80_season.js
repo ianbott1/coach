@@ -16,6 +16,11 @@ function logGame(pl,pos,line,step,tm,a,b,pa,pb){
   const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
   gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
   for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
+/* round 74: the old way, a line per player drawn from his rating and the score (a sport's fallback) */
+function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameStats(rng,x.pl,x.i,c.pf,c.pa,c.pf>c.pa)})) }
+/* a whole number split among weights, one unit at a time (a weight of "rest" takes what the tracked players don't) */
+function splitDraw(rng,n,w){ const out=w.map(()=>0), T=w.reduce((t,x)=>t+Math.max(0,x),0); if(!(T>0))return out;
+  for(let k=0;k<n;k++){ let u=rng.r()*T; for(let i=0;i<w.length;i++){ u-=Math.max(0,w[i]); if(u<0||i===w.length-1){ out[i]++; break } } } return out }
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -100,6 +105,24 @@ class Season{
     const hfa=neutral?0:LEAGUE.tuning.hfa, exp=1/(1+Math.pow(10,-(this.elo[a]+hfa-this.elo[b])/400));
     const sh=K*0.9*(0.5-exp); this.elo[a]+=sh; this.elo[b]-=sh;
   }
+  /* round 74 (engV 4): the players' lines come from the game's own record, a team at a time, so they add up to it (the
+     sport's teamLines: who scored, who caught the touchdown, who drove the runs in). They draw on their own numbers
+     (seeded by the game), never the season's: a change to how lines are drawn moves no result. Players who didn't
+     appear get no line. Seasons begun before keep the old per-player lines (gameStats, on the season's numbers), so
+     a save replays as it was played. */
+  _creditV4(a,b,hp,ap,drives){
+    [[a,hp,ap,"home"],[b,ap,hp,"away"]].forEach(([tm,pf,pa,side])=>{
+      const R=this.roster[tm]; if(!R)return;
+      const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
+      if(typeof statDeploy==="function")statDeploy(this,tm);
+      const act=POS.map((P,i)=>({pl:hurt.has(i)?R[BK(i)]:R[i], i:i, P:P.p})).filter(x=>x.pl);
+      const rng=new RNG(strHash(this.year+"|"+this.step+"|"+a+"|"+b+"|"+side));
+      let out=[]; try{ out=teamLines(rng,{tm:tm,side:side,pf:pf,pa:pa,drives:drives||[],R:R,act:act,home:a,away:b,sea:this})||[] }catch(e){ out=statLinesOld(rng,{pf:pf,pa:pa,act:act}) }
+      out.forEach(o=>{ const pl=o.pl, pos=o.pos; if(!pl||!pos)return; if(!pl.st2)pl.st2=blankStats(pos);
+        if(typeof noteGame==="function")noteGame(this,pl,pos,o.line,tm);
+        addStats(pl.st2,o.line); pl.last={line:o.line,pos:pos,week:this.step,team:tm}; logGame(pl,pos,o.line,this.step,tm,a,b,hp,ap) });
+    });
+  }
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
     // a cup tie: a knockout, and nothing to do with anyone's league record
@@ -154,7 +177,8 @@ class Season{
         if(!cup&&this.countsInRecord()){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-      if(this.roster){
+      if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,fh,fa,F.drives);   // round 74
+      else if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
           const tm=pair[0],pf=pair[1],pa2=pair[2];
           const hurt=new Set(this.talent.active(tm).map(x=>x.idx));
@@ -217,7 +241,8 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-    if(this.roster){
+    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+    else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
         const hurt=new Set(this.talent.active(tm).map(x=>x.idx));

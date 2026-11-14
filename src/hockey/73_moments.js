@@ -3,7 +3,7 @@
 function sportMoments(g,my,meHome){
   const out=[], side=meHome?"home":"away", D=g.drives||[];
   const goals=[]; D.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")goals.push(e) }));
-  const by={}; goals.filter(e=>e.side===side).forEach(e=>{ const n=hkGoalNames(my,e).n; if(!n||n==="a forward")return; (by[n]=by[n]||[]).push(e.m) });
+  const by={}; goals.filter(e=>e.side===side).forEach(e=>{ const N=hkGoalNames(my,e), n=N.n; if(N.depth||!n||n==="a forward")return; (by[n]=by[n]||[]).push(e.m) });   // (the fourth line is nobody's hat-trick)
   Object.keys(by).filter(n=>by[n].length>=3).forEach(n=>{ const m=by[n];
     out.push({k:"hattrick", h:m.length===3?"Hat-trick":m.length===4?"Four goals":m.length+" goals", who:n,
       l:`${esc(n)} scored ${m.length===3?"three":m.length===4?"four":m.length}${m.length===3?", and the hats came down":""}: ${m.map(x=>x+"'").join(", ")}.`}) });

@@ -132,6 +132,42 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   return s;
 }
 
+/* round 74 (engV 4): a team's lines from the game's own record. The touchdowns and interceptions are the play-by-play's
+   (driveScript): the passer and the receiver it names for a touchdown pass, the runner for a run, the defender for a
+   pick, and the game's own turnovers for the quarterback's interceptions. The receivers' catches and yards are a split
+   of the quarterback's completions and yards (the rest to receivers the roster doesn't carry), so they never come to
+   more. The rest of a line (attempts, carries, tackles) is drawn as before, from the player's rating. */
+function teamLines(rng,c){
+  const home=c.side==="home", g={home:c.home,away:c.away,hp:home?c.pf:c.pa,ap:home?c.pa:c.pf};
+  const slot={}; c.act.forEach(x=>slot[x.i]=x);
+  // the names the log will use: whoever played (an injured starter's backup)
+  c.drives.forEach(d=>{ d.by=d.by||{}; if(d.home===home){ [0,1,2,3].forEach(i=>{ if(slot[i])d.by[i]=slot[i].pl.n }); [BK(2),BK(3)].forEach(i=>{ const p=c.R[i]; if(p&&!c.act.some(x=>x.pl===p))d.by[i]=p.n }) } else { [7,8,9].forEach(i=>{ if(slot[i])d.by["d"+i]=slot[i].pl.n }); [BK(8),BK(9)].forEach(i=>{ const p=c.R[i]; if(p&&!c.act.some(x=>x.pl===p))d.by["d"+i]=p.n }) } });
+  const rows=typeof driveScript==="function"?driveScript(g,c.drives,[c.sea.roster[c.home],c.sea.roster[c.away]]):[];
+  const L={}; c.act.forEach(x=>{ L[x.i]=gameStats(rng,x.pl,x.i,c.pf,c.pa,c.pf>c.pa) });
+  const X={};   // backups the log named (a nickel back's pick)
+  const has=i=>!!L[i];
+  if(has(0)){ L[0].ptd=0; L[0].int=0 } if(has(1))L[1].rtd=0; [2,3].forEach(i=>{ if(has(i))L[i].ctd=0 }); [8,9].forEach(i=>{ if(has(i))L[i].ints=0 });
+  c.drives.forEach((d,k)=>{ const w=rows[k]&&rows[k].who; if(!w)return;
+    const slotOf=i=>{ if(has(i))return i; const p=c.R[i], x=p&&c.act.find(a=>a.pl===p); return x?x.i:-1 };   // a backup playing for an injured starter
+    if(d.home===home){ if(w.k==="pass"){ if(has(0))L[0].ptd++; const si=slotOf(w.i); if(si>=0)L[si].ctd++;
+        else if(w.i>=POS.length&&c.R[w.i]){ const p=c.R[w.i], e=X[w.i]=X[w.i]||{pl:p,pos:POS[w.i%POS.length].p,line:{rec:0,cyd:0,ctd:0}}; e.line.ctd++; e.line.rec++; e.line.cyd+=w.y||0 } }
+      else if(w.k==="run"&&w.i===1&&has(1))L[1].rtd++ }
+    else if(w.k==="int"){ const si=slotOf(w.i); if(si>=0){ if("ints" in L[si])L[si].ints++; else L[si].pd=(L[si].pd||0)+1 } else if(w.i>=POS.length&&c.R[w.i]){ const p=c.R[w.i]; (X[w.i]=X[w.i]||{pl:p,pos:POS[w.i%POS.length].p,line:{tkl:0,pd:0,ints:0}}).line.ints++ } } });
+  c.drives.forEach(d=>{ if(d.home===home&&d.kind==="INT"&&has(0))L[0].int++ });
+  // the catches and yards: a split of the passer's
+  const bkRec=Object.values(X).reduce((t,e)=>t+(e.line.rec||0),0), bkYd=Object.values(X).reduce((t,e)=>t+(e.line.cyd||0),0);
+  if(has(0)){ const Q=L[0]; Q.cmp=Math.max(Q.cmp,Q.ptd); Q.att=Math.max(Q.att,Q.cmp); Q.pyd=Math.max(Q.pyd,bkYd);
+    const rc=[2,3].filter(has), q=i=>(slot[i].pl.r-58)/22, star=i=>Math.max(0.5,1+q(i)*0.25);
+    const w=rc.map(i=>(i===2?0.30:0.20)*star(i)).concat([1-rc.reduce((t,i)=>t+(i===2?0.30:0.20),0)]);
+    const n=splitDraw(rng,Math.max(0,Q.cmp-bkRec),w);
+    rc.forEach((i,j)=>{ L[i].rec=Math.max(n[j],L[i].ctd) });
+    let over=rc.reduce((t,i)=>t+L[i].rec,0)+bkRec-Q.cmp; if(over>0)Q.cmp+=over, Q.att=Math.max(Q.att,Q.cmp);
+    const ypc=rc.map(i=>(i===2?12.8:11.6)+q(i)*2.2+rng.gauss(0,1.5)), rest=Q.cmp-bkRec-rc.reduce((t,i)=>t+L[i].rec,0);
+    const wy=rc.map((i,j)=>L[i].rec*Math.max(6,ypc[j])), T=wy.reduce((t,x)=>t+x,0)+rest*9.5;
+    rc.forEach((i,j)=>{ L[i].cyd=T>0?Math.floor((Q.pyd-bkYd)*wy[j]/T):0 }) }
+  else [2,3].forEach(i=>{ if(has(i)){ L[i].rec=L[i].ctd; L[i].cyd=0 } });
+  return c.act.map(x=>({pl:x.pl,pos:x.P,line:L[x.i]})).concat(Object.values(X));
+}
 function addStats(dst,src){
   dst.g=(dst.g||0)+1;
   Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k]);

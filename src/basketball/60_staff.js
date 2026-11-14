@@ -240,7 +240,13 @@ function staffAside(kind, data){
            ["capy",`I couldn't look. I am told it was very good.`]],
     m_comeback:[["bears",`Fifteen down means nothing to a bear.`],
            ["pearl",`They kept going and going! I'm so proud.`],
-           ["capy",`I had quite given up, privately. Please don't tell them.`]]
+           ["capy",`I had quite given up, privately. Please don't tell them.`]],
+    m_ot:  [["bears",`Five more minutes was all we needed. We'd have taken fifty.`],
+           ["pearl",`Overtime! My heart can't do overtime. But we WON.`],
+           ["capy",`I find overtime rather a lot. I'm glad it's over, and gladder still of how.`]],
+    m_late:[["bears",`Behind with a few minutes left? Bears don't read the scoreboard.`],
+           ["pearl",`They saved the best for last! Didn't they?`],
+           ["capy",`I'd started composing something consoling. I shan't need it now.`]]
   };
   const set=L[kind]; if(!set)return null;
   const i=Math.abs((data|0))%set.length;

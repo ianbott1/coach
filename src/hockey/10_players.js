@@ -51,6 +51,34 @@ function injuryCost(roster,idx){
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
   return -P.w*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
 }
+/* round 74 (engV 4): a team's lines from the game's own record. Every goal and assist to the men the log names
+   (hkGoalNames), the shots on goal the game had (its goals from shots and the other goalie's saves) shared among the
+   ten skaters dressed, the goalie's saves and goals against as the game played them (an empty-net goal isn't his).
+   Everyone dressed gets a line, the depth men too. */
+function teamLines(rng,c){
+  const o=c.side==="home"?"away":"home", tm=c.tm, at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
+  const dressed=hkDressed(tm,HK_SW); if(!dressed.length)return statLinesOld(rng,c);
+  const L={}; dressed.forEach(d=>L[d.n]={goals:0,ast:0,pts:0,sog:0});
+  const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
+  let mine=0;
+  ev.filter(e=>e.side===c.side).forEach(e=>{ const N=hkGoalNames(tm,e); e.nm=N.n; if(N.a)e.an=N.a; if(N.depth)e.dp=1;
+    if(L[N.n]){ L[N.n].goals++; if(!e.en&&!e.extra)mine++ } else if(!e.en&&!e.extra)mine++;
+    if(N.a&&L[N.a])L[N.a].ast++ });
+  const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
+  const sog=ev.filter(e=>e.side===c.side&&!e.en&&!e.extra).length+sv(o);
+  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited);
+  const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
+  dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]; l.pts=l.goals+l.ast });
+  const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
+  // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
+  // against; an empty-net goal is nobody's
+  const d0=c.drives[0]||{}, gi=POS.findIndex(P=>P.p==="G"), gAct=c.act.find(x=>x.i===gi), bkG=c.R[BK(gi)];
+  const start=d0.bk&&d0.bk[c.side]&&bkG?bkG:gAct?gAct.pl:null, other=start===bkG?(gAct?gAct.pl:null):bkG, G=new Map();
+  c.drives.forEach(d=>{ const inNet=(d.gIn&&d.gIn[c.side]&&other&&start!==bkG)?other:start; if(!inNet)return;
+    const l=G.get(inNet)||{sv:0,ga:0,so:0}; l.sv+=(d.sv||[]).filter(x=>x.side===c.side).length; l.ga+=(d.ev||[]).filter(e=>e.k==="goal"&&e.side===o&&!e.en).length; G.set(inNet,l) });
+  G.forEach((l,p)=>{ if(p!==start&&!l.sv&&!l.ga)return; l.so=p===start&&G.size===1&&l.ga===0&&c.pa===0?1:0; out.push({pl:p,pos:"G",line:l}) });
+  return out;
+}
 function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 
 /* ============ box scores ============ */

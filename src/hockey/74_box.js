@@ -16,3 +16,12 @@ function sportBox(g){
   return boxTeams(g,rows,false)+(list.length?`<div class="boxhead">Goals</div>`+statTable(["","",""],list,3):"")
     +(g.so?`<div class="fnote">Level after overtime: ${esc(g.winner)} won the shootout.</div>`:"");
 }
+
+/* round 74: each side's skaters dressed and the goalie (his saves and goals against as the game played them); the
+   goals the roster's depth scored are listed above as the fourth line's */
+function sportBoxPlayers(g,BL){
+  return ["away","home"].map(sd=>{ const R=BL[sd], sk=R.filter(x=>x.pos!=="G"), gk=R.filter(x=>x.pos==="G");
+    const rows=sk.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos==="D2"?"D":x.pos)}</span>`,x.s.goals,x.s.ast,x.s.pts,x.s.sog].map(String)}))
+      .concat(gk.map(x=>({c:[esc(boxName(x.n))+' <span style="color:var(--muted)">G</span>',`${x.s.sv} sv`,`${x.s.ga} ga`,x.s.sv+x.s.ga?(x.s.sv/(x.s.sv+x.s.ga)).toFixed(3).replace(/^0/,""):"",""]})));
+    return boxSide(g,sd,["","G","A","Pts","SOG"],rows) }).join("");
+}

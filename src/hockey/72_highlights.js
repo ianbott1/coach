@@ -52,7 +52,7 @@ const HL_SPORT=(function(){
     const gIn=sd=>!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd])), slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home, SL=slots(attSide), an=hlNamed(tm,SL), dn=hlNamed(opp,slots(defSide)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
-    const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>hkGoalNames(x.side==="home"?g.home:g.away,x).n):0;
+    const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>{ const N=hkGoalNames(x.side==="home"?g.home:g.away,x); return N.depth?null:N.n }):0;
     return {gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it

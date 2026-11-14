@@ -75,6 +75,36 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   if(s.tpm*3>s.pts)s.tpm=Math.floor(s.pts/3);
   return s;
 }
+/* round 74 (engV 4): a team's lines from the game's own record. Its made twos, threes and free throws (the engine counts
+   them) go one by one to the players on the floor, by position and rating, with the bench's share to the bench; the man
+   the play-by-play named for a three or an and-one has it. So the points come to the score, less the bench's. Rebounds
+   are the misses the game had (their misses less their offensive boards, and ours), assists about three made shots in
+   five, steals about half their turnovers, blocks about one of their missed twos in six; nine misses in ten end in a player's rebound, shared the same way. */
+const BB_AST=0.60, BB_STL=0.52, BB_BLK=0.18, BB_REB=0.9, BB_STARP=1.6;   // a star's share of the scoring grows faster than his rating (1.6)
+function teamLines(rng,c){
+  const recs=c.drives.filter(d=>d.ln), last=recs[recs.length-1], o=c.side==="home"?"away":"home";
+  if(!last)return statLinesOld(rng,c);
+  const M=last.ln[c.side], O=last.ln[o], tm=c.tm;
+  const sl=c.act.map(x=>({x:x,R:ROLE[x.P],star:Math.max(0.55,1+(x.pl.r-60)/20*0.35+rng.gauss(0,0.22))}));
+  const at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
+  const line=()=>({pts:0,reb:0,ast:0,stl:0,blk:0,tpm:0,f2:0,ft:0}), L=sl.map(line), extra={};
+  // the play-by-play's men: a three, a bucket inside and its free throw
+  const named=(nm,k)=>{ if(!nm)return; const j=sl.findIndex(s=>s.x.pl.n===nm); const t=j>=0?L[j]:(at[nm]?(extra[nm]=extra[nm]||line()):null); if(t)t[k]++ };
+  let t3=M.tpm||0, t2=M.fgm2||0, t1=M.ftm||0;
+  c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0;
+    if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u),"tpm"); t3-- }
+    if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
+  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,BB_STARP):s.star)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
+  ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
+  const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
+  share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));
+  const fin=l=>({pts:2*l.f2+3*l.tpm+l.ft,reb:l.reb,ast:l.ast,stl:l.stl,blk:l.blk,tpm:l.tpm});
+  const out=sl.map((s,j)=>({pl:s.x.pl,pos:s.x.P,line:fin(L[j])}));
+  Object.keys(extra).forEach(nm=>{ const x=at[nm]; out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:fin(extra[nm])}) });
+  return out;
+}
+/* the shares of made twos and free throws: the scorers' share of points (pts2, pts1 read ROLE.pts) */
+function ROLE_FT(sl){ sl.forEach(s=>{ if(s.R.pts2===undefined){ s.R=Object.assign({},s.R,{pts2:s.R.pts,pts1:s.R.pts}) } }) }
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
 /* season line, per game */
 function statLine(pos,s){

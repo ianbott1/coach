@@ -127,7 +127,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   }
   // the half-inning in progress
   let H=null;   // {bat, fs, outs, b:[r1,r2,r3], runs, ev}
-  const startHalf=(bat)=>{ H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], bn:[null,null,null], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
+  const startHalf=(bat)=>{ if(st.box&&st.box[other(bat)])st.box[other(bat)].resp={};   // round 74: runners left on are gone
+    H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], bn:[null,null,null], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
     if(st.seg>=SEGS&&!st.playoff){ H.b[1]=1; H.bn[1]=who(bat,(st.S[bat].bat+8)%9) }   // extra innings: a runner on second (the last man up)
   };
   let D=null;   // the inning's drive
@@ -162,6 +163,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       extra=bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));
       if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
     const nm=who(bat,slot), pre=H.bn.slice(), preB=H.b.slice(), ev0=H.ev.length, out0=H.outs;
+    const run0=bat==="home"?st.h:st.a;   // round 74: the box score, counted
     const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
     // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
@@ -185,9 +187,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const occ=[2,1,0].filter(i=>b[i]); while(q.length>occ.length)q.shift(); H.bn=[null,null,null]; occ.forEach((i,k)=>{ H.bn[i]=q[k]||null });
     const Xf=st.S[fs], pn=Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n;
     H.ev.slice(ev0).forEach(e=>{ if(e.k!=="ph"){ e.r=[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null]; e.p=pn } });
+    bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0));
     if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
-  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]}) };
+  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
+    bsCountSteal(st,side,ok,onFirst[side]); if(!ok){ const Xf=st.S[other(side)]; bsCountOuts(st,other(side),Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n,1) } };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -284,6 +288,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(st.seg>=SEGS&&st.h!==st.a){ st.done=true; if(lo&&!walked)out.last=lo }   // the out that ended it (round 70: the highlights' last moment)
     else if(st.seg>=SEGS){ st.ot=st.seg-SEGS+1 }
     if(st.seg>=30){ st.done=true }   // never, in practice
+    if(st.done)out.box=bsBoxDone(st);   // round 74: the game's own box score, on its last inning
     return {drive:out,h:st.h,a:st.a};
   };
   st.reply=function(v){ st.answer=v; st.waiting=null };
@@ -319,6 +324,50 @@ function bsStealP(runner,catcher){ return BS.steal+bsSpeed(runner)[1]+bsArm(catc
 const BS_SEND=0.80;   // the computer (and your assistant) send a runner only this likely to make it
 function bsPlayer(t,nm){ try{ return (SEA.roster[t]||[]).find(p=>p&&p.n===nm)||null }catch(e){ return null } }
 function bsPinchEdge(batR,benchR){ if(batR==null||benchR==null)return BS.pinch; return Math.max(-0.12,Math.min(0.15,(benchR-batR)*0.012)) }
+/* ---- round 74: the box score, counted as the game is played (no draws: nothing here moves a game) ----
+   Each batter's at-bats, hits, home runs, walks, strikeouts, RBI, runs and steals, by name; each pitcher's outs, runs,
+   strikeouts and walks, by name ("bullpen" for the relievers the roster doesn't carry, "closer" for the closer). Who
+   scored: the lead runners first, then the batter on a home run. The decisions at the end: the starter's win if he went
+   five and left ahead and the lead held; his loss if he left behind and they never caught up; the closer's save if he
+   came in to protect one to three runs and finished it. Read by the season (teamLines, baseball 10_players). */
+function bsBoxSide(st,sd){ st.box=st.box||{home:{bat:{},pit:{},seq:[]},away:{bat:{},pit:{},seq:[]}}; return st.box[sd] }
+function bsCount(st,bat,fs,nm,o,run0,pre,preB,outs,pn,evs){
+  const B=bsBoxSide(st,bat), F=bsBoxSide(st,fs);
+  const runs=(bat==="home"?st.h:st.a)-run0;
+  if(nm){ const b=B.bat[nm]=B.bat[nm]||{ab:0,h:0,hr:0,rbi:0,r:0,bb:0,sb:0,k:0};
+    if(o==="bb"||o==="hbp")b.bb++; else b.ab++;
+    if(o==="s1"||o==="s2"||o==="s3"||o==="hr")b.h++; if(o==="hr")b.hr++; if(o==="k")b.k++;
+    evs.forEach(e=>{ if((e.k==="rbi"||e.k==="hr")&&e.side===bat)b.rbi+=e.n||1 }) }
+  const P=F.pit[pn]=F.pit[pn]||{outs:0,er:0,k:0,bb:0}, resp=F.resp=F.resp||{};
+  // a run is charged to the pitcher who put that runner on (a reliever's inherited runners are the starter's); the
+  // extra-inning runner on second is nobody's, so his run is unearned
+  if(runs>0){ const lead=[2,1,0].filter(i=>preB[i]).map(i=>pre[i]); const sc=o==="hr"?lead.slice(0,runs-1).concat([nm]):lead.slice(0,runs);
+    sc.forEach(r=>{ if(!r)return; const x=B.bat[r]=B.bat[r]||{ab:0,h:0,hr:0,rbi:0,r:0,bb:0,sb:0,k:0}; x.r++;
+      const who=r===nm&&o==="hr"?pn:resp[r]; if(who){ const Q=F.pit[who]=F.pit[who]||{outs:0,er:0,k:0,bb:0}; Q.er++ } delete resp[r] }) }
+  if(nm&&(o==="bb"||o==="hbp"||o==="s1"||o==="s2"||o==="s3"))resp[nm]=pn;
+  P.outs+=outs;
+  P.k+=o==="k"?1:0; P.bb+=o==="bb"||o==="hbp"?1:0;
+  // the score as each pitcher works, for the decisions: [pitcher, lead before this batter, lead after]
+  const lead=s=>s==="home"?st.h-st.a:st.a-st.h, after=lead(fs), before=after+runs;
+  F.seq.push([pn,before,after]);
+}
+function bsCountOuts(st,fs,pn,n){ if(n>0){ const F=bsBoxSide(st,fs), P=F.pit[pn]=F.pit[pn]||{outs:0,er:0,k:0,bb:0}; P.outs+=n } }
+function bsCountSteal(st,side,ok,nm){ const B=bsBoxSide(st,side); if(ok&&nm){ const b=B.bat[nm]=B.bat[nm]||{ab:0,h:0,hr:0,rbi:0,r:0,bb:0,sb:0,k:0}; b.sb++ } }
+function bsBoxDone(st){
+  const box=JSON.parse(JSON.stringify(st.box||{home:{bat:{},pit:{},seq:[]},away:{bat:{},pit:{},seq:[]}}));
+  ["home","away"].forEach(sd=>{ delete box[sd].resp; const F=box[sd], won=sd==="home"?st.h>st.a:st.a>st.h, sp=st.S[sd].sp.n, seq=F.seq; F.dec={};
+    const spRows=seq.filter(x=>x[0]===sp), exit=spRows.length?spRows[spRows.length-1][2]:null, iExit=seq.map(x=>x[0]).lastIndexOf(sp);
+    const later=seq.slice(iExit+1), held=later.every(x=>x[2]>0), caught=later.some(x=>x[2]>=0);
+    const spOuts=F.pit[sp]?F.pit[sp].outs:0;
+    if(sp&&won&&spOuts>=15&&exit!==null&&exit>0&&held)F.dec.w=sp;
+    if(sp&&!won&&exit!==null&&exit<0&&!caught)F.dec.l=sp;
+    const iCl=seq.findIndex(x=>x[0]==="closer");
+    if(iCl>=0){ const lead0=seq[iCl][1], last=seq[seq.length-1][0];
+      if(won&&lead0>=1&&lead0<=3&&last==="closer")F.dec.sv="closer";
+      else if(!won&&lead0>=1&&!seq.slice(iCl).some(x=>x[0]!=="closer"))F.dec.l=F.dec.l||"closer" }
+    delete F.seq });
+  return box;
+}
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

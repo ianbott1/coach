@@ -24,7 +24,7 @@ const HL_SPORT=(function(){
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
     const r=mulberry32(((e.m||0)*7919+u*131+(e.side==="home"?17:29))>>>0);
-    const shooter=kind==="goal"||kind==="miss"?scScorer(tm,u):scScorer(tm,u);
+    const shooter=kind==="goal"?scGoalBy(tm,e):scScorer(tm,u);
     let text=""; try{ text=scEventTextIn(g,L.drives,e).text }catch(er){}
     // the move follows the commentary's words where they say how ("heads in at the near post", "from the penalty spot",
     // "blazes over"), else the event's draw
@@ -73,7 +73,7 @@ const HL_SPORT=(function(){
     // each shot its own flight (round 70, Ian: "all of the shots have a curve"): a low drive, a rising strike, a chip,
     // or one bent in from the side
     const shot=r(), lift=how==="over"?0.05:shot<0.35?0.003:shot<0.65?0.012:shot<0.82?0.028:0.008, bend=shot>=0.82?(r()<0.5?-1:1)*(0.03+r()*0.03):0;
-    const gno=kind==="goal"?hlGoalNo(L,e,x=>scScorer(x.side==="home"?g.home:g.away,x.u||0).n):0;
+    const gno=kind==="goal"?hlGoalNo(L,e,x=>scGoalBy(x.side==="home"?g.home:g.away,x).n):0;
     const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     return cl;

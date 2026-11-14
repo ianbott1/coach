@@ -7,9 +7,10 @@
 const SC_UNIT={GK:0,CB:1,FB:2,CM:3,W:4,ST:5};
 function scPlayer(team,unit,u){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
-  const i=SC_UNIT[unit]; const p=R[i]; const b=R[BK(i)];
+  const i=SC_UNIT[unit], hurt=new Set(typeof ENGINE_V!=="undefined"&&ENGINE_V<4?[]:SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);   // (a season begun before round 74: as it was)
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // round 74: an injured man isn't on the pitch (as in hockey)
   // the bench gets a game now and then (rotation, a knock)
-  const pick=(b&&(u%10)<2)?b:p; return pick?pick.n:null;
+  const pick=(b&&(u%10)<2)||!p?b:p; return pick?pick.n:null;
 }
 // a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
 const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
@@ -18,9 +19,12 @@ function scScorer(team,u){
   const x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
   return {n:scPlayer(team,unit,u)||"a forward", unit:unit};
 }
+/* a goal's scorer: the man the season stamped on it when the game was played (round 74: a rewatch after a knock or a
+   transfer names the same man), else the event's own draw */
+function scGoalBy(team,e){ return e&&e.nm?{n:e.nm,unit:e.un||"ST"}:scScorer(team,(e&&e.u)||0) }
 /* a game you watched: the goals go to the men the commentary named (core 80_season) */
 function scLogCredit(tm,side,drives){
-  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scScorer(tm,e.u||0); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
+  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scGoalBy(tm,e); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
   return C;
 }
 const FINISH={
@@ -68,7 +72,7 @@ function scEventTextIn(g,drives,e){ const used={}; for(const d of drives||[])for
 function scEventText(g,e,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
-  if(e.k==="goal"){ const s=scScorer(tm,u); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
+  if(e.k==="goal"){ const s=scGoalBy(tm,e); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
   if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";
     // round 72: the row is the keeper's, as its sentence is: "Fulham Orozco gets down to keep out Faulkner" put
     // Sunderland's keeper under Fulham (Instinct); every other row names the team of the man it starts with, as hockey's saves do

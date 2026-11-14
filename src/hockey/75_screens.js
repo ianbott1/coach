@@ -18,8 +18,35 @@ function hkSkater(team,u){
   return hkPlayer(team,unit,u)||"a forward";
 }
 /* who scored a goal and who set it up, from the event: the log says it and the box score credits it */
-function hkGoalNames(tm,e){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);
-  return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
+/* round 74: the scorer and the assist are drawn (from the event's own number, so the log, the box score and the season
+   agree) from the ten skaters dressed, by position, rating and ice time: the top line's centre about one goal in eight,
+   a depth man about one in eleven, a star more. (It was by position alone, the top centre one goal in five: with only
+   the log naming scorers, a top centre would score 50 at any rating.) The season stamps the names on the event, so a
+   rewatch names the same men after a trade. */
+const HK_GW={C:0.10,LW:0.10,RW:0.10,D:0.045,D2:0.035}, HK_AW={C:0.12,LW:0.11,RW:0.11,D:0.075,D2:0.06}, HK_SW={C:0.10,LW:0.10,RW:0.10,D:0.09,D2:0.07};
+const HK_DEPTHW=0.9, HK_PSTAR=0.55;
+function hkDressed(tm,W){
+  const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
+  const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
+  const star=p=>Math.max(0.3,1+(p.r-60)/20*HK_PSTAR);
+  ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
+    const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*HK_DEPTHW*b/0.3;
+    if(st&&bk){ out.push({n:st.n,w:top*star(st),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk),p:bk,i:BK(i)}) }
+    else if(st||bk){ const p=st||bk; out.push({n:p.n,w:(top+dp)*star(p),p:p,i:st?i:BK(i)}) } });
+  return out;
+}
+function hkWPick(L,x,not){ const T=L.reduce((t,o)=>t+(o.n===not?0:o.w),0); if(!(T>0))return null; let v=x*T;
+  for(const o of L){ if(o.n===not)continue; v-=o.w; if(v<0)return o.n } const r=L.filter(o=>o.n!==not); return r.length?r[r.length-1].n:null }
+/* the men the roster doesn't carry (the bottom six, the third pair) score about one goal in six: the log says which line */
+const HK_UNNAMED=0.17, HK_DEPTH_WHO=["The fourth line","The third line","A depth forward","The third pair"];
+function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
+  if(typeof ENGINE_V!=="undefined"&&ENGINE_V<4){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);   // a season begun before round 74 names as it did
+    return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
+  const u=e.u||0, D=hkDressed(tm,HK_GW), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
+  let n, depth=false;
+  if(x>=1-HK_UNNAMED||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-HK_UNNAMED))||"a forward";
+  const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW),(((u*7+3)%100)+0.5)/100,n);
+  return {n:n, a:a||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
 function hkLogCredit(tm,side,drives){
   const C={}, add=(nm,k)=>{ if(!nm||nm==="a forward")return; (C[nm]=C[nm]||{goals:0,ast:0})[k]++ };
