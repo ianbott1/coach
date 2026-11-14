@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="210b560";
+<script>const BUILD_ID="5d2237c";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -1503,8 +1503,9 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=4;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=5;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
+                                      // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -2817,8 +2818,21 @@ const SEGS=9;
    (Muse: the bullpen call graded "pull" 14 of 14; measured, leaving him in won more replays in 0 of 50 calls) */
 const BS_TIRED3=+((typeof process!=="undefined"&&process.env&&process.env.BS_T)||0.03);
 const BS_PEN3=+((typeof process!=="undefined"&&process.env&&process.env.BS_P)||-0.10);   // and a bullpen a shade further from a fresh starter, so the runs stay where MLB's are (4.38 a side, was 4.39; one-run 25%, extra innings 8%); measured, keeping him won 30% of the calls, 48% for a starter who hadn't allowed a run
+/* round 75 (engV 5): the players show. A hitter's own rating moves his at-bats (hit: per point above or below his
+   lineup's average, zero-sum, so a team's runs stay its own), and the lineup bats in order of ability (the third best
+   leading off, the best second, then the rest down the order) where it batted by position (the catcher led off every game). It was the
+   team's strength alone: a hitter's rating against his production read 0.16-0.21 (MLB 0.4+), the home run leader 31-39.
+   A starter's place in the rotation counts less (q: per rating point from the rotation's average; at 0.012 the best
+   starters ran 1.4-1.5 ERAs over 220+ innings, MLB's best 1.9-2.9), the bullpen is closer to a fresh starter (pen;
+   its ERA ran 4.56, MLB 3.6-4.3, and starters took 66% of the wins), and the league's offence (x) holds the runs where
+   MLB's are. Seasons begun before keep engine 3's. */
+const BS5={hit:+((typeof process!=="undefined"&&process.env&&process.env.BS5_H)||0.013), q:+((typeof process!=="undefined"&&process.env&&process.env.BS5_Q)||0.005),
+  pen:+((typeof process!=="undefined"&&process.env&&process.env.BS5_P)||-0.07), x:+((typeof process!=="undefined"&&process.env&&process.env.BS5_X)||0.01)};
+const BS5_HX={hr:2.6, bb:1.6, s2:1.4, s1:0.5, k:1.0};   // how a hitter's own edge splits across his line
+const BS_ORDER5=[2,0,1,3,4,5,6,7,8];   // batting slot k: the hitter ranked BS_ORDER5[k] (0 the best): the third best leads off, the best bats second
+function bsV5(){ return ENGINE_V>=5 }
 function bsTired(){ return ENGINE_V>=3?BS_TIRED3:BS.tired }
-function bsPen(){ return ENGINE_V>=3?BS_PEN3:BS.pen }
+function bsPen(){ return bsV5()?BS5.pen:ENGINE_V>=3?BS_PEN3:BS.pen }
 const BS={
   // a plate appearance between average sides: strikeout, walk, hit by pitch, single, double, triple, home run (the rest an out in play)
   k:0.224, bb:0.080, hbp:0.011, s1:0.134, s2:0.043, s3:0.004, hr:0.028,   // round 57: 0.136 and 0.029 ran 4.52-4.57 a side in the real app
@@ -2915,10 +2929,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const readEdge=(bat,fs)=>{ const A=st.S[bat].app, X=st.S[fs]; if(!X.ans)return 0; return ANSWERS[X.ans].beats===A?BS.read.right:(APPROACH[A].counter===X.ans?0:BS.read.wrong) };
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };
   /* one plate appearance: the batting side (bat), the side in the field (fs) */
-  function pa(bat,fs,extra){
+  function pa(bat,fs,extra,hx){
     const e=(bat==="home"?gap:-gap)*BS.edge*100/100, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
-    const x=e-pe+re+(extra||0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
+    const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
+    // engine 5: the hitter's own edge (hx) shows most in his power and his eye, least in his singles (a star's .385 was all singles)
+    if(hx){ p.hr*=Math.exp(hx*BS5_HX.hr); p.bb*=Math.exp(hx*BS5_HX.bb); p.s2*=Math.exp(hx*BS5_HX.s2); p.s1*=Math.exp(hx*BS5_HX.s1); p.k*=Math.exp(-hx*BS5_HX.k) }
     let u=rng.r(), o="out"; for(const k of ["k","bb","hbp","s1","s2","s3","hr"]){ if(u<p[k]){ o=k; break } u-=p[k] }
     // the evidence their approach leaves (for your read): pitches seen, pulled balls in play, strikeouts
     const T=st.S[bat].tell, tl=BS_TELL[st.S[bat].app]; T.pa++; T.pit+=Math.max(1,Math.round(rng.gauss(tl[1],BS_TELL_SD.pit)));
@@ -2942,7 +2958,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(n===3)return "Bases loaded"; return (b[0]&&b[1]?"Men on first and second":b[0]&&b[2]?"Men on first and third":b[1]&&b[2]?"Men on second and third":b[0]?"A man on first":b[1]?"A man on second":"A man on third")+(H.outs?`, ${H.outs} out`:", nobody out") };
   // the computer's manager: the bullpen when the starter is spent or hit hard; the closer for a save
   const cpuPen=fs=>{ const X=st.S[fs], P=X.sp; if(X.pen)return; if(P.bf>=P.stam||P.ra>=5||(P.bf>=18&&P.ra>=4))X.pen=true };
-  const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer){ X.closer=true; X.pen=true } };
+  // engine 5: the closer is rested one night in four (by the day, no draw): a set-up man takes that save (one man had
+  // every save chance, 57 a season; MLB's leaders 35-50)
+  const clRest=fs=>bsV5()&&((((ctx&&ctx.seed)||0)>>>(fs==="home"?3:7))&3)===0;
+  const cpuCloser=fs=>{ const X=st.S[fs], L=lead(fs); if(inn()>=9&&L>=1&&L<=3&&!X.closer&&!clRest(fs)){ X.closer=true; X.pen=true } };
   // the bullpen call: three batters before he's spent from the 5th (within three runs), and in a close game from the 6th
   // six batters before (round 58: it came in 18% of live games; Muse's first was game 114, "the best call in the game")
   // (round 59: after "leave him in", not again until he's faced three more or given up a run: it asked in back-to-back
@@ -2955,18 +2974,21 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const LU=side=>(ctx&&ctx.lineup&&ctx.lineup[side])||[], sub=st.sub={home:{},away:{}}, onFirst={home:null,away:null};
   const who=(side,slot)=>sub[side][slot]||LU(side)[slot]||null;
   const rateOf=(side,nm)=>ctx&&ctx.rate&&ctx.rate[side]&&nm?ctx.rate[side][nm]:null;
-  const catcherOf=side=>who(side,0);
+  const catcherOf=side=>bsV5()&&ctx&&ctx.catcher&&ctx.catcher[side]?ctx.catcher[side]:who(side,0);   // (engine 5: the order isn't by position)
+  // engine 5: each hitter against his lineup's average (the day's nine), by rating
+  const luMean={}; ["home","away"].forEach(sd=>{ const R=LU(sd).map(n=>rateOf(sd,n)).filter(x=>x!=null); luMean[sd]=R.length?R.reduce((a,b)=>a+b,0)/R.length:null });
+  const hitEdge=(bat,nm)=>{ const r=rateOf(bat,nm), m=luMean[bat]; return r==null||m==null?0:(r-m)*BS5.hit };
   // the pinch hitter is worth it: he's the better hitter, and you're not ahead (the computer's rule, and your assistant's)
   const pinchWorth=(bat,slot)=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat], b=rateOf(bat,who(bat,slot)), r=rateOf(bat,ph); return !!ph&&lead(bat)<=0&&(b==null||r==null||r>b) };
   const doAB=()=>{
     const bat=H.bat, fs=H.fs, X=st.S[bat];
     const slot=X.bat%9; X.bat++;
     let extra=0; if(st.late[bat+"pinch"]){ st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
-      extra=bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));
+      extra=bsV5()?0:bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));   // (engine 5: his own rating, below)
       if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
     const nm=who(bat,slot), pre=H.bn.slice(), preB=H.b.slice(), ev0=H.ev.length, out0=H.outs;
     const run0=bat==="home"?st.h:st.a;   // round 74: the box score, counted
-    const o=pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
+    const o=bsV5()?pa(bat,fs,extra,hitEdge(bat,nm)):pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
     // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
     if(o==="k"){ H.outs++; L.k++; if(b[0]+b[1]+b[2]>=2&&rng.r()<0.6){ const u=rng.int(100); if(!H.kkSaid){ H.kkSaid=true; H.ev.push({k:"kk",side:fs,u:u,inn:inn(),on:b[0]+b[1]+b[2]}) } } }   // the same draws as before
@@ -3103,16 +3125,21 @@ function spCtx(t,step){
   try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t];
     const k=(step+strHash(t))%5, idx=k<3?BS_SP[k]:BK(BS_SP[k-3]), p=R[idx]; if(!p)return null;
     const mean=(R[BS_SP[0]].r+R[BS_SP[1]].r+R[BS_SP[2]].r+(R[BK(BS_SP[0])]||R[BS_SP[0]]).r+(R[BK(BS_SP[1])]||R[BS_SP[1]]).r)/5;
-    return {n:p.n, q:(p.r-mean)*0.012} }catch(e){ return null } }
+    return {n:p.n, q:(p.r-mean)*(bsV5()?BS5.q:0.012)} }catch(e){ return null } }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
-  lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, team:{home:h,away:a},
+  lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
   rate:{home:ratesOf(h),away:ratesOf(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
 /* hitters' ratings by name, for the pinch hitter's edge */
 function ratesOf(t){ try{ const o={}; (SEA.roster[t]||[]).forEach(p=>{ if(p&&p.n)o[p.n]=p.r }); return o }catch(e){ return {} } }
 /* the day's nine: an injured regular's backup plays (round 56: the season's stats give his at-bats to the backup, and now
    the log does too); the bench bat is the best backup not already in it */
 function hurtSet(t){ try{ return new Set(SEA.talent?SEA.talent.active(t).map(x=>x.idx):[]) }catch(e){ return new Set() } }
-function lineupOf(t){ try{ const R=SEA.roster[t], H=hurtSet(t); return BS_HIT.map(i=>{ const p=H.has(i)?R[BK(i)]:R[i]; return p?p.n:(R[i]?R[i].n:null) }) }catch(e){ return null } }
+function lineupOf(t){ try{ const R=SEA.roster[t], H=hurtSet(t), P=BS_HIT.map(i=>{ const p=H.has(i)?R[BK(i)]:R[i]; return p||R[i]||null });
+    if(!bsV5())return P.map(p=>p?p.n:null);
+    // engine 5: in order of ability (ties by position, so the same nine always bat the same way)
+    const rk=P.map((p,k)=>({p:p,k:k})).sort((a,b)=>((b.p?b.p.r:0)-(a.p?a.p.r:0))||(a.k-b.k));
+    return BS_ORDER5.map(j=>rk[j]&&rk[j].p?rk[j].p.n:null) }catch(e){ return null } }
+function catcherName(t){ try{ const R=SEA.roster[t], H=hurtSet(t), i=BS_HIT[0], p=H.has(i)?R[BK(i)]:R[i]; return p?p.n:null }catch(e){ return null } }
 function benchBat(t){ try{ const R=SEA.roster[t], H=hurtSet(t); let b=null; BS_HIT.forEach(i=>{ if(H.has(i))return; const p=R[BK(i)]; if(p&&!H.has(BK(i))&&(!b||p.r>b.r))b=p }); return b?b.n:null }catch(e){ return null } }
 /* the steal and the pinch hitter (round 58: neither call showed anything to decide on: "no runner speed, no catcher
    arm, no hitters' numbers", Muse). A runner's speed and a catcher's arm are his own (from his name: the same all
@@ -6809,6 +6836,9 @@ function hlWatchPlan(w){
 function hlWatchAt(r){
   if(typeof watch==="undefined"||!watch||!watch.hl||hlMode()==="off")return 0;
   const P=watch.hl, g=watch.g, L={g:g, drives:g.drives}; let own=P.end.findIndex(e=>e>r); if(own<0)own=P.end.length-1;
+  // a drive that adds no rows of its own goes with the one before it (round 75: a last inning with no new row, the home
+  // side not batting in the ninth, never played its clips)
+  while(own+1<P.end.length&&P.end[own+1]===P.end[own])own++;
   if(P.next>own)return 0;
   let clips=[]; for(let k=P.next;k<=own;k++){ try{ clips=clips.concat(HL_SPORT.clips(L,g.drives[k],hlMode())||[]) }catch(e){} }
   const d=g.drives[P.next]; P.next=own+1;

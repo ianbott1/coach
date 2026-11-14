@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="27b84af";
+<script>const BUILD_ID="57c22dd";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1577,8 +1577,9 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=4;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=5;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
+                                      // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -7045,6 +7046,9 @@ function hlWatchPlan(w){
 function hlWatchAt(r){
   if(typeof watch==="undefined"||!watch||!watch.hl||hlMode()==="off")return 0;
   const P=watch.hl, g=watch.g, L={g:g, drives:g.drives}; let own=P.end.findIndex(e=>e>r); if(own<0)own=P.end.length-1;
+  // a drive that adds no rows of its own goes with the one before it (round 75: a last inning with no new row, the home
+  // side not batting in the ninth, never played its clips)
+  while(own+1<P.end.length&&P.end[own+1]===P.end[own])own++;
   if(P.next>own)return 0;
   let clips=[]; for(let k=P.next;k<=own;k++){ try{ clips=clips.concat(HL_SPORT.clips(L,g.drives[k],hlMode())||[]) }catch(e){} }
   const d=g.drives[P.next]; P.next=own+1;
