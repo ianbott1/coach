@@ -3295,7 +3295,10 @@ function render0(){
     return;
   }
   if(watch&&S.myTeam){
-    el("app").innerHTML=watchView();
+    // round 78: the box score under a rewatch too (Ian: "When I click rewatch I cannot see the box score"); it opens
+    // by itself once the rewatch reaches the end
+    const wbox=typeof boxHTML==="function"?boxHTML(watch.g,watch.i>=watch.script.length,watch.step):"";
+    el("app").innerHTML=watchView()+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
     if(typeof hlMount==="function")hlMount();
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
@@ -3506,7 +3509,7 @@ function render0(){
   document.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>{ const v=+b.dataset.wk;
     scoreWk=(v===SEA.weeks.length-1)?null:v; if(view!=="scores")view="scores"; render() });
   const rw=document.querySelector("[data-rewatch]");
-  if(rw)rw.onclick=()=>{const g=heroGame(); if(g)startWatch(g)};
+  if(rw)rw.onclick=()=>{const g=heroGame(), st=flash&&flash.step; if(g){ startWatch(g); if(watch)watch.step=st }};
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)
@@ -3933,6 +3936,9 @@ window.addEventListener("keydown",e=>{
   }
   const tag=(e.target&&e.target.tagName)||"";
   if(tag==="INPUT"||tag==="TEXTAREA")return;
+  // round 78: Space and Enter on a focused button, link or toggle press that control, not "advance" (Enter on the
+  // result card's Box score started the next game: testers pressed it five times and landed back on the hub)
+  if((e.key===" "||e.key==="Enter")&&(tag==="SUMMARY"||tag==="BUTTON"||tag==="A"||tag==="SELECT"||(e.target&&e.target.getAttribute&&e.target.getAttribute("role")==="button")))return;
   if(live&&!live.done){
     if(live.ask)return;
     if(e.key===" "){e.preventDefault();live.paused=!live.paused;S.watchStep=live.paused;liveTick();return}
