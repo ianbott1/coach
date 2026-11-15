@@ -41,7 +41,10 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // career leaders now include the players still here (round 50: a 108-yard passer led pro football's departed-only
       // list): changed on purpose, not compared
       // round 72, on purpose: the season goal is one line with its target (two goals showed at once, Instinct)
-      const noR72=x=>x.replace(/ Target: \d+ wins?(?:, \d+ to go)?\.(?=<\/span>)/g,'');
+      // round 79, on purpose: the team page opens on its schedule (it sat under the roster), and every played game in
+      // Scores opens its box score: the schedule compared wherever it sits, the box scores not compared
+      const noR79=x=>{ let sch=""; x=x.replace(/<div class="grouphead">\d+ schedule<\/div>[\s\S]*?(?=<div class="grouphead">|<div class="note">No completed seasons|$)/,m=>{ sch=m; return "" }); return x.replace(/<details class="boxscore"[\s\S]*?<\/details>/g,"").replace(/<div class="pland">\s*Play your game\.[\s\S]*?<\/div>\s*/g,"").replace(/<div class="grouphead">Season stats[^<]*<\/div>(?:<div style="overflow-x:auto[\s\S]*?<\/table><\/div>)*/g,"")+sch };   // ("Play your game." and the roster's season stats too)
+      const noR72=x=>noR79(x).replace(/ Target: \d+ wins?(?:, \d+ to go)?\.(?=<\/span>)/g,'');
       const noLead=x=>noR72(x).replace(/<div class="grouphead">Career leaders<\/div>[\s\S]*?(?=<div class="grouphead">|$)/g,'');
       const noWhy=x=>noLead(x).replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
       want.forEach((w,i)=>{checks++;if(roster&&/youtag/.test(w)&&/class="trec"/.test(w))return; if(coachList(noSeat(noWhy(w)))!==coachList(noSeat(noWhy(got[i])))){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`); if(process.env.DEBUG){ const A=coachList(noSeat(noWhy(w))),B=coachList(noSeat(noWhy(got[i]))); let k=0; while(k<A.length&&A[k]===B[k])k++; console.log('    old: '+A.slice(k-100,k+150)+'\n    new: '+B.slice(k-100,k+150)) }}});
