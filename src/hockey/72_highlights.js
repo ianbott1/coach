@@ -102,7 +102,8 @@ const HL_SPORT=(function(){
     else{ bx=c.end[0]; by=c.end[1] }
     const prog=Math.min(1,t/tb);
     const att=ATT.map((p,i)=>{ if(i===0)return c.en?[0.5,0.5]:[0.08,0.5]; let a=hlLerp(p[0]-0.25,p[0],prog), y=p[1]+(by-0.5)*0.15;
-      const j=c.rec.indexOf(i); if(j>=0){ const w=c.W[j], near=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-j)):j===n-1?1:0; a=hlLerp(a,w[0],hlEase(Math.min(1,near*1.4))); y=hlLerp(y,w[1],hlEase(Math.min(1,near*1.4))) }
+      /* round 79: a man who takes the puck twice goes to each spot in turn (it found his first only, and the pass went to
+         empty ice: Ian, "invisible passers") */ let j=-1, near=0; c.rec.forEach((ri,q)=>{ if(ri!==i)return; const v=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-q)):q===n-1?1:0; if(j<0||v>near){ j=q; near=v } }); if(j>=0){ const w=c.W[j]; a=hlLerp(a,w[0],hlEase(Math.min(1,near*1.4))); y=hlLerp(y,w[1],hlEase(Math.min(1,near*1.4))) }
       if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] }
       return [a,y] });
     const def=DEF.map((p,i)=>{ if(i===0){ if(c.en)return null; let y=0.5+(by-0.5)*0.3; if(t>=tb&&c.kind!=="goal")y=hlLerp(y,c.end[1],hlEase((t-tb)/(ts-tb))); return [GOAL-0.015,Math.max(0.45,Math.min(0.55,y))] }

@@ -89,7 +89,8 @@ const HL_SPORT=(function(){
     if(t<tb){ const f=t/tb*(n-1), k=Math.min(n-2,Math.floor(f)), s=hlEase(f-k), a=c.W[k], b=c.W[k+1]; bx=hlLerp(a[0],b[0],s); by=hlLerp(a[1],b[1],s) }
     else if(t<ts){ const s=(t-tb)/(ts-tb), a=c.W[n-1]; const to=c.made?RIM:[RIM[0]+0.02,RIM[1]+0.06]; bx=hlLerp(a[0],to[0],s); by=hlLerp(a[1],to[1],s); z=Math.sin(s*Math.PI)*0.06 }
     else{ const s=(t-ts)/(1-ts); bx=c.made?RIM[0]:RIM[0]-s*0.08; by=c.made?RIM[1]:RIM[1]+0.06+s*0.1 }
-    const att=ATT.map((p,i)=>{ let a=p[0],y=p[1]; const j=c.rec.indexOf(i); if(j>=0){ const w=c.W[j], nr=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-j)):j===n-1?1:0; a=hlLerp(a,w[0],hlEase(Math.min(1,nr*1.4))); y=hlLerp(y,w[1],hlEase(Math.min(1,nr*1.4))) }
+    const att=ATT.map((p,i)=>{ let a=p[0],y=p[1]; /* round 79: a man who takes the puck twice goes to each spot in turn (it found his first only, and the pass went to
+         empty ice: Ian, "invisible passers") */ let j=-1, nr=0; c.rec.forEach((ri,q)=>{ if(ri!==i)return; const v=t<tb?Math.max(0,1-Math.abs(t/tb*(n-1)-q)):q===n-1?1:0; if(j<0||v>nr){ j=q; nr=v } }); if(j>=0){ const w=c.W[j]; a=hlLerp(a,w[0],hlEase(Math.min(1,nr*1.4))); y=hlLerp(y,w[1],hlEase(Math.min(1,nr*1.4))) }
       if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] } return [a,y] });
     // man to man: each defender between his man and the rim, closer on the ball
     const def=att.map(([a,y])=>{ const d=Math.hypot(a-bx,y-by)<0.04?0.35:0.25; return [hlLerp(a,RIM[0],d),hlLerp(y,RIM[1],d)] });
