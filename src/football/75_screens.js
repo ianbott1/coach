@@ -21,13 +21,19 @@ const FB_PICKER=[8,9,18,19,8,9,18,9];   // who makes an interception, by the dri
    the career's seed: the same man all career, and nothing the season plays out draws from it. */
 function kickerName(team){ let h=2166136261; const k=String(team)+"|"+((typeof SEA!=="undefined"&&SEA&&SEA.seed)||0);
   for(let i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619)>>>0 } return playerName(new RNG(h)) }
+/* round 79: one game clock for the rewatch's rows, the live header and the late calls' "about N minutes left"
+   (Ian: "time left on calls"). Drives come about evenly through the game; overtime has no clock to give. The rows had
+   their own: drive 7 at 12:25 in the second quarter whatever had gone before. */
+function fbClock(q,idx,total){ if(q>=5)return ""; const left=3600*(total-idx)/total, inQ=Math.max(5,Math.min(900,Math.round(left-(4-q)*900-((idx*37)%40))));
+  return Math.floor(inQ/60)+":"+String(inQ%60).padStart(2,"0") }
 function driveScript(g,drives,rosters){
   const rng=new RNG(watchSeed(g));
   const RH=rosters?rosters[0]:SEA.roster[g.home], RA=rosters?rosters[1]:SEA.roster[g.away];
   const OUTTXT={PUNT:["three and out","forced to punt","stalls out, punt","goes backwards, punt"],
                 DOWNS:["turned over on downs"],MISS:["the field goal is no good"],   // a field goal: "the kick" read as a missed extra point (Grokbot)
                 INT:["threw an interception"],FUM:["fumble, recovered by the defense"]};
-  return drives.map(d=>{
+  const tot=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24;
+  return drives.map((d,di)=>{
     const off=d.home?RH:RA, def=d.home?RA:RH;
     // round 74: the names the season credited, if it has (d.by: whoever played that day, an injured starter's backup)
     const nm=i=>d.by&&d.by[i]?d.by[i]:off&&off[i]?off[i].n:"the offense";
@@ -43,8 +49,9 @@ function driveScript(g,drives,rosters){
     else if(d.kind==="FUM"){ text=`fumble, recovered by ${dn(7)}`; }
     else if(d.kind==="MISS"){ const r=Math.round(rng.range(38,56)); text=`${kickerName(d.home?g.home:g.away)}'s ${d.stall?fgDistance(d.stall):r}-yd attempt is no good`; }
     else { text=rng.pick(OUTTXT[d.kind]||["punt"]); }
-    const sec=Math.max(5,Math.round(890-((d.n-1)%6+1)*140-rng.range(0,50)));
-    return {n:d.n,q:d.q,clock:Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"),
+    const sec=Math.max(5,Math.round(890-((d.n-1)%6+1)*140-rng.range(0,50)));   // (still drawn: the next row's draws stay as they were)
+    const ck=ENGINE_V>=7?(fbClock(d.q,di,tot)||"OT"):Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0");
+    return {n:d.n,q:d.q,clock:ck,
       team:d.home?g.home:g.away, pts:d.pts, outcome:d.kind, text:text, who:who,
       start:d.start, end:d.pts>0?100:Math.min(95,d.start+20),
       yards:d.pts>0?100-d.start:Math.max(0,20),
@@ -113,7 +120,7 @@ function liveScoreboard(){
   const q=ask&&live.ask.q?live.ask.q:last?last.q:1;
   const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":"Q"+q+" &middot; drive "+(live.drives.length+(ask?1:0))}
+    <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":(q>=5?"OT":"Q"+q)+(ENGINE_V>=7&&q<5?" "+fbClock(q,Math.max(0,live.drives.length-(ask?0:1))+(ask&&live.ask.dp&&live.ask.dp.k!=="prep"?0.7:0),DRIVES_PER_TEAM*2):"")+" &middot; drive "+(live.drives.length+(ask?1:0))}
       ${g.label?" &middot; "+esc(g.label):(g.neutral?" &middot; neutral site"+(g.site?", "+esc(g.site):""):(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
