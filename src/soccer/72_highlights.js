@@ -190,6 +190,9 @@ const HL_SPORT=(function(){
     else pos.forEach((p,i)=>{ if(i&&i!==c.rec[n-1])pos[i]=i<5?[0.55+((i*7)%3)*0.03,0.25+((i*3)%4)*0.17]:[0.79-((i*7)%3)*0.012,0.2+((i*7)%10)*0.064] });   // a penalty: everyone back outside the box
     // each receiver: starts his run a beat before the pass, curving into the space it's played to
     c.rec.forEach((ri,j)=>{ if(!ri)return; const w=c.W[j], f=t<tb?t/tb*(n-1):n-1, lead=j-f;
+      // round 79: the corner's taker stays at the flag until he's struck it, then trots in (he ran into the box before the
+      // kick, leaving the ball by the flag with nobody there: Ian)
+      if(c.plan==="corner"&&j===0){ const u=Math.max(0,Math.min(1,(t-0.22)/0.78))*0.55; pos[ri]=[hlLerp(w[0],0.88,u),hlLerp(w[1],w[1]>0.5?0.8:0.2,u)]; return }
       if(lead<=-0.15&&j<n-1){ return }
       const s=Math.max(0,Math.min(1,1-(lead-0.05)/1.1)), e=hlEase(s), from=pos[ri], bend=(j%2?1:-1)*0.05*Math.sin(e*Math.PI);
       pos[ri]=[hlLerp(from[0],w[0],e)+bend*0.3,hlLerp(from[1],w[1],e)+bend] });
