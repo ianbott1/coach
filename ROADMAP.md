@@ -41,15 +41,19 @@ on numbers they can't trust and a sport they read rather than watch.
    keeper growing after a shot; duplicate surnames across teams.
 7. **Baseball schedule**: the Dodgers play Washington for seven straight to open. Use a real MLB-style schedule.
 
-## Round 79: games you can open
-- Scores: tap any game for its box score and both teams' player stats (all sports). Baseball shows the winning and
-  losing pitchers and the save with records; the box score shows the decisions with season ERA and W-L.
-- The next-game card: baseball previews both starters (name, W-L, ERA); drop "Featuring ..." everywhere and the
-  "Play your game" line.
-- In-game: team and player stats (this game and season) a tap away while watching.
-- Rewatch shows the box score; roster sortable by any stat; standings team click opens its schedule and results.
-- Football: kicker named on field goals, time left on every late call (and the clock on screen), fourth-down plays
-  always shown.
+## Round 79: games you can open (done)
+- Scores: every played game opens its box score (each side's players by position, from their game logs), all sports.
+  Baseball leads with the decisions: "W: N. Figueroa (1-0)  L: ...  S: ... (2)"; a decision the unnamed set-up men
+  took reads "W: Houston bullpen" (15 of 45 games had no W or L line before that).
+- Next-game card: baseball's probable starters with W-L and ERA. "Featuring" gone from the card; "Play your game." gone.
+- The bullpen call names your starter.
+- Baseball (engine 7): a man who has pinch-hit can't pinch-hit again (648 games: 21 with a repeat before, 0 after).
+- In-game: "Game stats so far" under a live game, all seven; stays open or shut through redraws (test/livestats.js).
+- Roster: season stats, sortable by any column (test/rostersort.js). The team page opens on its schedule.
+- Football: kickers named ("Tre Obi 35-yd field goal"), on the kick clip and the game-winner line; one game clock for
+  the live header, the run of play and the calls (engine 7 seasons); a failed fourth-down try plays as a clip; the
+  scouting call says "Before your first drive" when they had the ball first.
+- Not done from this list: player stats in the live panel (the players' lines are credited when the game ends).
 
 ## Rounds 80-82: watching
 - **Replay the whole game** (Ian's top item; highlights stay the default).
