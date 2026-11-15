@@ -79,11 +79,15 @@ function packSeries(rng,series){
         let best=-1, bs=1e9;
         for(let i=0;i<pool.length;i++){ const x=pool[i]; if(x.home!==t&&x.away!==t)continue; const o=x.home===t?x.away:x.home;
           if(taken.has(o)||rest.has(o)||free[o]>d||x.len>left||!clear(d,x.len))continue;
+          // round 79 (schedV 4): never the club you just played: back-to-back sets made seven straight against one club, in
+          // 54 of 90 club-seasons (Ian: the Dodgers played Washington seven straight to open)
+          const again=SCHED_V>=4&&(last[t]===o||last[o]===t);   // only when nothing else fits, and a day off can't wait
           // not the club you just played, unless nothing else fits (round 59: a 6-game set, 10 straight against Cleveland: Muse)
-          let sc=slack(o)+rng.r()*2+(last[t]===o?50:0);
+          let sc=slack(o)+rng.r()*2+(last[t]===o?50:0)+(again?1e6:0);
           if(SCHED_V>=3){ const L=(lag(t,d)+lag(o,d))*DIV_SPREAD; sc+=CONF[x.home]===CONF[x.away]?-L:L }
           if(sc<bs){bs=sc;best=i} }
         if(best<0)continue;
+        if(SCHED_V>=4&&bs>=1e5){ const o=pool[best].home===t?pool[best].away:pool[best].home; if(slack(t)>0&&slack(o)>0)continue }   // the same club again: a day off instead, while there's room
         const x=pool.splice(best,1)[0]; taken.add(x.home); taken.add(x.away);
         for(let k=0;k<x.len;k++)out.push({week:d+k,home:x.home,away:x.away,conf:CONF[x.home]===CONF[x.away],neutral:false,ser:x.id,sg:k+1,sn:x.len});
         [x.home,x.away].forEach(t=>{ free[t]=d+x.len; rem[t]-=x.len; run[t]+=x.len; if(CONF[x.home]===CONF[x.away])dRem[t]-=x.len }); last[x.home]=x.away; last[x.away]=x.home }
