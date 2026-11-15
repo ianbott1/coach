@@ -16,6 +16,10 @@ let plan="balanced", reveal=null, revealTimer=null;
    game's late window (SPORT.lateFloor: when it starts, and what close is) the first call that comes up is yours,
    whatever the gate would have said; it's graded as any call is, and "close either way" when it was. One a game. */
 const LATE_FLOOR_ON=true;
+function ffLateStop(L){
+  try{ if(!L||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
+    const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
 function lateFloorDue(L,any){
   try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
@@ -157,6 +161,7 @@ function liveTick(){
       // before the final whistle (Ian: a 5-4 shoot-out win he never saw)
       // the screen may still be the overtime call, with no pitch: the live view is drawn first, the score held
       const tail=live.drives.slice(k0); let hm=0;
+      if(live.ff&&!live.ffLate&&tail.length){ live.ff=false; live.ffLate=true }   // round 79: an overtime is a close finish: Skip stops for it
       if(!live.ff&&tail.length&&typeof hlPlayTail==="function"&&typeof hlCan==="function"&&hlCan()){
         live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null }
       if(hm){ live.finishing=true; live.timer=setTimeout(()=>{ live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive() },hm); return }
@@ -199,6 +204,9 @@ function liveTick(){
     // shows them.
     if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
+    // round 79: skipping stops for a close finish, so it's watched, not told (Ian: Skip jumped to the final of a one-score
+    // game); once a game, at the sport's own late window
+    if(live.ff&&!live.ffLate&&ffLateStop(live)){ live.ff=false; live.ffLate=true }
     if(live.ff)continue;                       // skipping: on to the next call or the final whistle
     break;
   }
