@@ -171,9 +171,9 @@ function staffTake(dp, ctx){
   const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":o.indexOf("keep")>=0?"keep":"normal";
   R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"level",seed)});
   R.push({who:"pearl", pick: behind?(diff<=-2||dp.k==="late"?"push":"normal"):ahead?(diff>=2?"sit":"normal"):(o.indexOf("win")>=0?"win":"normal"),
-    line:pearlSay((dp.k==="half"?pearlRecall(dp,seed):"")+(behind?"We need a goal! Let's go and get it.":ahead?"Let's be sensible and see this out!":"A draw's a point, but a win's three! Let's be brave."),seed)});
+    line:pearlSay((dp.k==="half"?pearlRecall(dp,seed):"")+(behind?"We need a goal! Let's go and get it.":ahead?"Let's be sensible and see this out!":(dp.ko?"Win it now and there's no extra time! Let's be brave.":"A draw's a point, but a win's three! Let's be brave.")),seed)});
   R.push({who:"capy", pick:safe, line:behind?"Chasing a game, one finds, mostly concedes on the break.":
-    ahead?"I would suggest keeping what we have.":"A point, I do believe, is a point."});
+    ahead?"I would suggest keeping what we have.":(dp.ko?"Extra time, I do believe, is no disgrace.":"A point, I do believe, is a point.")});
   return R;
 }
 

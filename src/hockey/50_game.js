@@ -126,7 +126,10 @@ const HK_FINAL=true, HK_OTQ=true;
    take your chances in a shootout. Edge-dependent by design: the stronger side should attack, the weaker hold. */
 function otCall(){ return {k:"ot",h:"Overtime: three on three",q:"Open it up, or keep the puck and take the shootout if it comes?",
   opts:[["attack","Open it up: send a defenceman"],["hold","Keep the puck: no risks, shootout if it comes"],ASSIST]} }
-function finalCall(lead){
+function finalCall(lead,playoff){
+  // round 79: in the playoffs there's no point for an overtime loss, and overtime is sudden death (Ian: "a point is a point" in a knockout)
+  if(lead<=0&&playoff)return {k:"final",ko:true,h:"Tied, five minutes left",q:"Go for the win, or play it tight and take it to sudden-death overtime?",
+       opts:[["push","Go for the win"],["sit","Play it tight: on to sudden death"],ASSIST]};
   return lead>0
     ? {k:"final",h:"Up one, five minutes left",q:"Shut it down, or go for the second and finish it?",
        opts:[["sit","Shut it down: trap, block shots"],["push","Go for the second"],ASSIST]}
@@ -365,7 +368,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s===10&&!st.t3q){st.t3q=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
         if(humans[sd]&&O.t3&&Math.abs(lead(sd))<=1)queueCall(sd,thirdCall(lead(sd),O.tell,O.t3,st.S[sd].ans)) });
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L)); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; const X=st.S[sd]; queueCall(sd,Object.assign(pullCall(L,p!==undefined&&p+2>s*5?p+2:0),{gn:{ga:X.ga,sa:X.sa,xga:X.xga,bk:!!X.backupIn}})) }   /* his night, on the card (round 47, Muse: the pull is a coin flip about a stranger) */ });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L,st.playoff)); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; const X=st.S[sd]; queueCall(sd,Object.assign(pullCall(L,p!==undefined&&p+2>s*5?p+2:0),{gn:{ga:X.ga,sa:X.sa,xga:X.xga,bk:!!X.backupIn}})) }   /* his night, on the card (round 47, Muse: the pull is a coin flip about a stranger) */ });
       if(st.queue.length)return st.next()}
     if(s>=SEGS&&HK_OTQ&&st.h===st.a&&!st.playoff&&!st.otq){ st.otq=true; ["home","away"].forEach(sd=>queueCall(sd,otCall())); if(st.queue.length)return st.next() }
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }

@@ -104,7 +104,7 @@ function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five"
 /* ten minutes left, within a goal: the second late call (round 40: nothing was asked after 65' in 29 of 29 close
    matches; Grokbot: an attacking change or parking the bus at 80') */
 const SC_FINAL=true;
-function finalCall(lead){
+function finalCall(lead,ko){
   const A=["normal","Leave it to your assistant"];
   // round 44, graded in league points: down one, everyone forward was the best answer in 128 of 144 matches; up one,
   // parking the bus in 108 of 122 (scratchpad scfinal.js). A question with one answer: asked only when it beats your
@@ -113,15 +113,20 @@ function finalCall(lead){
     opts:[["push","Everyone forward: a striker on for a defender"],["keep","Stay patient"],A]};
   if(lead>0)return {k:"final",spread:true,h:`Up ${lead}, ten minutes left`,q:"Close it out?",
     opts:[["sit","Park the bus: a defender on"],["keep","Keep the ball, keep playing"],A]};
+  // round 79: a knockout has no point to take; level goes to extra time (Ian: "take the point" in a cup tie)
+  if(ko)return {k:"final",ko:true,h:"Level, ten minutes left",q:"Go for the win, or keep it tight and take it to extra time?",
+    opts:[["win","Go for the win: fresh legs up front"],["point","Keep it tight: extra time if it comes"],A]};
   return {k:"final",h:"Level, ten minutes left",q:"Go for the win, or take the point?",
     opts:[["win","Go for the win: fresh legs up front"],["point","Take the point"],A]};
 }
-function lateCall(lead){
+function lateCall(lead,ko){
   const A=["normal","Leave it to your assistant"];
   if(lead<0)return {k:"late",h:`Down ${-lead}, ${lateLeft()} minutes left`,q:"Throw everything at it?",
     opts:[["push","All-out attack"],["keep","Keep our shape"],A]};
   if(lead>0)return {k:"late",h:`Up ${lead}, ${lateLeft()} minutes left`,q:"See it out?",
     opts:[["sit","Park the bus"],["keep","Keep going"],A]};
+  if(ko)return {k:"late",ko:true,h:`Level, ${lateLeft()} minutes left`,q:"Go for the win, or keep it tight and take it to extra time?",
+    opts:[["win","Go for the win"],["point","Keep it tight: extra time if it comes"],A]};
   return {k:"late",h:`Level, ${lateLeft()} minutes left`,q:"Go for the win, or take the point?",
     opts:[["win","Go for the win"],["point","Take the point"],A]};
 }
@@ -369,8 +374,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,finalCall(lead(sd))) }); if(st.queue.length)return st.next()}
-    if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd))) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
+    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,finalCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}
+    if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;
     return {drive:d,h:st.h,a:st.a};

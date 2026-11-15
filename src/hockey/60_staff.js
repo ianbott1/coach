@@ -185,8 +185,8 @@ function staffTake(dp, ctx){
     R.push({who:"bears", pick:"push", line:up?"ONE GOAL? THAT'S AN INSULT. GO GET ANOTHER.":"OVERTIME IS FOR COWARDS. WIN IT NOW."});
     R.push({who:"pearl", pick:up?["sit","push","sit"][Math.abs(seed)%3]:["push","push","sit"][Math.abs(seed)%3], line:pearlSay(up
       ? [`Five minutes! Let's be clever and close it down.`,`Get the second and it's over! Let's go!`,`Block everything! They won't get through us.`][Math.abs(seed)%3]
-      : [`We've got them rattled! Let's win it now!`,`Five minutes to win it! Let's go!`,`A point's a point. Let's not throw it away.`][Math.abs(seed)%3],seed)});
-    R.push({who:"capy", pick:"sit", line:up?`I would suggest the trap. Five minutes is, I find, a long time to be adventurous.`:`One point in the hand, it seems to me, is worth considering.`});
+      : [`We've got them rattled! Let's win it now!`,`Five minutes to win it! Let's go!`,(dp.ko?`Don't give them a chance! Sudden death's fine by me.`:`A point's a point. Let's not throw it away.`)][Math.abs(seed)%3],seed)});
+    R.push({who:"capy", pick:"sit", line:up?`I would suggest the trap. Five minutes is, I find, a long time to be adventurous.`:(dp.ko?`Overtime, it seems to me, is better than a goal against now.`:`One point in the hand, it seems to me, is worth considering.`)});
   }
   else if(dp.k==="ot"){
     R.push({who:"bears", pick:"attack", line:`THREE ON THREE. NO FEAR. SEND EVERYONE.`});
