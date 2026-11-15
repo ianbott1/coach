@@ -5,7 +5,22 @@ football 6.5, college basketball 6), Muse (7/10 across the board: "the loads are
 round 10 playtest (141/250). Ordered so trust comes before polish: testers say the games hold attention and lose it
 on numbers they can't trust and a sport they read rather than watch.
 
-## Round 78: trust breakers (bugs, verify each in a real browser first)
+## Round 78: done, and what was found
+- Box score button: Enter and Space on the focused toggle went to the page's "advance" shortcut and started the next
+  game (test/boxclick.js now presses it by keyboard, mouse and touch in all seven; it fails on round 77). Fixed: a
+  focused control keeps Space and Enter. Rewatch shows the box score.
+- Kicking: measured, not a current-engine bug. In a season begun before round 71 (engine 1), 39 of 91 kicks were over
+  60 yards (the old rule put the kick 12-40 yards past the drive's start); on the current engine, 0 of 58. Muse's
+  testers were in long-running seasons begun before round 71; the next season starts on the current engine. Changing
+  the old rule mid-season would make those saves replay differently, so it stays.
+- College basketball's false final: not reproduced. On the current build every watched overtime (9 of 9) played out
+  before the final, and live and recorded scores matched in 197 games (engines 1, 3 and 6 too). Needs a screenshot.
+  Found on the way: an overtime the engine hands back at the end (hockey's, soccer's) appeared all at once when its
+  highlights couldn't play; it now plays out a stretch at a time (44 of 44 hockey overtimes in a test).
+- Still to do from the list below: items 4-7 (ledger, calls, identity, schedule), and Skip to next call stopping
+  before a close finish instead of jumping to the final.
+
+## Round 78 (as planned): trust breakers (bugs, verify each in a real browser first)
 1. **Box score button** dismisses the result card instead of opening (5 of 5, four sports). Round 73 feature; its
    test checked the HTML, not the click. Also reachable from Rewatch.
 2. **Kicking, both footballs**: 60-86 yard field goals made (a championship decided by 62 and 76), short kicks missed
