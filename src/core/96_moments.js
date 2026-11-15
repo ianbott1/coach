@@ -34,6 +34,14 @@ function momentHTML(g,my,seed){
    From the game's own record only: the team numbers the engine counted and the scorers the run of play named. Every
    number here adds up to the score (test/boxscore.js). A sport's player-by-player lines are kept out where they are
    drawn per player rather than counted in the game (they would not add up). Each sport: sportBox(g) -> HTML. */
+/* round 79: the game's numbers so far, a tap away while it's on (Ian: "in-game stats"): the box score's team table from
+   the stretches played. It stays open, or shut, as you left it, through the game's redraws. */
+let liveStatsOpen=false;
+function liveStatsHTML(){
+  if(!MOMENTS_ON||typeof live==="undefined"||!live||!live.g||!live.drives||!live.drives.length||typeof sportBox!=="function")return "";
+  const H=typeof liveH==="function"?liveH():0, A=typeof liveA==="function"?liveA():0;
+  let b=""; try{ b=sportBox(Object.assign({},live.g,{drives:live.drives.slice(),h:H,a:A,hp:H,ap:A,live:true}))||"" }catch(e){ b="" } if(!b)return "";
+  return `<details class="boxscore livestats"${liveStatsOpen?" open":""}><summary>Game stats so far</summary>${b}</details>` }
 function boxHTML(g,open,step){
   if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
   let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";

@@ -3301,7 +3301,9 @@ function render0(){
     if(Hd){ live.drives=sv[0].slice(0,Hd.n); live.eng.h=Hd.h; live.eng.a=Hd.a }
     try{
     el("app").innerHTML=live.ask?liveCallView().replace('<div class="callbox">',(typeof liveWPHTML==="function"?liveWPHTML(true):"")+guideForCall(live.ask.dp)+(typeof filmMemoryHTML==="function"?filmMemoryHTML(live.ask.dp):"")+'<div class="callbox">'):autoNoteIn(liveView()).replace('<div class="actionbar">',livePlanBarHTML()+'<div class="actionbar">');
+      el("app").innerHTML+=liveStatsHTML();
     }finally{ if(sv){ live.drives=sv[0]; live.eng.h=sv[1]; live.eng.a=sv[2] } }
+    { const d=document.querySelector("details.livestats"); if(d)d.ontoggle=()=>{ liveStatsOpen=d.open } }
     bindGuide();
     if(typeof hlMount==="function")hlMount();
     if(live.ask){
