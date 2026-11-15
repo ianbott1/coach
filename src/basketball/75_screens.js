@@ -87,7 +87,7 @@ function flowSVG(g,drives){
     <div class="momkey"><span style="color:${ac}">${esc(g.away)}</span><span>each stretch</span><span style="color:${hc}">${esc(g.home)}</span></div></div>`;
 }
 function liveScoreboard(){
-  const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
+  const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
   const last=live.drives[live.drives.length-1];
   const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"TIP-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;

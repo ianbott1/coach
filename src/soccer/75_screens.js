@@ -134,7 +134,7 @@ function scoreTop(g,H,A,label,cls){
     </div>`;
 }
 function liveScoreboard(){
-  const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
+  const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
   const last=live.drives[live.drives.length-1];
   const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"KICK-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):g.title?" &middot; "+esc(g.title)+(g.neutral?"":(g.home===my?", at home":", away")):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;

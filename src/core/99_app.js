@@ -124,7 +124,18 @@ function startLive(g,step,slot){
 
 function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives.length&&r.drives.slice(0,live.drives.length).every((d,i)=>d===live.drives[i]))
   for(let i=live.drives.length;i<r.drives.length;i++)live.drives.push(r.drives[i]) }
+/* round 78: the score the live screen shows: the engine's, or while an overtime handed back at the end is still being
+   played out on screen, the last stretch shown (college basketball said FINAL at the regulation score, then the hub
+   showed an overtime result nobody watched: Muse, 3 of 10) */
+function liveH(){ return live&&live.tailShow?live.tailShow.h:live.eng.h }
+function liveA(){ return live&&live.tailShow?live.tailShow.a:live.eng.a }
 function liveTick(){
+  // the overtime tail, one stretch at a time, then the final whistle
+  if(live&&live.tailQ&&!live.done){ if(live.timer){clearTimeout(live.timer);live.timer=null}
+    if(live.ff||!live.tailQ.length){ while(live.tailQ.length)live.drives.push(live.tailQ.shift()); live.tailQ=null; live.tailShow=null; live.done=true; finishLive(); return }
+    const d=live.tailQ.shift(); live.drives.push(d);
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; if(h!==undefined&&a!==undefined)live.tailShow={h:h,a:a};
+    render(); if(!live.paused)live.timer=setTimeout(liveTick,liveGap()); return }
   if(live&&live.finishing){ if(live.timer)clearTimeout(live.timer); live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive(); return }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
@@ -149,6 +160,9 @@ function liveTick(){
       if(!live.ff&&tail.length&&typeof hlPlayTail==="function"&&typeof hlCan==="function"&&hlCan()){
         live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null }
       if(hm){ live.finishing=true; live.timer=setTimeout(()=>{ live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive() },hm); return }
+      // no highlights to play it (college basketball's court, Very Fast): the tail plays as stretches (round 78)
+      if(!live.ff&&tail.length){ live.drives.length=k0; live.tailQ=tail.slice(); live.tailShow={h:live.lastH||0,a:live.lastA||0}; render();
+        if(!live.paused)live.timer=setTimeout(liveTick,liveGap()); return }
       live.done=true; finishLive(); return }
     if(r.ask){
       if(live.ri<live.replay.length){          // answered before, keep going
@@ -341,6 +355,7 @@ function skipLive(){
   live.kicked=true; live.ff=true; liveTick();
 }
 function endLive(){
+  if(live&&live.tailQ){ while(live.tailQ.length)live.drives.push(live.tailQ.shift()); live.tailQ=null; live.tailShow=null }   // (an overtime still being shown: all of it)
   const was=live;                              // finishing can start your next game (a cup tie): keep that one
   if(live&&live.timer)clearTimeout(live.timer);
   if(live&&!live.done){                        // skip: run the rest instantly

@@ -101,7 +101,7 @@ function watchView(){
 
 function liveScoreboard(){
   const g=live.g, my=S.myTeam;
-  const H=live.eng.h, A=live.eng.a;
+  const H=liveH(), A=liveA();
   const last=live.drives[live.drives.length-1];
   // during a call it's the drive being played, not the last one finished (Grokbot: "KICKOFF" with a
   // fourth-and-3 call up, "drive 1" after the other side had scored)
@@ -203,7 +203,7 @@ function liveCallView(){
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${(dp.k==="prep"||dp.k==="read")&&FB_ANSWERS[o[0]]?`<small>${esc(FB_ANSWERS[o[0]].d)}</small>`:""}</button>`).join("")}</div>
     ${dp.k==="fourth"?`<div class="callnote">The percentages are the chance this play works. After the game, the call is graded on what wins the game: a likely conversion can still be the wrong choice, and a long kick the right one.</div>`:""}
     <div class="grouphead">Drive chart</div>
-    <div class="plays">${dp.k==="two"?(()=>{ const H=live.eng.h, A=live.eng.a;   // the touchdown is on the board: on the chart too (it read 6-12 under 12-12)
+    <div class="plays">${dp.k==="two"?(()=>{ const H=liveH(), A=liveA();   // the touchdown is on the board: on the chart too (it read 6-12 under 12-12)
       return `<div class="play mine"><span class="pq">Q${(live.drives[live.drives.length-1]||{q:1}).q} &middot; ${live.drives.length+1}</span>
         <div class="ptxt"><b>${esc(my)}</b> touchdown, the try to come <span class="dtag sc">TD</span></div>
         <span class="pscore">${A}&ndash;${H}</span></div>` })():""}${live.drives.slice().reverse().slice(0,6).map(d=>{

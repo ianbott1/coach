@@ -93,7 +93,7 @@ function lineScore(g,drives,now){
   return `<div class="linescore"><table><tr><th></th>${Array.from({length:n},(_,i)=>`<td>${i+1}</td>`).join("")}<td class="b">R</td><td>H</td></tr>${row("a",g.away)}${row("h",g.home)}</table></div>`;
 }
 function liveScoreboard(){
-  const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
+  const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
   const last=live.drives[live.drives.length-1];
   const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"FIRST PITCH":"After the "+esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;

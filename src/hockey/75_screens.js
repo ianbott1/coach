@@ -174,7 +174,7 @@ function shotBars(g,drives){
     <div class="momkey"><span style="color:${ac}">${esc(g.away)}${sog?" "+sog[1]:""}</span><span>shots</span><span style="color:${hc}">${sog?sog[0]+" ":""}${esc(g.home)}</span></div></div>`;
 }
 function liveScoreboard(){
-  const g=live.g, my=S.myTeam, H=live.eng.h, A=live.eng.a;
+  const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
   const last=live.drives[live.drives.length-1];
   const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"PUCK DROP":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
