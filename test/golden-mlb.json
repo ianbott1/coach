@@ -1,5 +1,5 @@
 {
- "fp": "59318f98b626708e",
+ "fp": "9ecb5f7f3d4d86f0",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -110,59 +110,64 @@
    "fp": "59318f98b626708e",
    "from": "594172b7f35b1db5",
    "note": "Round 77: engine 6 (baseball's running game, named relievers, the scorer's decisions; college basketball's star scoring)"
+  },
+  {
+   "fp": "9ecb5f7f3d4d86f0",
+   "from": "59318f98b626708e",
+   "note": "Round 79 (engine 7, schedV 4): a pinch hitter can't pinch-hit twice (648 games: 21 repeats before, 0 after); no second series straight against the same club (7 straight in 60% of club-seasons before, 5% after); decisions line and probable starters on screens"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "9bf5f5f634c2cfbc",
-    "post": "35db9495c6bbf980",
-    "champion": "Minnesota",
-    "rec": "aa0f285e28fe8a78",
-    "poll": "2d174dee53437bd0",
-    "heis": "d0af6fd2ca1fa77f",
-    "history": "86137ae4c754be9d",
-    "universe": "2c0fafe20062fe48",
-    "screens": "b9d3a6e7de15ce8c"
+    "games": "da304814c70e495b",
+    "post": "ff01c5adba769c50",
+    "champion": "Cleveland",
+    "rec": "1debeb7fe763363c",
+    "poll": "b9cf44c8b62b3829",
+    "heis": "f1fe02d2875be662",
+    "history": "4e46de7d8f091498",
+    "universe": "9b01dd45200cd1fc",
+    "screens": "61edbe6701d37a7f"
    },
    {
     "year": 2027,
-    "games": "033ea35919ccb39b",
-    "post": "485c60a88ed07610",
-    "champion": "Milwaukee",
-    "rec": "5a5fdfe1e7c11650",
-    "poll": "52af09c29b330779",
-    "heis": "290ff78e4eaf41b1",
-    "history": "20c444670bd5ce65",
-    "universe": "1986302b9db7ae9e",
-    "screens": "2f307b78fb558ef3"
+    "games": "1713fd69dce0f507",
+    "post": "b394d6427603d4cc",
+    "champion": "Philadelphia",
+    "rec": "39424201dbc45986",
+    "poll": "0899f742989ae573",
+    "heis": "e4ea92f1e796e3f0",
+    "history": "919e508517fbd2e7",
+    "universe": "e98a1e9ead2ffa7e",
+    "screens": "817cb59aafb3c6df"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "8ea71d0ffe5b62ad",
-    "post": "53bdb64ad9c393af",
-    "champion": "Chicago Cubs",
-    "rec": "bb6deebb27b08be1",
-    "poll": "899739dcbd8cb453",
-    "heis": "ab8ee0b2ab03ebfd",
-    "history": "c58094c883e51ae7",
-    "universe": "4ebff7b61c571284",
-    "screens": "4ed6087beedbc309"
+    "games": "ccc34f6e3eb8d248",
+    "post": "5a792160d89f7ca6",
+    "champion": "Philadelphia",
+    "rec": "432703e5045a268d",
+    "poll": "f6df34f4efde18cc",
+    "heis": "e141371eeedc6dad",
+    "history": "7588a3f9ce4d9c23",
+    "universe": "cf855b9622ec18f5",
+    "screens": "6cf3970626e6fa94"
    },
    {
     "year": 2027,
-    "games": "a656d405639f3a7a",
-    "post": "6170487a0eedf781",
-    "champion": "Chicago Cubs",
-    "rec": "54e0ffa1ba48e4e2",
-    "poll": "d196cad860c263cc",
-    "heis": "55a83e510d353c2a",
-    "history": "4d1795f757dd4ef8",
-    "universe": "baeaf08319932bc3",
-    "screens": "ef4aa1799edd0be8"
+    "games": "513ec1f09c4c6634",
+    "post": "8617c24c6ab05ae0",
+    "champion": "Toronto",
+    "rec": "390f907946b2bfdc",
+    "poll": "3e4eb58a2929347c",
+    "heis": "4b7071637130b79f",
+    "history": "0dc2317e658af3db",
+    "universe": "8004b2b57ff1a9fa",
+    "screens": "9810e34ad039634e"
    }
   ],
   "schedules#60": [
