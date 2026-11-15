@@ -1,5 +1,5 @@
 {
- "fp": "e30631e0d757bab9",
+ "fp": "8a7b20d61299989f",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -510,6 +510,11 @@
    "fp": "e30631e0d757bab9",
    "from": "df9c5302a3618438",
    "note": "Round 76: the coach's notes for a first season, screens only"
+  },
+  {
+   "fp": "8a7b20d61299989f",
+   "from": "e30631e0d757bab9",
+   "note": "Round 77: engine number 6 in the season settings only (games and screens unchanged)"
   }
  ],
  "result": {
@@ -523,7 +528,7 @@
     "poll": "4fc18b2790d24ba9",
     "heis": "ecd155e11cba5c1a",
     "history": "130c18bfb6eee69d",
-    "universe": "115aeb4dd82a0ee2",
+    "universe": "c0f3ebf61e36c825",
     "screens": "f987907d45fad05d"
    },
    {
@@ -535,7 +540,7 @@
     "poll": "c8c3dc944e565db0",
     "heis": "40c5bc6ff495d1ed",
     "history": "1ecdd0635c8c1855",
-    "universe": "499e2b8e6f8d5381",
+    "universe": "e653a0479cdcf959",
     "screens": "92c22500e04eaa07"
    },
    {
@@ -547,7 +552,7 @@
     "poll": "0174417a893155af",
     "heis": "7b4640654e35b531",
     "history": "feb095bb34330aea",
-    "universe": "2cffb9d1bd24e521",
+    "universe": "27f0e524be0eacb0",
     "screens": "6cc29a0feaa68562"
    },
    {
@@ -559,7 +564,7 @@
     "poll": "9fb8a20999aa99ad",
     "heis": "05213fc79d022a3c",
     "history": "d44bf62cb913ea8e",
-    "universe": "96c7b2c5c1d8a933",
+    "universe": "606b74954e5df72e",
     "screens": "6e3f668c336ef6e9"
    }
   ],
@@ -573,7 +578,7 @@
     "poll": "31d255e610cec5f1",
     "heis": "41c2b7bd9f8955ce",
     "history": "a7cbb5d9c598aebc",
-    "universe": "7f74205ac8ab84d3",
+    "universe": "bdf14be2fbf5755f",
     "screens": "8ec18bdbe5da6be7"
    },
    {
@@ -585,7 +590,7 @@
     "poll": "36569c1aca01467a",
     "heis": "38036bb6c62e2dac",
     "history": "f0f13779058a46a5",
-    "universe": "6ee5d1499dd79fe6",
+    "universe": "6e9205544fca1fec",
     "screens": "5b64a413fb3ed6b6"
    },
    {
@@ -597,7 +602,7 @@
     "poll": "3df041d952e044cd",
     "heis": "ee8e9fb22d238645",
     "history": "d07f55b02417440d",
-    "universe": "41728233d1e5c880",
+    "universe": "4546da2c97cc2f80",
     "screens": "addc8774ab4d7068"
    },
    {
@@ -609,7 +614,7 @@
     "poll": "aba2c4d9d3404e0b",
     "heis": "346a59eeedb615cd",
     "history": "8f21562f5b9ad2c0",
-    "universe": "ec6ba13fd351324c",
+    "universe": "caa60d25d08fbd18",
     "screens": "6a69f43815f181eb"
    }
   ],
@@ -623,7 +628,7 @@
     "poll": "3dd385d73672398c",
     "heis": "10ceb5dd20bb3499",
     "history": "28cffc021fc5497e",
-    "universe": "6359732920ad48b0",
+    "universe": "990678cf0f6808bb",
     "screens": "6e0fadf3168fa3e6"
    },
    {
@@ -635,7 +640,7 @@
     "poll": "5b455cef4f72a23c",
     "heis": "8a5161c22b9f9a8d",
     "history": "fd81c0521fc92cb5",
-    "universe": "4e8d3219d12c8e46",
+    "universe": "d9cc4e8e1e804a4f",
     "screens": "c3af32b44589a2d2"
    },
    {
@@ -647,7 +652,7 @@
     "poll": "7e89997b63c7f12d",
     "heis": "f269c206516f3649",
     "history": "b5091089a3b782d7",
-    "universe": "6c93be1a060474e4",
+    "universe": "351c9e810f73d710",
     "screens": "3fa03ef0c5be51c3"
    }
   ],
@@ -661,7 +666,7 @@
     "poll": "2ed941e4b86f0373",
     "heis": "477cf883dd7bc72e",
     "history": "6c1cba3aaf36ce9b",
-    "universe": "97c441c13ac10dda",
+    "universe": "3f2d14aaf548eae3",
     "screens": "ea82a441b93cd09f"
    },
    {
@@ -673,7 +678,7 @@
     "poll": "b750048545142fc7",
     "heis": "2c1b0557a8de640c",
     "history": "6916b10edad89c21",
-    "universe": "624219b9f1902bca",
+    "universe": "38010ed37615d587",
     "screens": "d35e5f2e97232396"
    },
    {
@@ -685,7 +690,7 @@
     "poll": "893e2ed240ff96a0",
     "heis": "e22a956d4ed7052e",
     "history": "162f6a47226aaf3e",
-    "universe": "13b22ee557ca147c",
+    "universe": "75c9e3c8e6ebb2ca",
     "screens": "3b80803311133e1c"
    }
   ],

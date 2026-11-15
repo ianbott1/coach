@@ -1,5 +1,5 @@
 {
- "fp": "b9fd28ad3f294963",
+ "fp": "0ad039082d836eeb",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -445,6 +445,11 @@
    "fp": "b9fd28ad3f294963",
    "from": "3cd5a28a515090ac",
    "note": "Round 76: the coach's notes for a first season, screens only"
+  },
+  {
+   "fp": "0ad039082d836eeb",
+   "from": "b9fd28ad3f294963",
+   "note": "Round 77: engine number 6 in the season settings only (games and screens unchanged)"
   }
  ],
  "result": {
@@ -458,7 +463,7 @@
     "poll": "c59e0f03e33ee607",
     "heis": "b0d3643fe51f45b0",
     "history": "11e26240f996104f",
-    "universe": "22cdccb1bf36ed02",
+    "universe": "1b52c8c3167a6711",
     "screens": "6af67816ddf779b1"
    },
    {
@@ -470,7 +475,7 @@
     "poll": "9a7e04392147ca1c",
     "heis": "9b52fd1a0f4ab380",
     "history": "4b0cac710915f705",
-    "universe": "643b2acfc6aada33",
+    "universe": "e99be766afb0d70a",
     "screens": "62a3ddebafaef20c"
    }
   ],
@@ -484,7 +489,7 @@
     "poll": "bf00d73c5c30aec1",
     "heis": "7ce35292c0cefdbc",
     "history": "35d3573cfa5d992d",
-    "universe": "cb30b52f297f64db",
+    "universe": "07569ef91b754e85",
     "screens": "2f7a748b6362eff0"
    },
    {
@@ -496,7 +501,7 @@
     "poll": "a56a7ec192ee0a12",
     "heis": "b33dc7f0c33ee345",
     "history": "6cba2ceb938a56c1",
-    "universe": "bc4527b270446f64",
+    "universe": "906e771d736edf84",
     "screens": "f1ada39f780169f6"
    }
   ],

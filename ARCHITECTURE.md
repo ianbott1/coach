@@ -358,6 +358,28 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 77: baseball's running game and named relievers (engine 6); college basketball's scoring. (The "what if"
+replay was dropped: the call grades already answer it from many replays, and one replay against a grade would only
+undercut it.)
+- Steals (BS6): a runner's speed (by name: one in twenty a burner +0.14, a fifth fast +0.08, half average, a fifth
+  slow -0.12) sets how often the computer sends him a chance (runner on first, second open, under two out): burners
+  0.45, fast 0.28, average 0.16, slow never, when he's 70% or better to make it (was one chance in thirty, at 80%).
+  Measured: 0.80 attempts a side a game (MLB 0.7-1.2), 80% make it (74-82), leaders 48-60 (40-70).
+- Named relievers: the third starter's backup is the long man (in at the 6th or before, two innings at most), the
+  closer's backup the set-up man (the 8th; the 9th when the closer rests); others "bullpen". Each by rating against a
+  usual reliever (50) x BS5.q, so naming them didn't make the bullpen worse (rated against the rotation, runs went to
+  4.9 a side). They have lines (no start: B.sp names the starter) and show in the box as RP.
+- The scorer's decisions (bsBoxDone6): the win to the pitcher of record when his side took the lead for good (a
+  starter short of five innings gives it to the first reliever), the loss to the man pitching when his side fell behind
+  for good, the save to the last man if he came in protecting one to three. Starters face one batter fewer (5.5 innings
+  a start and 64% of the wins before; now 60%), the offence -0.005 for the running. Runs 4.22 (bs-calibrate) and
+  4.34-4.38 in the app's seasons; bs-players (suite) all in range over three seasons, with a steals-leader check.
+- College basketball (engine 6, ncaab only): a star's scoring share as rating^2.8: the leader ~26 a game with the
+  tournament (was ~23-24; the real one ~25). Pro unchanged.
+- Old seasons replay: engine-replay now checks rounds 73, 74 and 76's pages (engines 3, 4, 5): all match. Football,
+  hockey, soccer and pro basketball play exactly as before (goldens differ only in the engine number; hot seat
+  matches).
+
 Round 76: the coach's notes cover a first season (the tutorial). The guide already existed (round 39: "Coach's
 notes", one per kind of call plus the home screen and the result card; "Skip the guide" off for good in every game in
 this browser, Help's "Coach's notes" back on; none in a hot seat). Walked in a browser at phone width, a new player met

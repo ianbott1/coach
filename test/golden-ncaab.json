@@ -1,5 +1,5 @@
 {
- "fp": "48e49d5a02ce9042",
+ "fp": "89c02cd75457bb89",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -475,6 +475,11 @@
    "fp": "48e49d5a02ce9042",
    "from": "634aab467f165d80",
    "note": "Round 76: the coach's notes for a first season, screens only"
+  },
+  {
+   "fp": "89c02cd75457bb89",
+   "from": "48e49d5a02ce9042",
+   "note": "Round 77: engine 6 (baseball's running game, named relievers, the scorer's decisions; college basketball's star scoring)"
   }
  ],
  "result": {
@@ -486,10 +491,10 @@
     "champion": "Kentucky",
     "rec": "332ccd0992fac95d",
     "poll": "5e83e3ec28f66ef4",
-    "heis": "cfe20ccef66d802e",
-    "history": "1fbe5ef43177b585",
-    "universe": "f90cea416ece396a",
-    "screens": "8237e2e9ed5afe61"
+    "heis": "2cf4aebe2d39055b",
+    "history": "259c3e0fa871b237",
+    "universe": "2e3a6b478355917c",
+    "screens": "f1b863a2ffac5f70"
    },
    {
     "year": 2027,
@@ -498,10 +503,10 @@
     "champion": "Iowa State",
     "rec": "42c0e68ab69e7838",
     "poll": "f465e142cb52b139",
-    "heis": "14296f363e4f0ac2",
-    "history": "2cad91fa5ff3d989",
-    "universe": "8cb76d75aa16805e",
-    "screens": "694ef8bffa11ad1e"
+    "heis": "c8f41de2dcb0a4f7",
+    "history": "33abdbbb920cb934",
+    "universe": "23d7a8414b28c9d7",
+    "screens": "7418d0633dcc8f6b"
    }
   ],
   "Coppin State#2024": [
@@ -512,10 +517,10 @@
     "champion": "Michigan",
     "rec": "19aa66d55e46ce79",
     "poll": "535bf9b537c8c7a6",
-    "heis": "9ba6edc9ae61a85c",
-    "history": "8dbabb2feff151b6",
-    "universe": "e82417eed575863f",
-    "screens": "5c99caf5ced37199"
+    "heis": "e21cc39fcc2f01f4",
+    "history": "4a2a918f2781b39e",
+    "universe": "5970cc789958ee31",
+    "screens": "bca099984fa2e4f9"
    },
    {
     "year": 2027,
@@ -524,10 +529,10 @@
     "champion": "Houston",
     "rec": "59a5ecb3faf0a66e",
     "poll": "6ac009bf5476fcf9",
-    "heis": "67855648984d675a",
-    "history": "66ca5bdfbcd4a41e",
-    "universe": "bffcfa525e1d1783",
-    "screens": "83e95217f5c8767b"
+    "heis": "2118334fedce7383",
+    "history": "1f96c5d61306b950",
+    "universe": "e3ba82dc6150fadd",
+    "screens": "4a9d59a2ba391c30"
    }
   ],
   "Gonzaga#777": [
@@ -538,10 +543,10 @@
     "champion": "Kansas",
     "rec": "de74b8e90b05f70d",
     "poll": "36c47d6e24ac2fca",
-    "heis": "60f6da3b75371a99",
-    "history": "5af1d42a0d303f34",
-    "universe": "8e6ed19a9a997308",
-    "screens": "5ca79c39b363b507"
+    "heis": "7f76a7dc93990fa1",
+    "history": "1cbe9e195694e5f6",
+    "universe": "c216e5d964d46573",
+    "screens": "9d9d62c421113f8d"
    },
    {
     "year": 2027,
@@ -550,10 +555,10 @@
     "champion": "North Carolina",
     "rec": "7280f5a6c448c60a",
     "poll": "d0d46c3c2c34a4fe",
-    "heis": "849597a592c233be",
-    "history": "764af54597ebcf2c",
-    "universe": "2450d1f7552f6a16",
-    "screens": "4bac80827c8250ea"
+    "heis": "a79563ff5420807b",
+    "history": "70cf924bb5cf00c3",
+    "universe": "047ccc7fac01fe84",
+    "screens": "b511f1176c8de84c"
    }
   ],
   "schedules#60": [

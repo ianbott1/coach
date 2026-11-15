@@ -1,5 +1,5 @@
 {
- "fp": "6b1c25643e6d3cd2",
+ "fp": "481c8c4903f6a4ee",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -75,6 +75,11 @@
    "fp": "6b1c25643e6d3cd2",
    "from": "6e96b28bf9c236e1",
    "note": "Round 75: engine 5 (baseball's players; basketball's star scoring)"
+  },
+  {
+   "fp": "481c8c4903f6a4ee",
+   "from": "6b1c25643e6d3cd2",
+   "note": "Round 77: engine 6"
   }
  ],
  "out": [
@@ -84,20 +89,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "86-76",
+      "result": "Lost in the wild-card series",
+      "grade": "B-"
      },
-     "book": "cf67d055ccce5c1d"
+     "book": "a6599bc03b4db323"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "87-75",
-      "result": "Lost in the division series",
-      "grade": "B"
+      "rec": "67-95",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "68e9f8aee1abcf34"
+     "book": "af99744e4ec9e1b7"
     }
    ]
   },
@@ -107,20 +112,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "79-83",
+      "rec": "80-82",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "d48508b5012c6a6a"
+     "book": "4f1b5e0ed8e2c32c"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "96-66",
+      "rec": "89-73",
       "result": "Lost in the wild-card series",
-      "grade": "B"
+      "grade": "A-"
      },
-     "book": "905c1578830805bc"
+     "book": "4ffa6526888fe302"
     }
    ]
   },
@@ -130,20 +135,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "76-86",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "95-67",
+      "result": "Lost the World Series",
+      "grade": "A"
      },
-     "book": "6f5912b4212d8dd2"
+     "book": "a651f6d204b95a29"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "90-72",
+      "rec": "84-78",
       "result": "Lost in the championship series",
       "grade": "A"
      },
-     "book": "7ecba4b9615f70ad"
+     "book": "d349dea14cd4f7ee"
     }
    ]
   }

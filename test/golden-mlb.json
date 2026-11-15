@@ -1,5 +1,5 @@
 {
- "fp": "594172b7f35b1db5",
+ "fp": "59318f98b626708e",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -105,59 +105,64 @@
    "fp": "594172b7f35b1db5",
    "from": "f9f80edafc7417bc",
    "note": "Round 76: the coach's notes for a first season, screens only"
+  },
+  {
+   "fp": "59318f98b626708e",
+   "from": "594172b7f35b1db5",
+   "note": "Round 77: engine 6 (baseball's running game, named relievers, the scorer's decisions; college basketball's star scoring)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "e734b416db9d6aab",
-    "post": "3c9631118986e3b0",
-    "champion": "Texas",
-    "rec": "d56b7641ce963c81",
-    "poll": "097ff6404397d1e4",
-    "heis": "4bef92a5da6f0d4e",
-    "history": "df41e496dd360c2e",
-    "universe": "b8fea5d57f9d3568",
-    "screens": "55c5aeae58e289cc"
+    "games": "9bf5f5f634c2cfbc",
+    "post": "35db9495c6bbf980",
+    "champion": "Minnesota",
+    "rec": "aa0f285e28fe8a78",
+    "poll": "2d174dee53437bd0",
+    "heis": "d0af6fd2ca1fa77f",
+    "history": "86137ae4c754be9d",
+    "universe": "2c0fafe20062fe48",
+    "screens": "b9d3a6e7de15ce8c"
    },
    {
     "year": 2027,
-    "games": "56dbdcd85bd94c94",
-    "post": "1d0cd59d50c5f5ae",
-    "champion": "Washington",
-    "rec": "70547204eb4797d7",
-    "poll": "8e1c723bd94018f5",
-    "heis": "1badb10b1d126da1",
-    "history": "b161b53f8ba66c92",
-    "universe": "629a5e03f87856ba",
-    "screens": "83ea89d2efede31a"
+    "games": "033ea35919ccb39b",
+    "post": "485c60a88ed07610",
+    "champion": "Milwaukee",
+    "rec": "5a5fdfe1e7c11650",
+    "poll": "52af09c29b330779",
+    "heis": "290ff78e4eaf41b1",
+    "history": "20c444670bd5ce65",
+    "universe": "1986302b9db7ae9e",
+    "screens": "2f307b78fb558ef3"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "4166afb202b90c2a",
-    "post": "cd08a0fff3857a7f",
-    "champion": "Boston",
-    "rec": "7e44e1e9d06eabe2",
-    "poll": "40dc2b8cf2c7b9e5",
-    "heis": "32a9d67e2ee8ad6d",
-    "history": "4e16ff8aeae43875",
-    "universe": "5184bf94b60dbb08",
-    "screens": "15dc5efba8fcec43"
+    "games": "8ea71d0ffe5b62ad",
+    "post": "53bdb64ad9c393af",
+    "champion": "Chicago Cubs",
+    "rec": "bb6deebb27b08be1",
+    "poll": "899739dcbd8cb453",
+    "heis": "ab8ee0b2ab03ebfd",
+    "history": "c58094c883e51ae7",
+    "universe": "4ebff7b61c571284",
+    "screens": "4ed6087beedbc309"
    },
    {
     "year": 2027,
-    "games": "574dd489f9baa425",
-    "post": "69599f7dbdd2fe27",
-    "champion": "NY Mets",
-    "rec": "e1690f912f9a4945",
-    "poll": "0e4d35bb9955354b",
-    "heis": "b958db9951b8d0fd",
-    "history": "003f4e0ee0e5237b",
-    "universe": "d3907028d57dd4a1",
-    "screens": "d811ad4bae81420e"
+    "games": "a656d405639f3a7a",
+    "post": "6170487a0eedf781",
+    "champion": "Chicago Cubs",
+    "rec": "54e0ffa1ba48e4e2",
+    "poll": "d196cad860c263cc",
+    "heis": "55a83e510d353c2a",
+    "history": "4d1795f757dd4ef8",
+    "universe": "baeaf08319932bc3",
+    "screens": "ef4aa1799edd0be8"
    }
   ],
   "schedules#60": [
