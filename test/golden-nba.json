@@ -1,5 +1,5 @@
 {
- "fp": "0ad039082d836eeb",
+ "fp": "02d89c7bf9806bc3",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -450,6 +450,11 @@
    "fp": "0ad039082d836eeb",
    "from": "b9fd28ad3f294963",
    "note": "Round 77: engine number 6 in the season settings only (games and screens unchanged)"
+  },
+  {
+   "fp": "02d89c7bf9806bc3",
+   "from": "0ad039082d836eeb",
+   "note": "Round 79: screens only (box score on every played game in Scores, sortable roster stats, schedule first on the team page, football's clock and named kicker, knockout wording, no zero-win target); results identical to round 78 field by field, the universe differs only by its engine stamp (7)"
   }
  ],
  "result": {
@@ -463,8 +468,8 @@
     "poll": "c59e0f03e33ee607",
     "heis": "b0d3643fe51f45b0",
     "history": "11e26240f996104f",
-    "universe": "1b52c8c3167a6711",
-    "screens": "6af67816ddf779b1"
+    "universe": "1fad3a22186797bb",
+    "screens": "f0f66483d2074c23"
    },
    {
     "year": 2027,
@@ -475,8 +480,8 @@
     "poll": "9a7e04392147ca1c",
     "heis": "9b52fd1a0f4ab380",
     "history": "4b0cac710915f705",
-    "universe": "e99be766afb0d70a",
-    "screens": "62a3ddebafaef20c"
+    "universe": "3cac1a2cdd53ba75",
+    "screens": "65f35fd487e2d64b"
    }
   ],
   "Detroit#777": [
@@ -489,8 +494,8 @@
     "poll": "bf00d73c5c30aec1",
     "heis": "7ce35292c0cefdbc",
     "history": "35d3573cfa5d992d",
-    "universe": "07569ef91b754e85",
-    "screens": "2f7a748b6362eff0"
+    "universe": "bdd93258bed4e1cf",
+    "screens": "cd93539f925dc83a"
    },
    {
     "year": 2027,
@@ -501,8 +506,8 @@
     "poll": "a56a7ec192ee0a12",
     "heis": "b33dc7f0c33ee345",
     "history": "6cba2ceb938a56c1",
-    "universe": "906e771d736edf84",
-    "screens": "f1ada39f780169f6"
+    "universe": "804827bba7755d80",
+    "screens": "02a61d95a2c947b2"
    }
   ],
   "schedules#60": [
