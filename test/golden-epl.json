@@ -1,5 +1,5 @@
 {
- "fp": "aa95ea508989775d",
+ "fp": "49acab6ef2907c7c",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -440,6 +440,11 @@
    "fp": "aa95ea508989775d",
    "from": "cbec1011c953d140",
    "note": "Round 77: engine number 6 in the season settings only (games and screens unchanged)"
+  },
+  {
+   "fp": "49acab6ef2907c7c",
+   "from": "aa95ea508989775d",
+   "note": "Round 79: screens only (box score on every played game in Scores, sortable roster stats, schedule first on the team page, football's clock and named kicker, knockout wording, no zero-win target); results identical to round 78 field by field, the universe differs only by its engine stamp (7)"
   }
  ],
  "result": {
@@ -453,8 +458,8 @@
     "poll": "7b7f3d8727aeca30",
     "heis": "95efb282beb2b16c",
     "history": "9c83b384bb87e07e",
-    "universe": "156fdce025483476",
-    "screens": "a0ce4abcb0d1ba44"
+    "universe": "e9b9f85b1c0cac82",
+    "screens": "161c06fedd6fb3a9"
    },
    {
     "year": 2027,
@@ -465,8 +470,8 @@
     "poll": "b61baffad62021dd",
     "heis": "d63de9aad16e90be",
     "history": "0b8d14311862a525",
-    "universe": "94bf97c4f73cd49f",
-    "screens": "0a0b561773c898dc"
+    "universe": "b9c3c5bd8a0716c9",
+    "screens": "cbc82cbe53d509eb"
    }
   ],
   "Wrexham#777": [
@@ -479,8 +484,8 @@
     "poll": "84fd0765d46bc8aa",
     "heis": "1c65ec2264b022a0",
     "history": "ed5265d673f940fb",
-    "universe": "0ab268c83aa3925a",
-    "screens": "80268c95f78604db"
+    "universe": "c8583f64163ad9c5",
+    "screens": "e0adb883174cdfc2"
    },
    {
     "year": 2027,
@@ -491,8 +496,8 @@
     "poll": "f13122060fec7347",
     "heis": "6c62922cdeac8984",
     "history": "b9b742b66f61704b",
-    "universe": "183bc70e93d2b619",
-    "screens": "5106ebce1935f9c2"
+    "universe": "1209a1a870499bc7",
+    "screens": "3463765c456ae549"
    }
   ],
   "schedules#60": [
