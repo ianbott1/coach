@@ -27,6 +27,6 @@ for(const seed of [3,8,21]){ const A=load({file:F,expose:['SEA','NAMES','newDyna
     mine.forEach((G,i)=>{ if(i){ const o=G[0].home===t?G[0].away:G[0].home, P=mine[i-1][0], po=P.home===t?P.away:P.home; if(o===po)b2b++ } }) });
   ok(S.length===2430&&H.every(h=>h===81)&&A.NAMES.every(t=>days[t].size===162),`schedule ${seed}: 162 games each, 81 at home (${Math.min(...H)}-${Math.max(...H)})`);
   ok(!dup&&!seq,`schedule ${seed}: no club twice in a day (${dup}), every series on consecutive days (${seq} gaps); series of ${[...lens].sort().join("/")} games`);
-  ok(b2b<=60,`schedule ${seed}: back-to-back series against the same club ${b2b/2} (was ~70 a season before round 59)`);
+  ok(b2b/2<=5,`schedule ${seed}: back-to-back series against the same club ${b2b/2} (was ~70 a season before round 59, ~18 before round 79)`);
   ok(stretch<=20&&last>=A.LEAGUE.weeks-3,`schedule ${seed}: longest stretch without a day off ${stretch} (MLB's cap is 20); the season ends on day ${last+1} of ${A.LEAGUE.weeks}`) }
 console.log(bad?`MISMATCH ${bad}`:'MATCH baseball plays like MLB'); process.exit(bad?1:0);
