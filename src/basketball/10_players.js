@@ -80,7 +80,7 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
    the play-by-play named for a three or an and-one has it. So the points come to the score, less the bench's. Rebounds
    are the misses the game had (their misses less their offensive boards, and ours), assists about three made shots in
    five, steals about half their turnovers, blocks about one of their missed twos in six; nine misses in ten end in a player's rebound, shared the same way. */
-const BB_AST=0.60, BB_STL=0.52, BB_BLK=0.18, BB_REB=0.9, BB_STARP4=1.6, BB_STARP5=+((typeof process!=="undefined"&&process.env&&process.env.BB_SP)||2.2);   // round 75 (engine 5): 2.2, college's scoring leader ran 22 (the real one ~25); pro 30 to 32   // a star's share of the scoring grows faster than his rating (1.6)
+const BB_AST=0.60, BB_STL=0.52, BB_BLK=0.18, BB_REB=0.9, BB_STARP6C=+((typeof process!=="undefined"&&process.env&&process.env.BB_SPC)||2.8), BB_STARP4=1.6, BB_STARP5=+((typeof process!=="undefined"&&process.env&&process.env.BB_SP)||2.2);   // round 75 (engine 5): 2.2, college's scoring leader ran 22 (the real one ~25); pro 30 to 32   // a star's share of the scoring grows faster than his rating (1.6)
 function teamLines(rng,c){
   const recs=c.drives.filter(d=>d.ln), last=recs[recs.length-1], o=c.side==="home"?"away":"home";
   if(!last)return statLinesOld(rng,c);
@@ -94,7 +94,7 @@ function teamLines(rng,c){
   c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0;
     if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u),"tpm"); t3-- }
     if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
-  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
+  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
   ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
   const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
   share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));

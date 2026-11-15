@@ -99,6 +99,7 @@ function statProd(pos,s){
   const avg=s.ab?s.h/s.ab:0; return (s.hr||0)*2.2+(s.rbi||0)*0.5+(s.r||0)*0.4+Math.max(0,avg-0.22)*s.ab*0.9;
 }
 
+/* (round 77, engine 6: the named relievers have lines of their own, no start; B.sp names the starter) */
 /* round 74 (engV 4): a team's lines are the game's own box score (50_game counts it at bat by bat): every hit, run, RBI
    and home run to the man who had it, the starter's innings and runs, the closer's. A man who didn't play gets no line. */
 function teamLines(rng,c){
@@ -111,7 +112,7 @@ function teamLines(rng,c){
   const cl=POS.findIndex(P=>P.p==="CL"), clAct=c.act.find(x=>x.i===cl), dec=B.dec||{};
   Object.keys(B.pit).forEach(nm=>{ if(nm==="bullpen")return; const p=B.pit[nm], x=nm==="closer"?(clAct?{pl:clAct.pl,i:cl}:null):at[nm]; if(!x)return;
     const pos=nm==="closer"?"CL":posOf(x.i); if(!isPitcher(pos))return;
-    out.push({pl:x.pl,pos:pos,line:{gs:nm==="closer"?0:1,ip:p.outs,er:p.er,k:p.k,bb:p.bb,w:dec.w===nm?1:0,l:dec.l===nm?1:0,sv:dec.sv===nm?1:0}}) });
+    out.push({pl:x.pl,pos:pos,line:{gs:nm==="closer"?0:B.sp?(nm===B.sp?1:0):1,ip:p.outs,er:p.er,k:p.k,bb:p.bb,w:dec.w===nm?1:0,l:dec.l===nm?1:0,sv:dec.sv===nm?1:0}}) });
   return out;
 }
 /* a watched game's log, by hitter (round 56): home runs, RBI and hits for the men it named (core 80_season credits them) */

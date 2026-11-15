@@ -16,7 +16,8 @@ function sportBoxPlayers(g,BL){
   return ["away","home"].map(sd=>{ const R=BL[sd], hit=R.filter(x=>!isPitcher(x.pos)), pit=R.filter(x=>isPitcher(x.pos)), nm=x=>esc(boxName(x.n));
     const h=hit.map(x=>({c:[nm(x)+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.ab,x.s.h,x.s.hr,x.s.rbi,x.s.r,x.s.bb].map(String)}));
     const dec=s=>s.w?"W":s.l?"L":s.sv?"SV":"";
-    const p=pit.map(x=>({c:[nm(x)+` <span style="color:var(--muted)">${esc(x.pos==="CL"?"CL":"SP")}</span>`,ipStr(x.s.ip||0),x.s.er,x.s.k,x.s.bb,dec(x.s)].map(String)}));
+    const role=x=>x.s.gs?"SP":x.pos==="CL"&&x.i===POS.findIndex(P=>P.p==="CL")?"CL":x.pos==="CL"||!x.s.gs?"RP":"SP";   // (round 77: the set-up and long men, RP)
+    const p=pit.map(x=>({c:[nm(x)+` <span style="color:var(--muted)">${esc(role(x))}</span>`,ipStr(x.s.ip||0),x.s.er,x.s.k,x.s.bb,dec(x.s)].map(String)}));
     const bp=B&&B[sd]&&B[sd].pit&&B[sd].pit.bullpen; if(bp)p.push({c:['<span style="color:var(--muted)">Bullpen</span>',ipStr(bp.outs),bp.er,bp.k,bp.bb,""].map(String)});
     return boxSide(g,sd,["","AB","H","HR","RBI","R","BB"],h)+(p.length?statTable(["","IP","ER","K","BB",""],p,1):"") }).join("");
 }
