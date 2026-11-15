@@ -1898,7 +1898,8 @@ function teamCardHTML(my,rk,co){
       // number ("Eight wins and a decent bowl") stand alone
       const says=/\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen)\b/i.test(e.l||""), lead=says?"Target: ":`${esc(e.l)} Target: `;
       return `<div class="expbar"><span class="etag">${esc(e.t)}</span>
-        <span class="eline">${w+l===0?(says?esc(e.l):`${esc(e.l)} Target: ${e.w} wins.`)
+        <span class="eline">${!(e.w>0)?esc(e.l)   /* round 79: a goal with no wins in it reads as itself ("Target: 0 wins": Ian) */
+          :w+l===0?(says?esc(e.l):`${esc(e.l)} Target: ${e.w} wins.`)
           :e.pos?posGoalLine(e,my)
           // the pros after game 82: the wins are in; the play-offs are judged on their own (the board weighs both)
           :!LEAGUE.postRecord&&SEA.phase!=="week"&&need>0?(()=>{ const c=LEAGUE.goals.clauseLine?LEAGUE.goals.clauseLine(e,my):null;
