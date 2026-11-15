@@ -252,9 +252,9 @@ const slotCheck=async()=>{ const A=load({settable:SET,file:D('basketball-coach-p
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Brentford',5,'T'); play(A,999); A.openOffseason(); A.S.off.move='Fulham';
   for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
   ok(A.S.myTeam==='Fulham'&&/Your seasons/.test(A.yourSeasonsHTML()),'soccer: no "Your seasons" after a move, before a season at the new club'); }
-/* 30. the odds say when they include your featuring */
+/* 30. the odds say when they include your featuring (round 79: Ian asked for no "Featuring" on the card; it no longer says so) */
 for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T'); if(!A.ownMark){ok(false,f+': no featuring mark on the odds');continue}
-  A.S.featured=1; A.SEA.featured=1; ok(/with featuring/.test(A.ownMark(A.S.myTeam)),`${f}: the odds don't say they include featuring`) }
+  A.S.featured=1; A.SEA.featured=1; ok(!/featuring/i.test(A.ownMark(A.S.myTeam)),`${f}: the odds still mention featuring`) }
 /* 31. hockey asks about your goalie only when the evidence is split */
 { const A=load({settable:SET,file:D('hockey-coach-pro.html'),expose:EXP}); A.newDynasty('Boston',5,'T'); let asked=0,plain=0,n=0;
   for(let k=0;k<30&&A.SEA.phase==='week';k++){ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<5000){ const q=A.live.ask;
