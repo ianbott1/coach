@@ -17,6 +17,10 @@ function startWatch(g){
 
 /* Turn the real drives into readable lines, using the actual rosters. */
 const FB_PICKER=[8,9,18,19,8,9,18,9];   // who makes an interception, by the drive's number: the corner (8), the safety (9), or their backups (18, 19: the nickel and the other safety)
+/* round 79: the kicker has a name (Ian: "kicker name"). The roster has no kicker, so each club's is drawn from its name and
+   the career's seed: the same man all career, and nothing the season plays out draws from it. */
+function kickerName(team){ let h=2166136261; const k=String(team)+"|"+((typeof SEA!=="undefined"&&SEA&&SEA.seed)||0);
+  for(let i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619)>>>0 } return playerName(new RNG(h)) }
 function driveScript(g,drives,rosters){
   const rng=new RNG(watchSeed(g));
   const RH=rosters?rosters[0]:SEA.roster[g.home], RA=rosters?rosters[1]:SEA.roster[g.away];
@@ -34,10 +38,10 @@ function driveScript(g,drives,rosters){
       if(rng.r()<0.56){ const u=rng.r(), v4=!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4), ri=!v4?(u<0.62?2:3):u<0.42?2:u<0.68?3:u<0.86?BK(2):BK(3); who={k:"pass",i:ri,y:y}; text=`${nm(0)} ${y}-yd TD pass to ${nm(ri)}` }   // round 74: the backups catch some (a tight end, the slot): one receiver caught 30 in a season
       else if(rng.r()<0.8){ who={k:"run",i:1}; text=`${nm(1)} ${y}-yd TD run` }
       else { who={k:"run",i:0}; text=`${nm(0)} ${Math.round(rng.range(1,12))}-yd TD run` }
-    } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
+    } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${kickerName(d.home?g.home:g.away)} ${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
     else if(d.kind==="INT"){ const di=typeof ENGINE_V!=="undefined"&&ENGINE_V<4?8:FB_PICKER[(d.n||0)%FB_PICKER.length]; who={k:"int",i:di}; text=`intercepted by ${dn(di)}`; }   // round 74: a corner or a safety (it was always the corner)
     else if(d.kind==="FUM"){ text=`fumble, recovered by ${dn(7)}`; }
-    else if(d.kind==="MISS"){ const r=Math.round(rng.range(38,56)); text=`${d.stall?fgDistance(d.stall):r}-yd attempt is no good`; }
+    else if(d.kind==="MISS"){ const r=Math.round(rng.range(38,56)); text=`${kickerName(d.home?g.home:g.away)}'s ${d.stall?fgDistance(d.stall):r}-yd attempt is no good`; }
     else { text=rng.pick(OUTTXT[d.kind]||["punt"]); }
     const sec=Math.max(5,Math.round(890-((d.n-1)%6+1)*140-rng.range(0,50)));
     return {n:d.n,q:d.q,clock:Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"),

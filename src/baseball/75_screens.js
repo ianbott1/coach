@@ -116,7 +116,7 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are hitting <span>three innings</span></div>
       ${rows.map(r=>`<div class="evr ${r[2]?'lo':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
       <div class="evn">League average: ${Math.round(100*A[0])}% of balls in play pulled, ${A[1].toFixed(1)} pitches an at-bat, ${A[2].toFixed(2)} swings and misses. &#9650; well above it, &#9660; well below. Pull hitters pull it; patient hitters see pitches; contact hitters don't miss. Three innings is a small sample.</div></div>`; }
-  if(dp.k==="pull")return `<div class="evid"><div class="evh">Your starter today</div>
+  if(dp.k==="pull")return `<div class="evid"><div class="evh">${dp.sp?esc(dp.sp)+", your starter today":"Your starter today"}</div>
       <div class="evr ${dp.bf>=24?'hi':''}"><span class="evk">Batters faced</span><span class="evv">${dp.bf}</span></div>
       <div class="evr ${dp.ra>=3?'hi':''}"><span class="evk">Runs allowed</span><span class="evv">${dp.ra}</span></div>
       <div class="evn">Past about eighteen batters a starter gets a little worse with every one he faces; the bullpen is fresh, and a shade below a good starter. Your assistant goes to the pen when he's spent or hit hard.</div></div>`;

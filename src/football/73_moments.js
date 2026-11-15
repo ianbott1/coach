@@ -8,7 +8,7 @@ function sportMoments(g,my,meHome){
   const before=meHome?(d.h-d.pts)-d.a:(d.a-d.pts)-d.h;
   if(before>0)return out;
   let txt=""; try{ const R=driveScript(g,D); txt=R[k]&&R[k].text||"" }catch(e){}
-  const ot=d.q>=5||d.ot, what=txt?(d.kind==="FG"?"a "+txt:txt):(d.kind==="FG"?"a field goal":"a touchdown");
+  const ot=d.q>=5||d.ot, what=txt?(d.kind==="FG"?txt.replace(/^(.*?) (\d+)-yd field goal$/,"a $2-yard field goal by $1"):txt):(d.kind==="FG"?"a field goal":"a touchdown");
   out.push({k:"winner", h:ot?"Overtime winner":"Game-winning drive",
     l:`${before<0?`Down ${-before}`:"Level"} ${ot?"in overtime":"in the fourth quarter"}: ${esc(what)}. That won it.`});
   return out;

@@ -3,7 +3,7 @@ const INTERIM_Q=-18;     // replacement-level assistant
 const FEATURE_EDGE=12;   // Elo
 const PLANS={
   safe:      {sd:0.85, edge:0, l:"Skate with them", d:"Open, high-event hockey: more chances, and more goals, at both ends. Over sixty minutes the better team wins, so it's best when that's you."},
-  balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:"Play your game."},
+  balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:""},
   aggressive:{sd:1.2,  edge:0, l:"Clog it up",      d:"Trap the neutral zone, block shots, shorten the game: fewer chances at both ends, and more luck. Best when you're outgunned."}
 };
 function isBigGame(g,team,seaRankMap,rivalName){

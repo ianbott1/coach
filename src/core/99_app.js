@@ -1180,7 +1180,7 @@ function endSeason(rng,choices,act,seasonTeam){
 function ranksMean(){ return !!LEAGUE.position||LEAGUE.id==="cfb"||LEAGUE.id==="ncaab" }
 function rkTag(r){return ranksMean()&&r&&r<=RANK_TOP?`<span class="rk" title="${LEAGUE.position?"Table position":"Ranked No. "+r}">${LEAGUE.position?"":"#"}${r}</span>`:""}   // "#8", so it reads as a ranking, not part of a code
 
-function gameLine(g,mine){
+function gameLine(g,mine,step){
   const hw=g.winner===g.home;
   const best=Math.min(g.hrank||999,g.arank||999);
   const ups=g.hrank&&g.arank?(hw?g.hrank>g.arank:g.arank>g.hrank):false;
@@ -1201,8 +1201,15 @@ function gameLine(g,mine){
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
     ${LEAGUE.homeFirst?side(g.home,g.hp,g.hrank,hw&&!g.draw,g.hseed,g.hrec)+side(g.away,g.ap,g.arank,!hw&&!g.draw,g.aseed,g.arec)
       :side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)+side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
-    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}</div></article>`;
+    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}</div></article>`;
 }
+/* round 79: tap a played game for its box score: yours with the full box (the play-by-play is kept), any other from
+   the players' logs */
+function gameSheetHTML(g,mine,step){ if(step===undefined||step===null||g.hp===undefined||typeof boxHTML!=="function")return "";
+  let b=""; try{ b=g.drives&&g.drives.length?boxHTML(g,false,step):"" }catch(e){ b="" }
+  if(b)return b;
+  let s=""; try{ s=gameSheet(g,step) }catch(e){ s="" }
+  return s?`<details class="boxscore"><summary>Box score</summary>${s}</details>`:"" }
 
 /* ---- watching a game ---- */
 let watch=null;   // {g, script, i, timer}
@@ -1507,10 +1514,10 @@ function oddsHTML(me,opp,atHome,neutral,wp){
    in the rounding (Muse saw soccer's odds not move) */
 function ownMark(me){
   if(me!==S.myTeam||!SEA)return "";
-  const R=SEA.roster&&SEA.roster[S.myTeam], f=S.featured!==null&&S.featured!==undefined&&R&&R[S.featured]?R[S.featured]:null;
+  // round 79: the card doesn't name who you're featuring (Ian: "It shouldn't say who you are featuring in the game card")
   const dep=S.deploy&&Object.keys(S.deploy).some(k=>S.deploy[k]&&S.deploy[k]!=="bal");
-  if(!f&&!dep)return "";
-  return `<span class="olab omark">with ${[f?"featuring "+esc(f.n.split(" ").slice(-1)[0]):"",dep?"your ice time":""].filter(Boolean).join(" and ")}</span>`;
+  if(!dep)return "";
+  return `<span class="olab omark">with your ice time</span>`;
 }
 /* The chance shown is the engine's own: each league's curve, measured by
    playing thousands of games at each gap, and your gameplan's (the safe plan
@@ -1975,7 +1982,7 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    <div class="pland">${esc(PLANS[plan].d)}</div>${planFitHTML(wp)}
+    ${PLANS[plan].d?`<div class="pland">${esc(PLANS[plan].d)}</div>`:""}${planFitHTML(wp)}
   </div>`;
 }
 /* round 72: the gameplan you last chose carries over; when it doesn't suit tonight, a line says so (Instinct: a 34%
@@ -2091,6 +2098,7 @@ function nextUpHTML(my,rk){
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
       </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}${typeof filmLine==="function"?filmLine(opp):""}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
+      ${typeof sportNextExtra==="function"?sportNextExtra(ng,my,ngStep):""}
       ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
         <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
         :((LEAGUE.cup&&LEAGUE.cup.groupLine&&LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng)))?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag)}</span><span class="sline">${LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng))}</span></div><button class="rewatch seedraw" data-cupview="1">See the Cup</button>`:"")
@@ -2437,7 +2445,7 @@ function scoresView(){
   if(LEAGUE.groupFilter){
     const cupG=W.games.filter(g=>g.cup), g0=grpNow(), sel=g0==="CUP"&&!cupG.length?CONF[S.myTeam]:g0;
     let h=wkNav(w,last,maxW)+grpTabsHTML(cupG.length>0)+(sel===CONF[S.myTeam]&&w===last?newsBlock():"");
-    const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam);
+    const line=g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam,w);
     if(sel==="CUP")return h+`<div class="grouphead">${esc(cupG[0].title)} &mdash; ${nOf(cupG.length,"tie")}</div>`+cupG.map(line).join("")+
       `<button class="rewatch seedraw" data-cupview="1">See the whole draw</button>`;
     const groups=sel==="ALL"?LEAGUE.conf.order:[sel];
@@ -2451,10 +2459,10 @@ function scoresView(){
   let h=wkNav(w,last,maxW);
   if(w===last)h+=newsBlock();
   if(marq.length)h+=`<div class="grouphead">Ranked teams</div>`+
-    marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("");
+    marq.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam,w)).join("");
   if(rest.length)h+=`<div class="grouphead">Around the country &mdash; ${nOf(rest.length,"game")}</div>`+
     `<div class="${wide?'gamegrid':''}">`+
-    rest.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam)).join("")+`</div>`;
+    rest.map(g=>gameLine(g,g.home===S.myTeam||g.away===S.myTeam,w)).join("")+`</div>`;
   return h;
 }
 

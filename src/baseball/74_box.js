@@ -21,3 +21,22 @@ function sportBoxPlayers(g,BL){
     const bp=B&&B[sd]&&B[sd].pit&&B[sd].pit.bullpen; if(bp)p.push({c:['<span style="color:var(--muted)">Bullpen</span>',ipStr(bp.outs),bp.er,bp.k,bp.bb,""].map(String)});
     return boxSide(g,sd,["","AB","H","HR","RBI","R","BB"],h)+(p.length?statTable(["","IP","ER","K","BB",""],p,1):"") }).join("");
 }
+
+/* round 79: a pitcher's season so far, "7-4, 3.21 ERA" (Ian: the card should preview the starters, and the box score
+   and scores the winning and losing pitchers, with their records, as real baseball does) */
+function bsSeasonLine(team,nm){ const R=(SEA&&SEA.roster&&SEA.roster[team])||[], p=R.find(x=>x&&x.n===nm), s=p&&p.st2;
+  if(!s||!s.ip)return "no starts yet"; return `${s.w||0}-${s.l||0}, ${(s.er*27/s.ip).toFixed(2)} ERA` }
+/* the next game's card: both probable starters */
+function sportNextExtra(ng,my,step){ try{ if(typeof spCtx!=="function")return "";
+  const opp=ng.home===my?ng.away:ng.home, a=spCtx(my,step), b=spCtx(opp,step); if(!a||!b)return "";
+  const row=(t,p)=>`<div class="nrec"><b>${esc(tAb(t))}</b> ${esc(p.n)} <span style="color:var(--muted)">(${esc(bsSeasonLine(t,p.n))})</span></div>`;
+  return `<div class="probable"><div class="nlabel" style="margin-top:6px">PROBABLE STARTERS</div>${row(my,a)}${row(opp,b)}</div>` }catch(e){ return "" } }
+
+/* the decisions, with each man's season after this game: "W: R. Ortiz (8-3)  L: J. Kim (4-6)  S: T. Padilla (21)" */
+function sportSheetNote(g,BL){
+  const pick=k=>{ for(const sd of ["home","away"]){ const x=BL[sd].find(y=>isPitcher(y.pos)&&y.s[k]); if(x)return {x:x,t:g[sd]} } return null };
+  const rec=(t,nm,k)=>{ const R=(SEA.roster&&SEA.roster[t])||[], p=R.find(y=>y&&y.n===nm), s=p&&p.st2; if(!s)return ""; return k==="sv"?`${s.sv||0}`:`${s.w||0}-${s.l||0}` };
+  // a decision that went to the set-up men (the unnamed bullpen) still gets its line, from engine 6 on, when every game has one
+  const hs=g.hp!==undefined?g.hp:g.h, as=g.ap!==undefined?g.ap:g.a, win=hs>as?"home":as>hs?"away":null, pen=k=>ENGINE_V>=6&&win&&k!=="sv"?`${esc(g[k==="w"?win:(win==="home"?"away":"home")])} bullpen`:"";
+  const parts=[["w","W"],["l","L"],["sv","S"]].map(([k,lab])=>{ const r=pick(k); return r?`<b>${lab}:</b> ${esc(boxName(r.x.n))} (${esc(rec(r.t,r.x.n,k))})`:pen(k)?`<b>${lab}:</b> ${pen(k)}`:"" }).filter(Boolean);
+  return parts.length?`<div class="fnote" style="margin:6px 0 2px">${parts.join(" &nbsp; ")}</div>`:"" }

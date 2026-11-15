@@ -104,7 +104,7 @@ function readCall(T,cur){
 function pullCall(inn,lead,P,on){
   return {k:"pull",h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
     q:`${P.n||"Your starter"} has faced ${P.bf} batters${P.ra?` and given up ${nOf(P.ra,"run")}`:""}.${on?" "+on:""} Go to the bullpen?`,
-    opts:[["pen","Go to the bullpen"],["stay","Leave him in"],ASSIST], bf:P.bf, ra:P.ra};
+    opts:[["pen","Go to the bullpen"],["stay","Leave him in"],ASSIST], bf:P.bf, ra:P.ra, sp:P.n||null};
 }
 function pinchCall(inn,lead,who,bench,on){
   return {k:"pinch",h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
@@ -200,7 +200,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const luMean={}; ["home","away"].forEach(sd=>{ const R=LU(sd).map(n=>rateOf(sd,n)).filter(x=>x!=null); luMean[sd]=R.length?R.reduce((a,b)=>a+b,0)/R.length:null });
   const hitEdge=(bat,nm)=>{ const r=rateOf(bat,nm), m=luMean[bat]; return r==null||m==null?0:(r-m)*BS5.hit };
   // the pinch hitter is worth it: he's the better hitter, and you're not ahead (the computer's rule, and your assistant's)
-  const pinchWorth=(bat,slot)=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat], b=rateOf(bat,who(bat,slot)), r=rateOf(bat,ph); return !!ph&&lead(bat)<=0&&(b==null||r==null||r>b) };
+  // round 79 (engine 7): a man who has pinch-hit is in the game, so he can't pinch-hit again (Ian: asked twice in a game,
+  // the same man both times)
+  const benchFree=bat=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat]; return !!ph&&!(ENGINE_V>=7&&Object.keys(sub[bat]).some(k=>sub[bat][k]===ph)) };
+  const pinchWorth=(bat,slot)=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat], b=rateOf(bat,who(bat,slot)), r=rateOf(bat,ph); return benchFree(bat)&&lead(bat)<=0&&(b==null||r==null||r>b) };
   const doAB=()=>{
     const bat=H.bat, fs=H.fs, X=st.S[bat];
     const slot=X.bat%9; X.bat++;
@@ -262,7 +265,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       // tied or behind only (round 56: the help says "when you're chasing", and a third of the calls came with a lead: Instinct)
       // round 58, measured on replays: a pinch hitter is worth asking you about tied or down one from the 8th (about 4
       // points on your assistant); in the 7th, or down two, about 2: those go to him
-      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&lead(bat)>=-1&&inn()>=8&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&lead(bat)>=-1&&inn()>=8&&!st.asked["pinch"+inn()+bat]&&(ENGINE_V<7||benchFree(bat))){ st.asked["pinch"+inn()+bat]=true;
         const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench&&ctx.bench[bat]||null,onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true }
       // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
@@ -274,7 +277,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // be a spectator for three innings", Muse). If nothing worth asking has come by then, the first pinch-hit or steal
     // chance is yours, even where the replays put it under 3 points on your assistant.
     if(humans[bat]&&inn()>=8&&Math.abs(lead(bat))<=1&&!(st.lateGot&&st.lateGot[bat])){ const X=st.S[bat], slot=X.bat%9;
-      if((H.b[1]||H.b[2])&&slot>=5&&ctx.bench&&ctx.bench[bat]&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+      if((H.b[1]||H.b[2])&&slot>=5&&ctx.bench&&ctx.bench[bat]&&!st.asked["pinch"+inn()+bat]&&(ENGINE_V<7||benchFree(bat))){ st.asked["pinch"+inn()+bat]=true;
         const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench[bat],onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true }
       if(H.b[0]&&!H.b[1]&&H.outs<2&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;

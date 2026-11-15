@@ -3,7 +3,7 @@ const INTERIM_Q=-18;     // replacement-level assistant
 const FEATURE_EDGE=12;   // Elo
 const PLANS={
   safe:      {sd:0.85, edge:0, l:"Take the game to them", d:"Press high and keep the ball. Over ninety minutes the better side wins \u2014 best when that's you."},
-  balanced:  {sd:1.0,  edge:0, l:"Balanced",              d:"Play your game."},
+  balanced:  {sd:1.0,  edge:0, l:"Balanced",              d:""},
   aggressive:{sd:1.2,  edge:0, l:"Sit deep and counter",  d:"Two banks of four, hit them on the break. Fewer chances, more luck \u2014 best when you're outgunned."}
 };
 function isBigGame(g,team,seaRankMap,rivalName){

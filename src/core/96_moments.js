@@ -38,7 +38,7 @@ function boxHTML(g,open,step){
   if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
   let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";
   // round 74: the players' lines, where they come from the game's own record (engine 4) and so add up to it
-  let p=""; try{ const L=boxLines(g,step); if(L&&typeof sportBoxPlayers==="function")p=sportBoxPlayers(g,L)||"" }catch(e){ p="" }
+  let p=""; try{ const L=boxLines(g,step); if(L&&typeof sportBoxPlayers==="function")p=(typeof sportSheetNote==="function"?sportSheetNote(g,L):"")+(sportBoxPlayers(g,L)||"") }catch(e){ p="" }
   return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}${p}</details>` }
 /* each side's players' lines for one game, from their game logs (round 74): [{n, i (roster place), pos, s (the line)}] */
 function boxLines(g,step){
@@ -58,3 +58,18 @@ function boxSide(g,sd,head,rows){ return rows.length?`<div class="boxhead">${esc
 /* a team table: first column the label, then a column per side */
 function boxTeams(g,rows,homeFirst){ const A=tAb(g.away), H=tAb(g.home);
   return statTable(["",homeFirst?H:A,homeFirst?A:H],rows.filter(Boolean).map(r=>({c:[esc(r[0]),homeFirst?r[2]:r[1],homeFirst?r[1]:r[2]].map(String)}))) }
+
+/* ---- round 79: any game's sheet, from the players' game logs (Ian: "When you go to scores ... you should be able to
+   click on a game to see the box scores and team and player stats"). The computer's games keep no play-by-play, but
+   every player's line is logged, so any game this season has its box: each side's players by position group, with
+   the columns their player pages use, and the sport's own note (baseball's decisions). Engine 4 seasons on. */
+function gameSheet(g,step){
+  const BL=boxLines(g,step); if(!BL)return "";
+  const side=sd=>{ const groups=[]; BL[sd].forEach(x=>{ const cols=typeof statCols==="function"?statCols(x.pos):[], key=cols.map(c=>c[0]).join("|");
+      const o=Object.assign({g:1},x.s); if(!Object.keys(x.s).some(k=>x.s[k]))return;
+      let G=groups.find(y=>y.key===key); if(!G){ G={key:key,cols:cols,rows:[]}; groups.push(G) }
+      G.rows.push({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`].concat(cols.map(c=>esc(String(c[1](o)))))}) });
+    return groups.length?`<div class="boxhead">${esc(g[sd])}</div>`+groups.map(G=>statTable([""].concat(G.cols.map(c=>c[0])),G.rows,1)).join(""):"" };
+  const note=typeof sportSheetNote==="function"?sportSheetNote(g,BL):"";
+  return note+side("away")+side("home");
+}
