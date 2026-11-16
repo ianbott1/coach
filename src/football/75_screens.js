@@ -79,7 +79,7 @@ function watchView(){
              INT:"INT",FUM:"FUMBLE",HALF:"HALF",END:"END"};
   return `<div class="watchwrap">
     <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
-      <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
+      <div class="wlabel">${done?`FINAL &middot; ${watchRes(g,mine,theirs)}`
         :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:kick?`<span class="live"></span>KICKOFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>Q${q} ${esc(cur.clock)} &middot; drive ${cur.n}`}</div>
       <div class="wscore">

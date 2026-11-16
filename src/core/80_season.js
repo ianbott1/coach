@@ -21,6 +21,7 @@ function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameSta
 /* a whole number split among weights, one unit at a time (a weight of "rest" takes what the tracked players don't) */
 function splitDraw(rng,n,w){ const out=w.map(()=>0), T=w.reduce((t,x)=>t+Math.max(0,x),0); if(!(T>0))return out;
   for(let k=0;k<n;k++){ let u=rng.r()*T; for(let i=0;i<w.length;i++){ u-=Math.max(0,w[i]); if(u<0||i===w.length-1){ out[i]++; break } } } return out }
+let REPLAY_ON=true;   // round 81: keep each computer game's dice to watch it later
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -220,6 +221,12 @@ class Season{
     if(LEAGUE.tracksOT||LEAGUE.draws||LEAGUE.postFull)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
     // what the sport knows about the two sides before kick-off (soccer: each club's usual approach)
     if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step)});
+    /* round 81: any game in the league can be watched (Ian: "Football Manager ... you can watch the full game"). Before a
+       computer game is played, where the dice stood and what it was played with are kept (the season's own copy, not
+       saved: a load replays the season and keeps them again), so it can be played again from the same dice on a tap
+       and shown, without storing a single play. replayGame (core 96) checks it ends the same. */
+    if(!isUser&&REPLAY_ON){ if(!this._rp)Object.defineProperty(this,"_rp",{value:new Map(),writable:true,enumerable:false});
+      this._rp.set(this.step+"|"+a+"|"+b+"|"+(cup?1:0),{ra:this.rng.a,rs:this.rng.sp,eh:eloH,ea:eloA,go:gopts?JSON.stringify(gopts):null}) }   // (as text: baseball's lineups cost 4.7 KB a game as objects)
     const gs=playGame(this.rng,eloH,eloA,
       this.userTeam===a?plan:"balanced",
       this.userTeam===b?plan:"balanced",
@@ -242,6 +249,9 @@ class Season{
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
     if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+    // round 81: the names the credit put on the plays (football's who-played, the scorers and assists), kept with the
+    // dice so a replay names the same men as the box score even after injuries and moves
+    if(!isUser&&this._rp){ const E=this._rp.get(this.step+"|"+a+"|"+b+"|"+(cup?1:0)); if(E)E.st=JSON.stringify((gs.drives||[]).map(d=>[d.by||0,(d.ev||[]).map(e=>e.nm||e.an||e.dp||e.un?[e.nm||0,e.an||0,e.dp||0,e.un||0]:0)])) }
     else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];

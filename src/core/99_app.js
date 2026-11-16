@@ -1209,8 +1209,14 @@ function gameLine(g,mine,step){
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
     ${LEAGUE.homeFirst?side(g.home,g.hp,g.hrank,hw&&!g.draw,g.hseed,g.hrec)+side(g.away,g.ap,g.arank,!hw&&!g.draw,g.aseed,g.arec)
       :side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)+side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
-    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}</div></article>`;
+    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}${watchBtnHTML(g,step)}</div></article>`;
 }
+/* round 81: watch any game in the league: a computer game this season is played again from its own dice on the tap
+   (replayGame) and shown as a rewatch; nothing is kept */
+function watchBtnHTML(g,step){ if(step===undefined||step===null||g.drives||g.hp===undefined||!SEA||!SEA._rp||!SEA.roster)return "";
+  if(!SEA._rp.has([step,g.home,g.away,g.cup?1:0].join("|")))return "";
+  const id=++sheetN; WATCHG[id]=[g,step]; return `<button class="rewatch wgame" data-watchg="${id}">Watch</button>` }
+let WATCHG={};
 /* round 79: tap a played game for its box score: yours with the full box (the play-by-play is kept), any other from
    the players' logs */
 function gameSheetHTML(g,mine,step){ if(step===undefined||step===null||g.hp===undefined||typeof boxHTML!=="function")return "";
@@ -1231,6 +1237,10 @@ function watchSeed(g){
   return (g.hp*7919 + g.ap*104729 + (g.week||0)*131 + (g.home.length*17) + g.away.length)>>>0;
 }
 
+/* round 81: a game that isn't yours ends with who won, not WIN or LOSS (mine is the away side's score then) */
+function watchRes(g,mine,theirs,pens){ const my=S.myTeam; if(g.home===my||g.away===my)return mine>theirs?"WIN":"LOSS";
+  if(mine===theirs&&!pens&&!g.pens)return "DRAW"; const homeWon=theirs>mine||(mine===theirs&&(g.pens==="home"||g.pens===g.home));
+  return esc(String(homeWon?g.home:g.away).toUpperCase())+" WIN" }
 function speedMult(){
   const k=S.watchSpeed||"normal";
   const f=SPEEDS.find(s=>s[0]===k);
@@ -3283,7 +3293,9 @@ function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=doc
   const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
 function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
   const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
-function render(){ SHEETS={}; try{ return render0() }finally{ bindSheets(); fitBar(); miniBar(); finalIntoView() } }
+function render(){ SHEETS={}; WATCHG={}; try{ return render0() }finally{ bindSheets(); bindWatchG(); fitBar(); miniBar(); finalIntoView() } }
+function bindWatchG(){ try{ document.querySelectorAll("[data-watchg]").forEach(b=>b.onclick=()=>{ const x=WATCHG[b.dataset.watchg]; if(!x)return;
+  const g=replayGame(x[0],x[1]); if(!g){ b.textContent="Can't replay this one"; b.disabled=true; return } startWatch(g); if(watch){ watch.step=x[1]; watch.other=true; try{ window.scrollTo(0,0) }catch(e){} } }) }catch(e){} }   // (the game opens at its top, not where Scores was scrolled)
 function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
@@ -3353,8 +3365,12 @@ function render0(){
     // round 78: the box score under a rewatch too (Ian: "When I click rewatch I cannot see the box score"); it opens
     // by itself once the rewatch reaches the end
     const wbox=typeof boxHTML==="function"?boxHTML(watch.g,watch.i>=watch.script.length,watch.step):"";
-    el("app").innerHTML=watchView()+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
+    // round 81: how much of it to watch, as on the live screen (Highlights, Every chance: every moment the game had)
+    const depth=typeof hlCan==="function"&&hlCan()&&watch.i<watch.script.length?`<div class="liveplan" style="max-width:760px;margin:8px auto 0;padding:0 16px"><div class="fnote" style="margin:6px 0 4px">Watch</div>
+      <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
+    el("app").innerHTML=watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
     if(typeof hlMount==="function")hlMount();
+    document.querySelectorAll("[data-whl]").forEach(x=>x.onclick=()=>{ S.highlights=x.dataset.whl; save(); if(typeof hlSkip==="function"&&HL.cur)hlSkip(); watch.hl=undefined; watch.hlWait=false; tickWatch() });
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
     const st=el("wstep"); if(st)st.onclick=()=>{watch.paused=true;S.watchStep=true;stepWatch()};

@@ -300,7 +300,7 @@ function watchView(){
   const H=cur?cur.h:0, A=cur?cur.a:0, done=watch.i>=watch.script.length, tip=watch.i<0;
   const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
   const pens=g.pens?(g.pens===my||(g.pens==="home"&&g.home===my)||(g.pens==="away"&&g.away===my)):null;
-  const res=done?(mine>theirs||(mine===theirs&&pens===true)?"WIN":mine===theirs&&pens===null?"DRAW":"LOSS"):"";
+  const res=done?(g.home!==my&&g.away!==my?watchRes(g,mine,theirs,pens):mine>theirs||(mine===theirs&&pens===true)?"WIN":mine===theirs&&pens===null?"DRAW":"LOSS"):"";
   const lab=done?`FINAL &middot; ${res}`
         :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:tip?`<span class="live"></span>KICK-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`;

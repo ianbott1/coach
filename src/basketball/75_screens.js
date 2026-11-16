@@ -204,7 +204,7 @@ function watchView(){
   const cur=upto[upto.length-1]||null;
   const H=cur?cur.h:0, A=cur?cur.a:0, done=watch.i>=watch.script.length, tip=watch.i<0;
   const mine=(g.home===my)?H:A, theirs=(g.home===my)?A:H;
-  const lab=done?`FINAL${g.ot?" / OT":""} &middot; ${mine>theirs?"WIN":"LOSS"}`
+  const lab=done?`FINAL${g.ot?" / OT":""} &middot; ${watchRes(g,mine,theirs)}`
         :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:tip?`<span class="live"></span>TIP-OFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>${esc(cur.clock)}`;
   return `<div class="watchwrap">
