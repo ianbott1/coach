@@ -64,7 +64,7 @@ function tdClubs(){ const my=S.myTeam, H=typeof nflHumans==="function"?nflHumans
 function tdOffers(a){
   const my=S.myTeam; if(tdHurt(my,a))return [];
   const out=[]; tdClubs().forEach(t=>{ if(tdRecent(t))return; let best=null;
-    SEA.roster[t].forEach((q,b)=>{ if(!q||tdGrp(b)!==tdGrp(a)||tdHurt(t,b))return; const d=tdDeal(t,a,b); if(d&&d.yes&&(!best||d.now>best.now||(d.now===best.now&&d.fut>best.fut)))best=d });
+    SEA.roster[t].forEach((q,b)=>{ if(!q||tdGrp(b)!==tdGrp(a)||tdHurt(t,b))return; const d=tdDeal(t,a,b); if(d&&d.yes&&(d.now>0||d.fut>0)&&(!best||d.now>best.now||(d.now===best.now&&d.fut>best.fut)))best=d });
     if(best)out.push(best) });
   return out.sort((x,y)=>y.now-x.now||y.fut-x.fut).slice(0,5) }
 // who of mine a club would take for one of theirs
@@ -104,17 +104,17 @@ function tradesView(){
   if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${esc(x.gn)} to ${esc(x.t)}, ${esc(x.qn)} to you.</div>` }
   const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${esc(x.gn)} to ${esc(x.t)} for ${esc(x.qn)}</div>`).join("")}</div>`;
   if(!st.open)return h;
-  const cap=LEAGUE.taxLine||LEAGUE.cap; if(cap&&R.some(p=>p&&p.k))h+=`<div class="fnote">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;
+  const cap=LEAGUE.taxLine||LEAGUE.cap; if(cap&&R.some(p=>p&&p.k))h+=`<div class="note">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;
   // shop one of mine
   h+=`<div class="grouphead">Shop a player</div>`;
   if(TD_UI.shop!=null&&R[TD_UI.shop]){ const a=TD_UI.shop, O=tdOffers(a);
     h+=`<div class="card" style="padding:8px 12px"><div style="margin-bottom:6px">Offers for ${tdPl(my,R[a],a)} <button class="promo" data-tdshop="-1">Back</button></div>`+
       (O.length?O.map((d,k)=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${esc(d.t)}: ${tdPl(d.t,d.get,d.b)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${esc(d.t)}|${d.a}|${d.b}">Trade</button></div>`).join(""):
-        `<div class="fnote">No club would give a man at his spot for him${tdHurt(my,a)?" (he's injured)":""}.</div>`)+`</div>` }
+        `<div class="fnote">No club would give you a better man at his spot, now or in two years, for him.</div>`)+`</div>` }
   else h+=`<div class="card" style="padding:6px 12px">${R.map((p,i)=>p&&!tdHurt(my,i)?`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,p,i)}</div></div><button class="promo" data-tdshop="${i}">Shop</button></div>`:"").join("")}</div>`;
   // ask about one of theirs
   const C=tdClubs(), t=TD_UI.club&&C.indexOf(TD_UI.club)>=0?TD_UI.club:null;
-  h+=`<div class="grouphead">Ask about a player</div><div class="card" style="padding:8px 12px"><select data-tdclub style="max-width:100%"><option value="">Choose a club</option>${C.map(c=>`<option${c===t?" selected":""}>${esc(c)}</option>`).join("")}</select>`;
+  h+=`<div class="grouphead">Ask about a player</div><div class="card" style="padding:8px 12px"><div class="confpick"><select data-tdclub><option value="">Choose a club</option>${C.map(c=>`<option${c===t?" selected":""}>${esc(c)}</option>`).join("")}</select></div>`;
   if(t){ const T=SEA.roster[t];
     if(TD_UI.ask!=null&&T[TD_UI.ask]){ const b=TD_UI.ask, A=tdAsk(t,b);
       h+=`<div style="margin:8px 0">${t} on ${tdPl(t,T[b],b)} <button class="promo" data-tdask="-1">Back</button></div>`+
