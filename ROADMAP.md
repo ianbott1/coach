@@ -53,7 +53,16 @@ on numbers they can't trust and a sport they read rather than watch.
 - Football: kickers named ("Tre Obi 35-yd field goal"), on the kick clip and the game-winner line; one game clock for
   the live header, the run of play and the calls (engine 7 seasons); a failed fourth-down try plays as a clip; the
   scouting call says "Before your first drive" when they had the ball first.
-- Not done from this list: player stats in the live panel (the players' lines are credited when the game ends).
+- Football (engine 7): the run of play is seeded by the fixture, not the final score: a live touchdown named one scorer
+  and the box score another in 18 of 29 (the testers' TD contradictions); now 0 of 89.
+- Hockey and basketball clips: a man who takes the puck or ball twice goes to each spot (a third of clips passed to
+  empty space: the invisible passers). Soccer's corner taker stays at the flag until he's struck it.
+- Skip stops once for a close finish (and an overtime). Knockouts don't offer "the point". No "Target: 0 wins".
+- Baseball (schedV 4): no second series straight against the same club, where avoidable (60% of club-seasons had
+  seven straight against one club; 5% now).
+- Scores' box sheets are drawn when opened (a busy day's page was 1.6 MB with them all drawn).
+- Not done from this list: player stats in the live panel (the players' lines are credited when the game ends);
+  a converted fourth down has no clip (only a failed try). Not reproduced: the Div/Conf column against records.
 
 ## Rounds 80-82: watching
 - **Replay the whole game** (Ian's top item; highlights stay the default).
