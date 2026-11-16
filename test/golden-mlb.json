@@ -115,6 +115,11 @@
    "fp": "9ecb5f7f3d4d86f0",
    "from": "59318f98b626708e",
    "note": "Round 79 (engine 7, schedV 4): a pinch hitter can't pinch-hit twice (648 games: 21 repeats before, 0 after); no second series straight against the same club (7 straight in 60% of club-seasons before, 5% after); decisions line and probable starters on screens"
+  },
+  {
+   "fp": "9ecb5f7f3d4d86f0",
+   "from": "9ecb5f7f3d4d86f0",
+   "note": "Round 79b: box sheets in Scores drawn when opened (screens only)"
   }
  ],
  "result": {

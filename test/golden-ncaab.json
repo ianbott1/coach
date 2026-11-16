@@ -485,6 +485,11 @@
    "fp": "ab795602f0b8e23e",
    "from": "89c02cd75457bb89",
    "note": "Round 79: screens only (box score on every played game in Scores, sortable roster stats, schedule first on the team page, football's clock and named kicker, knockout wording, no zero-win target); results identical to round 78 field by field, the universe differs only by its engine stamp (7)"
+  },
+  {
+   "fp": "ab795602f0b8e23e",
+   "from": "ab795602f0b8e23e",
+   "note": "Round 79b: box sheets in Scores drawn when opened (screens only)"
   }
  ],
  "result": {

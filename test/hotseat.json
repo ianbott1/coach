@@ -1,5 +1,5 @@
 {
- "fp": "0db891be8c7c18a1",
+ "fp": "130b297acda6d40c",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -310,6 +310,11 @@
    "fp": "0db891be8c7c18a1",
    "from": "78e80f48c9dc2aee",
    "note": "Round 74: engine 4 (players' lines from the game's record)"
+  },
+  {
+   "fp": "130b297acda6d40c",
+   "from": "0db891be8c7c18a1",
+   "note": "Round 79b: football's run of play seeded by the fixture (engine 7); players' lines and awards move, results identical"
   }
  ],
  "out": [
@@ -323,7 +328,7 @@
       "result": "Lost the Duke's Mayo Bowl",
       "grade": "D"
      },
-     "book": "8c5b8d201188a98d"
+     "book": "be4b89162468f120"
     },
     {
      "team": "Rice",
@@ -332,7 +337,7 @@
       "result": "Lost the Frisco Bowl",
       "grade": "A"
      },
-     "book": "2a63fc1075c51065"
+     "book": "a14fb70ce58f2ec5"
     }
    ]
   },
@@ -346,7 +351,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A"
      },
-     "book": "3afad2e4bbb9b827"
+     "book": "479aff90020a5b13"
     },
     {
      "team": "Rice",
@@ -355,7 +360,7 @@
       "result": "Lost the Camellia Bowl",
       "grade": "A"
      },
-     "book": "daca8c48ebeebcf6"
+     "book": "875e4225df5e535c"
     }
    ]
   },
@@ -369,7 +374,7 @@
       "result": "Eliminated in the national title game",
       "grade": "A+"
      },
-     "book": "1d549c534272e275"
+     "book": "df0c2a69408ada06"
     },
     {
      "team": "Rice",
@@ -378,7 +383,7 @@
       "result": "Won the Music City Bowl",
       "grade": "A+"
      },
-     "book": "c78dd9a61c144810"
+     "book": "7d9054fc3b45e322"
     }
    ]
   }

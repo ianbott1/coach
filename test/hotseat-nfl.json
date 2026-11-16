@@ -1,5 +1,5 @@
 {
- "fp": "c734f78561504f84",
+ "fp": "7311cd745c9a8b1a",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -335,6 +335,11 @@
    "fp": "c734f78561504f84",
    "from": "61dbdcd8eeb22c37",
    "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
+  },
+  {
+   "fp": "7311cd745c9a8b1a",
+   "from": "c734f78561504f84",
+   "note": "Round 79b: football's run of play seeded by the fixture (engine 7); players' lines and awards move, results identical"
   }
  ],
  "out": [
@@ -348,7 +353,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "abbed84c692a0b31"
+     "book": "d7c2bd2f46ce220e"
     },
     {
      "team": "Tennessee",
@@ -357,7 +362,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "627f385f34d161f5"
+     "book": "52be9f95f2242c81"
     }
    ]
   },
@@ -371,7 +376,7 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "5b52bb25e272c648"
+     "book": "01fb67a0e114ca48"
     },
     {
      "team": "Tennessee",
@@ -380,7 +385,7 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "87f6189186906d79"
+     "book": "fe2b15c87dd65dc8"
     }
    ]
   },
@@ -394,7 +399,7 @@
       "result": "Lost the conference championship",
       "grade": "A"
      },
-     "book": "24872c3ff511b820"
+     "book": "6cffa49fd04ece40"
     },
     {
      "team": "Tennessee",
@@ -403,7 +408,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "208bfd2e6fdc1641"
+     "book": "04a7c4f5a0a0b2fe"
     }
    ]
   }
