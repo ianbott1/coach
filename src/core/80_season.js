@@ -248,10 +248,11 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
-    // round 81: the names the credit put on the plays (football's who-played, the scorers and assists), kept with the
-    // dice so a replay names the same men as the box score even after injuries and moves
-    if(!isUser&&this._rp){ const E=this._rp.get(this.step+"|"+a+"|"+b+"|"+(cup?1:0)); if(E)E.st=JSON.stringify((gs.drives||[]).map(d=>[d.by||0,(d.ev||[]).map(e=>e.nm||e.an||e.dp||e.un?[e.nm||0,e.an||0,e.dp||0,e.un||0]:0)])) }
+    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function"){ this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+      // round 81: the names the credit put on the plays (football's who-played, the scorers and assists), kept with the
+      // dice so a replay names the same men as the box score even after injuries and moves. (Inside this branch: placed
+      // between the if and its else, it took the else for itself, and every user game was credited twice.)
+      if(!isUser&&this._rp){ const E=this._rp.get(this.step+"|"+a+"|"+b+"|"+(cup?1:0)); if(E)E.st=JSON.stringify((gs.drives||[]).map(d=>[d.by||0,(d.ev||[]).map(e=>e.nm||e.an||e.dp||e.un?[e.nm||0,e.an||0,e.dp||0,e.un||0]:0)])) } }
     else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
