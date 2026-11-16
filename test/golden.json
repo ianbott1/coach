@@ -1,5 +1,5 @@
 {
- "fp": "4f1a14ac45836324",
+ "fp": "218e7c8ac6d1c80b",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -514,6 +514,11 @@
    "fp": "4f1a14ac45836324",
    "from": "fd90b433bfbedc62",
    "note": "Round 80 (engine 8): a drive after a strategy call keeps its start, so your games' results move; clips (returns, conversions, pursuit) draw nothing"
+  },
+  {
+   "fp": "218e7c8ac6d1c80b",
+   "from": "4f1a14ac45836324",
+   "note": "Round 81: screens only (the Watch button on computer games in Scores); results identical to round 80 field by field"
   }
  ],
  "result": {
@@ -552,7 +557,7 @@
     "heis": "d97c1f876bb0ee53",
     "history": "38b6e9892477c09c",
     "universe": "450b95e37dd62e6a",
-    "screens": "170d8e1da0dd816c"
+    "screens": "bf7514657b8f4a04"
    },
    {
     "year": 2029,

@@ -1,5 +1,5 @@
 {
- "fp": "bf2767ea0e070e74",
+ "fp": "1417645fc89929b9",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -470,6 +470,11 @@
    "fp": "bf2767ea0e070e74",
    "from": "0300e487555c7555",
    "note": "Round 80: engine number 8 in the universe (the one-season dumps differ in the universe only); clip changes draw nothing"
+  },
+  {
+   "fp": "1417645fc89929b9",
+   "from": "bf2767ea0e070e74",
+   "note": "Round 81: screens only (the Watch button on computer games in Scores); results identical to round 80 field by field"
   }
  ],
  "result": {
@@ -496,7 +501,7 @@
     "heis": "d1fdb803b5057b06",
     "history": "22201acf6615b881",
     "universe": "d2dc21bd1b0c6253",
-    "screens": "a0ac6e7366e58189"
+    "screens": "92fc959734914650"
    }
   ],
   "Edmonton#777": [
