@@ -58,7 +58,7 @@ const shut=await p.evaluate(()=>{let n=0;while(tdState().open&&SEA.phase==="week
 ok(!shut.open&&shut.tab,'closed after the deadline: '+shut.why);
 // next season: the traded men where they went, their seasons banked
 const S_TEAM=()=>team;
-const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry=function(u){ orig(u); carried={mine:u.roster[S.myTeam].some(q=>q&&q.n===x.qn),theirs:u.roster[x.t].some(q=>q&&q.n===x.gn)} }; const run0=LEAGUE.offseason.run; let banked=null; LEAGUE.offseason.run=function(u,...rest){ const q=u.roster[S.myTeam].find(q=>q&&q.n===x.qn); banked=q&&q.hist?q.hist.slice(-1)[0]:null; LEAGUE.offseason.run=run0; return run0.call(this,u,...rest) }; let n=0;while(SEA.phase!=="done"&&n<500){simAdvance();n++} try{ openOffseason(); const O=S.off; if(O&&O.act&&O.act.userOpen)O.move=S.myTeam;
+const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry=function(u){ orig(u); carried={mine:u.roster[S.myTeam].some(q=>q&&q.n===x.qn),theirs:u.roster[x.t].some(q=>q&&q.n===x.gn)}; const pr=u.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn); carried.ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })() }; const run0=LEAGUE.offseason.run; let banked=null; LEAGUE.offseason.run=function(u,...rest){ const q=u.roster[S.myTeam].find(q=>q&&q.n===x.qn); banked=q&&q.hist?q.hist.slice(-1)[0]:null; LEAGUE.offseason.run=run0; return run0.call(this,u,...rest) }; let n=0;while(SEA.phase!=="done"&&n<500){simAdvance();n++} try{ openOffseason(); const O=S.off; if(O&&O.act&&O.act.userOpen)O.move=S.myTeam;
     if(LEAGUE.ui.offseasonBlock()!==null&&O.picks&&O.picks.resign)Object.keys(O.picks.resign).forEach(k=>O.picks.resign[k]=false);   // under the cap: let the expiring go
     commitOffseason() }catch(e){return {err:'offseason '+e.message}}
   const inU=(t,nm)=>U.roster[t]&&U.roster[t].some(q=>q&&q.n===nm);
@@ -66,7 +66,7 @@ const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry
   const where=NAMES.filter(t=>U.roster[t].some(q=>q&&q.n===x.gn)); const H=S.history[S.history.length-1], L=H&&H.league; const fate=L?['released','retired','signed','resigned','left','gone'].filter(k=>JSON.stringify(L[k]||'').includes(x.gn)):[];
   const pr=U.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn), ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })();
   return {ordered,banked,carried,where,fate,block:LEAGUE.ui.offseasonBlock&&S.off?LEAGUE.ui.offseasonBlock():null,year:SEA.year,phase:SEA.phase,mine:inU(S.myTeam,x.qn),theirs:inU(x.t,x.gn),hist:g&&g.hist?g.hist.slice(-1)[0]:null}},[pre]);
-console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); ok(nx.ordered,'next season the better of the two at his spot starts'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
+console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); ok(nx.carried&&nx.carried.ordered,'carried into next season, the better of the two at his spot starts'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
 // fleece: every deal any club would take (any of yours, any of theirs at the spot), the best each day, to the deadline
 for(const obj of ['now+later','now']){ const fl=await p.evaluate(([team,obj])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
   const my=S.myTeam, r0=teamRating(SEA.roster[my]), f0=tdVal(SEA.roster[my],true); let k=0;
@@ -76,7 +76,7 @@ for(const obj of ['now+later','now']){ const fl=await p.evaluate(([team,obj])=>{
     if(best){tdDo(best);k++} else simAdvance() }
   return {k,gain:teamRating(SEA.roster[my])-r0,fut:(tdVal(SEA.roster[my],true)-f0)/R_SLOPE}},[team,obj]);
   console.log(`   fleece (${obj}): ${fl.k} trades, team rating ${fl.gain>=0?'+':''}${fl.gain.toFixed(2)} now, ${fl.fut>=0?'+':''}${fl.fut.toFixed(2)} in two years`);
-  FL.push({f,obj,...fl}) }
+  FL.push({f,obj,...fl}); if(obj==='now+later')ok(fl.gain+fl.fut<=0.05,`no coach comes out ahead now and later together by trading (${(fl.gain+fl.fut).toFixed(2)})`) }
 if(false){ const fl=await p.evaluate(([team])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
   const r0=teamRating(SEA.roster[S.myTeam]), b0=SEA.talent.base[S.myTeam]; let k=0, fut=0;
   while(tdState().open&&SEA.phase==="week"){ const R=SEA.roster[S.myTeam]; let best=null; R.forEach((q,i)=>{ if(!q)return; tdOffers(i).forEach(d=>{ if(d.now>0&&(!best||d.now>best.now))best=d }) });

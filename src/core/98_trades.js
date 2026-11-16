@@ -6,7 +6,7 @@
    What a club wants: how much stronger the deal makes it now and in two years (its own roster, rated now and as its
    players will be: the young toward their ceiling, the old past 29 losing a step), weighed by where it stands. A
    contender wants now; a club out of it wants later. It takes the deal when that is worth a little more than it gives
-   (TD_PREM), it fits under the cap, and it hasn't traded with you in the last TD_GAP days. Injured men aren't traded.
+   (TD_PREM), you don't come out ahead now and later together, it fits under the cap, and it hasn't traded with you in the last TD_GAP days. Injured men aren't traded.
 
    A trade is kept with its day among the promotions (S.promos), as a promotion is: a reload plays it at the same point. Each man takes the
    other's slot and the better of the two at that spot starts. Both clubs' strength moves by what the sim reads (the
@@ -54,8 +54,13 @@ function tdDeal(t,a,b){
   const M2=tdAfter(M,a,get), T2=tdAfter(T,b,give), w=tdWin(t);
   const score=w*(tdVal(T2,false)-tdVal(T,false))+(1-w)*(tdVal(T2,true)-tdVal(T,true));
   const cap=LEAGUE.taxLine||LEAGUE.cap, over=cap?[[M,M2],[T,T2]].some(([x,y])=>tdPay(y)>cap&&tdPay(y)>tdPay(x)):false;
-  return {t:t,a:a,b:b,give:give,get:get,score:score,yes:score>=TD_PREM&&!over,over:over,w:w,
-    now:teamRating(M2)-teamRating(M), fut:(tdVal(M2,true)-tdVal(M,true))/R_SLOPE*1}
+  const now=teamRating(M2)-teamRating(M), fut=(tdVal(M2,true)-tdVal(M,true))/R_SLOPE;
+  // and it won't give you more than you give, now and in two years counted together: it will swap one for the other
+  // when that suits where it stands, never both (measured: without this a coach who took the best deal every day
+  // gained in both, 16 trades for +4.3 now and +10.7 in two years in basketball, buying now from clubs out of it and
+  // selling it dear to contenders)
+  const fair=now+fut<=-0.01;
+  return {t:t,a:a,b:b,give:give,get:get,score:score,yes:score>=TD_PREM&&!over&&fair,over:over,fair:fair,w:w,now:now,fut:fut}
 }
 // kept among the promotions (S.promos), so a reload replays a trade and a promotion on one day in the order they were made
 const tdLog=()=>{ const L=S.promos||{}, o={}; Object.keys(L).forEach(k=>{ const v=L[k].filter(x=>x&&x.tr).map(x=>x.tr); if(v.length)o[k]=v }); return o };
