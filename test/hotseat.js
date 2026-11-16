@@ -10,7 +10,9 @@ const api=m.exports.load(file);
 const LG=api.leagueId(), [TA,TB]=LG==='cfb'?['Alabama','Rice']:LG==='ncaab'?['Duke','North Carolina']:LG==='nba'?['Boston','New York']:LG==='nhl'?['Boston','Montreal']:LG==='epl'?['Arsenal','Tottenham Hotspur']:LG==='mlb'?['NY Yankees','Boston']:['Kansas City','Tennessee'];
 api.newDynasty(TA,99,'A',[{team:TA,name:'Coach A'},{team:TB,name:'Coach B'}]);
 const out=[], crashes=[];
-for(let y=0;y<3;y++){
+// round 80: baseball two seasons, not three (162 games a coach a season: its check alone took 29 minutes); one
+// offseason still passes between the coaches
+for(let y=0;y<(LG==='mlb'?2:3);y++){
   let guard=0;
   // every season starts with coach 1, and every game a coached team plays is
   // played live by a person (a head-to-head counts once)

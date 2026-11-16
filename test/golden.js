@@ -115,11 +115,14 @@ const CASES = LG==='cfb' ? [['Alabama',1,4],['Rice',2024,4],['Oregon',777,3],['K
   : LG==='mlb' ? [['Seattle',1,2],['Colorado',777,2]]
   : LG==='epl' ? [['Arsenal',1,2],['Wrexham',777,2]]
   : [['Kansas City',1,4],['Tennessee',2024,4],['Detroit',777,3],['NY Giants',31337,3]];
+// --fast (round 80): the quick tier's fingerprint, one career's first season (its own file, golden-fast-*.json), for a
+// check on every change; the full fingerprint before a release
+const FAST = args.includes('--fast');
 const result = {};
-for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
+for (const [t,s,n] of (FAST ? [[CASES[0][0], CASES[0][1], 1]] : CASES)) result[t+'#'+s] = career(file, t, s, n);
 // Schedules for many 2026 universes. Careers alone only see four opening
 // seasons, which missed the double-booking bug entirely.
-{ const api = load(file);
+if (!FAST) { const api = load(file);
   const sch = [];
   for (let s = 1; s <= 60; s++) {
     const pull = api.schedule(s);
@@ -128,7 +131,7 @@ for (const [t,s,n] of CASES) result[t+'#'+s] = career(file, t, s, n);
   result['schedules#60'] = [{ all: h(sch) }];
 }
 const fp = h(result);
-const GOLD = path.join(__dirname, LG==='cfb' ? 'golden.json' : 'golden-'+LG+'.json');
+const GOLD = path.join(__dirname, (FAST?'golden-fast':'golden')+(LG==='cfb' ? '' : '-'+LG)+'.json');
 /* Every run ends with exactly one verdict line: MATCH or MISMATCH.
      node test/golden.js [file.html]                    compare with golden.json
      node test/golden.js [file.html] --write --note "…"  re-record, then compare
