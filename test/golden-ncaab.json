@@ -1,5 +1,5 @@
 {
- "fp": "ab795602f0b8e23e",
+ "fp": "356ac22bb681bffd",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -490,6 +490,11 @@
    "fp": "ab795602f0b8e23e",
    "from": "ab795602f0b8e23e",
    "note": "Round 79b: box sheets in Scores drawn when opened (screens only)"
+  },
+  {
+   "fp": "356ac22bb681bffd",
+   "from": "ab795602f0b8e23e",
+   "note": "Round 80: engine number 8 in the universe (the one-season dumps differ in the universe only); clip changes draw nothing"
   }
  ],
  "result": {
@@ -503,7 +508,7 @@
     "poll": "5e83e3ec28f66ef4",
     "heis": "2cf4aebe2d39055b",
     "history": "259c3e0fa871b237",
-    "universe": "ce40e800e03131e8",
+    "universe": "94def3669f23ab14",
     "screens": "97cdf24b98571c93"
    },
    {
@@ -515,7 +520,7 @@
     "poll": "f465e142cb52b139",
     "heis": "c8f41de2dcb0a4f7",
     "history": "33abdbbb920cb934",
-    "universe": "dfdaa9c2de7fb7aa",
+    "universe": "7946907935761b36",
     "screens": "0bd6c146b107b0b5"
    }
   ],
@@ -529,7 +534,7 @@
     "poll": "535bf9b537c8c7a6",
     "heis": "e21cc39fcc2f01f4",
     "history": "4a2a918f2781b39e",
-    "universe": "d627997ad1e8d0ef",
+    "universe": "03619eac5a2f871b",
     "screens": "2ba3e310c9e8b3c2"
    },
    {
@@ -541,7 +546,7 @@
     "poll": "6ac009bf5476fcf9",
     "heis": "2118334fedce7383",
     "history": "1f96c5d61306b950",
-    "universe": "a3e2576ceb1fc185",
+    "universe": "79ddea23421841fa",
     "screens": "ee190dcd7e8e1748"
    }
   ],
@@ -555,7 +560,7 @@
     "poll": "36c47d6e24ac2fca",
     "heis": "7f76a7dc93990fa1",
     "history": "1cbe9e195694e5f6",
-    "universe": "2669f951b05323b9",
+    "universe": "2ec1fb527ee8e7de",
     "screens": "761c9b97d28ac29a"
    },
    {
@@ -567,7 +572,7 @@
     "poll": "d0d46c3c2c34a4fe",
     "heis": "a79563ff5420807b",
     "history": "70cf924bb5cf00c3",
-    "universe": "48b0dca20a0ad778",
+    "universe": "6f4374f6d425940a",
     "screens": "9172cc716c6a1fef"
    }
   ],

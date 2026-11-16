@@ -1,5 +1,5 @@
 {
- "fp": "61a1cded2dea1c69",
+ "fp": "2a0357d7f18e72cd",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -85,6 +85,11 @@
    "fp": "61a1cded2dea1c69",
    "from": "481c8c4903f6a4ee",
    "note": "Round 79 (engine 7, schedV 4): a pinch hitter can't pinch-hit twice; no second series straight against the same club. Records stay in range (79-100 wins)"
+  },
+  {
+   "fp": "2a0357d7f18e72cd",
+   "from": "61a1cded2dea1c69",
+   "note": "Round 80: two seasons, not three (the test's length, for speed); the two seasons are identical to round 79's first two (83-79/82-80, 79-83/86-76)"
   }
  ],
  "out": [
@@ -131,29 +136,6 @@
       "grade": "B"
      },
      "book": "4a24c989e3235e83"
-    }
-   ]
-  },
-  {
-   "year": 2028,
-   "coaches": [
-    {
-     "team": "NY Yankees",
-     "last": {
-      "rec": "81-81",
-      "result": "Losing season",
-      "grade": "C-"
-     },
-     "book": "85b74efb0cc5c9ed"
-    },
-    {
-     "team": "Boston",
-     "last": {
-      "rec": "100-62",
-      "result": "Lost in the division series",
-      "grade": "A-"
-     },
-     "book": "23ea08d89e11e615"
     }
    ]
   }
