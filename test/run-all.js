@@ -74,7 +74,10 @@ add('reported cases (all six)',['regressions.js'],{timeout:1800000});   /* ~375s
       const ok=/^(MATCH|AGREE)/.test(last)&&!/TIMEOUT/.test(out);
       results.push({name:t.name,ok,last,secs:Math.round((Date.now()-s)/1000),tail:lines.slice(-6).join('\n')}); res()});
   });
-  const pick=()=>{ const i=todo.findIndex(t=>!isBrowser(t)||browsers===0); return i<0?null:todo.splice(i,1)[0] };
+  // round 82: two browser tests at once on two cores (one at a time left a core idle once only browser tests were left:
+  // the round 81 run took 112 minutes); BROWSERS=1 to go back
+  const MAXB=Math.max(1,+(process.env.BROWSERS||Math.min(2,W)));
+  const pick=()=>{ const i=todo.findIndex(t=>!isBrowser(t)||browsers<MAXB); return i<0?null:todo.splice(i,1)[0] };
   const worker=async()=>{ while(todo.length){ const t=pick(); if(!t){ await new Promise(r=>setTimeout(r,500)); continue }
     const br=isBrowser(t); if(br)browsers++; await run(t); if(br)browsers--;
     const r=results[results.length-1]; console.log(`${r.ok?'  ok  ':'  FAIL'} ${r.name} (${r.secs}s)`) } };
