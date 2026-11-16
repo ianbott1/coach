@@ -1,5 +1,5 @@
 {
- "fp": "481c8c4903f6a4ee",
+ "fp": "61a1cded2dea1c69",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -80,6 +80,11 @@
    "fp": "481c8c4903f6a4ee",
    "from": "6b1c25643e6d3cd2",
    "note": "Round 77: engine 6"
+  },
+  {
+   "fp": "61a1cded2dea1c69",
+   "from": "481c8c4903f6a4ee",
+   "note": "Round 79 (engine 7, schedV 4): a pinch hitter can't pinch-hit twice; no second series straight against the same club. Records stay in range (79-100 wins)"
   }
  ],
  "out": [
@@ -89,20 +94,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "86-76",
+      "rec": "83-79",
       "result": "Lost in the wild-card series",
       "grade": "B-"
      },
-     "book": "a6599bc03b4db323"
+     "book": "0440bcf65c7dc334"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "67-95",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "82-80",
+      "result": "Lost in the wild-card series",
+      "grade": "B-"
      },
-     "book": "af99744e4ec9e1b7"
+     "book": "442f000f1b9654e6"
     }
    ]
   },
@@ -112,20 +117,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "80-82",
+      "rec": "79-83",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "4f1b5e0ed8e2c32c"
+     "book": "6b50a51a665f8863"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "89-73",
-      "result": "Lost in the wild-card series",
-      "grade": "A-"
+      "rec": "86-76",
+      "result": "Lost in the division series",
+      "grade": "B"
      },
-     "book": "4ffa6526888fe302"
+     "book": "4a24c989e3235e83"
     }
    ]
   },
@@ -135,20 +140,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "95-67",
-      "result": "Lost the World Series",
-      "grade": "A"
+      "rec": "81-81",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "a651f6d204b95a29"
+     "book": "85b74efb0cc5c9ed"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "84-78",
-      "result": "Lost in the championship series",
-      "grade": "A"
+      "rec": "100-62",
+      "result": "Lost in the division series",
+      "grade": "A-"
      },
-     "book": "d349dea14cd4f7ee"
+     "book": "23ea08d89e11e615"
     }
    ]
   }
