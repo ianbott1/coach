@@ -1,0 +1,26 @@
+{
+ "fp": "7796a9d9893f209f",
+ "log": [
+  {
+   "fp": "7796a9d9893f209f",
+   "from": null,
+   "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  }
+ ],
+ "result": {
+  "Seattle#1": [
+   {
+    "year": 2026,
+    "games": "da304814c70e495b",
+    "post": "ff01c5adba769c50",
+    "champion": "Cleveland",
+    "rec": "1debeb7fe763363c",
+    "poll": "b9cf44c8b62b3829",
+    "heis": "f1fe02d2875be662",
+    "history": "4e46de7d8f091498",
+    "universe": "9b01dd45200cd1fc",
+    "screens": "61edbe6701d37a7f"
+   }
+  ]
+ }
+}

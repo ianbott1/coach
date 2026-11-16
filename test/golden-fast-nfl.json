@@ -1,0 +1,26 @@
+{
+ "fp": "dc567a760422649a",
+ "log": [
+  {
+   "fp": "dc567a760422649a",
+   "from": null,
+   "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  }
+ ],
+ "result": {
+  "Kansas City#1": [
+   {
+    "year": 2026,
+    "games": "d6ded02a9156a128",
+    "post": "294faa75c61f031b",
+    "champion": "Baltimore",
+    "rec": "2c7491cae91a62fd",
+    "poll": "4fc18b2790d24ba9",
+    "heis": "bff623b4075a3311",
+    "history": "1daa1f16bbeec47c",
+    "universe": "a6c62eba87db271c",
+    "screens": "5a43fa022f214412"
+   }
+  ]
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "fp": "8832b5880900579a",
+ "log": [
+  {
+   "fp": "8832b5880900579a",
+   "from": null,
+   "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  }
+ ],
+ "result": {
+  "Alabama#1": [
+   {
+    "year": 2026,
+    "games": "04d85b4f5a0631dc",
+    "post": "cff1ff9f4adfd38a",
+    "champion": "Notre Dame",
+    "rec": "90c8147b35906c6f",
+    "poll": "b5723de932ba10e7",
+    "heis": "58b3932bdaf791ee",
+    "history": "0ef0014165a8a0dc",
+    "universe": "c442637244704f45",
+    "screens": "81b79dfeb4b96034"
+   }
+  ]
+ }
+}

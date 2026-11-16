@@ -1,0 +1,26 @@
+{
+ "fp": "50b6ced4602cd001",
+ "log": [
+  {
+   "fp": "50b6ced4602cd001",
+   "from": null,
+   "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  }
+ ],
+ "result": {
+  "Duke#1": [
+   {
+    "year": 2026,
+    "games": "037161ab93334b1c",
+    "post": "a12f838c0f89ebb1",
+    "champion": "Kentucky",
+    "rec": "332ccd0992fac95d",
+    "poll": "5e83e3ec28f66ef4",
+    "heis": "2cf4aebe2d39055b",
+    "history": "259c3e0fa871b237",
+    "universe": "ce40e800e03131e8",
+    "screens": "97cdf24b98571c93"
+   }
+  ]
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "fp": "ed5aedc9bd02de30",
+ "log": [
+  {
+   "fp": "ed5aedc9bd02de30",
+   "from": null,
+   "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  }
+ ],
+ "result": {
+  "Arsenal#1": [
+   {
+    "year": 2026,
+    "games": "62ee10096ce74575",
+    "post": "dff1ed81ff99c860",
+    "champion": "Manchester City",
+    "rec": "16f1943b22f7d95b",
+    "poll": "7b7f3d8727aeca30",
+    "heis": "95efb282beb2b16c",
+    "history": "9c83b384bb87e07e",
+    "universe": "e9b9f85b1c0cac82",
+    "screens": "161c06fedd6fb3a9"
+   }
+  ]
+ }
+}

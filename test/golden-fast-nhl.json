@@ -1,0 +1,26 @@
+{
+ "fp": "8dd825c749242721",
+ "log": [
+  {
+   "fp": "8dd825c749242721",
+   "from": null,
+   "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  }
+ ],
+ "result": {
+  "Boston#1": [
+   {
+    "year": 2026,
+    "games": "93ec3829af2af484",
+    "post": "069f03be48f6481c",
+    "champion": "Los Angeles",
+    "rec": "d601cb8345b59261",
+    "poll": "e3747dc9606f9bbb",
+    "heis": "d51c9d0a44f4d257",
+    "history": "bd9b6fef6652f8a2",
+    "universe": "abbc26115399436f",
+    "screens": "d9b45f35c9cde262"
+   }
+  ]
+ }
+}
