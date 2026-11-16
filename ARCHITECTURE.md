@@ -1867,13 +1867,11 @@ Measured value, even sides at home (tests below):
 2. Before changing anything, rebuild and confirm golden matches.
 3. Verify by measurement, not by reading code; every claim about behaviour
    comes from a test run.
-4. Run the suite before every commit and read the result before writing the
-   message:   node test/run-all.js --quick   (full: without --quick).
-   One CPU: the quick suite takes ~8 minutes, the full one ~10-12.
-   Don't wait on it with a pgrep loop: it matches its own command line.
-   `python3 build.py site` builds all six into dist/ and dist/site/;
-   plain `python3 build.py` builds college football only.
-   Wait for the summary line in the output file instead.
+4. Two tiers (round 80). On every change: node test/run-all.js --fast (about 6 minutes: one-season fingerprints,
+   golden-fast-*.json, and the cheap checks). Before a release: node test/run-all.js --quick (about 90 minutes on two
+   cores; full: without --quick). run-all runs one test a core, one browser test at a time, longest first by the last
+   run's times (test/timings.json). Read the result before writing the message.
+   `python3 build.py site` builds all seven into dist/site/. Wait for the summary line in a fresh output file.
 5. Check simulation changes against the calibration targets below.
 6. Tell Ian plainly when something is broken, a plan is wrong, or you made a
    mistake.
