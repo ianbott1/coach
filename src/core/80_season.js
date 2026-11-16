@@ -365,13 +365,15 @@ class Season{
         if(!pl)return;
         if(pl.from===undefined||pl.from===null)pl.from=this.year-(pl.c||0);
         pl.peak=Math.max(pl.peak||0,pl.r||0);
-        const src=live[i];
-        if(!src||!src.st2||src.n!==pl.n)return;      // same man, same slot
-        if(!pl.car){pl.car=blankStats(POS[i%POS.length].p); pl.car.yrs=0}
+        // round 83: the same man wherever he finished the season: a promotion, a staff role or a trade moves him
+        // to another slot (a promoted man's season went unbanked before: same man, same slot only)
+        let li=live[i]&&live[i].n===pl.n?i:live.findIndex(x=>x&&x.n===pl.n); const src=li>=0?live[li]:null;
+        if(!src||!src.st2)return;
+        if(!pl.car){pl.car=blankStats(POS[li%POS.length].p); pl.car.yrs=0}
         addStats(pl.car,src.st2);
         pl.car.yrs=(pl.car.yrs||0)+1;
         // round 69: the season kept as its own line, for the player's page (careers before this have only the total)
-        (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[i%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
+        (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[li%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
       });
     });
   }

@@ -611,3 +611,4 @@ LEAGUE.poachOffers=function(u,rng,rep,openings,current){
   return openings.filter(t=>t!==current&&DIVS[CONF[t]].tier>=myT-1&&u.program[t]>mine+80&&u.program[t]<=mine+150+rep*4)
     .sort((a,b)=>u.program[b]-u.program[a]).slice(0,2);
 };
+LEAGUE.trade={window:["Jan"],shut:"Feb 2",sameDiv:true};   // round 83: the January window, within your division

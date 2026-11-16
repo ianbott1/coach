@@ -552,3 +552,4 @@ function wcRace(my){
     const wc=teams.filter(t=>!lead[t]).sort((a,b)=>sea._tb(a,b)), i=wc.indexOf(my), gb=(a,b)=>((R[a][0]-R[b][0])+(R[b][1]-R[a][1]))/2;
     if(i<3){ const g=gb(my,wc[3]); return `In a wild-card place${g>0?`, ${g} game${g===1?"":"s"} clear`:""}.` }
     const g=gb(wc[2],my); return `${g} game${g===1?"":"s"} out of the last wild card.` }catch(e){ return null } }
+LEAGUE.trade={by:"Jul 31"};   // round 83: the deadline, the end of July

@@ -401,6 +401,7 @@ function snap(u){return JSON.parse(JSON.stringify(u))}
    the injury stayed on the slot (Muse: "promote the healthy backup and the
    roster shows him as OUT"). */
 function swapDepth(sea,i){
+  if(i&&i.tr){ if(typeof tdApply==="function")tdApply(sea,i.tr); return }   // round 83: a trade, kept in its place among the day's moves
   // round 82: two roles traded (baseball's staff: a starter to the closer's job and back), kept like a promotion
   if(typeof i==="object"&&i.j!==undefined){ const R=sea.roster&&sea.roster[S.myTeam], a=i.i, b=i.j; if(!R||!R[a]||!R[b])return;
     const before=rosterElo(R), t=R[a]; R[a]=R[b]; R[b]=t; sea.talent.base[S.myTeam]+=rosterElo(R)-before;
@@ -1126,6 +1127,7 @@ function endSeason(rng,choices,act,seasonTeam){
     else if(SEA.otl)teamRows[t].push(null,SEA.otl[t]||0)});   // [w,l,rank,draws]
   const {confChamps,post,pnote,cfpOf}=SEA.postRecord();
   LEAGUE.rivals.record(U,SEA);
+  if(typeof tdCarry==="function")tdCarry(U);   // round 83: the season's trades into next season's rosters, before the careers are banked
   SEA.bankCareers(U);
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
@@ -1869,9 +1871,10 @@ function myTeamView(){
   const inj=SEA.talent.active(my);
   let h=wide?"":heroResult();
   const co=U&&U.coach?U.coach[my]:null;
-  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].map(([k,l])=>
+  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].concat(LEAGUE.trade&&SEA.roster?[["trades","Trades"]]:[]).map(([k,l])=>
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
+  if(teamTab==="trades"&&LEAGUE.trade&&SEA.roster)return h+tradesView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
     (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my))}
   else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my);
@@ -3593,6 +3596,7 @@ function render0(){
     scoreWk=(v===SEA.weeks.length-1)?null:v; if(view!=="scores")view="scores"; render() });
   const rw=document.querySelector("[data-rewatch]");
   if(rw)rw.onclick=()=>{const g=heroGame(), st=flash&&flash.step; if(g){ startWatch(g); if(watch)watch.step=st }};
+  if(typeof bindTrades==="function")bindTrades();
   document.querySelectorAll("[data-role]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const i=+b.dataset.role;
     if(ROLE_SEL===null){ ROLE_SEL=i; render() } else if(ROLE_SEL===i){ ROLE_SEL=null; render() } else { const a=ROLE_SEL; ROLE_SEL=null; swapRoles(a,i) } });
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{

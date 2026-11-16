@@ -491,3 +491,4 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
+LEAGUE.trade={by:"Nov 5"};   // round 83: trades in the season, to the deadline (after week 9)
