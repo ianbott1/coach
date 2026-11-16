@@ -1,5 +1,5 @@
 {
- "fp": "67facf34e5e150e0",
+ "fp": "ecdbbe3b478407ef",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -15,6 +15,11 @@
    "fp": "67facf34e5e150e0",
    "from": "814e58be97b17cbd",
    "note": "Round 81: screens only (the monthly awards on the home screen); results identical to round 80"
+  },
+  {
+   "fp": "ecdbbe3b478407ef",
+   "from": "67facf34e5e150e0",
+   "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
   }
  ],
  "result": {
@@ -29,7 +34,7 @@
     "heis": "95efb282beb2b16c",
     "history": "9c83b384bb87e07e",
     "universe": "d3aed31c414d25d6",
-    "screens": "5212a724ae0ce973"
+    "screens": "14916d849a588347"
    }
   ]
  }

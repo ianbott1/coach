@@ -1,5 +1,5 @@
 {
- "fp": "aab3fe8677adbf47",
+ "fp": "beae8ab12b014ab5",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -10,6 +10,11 @@
    "fp": "aab3fe8677adbf47",
    "from": "7796a9d9893f209f",
    "note": "Round 80: engine number 8 in the universe only (field-by-field: only the universe differs)"
+  },
+  {
+   "fp": "beae8ab12b014ab5",
+   "from": "aab3fe8677adbf47",
+   "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
   }
  ],
  "result": {
@@ -24,7 +29,7 @@
     "heis": "f1fe02d2875be662",
     "history": "4e46de7d8f091498",
     "universe": "1b268e0988a77935",
-    "screens": "61edbe6701d37a7f"
+    "screens": "d2630a25d79e58f4"
    }
   ]
  }
