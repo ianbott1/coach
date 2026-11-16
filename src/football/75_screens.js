@@ -26,8 +26,13 @@ function kickerName(team){ let h=2166136261; const k=String(team)+"|"+((typeof S
    their own: drive 7 at 12:25 in the second quarter whatever had gone before. */
 function fbClock(q,idx,total){ if(q>=5)return ""; const left=3600*(total-idx)/total, inQ=Math.max(5,Math.min(900,Math.round(left-(4-q)*900-((idx*37)%40))));
   return Math.floor(inQ/60)+":"+String(inQ%60).padStart(2,"0") }
+/* round 79 (engine 7): the run of play's draw is seeded by the fixture, not the final score. Seeded by the score, a live
+   game (no final score yet) drew other names than the finished one: 18 of 29 touchdowns named one scorer on the clip
+   and another in the box score and the player's line (the testers' TD contradictions). The fixture is its two sides and the
+   year: the recorded game keeps no week, and a rematch with the same home side only repeats the words. */
+function fbScriptSeed(g){ return ENGINE_V>=7?strHash([g.home,g.away,(typeof SEA!=="undefined"&&SEA&&SEA.year)||0].join("|")):watchSeed(g) }
 function driveScript(g,drives,rosters){
-  const rng=new RNG(watchSeed(g));
+  const rng=new RNG(fbScriptSeed(g));
   const RH=rosters?rosters[0]:SEA.roster[g.home], RA=rosters?rosters[1]:SEA.roster[g.away];
   const OUTTXT={PUNT:["three and out","forced to punt","stalls out, punt","goes backwards, punt"],
                 DOWNS:["turned over on downs"],MISS:["the field goal is no good"],   // a field goal: "the kick" read as a missed extra point (Grokbot)
