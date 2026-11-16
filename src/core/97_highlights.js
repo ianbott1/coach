@@ -191,11 +191,12 @@ function hlKit(team,alt){
 function hlPlayer(x,px,py,r,kit,o){
   o=o||{}; x.save(); if(o.alpha!=null)x.globalAlpha=o.alpha;
   // a keeper's dive: the body laid out along the dive, a blur behind it
-  if(o.dive){ const a=o.dive.ang, k=1+o.dive.k*0.9; x.translate(px,py); x.rotate(a);
-    x.beginPath(); x.ellipse(r*0.3,r*0.4,r*k*1.05,r*0.8,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
-    for(let q=2;q>=1;q--){ x.globalAlpha=(o.alpha!=null?o.alpha:1)*0.18*q; x.beginPath(); x.ellipse(-q*r*0.7*o.dive.k,0,r*k,r*0.85,0,0,Math.PI*2); x.fillStyle=kit.fill; x.fill() }
+  // round 80: laid out, not grown (Ian: the goalie grew as he dived): longer by up to 45% and thinner, about the same size
+  if(o.dive){ const a=o.dive.ang, k=1+o.dive.k*0.45, wd=0.9/Math.sqrt(k); x.translate(px,py); x.rotate(a);
+    x.beginPath(); x.ellipse(r*0.3,r*0.4,r*k*1.02,r*wd*0.95,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
+    for(let q=2;q>=1;q--){ x.globalAlpha=(o.alpha!=null?o.alpha:1)*0.12*q; x.beginPath(); x.ellipse(-q*r*0.45*o.dive.k,0,r*k,r*wd,0,0,Math.PI*2); x.fillStyle=kit.fill; x.fill() }
     x.globalAlpha=o.alpha!=null?o.alpha:1; const g=x.createLinearGradient(0,-r,0,r); g.addColorStop(0,hlShade(kit.fill,0.25)); g.addColorStop(1,hlShade(kit.fill,-0.3));
-    x.beginPath(); x.ellipse(0,0,r*k,r*0.85,0,0,Math.PI*2); x.fillStyle=g; x.fill(); x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
+    x.beginPath(); x.ellipse(0,0,r*k,r*wd,0,0,Math.PI*2); x.fillStyle=g; x.fill(); x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
     x.restore(); return }
   x.beginPath(); x.ellipse(px+r*0.28,py+r*0.38,r*1.02,r*0.82,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
   if(o.hot){ const ph=(HLK.now%900)/900, rr=r*(1.55+0.35*Math.sin(ph*Math.PI*2));
