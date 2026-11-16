@@ -358,6 +358,31 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 80: watching (engine 8), and a faster test loop.
+- Football clips: a pick is run back to where the next drive starts. The engine draws a turnover's return with the next
+  drive's start (nextStart, that step's first draw); push() reads it ahead on a copy of the dice (cp.a, cp.sp) into
+  drive.retTo, with where it was lost (drive.lost), so nothing the game draws moves. The passing side chases, the
+  returner is labelled INT, the catch comes earlier to leave the run room (c.f). A fourth down made has its own clip
+  (mkConv, "FIRST DOWN!", the line to gain drawn). Pursuit: on a touchdown run or catch the back seven take angles and
+  end a few yards behind (61 of 66 long touchdowns with three defenders within 8 yards; 0 of 68 before).
+- Engine 8: a drive after a strategy call kept no hold on its start and drew it again on resuming, so the drive started
+  elsewhere than where it stood when you were asked (found because 3 of 24 read-ahead returns missed). Now
+  st.startHold=start (ENGINE_V>=8). Only your games move; computer games and calibration don't.
+- Hockey line changes (clips): the scorer's line and pair (first or second), the assist on the ice and making the last
+  pass (at his own place, or beside the scorer), the second unit about its share of the ice in chances (DEPLOY's bench
+  share), no names on a fourth-line goal. The scoring dot wore the scorer's name in 16 of 74 goals before; 74 of 74 now
+  (test/hk-lines.js).
+- Basketball rotations (clips): starters open each half and close; the bench for the late first and third quarters
+  and the start of the second and fourth (BENCH_P), each position its own rhythm; the shooter's dot is the man the play
+  names (106 of 142 before; 142 of 142: test/bb-floor.js); starters for the last shot.
+- Testing: run-all runs one test a core (it ran four on two), one browser test at a time, longest first by
+  test/timings.json; --fast is the quick tier (one-season fingerprints, golden-fast-*.json, and the cheap checks: 29
+  tests, about 6 minutes) for every change; --quick before a release (108 tests, about 97 minutes). Baseball's hot
+  seat plays two seasons (it took 29 minutes; the two are identical to round 79's first two).
+- Goldens: football's move (engine 8); elsewhere the universe's engine number only (field by field on one-season
+  dumps). Hot seat: football re-recorded (engine 8), baseball (two seasons); the other four match. Suite 105 of 108,
+  the three the hot seats named.
+
 Round 78: trust breakers (the testers' feedback, verified in a real browser first).
 - Box score button: Enter and Space on the focused toggle went to the page's "advance" shortcut and started the next
   game. A focused control (summary, button, link, select, role=button) now keeps Space and Enter. test/boxclick.js

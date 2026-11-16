@@ -64,13 +64,17 @@ on numbers they can't trust and a sport they read rather than watch.
 - Not done from this list: player stats in the live panel (the players' lines are credited when the game ends);
   a converted fourth down has no clip (only a failed try). Not reproduced: the Div/Conf column against records.
 
-## Rounds 80-82: watching
+## Round 80: watching (done)
+- Football: picks run back to where the next drive starts, a clip for a fourth down made, defenders chase a breakaway;
+  engine 8 (a drive after a strategy call keeps its start).
+- Hockey line changes and basketball rotations in the clips, with the right man's name on the scoring dot.
+- Testing: a quick tier (about 6 minutes) for every change; the full suite (about 97) at a release.
+
+## Still to come: watching
 - **Replay the whole game** (Ian's top item; highlights stay the default).
-- Motion, not stills: goals, shots, passes and the ball in play animated; the surface stays up behind call cards; a
-  watch rhythm between calls (pro basketball, baseball); college football's field to the pro standard.
-- Clock, down and distance, count and outs, penalties and power plays on the surface.
-- Football: defenders pursue a breakaway; turnover returns; punts, kick returns, blocks shown.
-- Hockey line changes and basketball rotations in the game (and shown).
+- Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
+  college football's field to the pro standard; clock, down and distance, count and outs on the surface.
+- Football: punts, kick returns, blocks shown.
 
 ## Later: depth
 - Player attributes by category (as Football Manager) that drive performance and develop over time.
