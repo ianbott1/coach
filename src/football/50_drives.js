@@ -395,7 +395,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     /* round 80: a turnover's return is drawn with the next drive's start (nextStart, its first draw); for the clip, the
        same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
        the ball was lost (stall) and where they took over (retTo, from their own goal). */
-    if((res.kind==="INT"||res.kind==="FUM")&&res.stall!=null){ drive.lost=res.stall; try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
+    if((res.kind==="INT"||res.kind==="FUM"||res.kind==="PUNT")&&res.stall!=null){   // (round 81: a punt's flight and return too)
+      drive.lost=res.stall; try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
     st.drives.push(drive);
     st.prev=res.kind; st.at=res.stall; st.i++; st.pend=null; st.stage=null;
     return drive;

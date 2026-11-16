@@ -20,12 +20,15 @@ const HL_SPORT=(function(){
     const conv=mode!=="goals"&&d.converted===true&&/converted on fourth and (\d+)/.test(d.note||"")?[mkConv(L,d)]:[];
     if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return conv.concat([mk(L,d)]) }
     if(mode==="goals")return [];
-    if(conv.length&&k!=="FG"&&k!=="MISS"&&k!=="INT"&&k!=="FUM"&&k!=="DOWNS")return conv;
+    if(conv.length&&k!=="FG"&&k!=="MISS"&&k!=="INT"&&k!=="FUM"&&k!=="DOWNS"&&k!=="PUNT")return conv;
     const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
     if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return conv.concat([mkKick(L,d)]);
     if(k==="INT")return conv.concat([mkPick(L,d)]);   // round 70: every turnover (Ian: "I didn't see any turnovers")
     if(k==="FUM")return conv.concat([mkFum(L,d)]);
-    if(k==="DOWNS"&&ENGINE_V>=7)return conv.concat([mkDowns(L,d)]);   // round 79: a fourth-down try that fails is shown (Ian: "fourth-down plays always shown")
+    if(k==="DOWNS"&&ENGINE_V>=7)return conv.concat([mkDowns(L,d)]);
+    // round 81: punts and their returns (Ian), from where it was kicked to where they took over (d.retTo, read ahead):
+    // every punt in "every chance" and the full game, a long return (15+) in key moments
+    if(k==="PUNT"&&retTo(L,d)!=null&&(d.lost!=null||d.stall!=null)){ const c=mkPunt(L,d); if(all||c.ret>=15)return conv.concat([c]) }   // round 79: a fourth-down try that fails is shown (Ian: "fourth-down plays always shown")
     return conv;
   }
   // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
@@ -52,11 +55,19 @@ const HL_SPORT=(function(){
     return Object.assign(base(L,d),{kind:"conv",pass:false,los,rcv:1,len,togo:tg,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:"",base:3000,reveal:0.86}) }
   // round 80: the pick from where the ball was lost (d.lost), run back to where they took over (d.retTo: the next drive's
   // start, read ahead in the engine), with the passing side chasing him; the catch comes earlier to leave the run room
+  // where they took over: read ahead in the engine, or (a game played before round 80, or simmed) the next drive's start
+  function retTo(L,d){ if(d.retTo!=null)return d.retTo; const i=(L.drives||[]).indexOf(d), nx=i>=0?L.drives[i+1]:null; return nx&&nx.start!=null&&(d.lost!=null||d.stall!=null)?nx.start:null }
+  function mkPunt(L,d){ const rt=retTo(L,d), lost=d.lost!=null?d.lost:d.stall, r=mulberry32(((d.n||1)*7919+(lost||0)*131+(d.home?47:53))>>>0), los=Math.max(5,Math.min(70,lost)), end=100-rt;
+    const tb=rt===20&&los+40>=95, fair=!tb&&r()<0.25;
+    let land=tb?104:fair?end:Math.min(99,end+Math.round(2+r()*Math.min(14,99-end)));
+    if(land<=los+15)land=Math.min(99,los+30);
+    const ret=tb||fair?0:Math.max(0,land-end);
+    return Object.assign(base(L,d),{kind:"punt",los,land,end,ret,tb,fair,lane:0.35+r()*0.3,who:"",base:3600+ret*35,reveal:0.95}) }
   function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(30,Math.min(90,d.lost||d.stall||70));
     const rcv=r()<0.6?2:3; let len=Math.round(8+r()*Math.min(25,100-los-2));
-    let ret=null; if(d.retTo!=null){ const end=100-d.retTo; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
+    let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
     if(ret!=null){ const m=/intercepted by (.*)$/.exec(rowText(L,d)), f=ret>3?0.6:0.86;
-      return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-d.retTo}) }
+      return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-rtp}) }
     const m=/intercepted by (.*)$/.exec(rowText(L,d));
     return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
   /* the run of play's line for this drive (driveScript draws its words in drive order from the game's seed, so the
@@ -114,6 +125,29 @@ const HL_SPORT=(function(){
       const k=c.kits[team===c.hm?0:1]; x.save(); x.globalAlpha=0.78; x.fillStyle=k.fill; x.fillRect(l,tp,w,h); x.globalAlpha=1;
       const nm=String(team).toUpperCase(), fs=Math.max(8,Math.min(w*0.62,h/Math.max(4,nm.length)*1.25)); x.translate(l+w/2,tp+h/2); x.rotate(l<W/2?-Math.PI/2:Math.PI/2);
       x.font=`800 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle"; x.fillStyle=k.num; x.globalAlpha=0.9; x.fillText(nm,0,1,h*0.92); x.restore() }) }
+  // a punt: the snap back to the punter, the ball up and away, the coverage team down the field, the returner under it and
+  // back to where they take over (or a fair catch, or a touchback)
+  function puntFrame(x,W,H,c,t){
+    const snap=0.12, kick=0.24, landT=0.58, tEnd=0.92, pY=c.los-13, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    let bx,by,z=0; const ret=c.ret, rs=Math.max(0,Math.min(1,(t-landT)/(tEnd-landT)));
+    const retAt=s=>[hlLerp(c.land,c.end,hlEase(s)),hlLerp(c.lane,0.5,hlEase(s)*0.4)];
+    if(t<snap){ bx=c.los; by=0.5 } else if(t<kick){ const s=(t-snap)/(kick-snap); bx=hlLerp(c.los,pY,s); by=0.5 }
+    else if(t<landT){ const s=(t-kick)/(landT-kick); bx=hlLerp(pY,c.land,s); by=hlLerp(0.5,c.lane,s); z=Math.sin(s*Math.PI)*0.16 }
+    else if(c.tb){ bx=Math.min(110,c.land+rs*4); by=c.lane } else { const q=retAt(rs); bx=q[0]; by=q[1] }
+    // the punting side: a line of eleven, the gunners wide, all running down the field after the kick
+    const off=[...Array(11)].map((_,i)=>{ if(i===0)return t<kick?[pY,0.5]:[pY+(t-kick)*8,0.5];
+      const y0=i<=2?(i===1?0.06:0.94):0.3+(i-3)*0.055, y1=c.lane+((i%5)-2)*0.07, s=Math.max(0,Math.min(1,(t-snap)/(landT-snap))), fy=hlLerp(c.los,c.land-3-(i%4)*2,hlEase(s)*(i<=2?1:0.85));
+      const chase=Math.max(0,Math.min(1,(t-landT)/(tEnd-landT))); const q=retAt(chase);
+      return t<=snap?[c.los-0.5,y0]:[hlLerp(fy,q[0]+2+(i%3),chase*0.7),hlLerp(hlLerp(y0,y1,s),q[1]+((i%2)?0.05:-0.05),chase*0.7)] });
+    const def=[...Array(11)].map((_,i)=>{ if(i===0){ return t<landT?[c.land,c.lane]:c.tb?[c.land,c.lane]:retAt(rs) }
+      const y=0.2+(i-1)*0.065, d0=i<=6?c.los+1:c.land-12-(i%3)*4, s=Math.max(0,Math.min(1,(t-snap)/(landT-snap)));
+      return [hlLerp(d0,c.land-8-(i%4)*3,s*(i<=6?0.7:0.4))-(t>landT?rs*Math.min(ret,10)*0.5:0),hlLerp(y,c.lane+((i%3)-1)*0.12,s*0.5)] });
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)",i===0&&t>landT-0.08?"PR":"",c.defN?{num:c.defN[i%c.defN.length]}:null) });
+    off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",i===0&&t<landT?"P":"",c.offN?{num:c.offN[i%c.offN.length]}:null) });
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} punt`, yds=Math.min(100,c.land)-c.los;
+    const end=t>=tEnd?(c.tb?`PUNT, ${Math.min(99,yds)} yards: touchback`:c.fair?`PUNT, ${yds} yards: fair catch`:`PUNT, ${yds} yards: returned ${ret} yard${ret===1?"":"s"}`):null;
+    hlCaption(x,W,H,top,end,null) }
   function kickFrame(x,W,H,c,t){
     const snap=0.15, kick=0.3, tEnd=c.reveal, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     const holder=[c.los-7,0.5], kicker=[c.los-9.5+Math.min(1,Math.max(0,(t-snap)/(kick-snap)))*2.3,0.47];
@@ -149,6 +183,7 @@ const HL_SPORT=(function(){
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
     if(c.kind==="fg"||c.kind==="miss")return kickFrame(x,W,H,c,t);
+    if(c.kind==="punt")return puntFrame(x,W,H,c,t);
     const sf=(c.f||0.86)/0.86, snap=0.18*sf, throwT=0.5*sf, tEnd=0.86*sf;   // (round 80: a pick with a return catches earlier)
     // the ball: snapped, then a drop and a throw, or a handoff and a run
     let bx,by,z=0;
