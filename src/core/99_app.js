@@ -1216,8 +1216,13 @@ function gameLine(g,mine,step){
 function gameSheetHTML(g,mine,step){ if(step===undefined||step===null||g.hp===undefined||typeof boxHTML!=="function")return "";
   let b=""; try{ b=g.drives&&g.drives.length?boxHTML(g,false,step):"" }catch(e){ b="" }
   if(b)return b;
-  let s=""; try{ s=gameSheet(g,step) }catch(e){ s="" }
-  return s?`<details class="boxscore"><summary>Box score</summary>${s}</details>`:"" }
+  // round 79: drawn when it's opened, not with the page (a busy day's Scores came to 1.6 MB with every sheet drawn)
+  let L=null; try{ L=typeof boxLines==="function"?boxLines(g,step):null }catch(e){ L=null } if(!L)return "";
+  const id=++sheetN; SHEETS[id]=()=>{ try{ return gameSheet(g,step) }catch(e){ return "" } };
+  return `<details class="boxscore" data-sheet="${id}"><summary>Box score</summary></details>` }
+let SHEETS={}, sheetN=0;
+function sheetFill(d){ if(!d||d.dataset.filled||!d.dataset.sheet)return; const f=SHEETS[d.dataset.sheet]; d.dataset.filled="1"; if(f)d.insertAdjacentHTML("beforeend",f()) }
+function bindSheets(){ try{ document.querySelectorAll("details[data-sheet]").forEach(d=>{ d.addEventListener("toggle",()=>{ if(d.open)sheetFill(d) }); if(d.open)sheetFill(d) }) }catch(e){} }
 
 /* ---- watching a game ---- */
 let watch=null;   // {g, script, i, timer}
@@ -3278,7 +3283,7 @@ function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=doc
   const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
 function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
   const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
-function render(){ try{ return render0() }finally{ fitBar(); miniBar(); finalIntoView() } }
+function render(){ SHEETS={}; try{ return render0() }finally{ bindSheets(); fitBar(); miniBar(); finalIntoView() } }
 function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
