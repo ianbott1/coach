@@ -1,5 +1,5 @@
 {
- "fp": "7311cd745c9a8b1a",
+ "fp": "b08f39766dd6482b",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -340,6 +340,11 @@
    "fp": "7311cd745c9a8b1a",
    "from": "c734f78561504f84",
    "note": "Round 79b: football's run of play seeded by the fixture (engine 7); players' lines and awards move, results identical"
+  },
+  {
+   "fp": "b08f39766dd6482b",
+   "from": "7311cd745c9a8b1a",
+   "note": "Round 80 (engine 8): a drive after a strategy call keeps its start; both coaches' games move"
   }
  ],
  "out": [
@@ -353,16 +358,16 @@
       "result": "Lost the Super Bowl",
       "grade": "A"
      },
-     "book": "d7c2bd2f46ce220e"
+     "book": "8f0a495f9de42066"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "5-12",
+      "rec": "7-10",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "B-"
      },
-     "book": "52be9f95f2242c81"
+     "book": "aa88b46fa7669bb5"
     }
    ]
   },
@@ -372,20 +377,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "4-13",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "9-8",
+      "result": "Missed the playoffs",
+      "grade": "C+"
      },
-     "book": "01fb67a0e114ca48"
+     "book": "cdf56d349012574d"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
-      "result": "Lost the Super Bowl",
-      "grade": "A"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "fe2b15c87dd65dc8"
+     "book": "417b525a355de393"
     }
    ]
   },
@@ -395,20 +400,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost the conference championship",
-      "grade": "A"
+      "rec": "11-6",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "6cffa49fd04ece40"
+     "book": "526f63804dc0f74b"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "7-10",
-      "result": "Losing season",
-      "grade": "B-"
+      "rec": "10-7",
+      "result": "Lost in the wild card round",
+      "grade": "A-"
      },
-     "book": "04a7c4f5a0a0b2fe"
+     "book": "1a5cdbf19c9ca8ea"
     }
    ]
   }

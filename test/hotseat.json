@@ -1,5 +1,5 @@
 {
- "fp": "130b297acda6d40c",
+ "fp": "3d3127fea1f45419",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -315,6 +315,11 @@
    "fp": "130b297acda6d40c",
    "from": "0db891be8c7c18a1",
    "note": "Round 79b: football's run of play seeded by the fixture (engine 7); players' lines and awards move, results identical"
+  },
+  {
+   "fp": "3d3127fea1f45419",
+   "from": "130b297acda6d40c",
+   "note": "Round 80 (engine 8): a drive after a strategy call keeps its start; both coaches' football games move (records plausible: 9-4/6-7, 14-2/7-6, 14-2/8-5)"
   }
  ],
  "out": [
@@ -324,20 +329,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Duke's Mayo Bowl",
-      "grade": "D"
+      "rec": "9-4",
+      "result": "Eliminated in the first round",
+      "grade": "C+"
      },
-     "book": "be4b89162468f120"
+     "book": "c224da6bea9d1219"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-7",
+      "rec": "6-7",
       "result": "Lost the Frisco Bowl",
-      "grade": "A"
+      "grade": "A-"
      },
-     "book": "a14fb70ce58f2ec5"
+     "book": "15670d3eddb13b10"
     }
    ]
   },
@@ -347,20 +352,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "12-2",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A"
+      "rec": "14-2",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "479aff90020a5b13"
+     "book": "5154ab3684b100bb"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "7-6",
-      "result": "Lost the Camellia Bowl",
+      "result": "Won the Hawaii Bowl",
       "grade": "A"
      },
-     "book": "875e4225df5e535c"
+     "book": "0bc143b2d3a1598d"
     }
    ]
   },
@@ -370,20 +375,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "13-3",
+      "rec": "14-2",
       "result": "Eliminated in the national title game",
       "grade": "A+"
      },
-     "book": "df0c2a69408ada06"
+     "book": "85590481ca396f99"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "10-3",
-      "result": "Won the Music City Bowl",
+      "rec": "8-5",
+      "result": "Won the Boca Raton Bowl",
       "grade": "A+"
      },
-     "book": "7d9054fc3b45e322"
+     "book": "7e3c1805caddacbe"
     }
    ]
   }
