@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="acf6df0";
+<script>const BUILD_ID="94c8cfe";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -3984,6 +3984,22 @@ function readTextBase(e){
     :`You planned for the wrong lineup: they came out ${A(e.truth)}.`;
   return "";
 }
+
+/* round 82: the pitching staff by role (Ian: restructure the rotation and the bullpen). Five starters turn a game each
+   (the three at the top and the two behind the first two); the closer; the set-up man (the 8th, the 9th when the closer
+   rests); the long man (in early when a starter is knocked out). Tap one pitcher, then another, and they trade jobs:
+   kept with the day it was done, as a promotion is, so a reload plays the season the same way. A job's weight in the
+   team's strength goes with it: an ace in the bullpen pitches less. */
+const BS_ROLES=()=>[[BS_SP[0],"Starter 1"],[BS_SP[1],"Starter 2"],[BS_SP[2],"Starter 3"],[BK(BS_SP[0]),"Starter 4"],[BK(BS_SP[1]),"Starter 5"],
+  [BS_CL,"Closer"],[BK(BS_CL),"Set-up"],[BK(BS_SP[2]),"Long relief"]];
+function staffRolesHTML(){
+  if(S.off||!SEA||!SEA.roster)return ""; const my=S.myTeam, R=SEA.roster[my]||[], hurt={}; SEA.talent.active(my).forEach(e=>hurt[e.idx]=e);
+  const rows=BS_ROLES().map(([i,lab],k)=>{ const p=R[i]; if(!p)return ""; const sel=ROLE_SEL===i, line=p.st2&&p.st2.g?statLine(p.st2.gs?"SP":"CL",p.st2):"";
+    return `${k===5?`<div class="fnote" style="margin:10px 0 2px">Bullpen</div>`:""}<div class="prow2${sel?" feat":""}" style="align-items:center">
+      <div class="pmain"><div class="pname"><span style="color:var(--muted);font-size:12px;display:inline-block;min-width:78px">${esc(lab)}</span>${plLink(my,p.n)}${hurt[i]?` <span class="outtag">OUT ${outFor(hurt[i].w)}</span>`:""}</div>
+        ${line?`<div class="psub">${esc(line)}</div>`:""}</div>
+      <button class="promo" data-role="${i}" aria-pressed="${sel}">${sel?"Cancel":ROLE_SEL!==null?"Swap here":"Move"}</button><span class="prate">${p.r}</span></div>` }).join("");
+  return `<div class="grouphead">Pitching staff</div><div class="note">${ROLE_SEL!==null?`Now tap the job to give ${esc((R[ROLE_SEL]||{}).n||"")}: the two trade places.`:"Five starters take a game each; the closer has the 9th, the set-up man the 8th, the long man comes in early. Tap Move, then another pitcher, to trade their jobs."}</div><div class="card" style="padding:6px 12px">${rows}</div>` }
 /* ============ Season state machine ============ */
 /* featuring's edge scales with the player: your best starter is worth more than your weakest
    (Instinct: featuring anyone did the same). Six points above the starters' average, x1.3; six
@@ -6620,7 +6636,9 @@ function boxLines(g,step,all){
     const pool=all?NAMES.filter(t=>t===tm||t!==(sd==="home"?g.away:g.home)).flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
     pool.forEach(([p,i])=>{ if(!p||!p.gl)return;
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
-        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
+        // (round 82: and the score: a cup week can hold a league game and a cup tie with the same club at the same ground,
+        // and the box score showed the other game's lines)
+        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf&&(p.gl[j+3]===undefined||p.gl[j+3]===(sd==="home"?g.hp:g.ap))&&(p.gl[j+4]===undefined||p.gl[j+4]===(sd==="home"?g.ap:g.hp))){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
           out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
   return out.home.length||out.away.length?out:null;
 }
@@ -8100,6 +8118,10 @@ function snap(u){return JSON.parse(JSON.stringify(u))}
    the injury stayed on the slot (Muse: "promote the healthy backup and the
    roster shows him as OUT"). */
 function swapDepth(sea,i){
+  // round 82: two roles traded (baseball's staff: a starter to the closer's job and back), kept like a promotion
+  if(typeof i==="object"&&i.j!==undefined){ const R=sea.roster&&sea.roster[S.myTeam], a=i.i, b=i.j; if(!R||!R[a]||!R[b])return;
+    const before=rosterElo(R), t=R[a]; R[a]=R[b]; R[b]=t; sea.talent.base[S.myTeam]+=rosterElo(R)-before;
+    (sea.talent.inj[S.myTeam]||[]).forEach(e=>{ if(e.idx===a)e.idx=b; else if(e.idx===b)e.idx=a }); return }
   const moveInj=typeof i==="object"; if(moveInj)i=i.i;
   const R=sea.roster&&sea.roster[S.myTeam];
   if(!R||!R[i]||!R[BK(i)])return;
@@ -8149,6 +8171,9 @@ function fireCoord(side){
   save(); render();
 }
 
+function swapRoles(a,b){
+  S.promos=S.promos||{}; const k=SEA.step; S.promos[k]=S.promos[k]||[]; S.promos[k].push({i:a,j:b});
+  swapDepth(SEA,{i:a,j:b}); save(); render() }
 function promote(i){
   S.promos=S.promos||{};
   const k=SEA.step;
@@ -9431,6 +9456,7 @@ function seatBadge(){
   return `<span class="seat cool">Secure</span>`;
 }
 
+let ROLE_SEL=null;   // round 82: the first of two pitchers tapped to trade roles
 let teamTab="overview", rosterSort={g:null,c:-1,dir:-1};
 /* round 79: the roster's season stats, sortable by any column (Ian: "sortable roster"). One table per kind of player
    (the columns a hitter and a pitcher keep differ); tap a heading to sort by it, again to flip the order. */
@@ -9503,6 +9529,7 @@ function rosterView(){
       :S.featuredLast&&S.featuredLast.year===SEA.year-1&&(!S.featuredLast.team||S.featuredLast.team===my)&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
       :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
   if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
+  if(typeof staffRolesHTML==="function")h+=staffRolesHTML();   // baseball: the rotation and the bullpen's roles (round 82)
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
@@ -11283,6 +11310,8 @@ function render0(){
     scoreWk=(v===SEA.weeks.length-1)?null:v; if(view!=="scores")view="scores"; render() });
   const rw=document.querySelector("[data-rewatch]");
   if(rw)rw.onclick=()=>{const g=heroGame(), st=flash&&flash.step; if(g){ startWatch(g); if(watch)watch.step=st }};
+  document.querySelectorAll("[data-role]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const i=+b.dataset.role;
+    if(ROLE_SEL===null){ ROLE_SEL=i; render() } else if(ROLE_SEL===i){ ROLE_SEL=null; render() } else { const a=ROLE_SEL; ROLE_SEL=null; swapRoles(a,i) } });
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)

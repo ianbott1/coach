@@ -76,7 +76,12 @@ on numbers they can't trust and a sport they read rather than watch.
 ## Round 81 (done)
 - Watch any game in the league this season (replayed on a tap from its own dice, to its recorded score).
 - Punts and their returns as clips. Soccer: Player of the Month and your Goal of the Month; a diving keeper no longer grows.
-- Next: soccer's credit gap (a goal stamped to a man with no line, about 2 a season: engine 9).
+- Soccer's credit gap turned out to be the box score reading the other cup-week game (fixed in round 82; no engine change).
+
+## Round 82 (done)
+- Baseball: the pitching staff by role (five starters, closer, set-up, long relief); trade any two pitchers' jobs.
+- Testing: two browsers at once measured slower on two cores; back to one.
+- Next: in-season trades (about two rounds). Then attributes by category, from a written design agreed first.
 
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
@@ -86,8 +91,8 @@ on numbers they can't trust and a sport they read rather than watch.
 ## Later: depth
 - Player attributes by category (as Football Manager) that drive performance and develop over time.
 - In-season trades and offers, with deadlines and caps: make an offer, ask what they'd want, counter.
-- Baseball staff: a five-man rotation and a bench of starters; a bullpen of set-up and middle relievers with roles you
-  assign (closer, set-up, middle, long), instead of one backup per slot.
+- Baseball staff, further: a middle reliever and a sixth starter would need roster slots (the 8 pitcher slots are
+  four jobs and their backups today); fatigue and pitch counts carried between days.
 - Awards: coach of the month, other sports' monthly awards; a top-five goals reel.
 - Decisions: late calls with clock, timeouts and fouls; stakes shown on options; scouting with sample sizes and ties
   shown as ties.

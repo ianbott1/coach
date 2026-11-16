@@ -358,6 +358,23 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 82: baseball's pitching staff by role; the soccer "credit gap" found to be the box score.
+- Baseball (Ian: a five-man rotation, a bullpen whose roles you assign). The roster's Pitching staff card
+  (staffRolesHTML, baseball 75_screens) names each job by its slot: Starters 1-5 (SP, SP2, SP3, BK(SP), BK(SP2), as
+  spCtx turns them), Closer (CL), Set-up (BK(CL)), Long relief (BK(SP3)), with each man's season line. Tap Move on
+  one and then on another and they trade jobs: swapDepth(sea,{i,j}) swaps the two slots, moves their injuries and
+  adds the change in rosterElo to talent.base (a job's weight goes with it: an ace in the bullpen counts for less).
+  Kept in S.promos with its day, as a promotion is, so rebuild plays it at the same point. No engine change: the
+  slots already decide who starts and who closes. test/bs-staff.js (browser): eight jobs, the trade, the strength
+  moves, kept in the save, a rebuild 40 days on gives the same results, the ace moved to closer starts no more games.
+- Soccer: the "about 2 goals a season with no line" was the box sheet, not the credit. In a cup week a club can play
+  the same side twice on one step at the same ground (a league game and a cup tie); boxLines matched rows on step,
+  opponent and ground and read the other game's lines. Rows now match on the score too. replay.js now asks every
+  name to agree (10,478 of 10,478). No engine 9.
+- Testing: two browser tests at once was tried and measured slower on two cores (68 of 112 in two hours; round 81's
+  whole suite took 112 minutes), so it is back to one (BROWSERS=2 to try again on a bigger machine). Full suite
+  117 of 117; quick tier 34 of 34 (571 s); goldens unchanged.
+
 Round 81: watch any game in the league; punts; soccer's monthly awards.
 - Any game this season, any league (Ian: as Football Manager). Before each computer game the season keeps where its dice
   stood and what it was played with (Season._rp: rng a/sp, both strengths, the game's options as text), not saved: a

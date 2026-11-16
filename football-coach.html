@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="fe5a344";
+<script>const BUILD_ID="70525bc";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -8986,7 +8986,9 @@ function boxLines(g,step,all){
     const pool=all?NAMES.filter(t=>t===tm||t!==(sd==="home"?g.away:g.home)).flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
     pool.forEach(([p,i])=>{ if(!p||!p.gl)return;
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
-        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
+        // (round 82: and the score: a cup week can hold a league game and a cup tie with the same club at the same ground,
+        // and the box score showed the other game's lines)
+        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf&&(p.gl[j+3]===undefined||p.gl[j+3]===(sd==="home"?g.hp:g.ap))&&(p.gl[j+4]===undefined||p.gl[j+4]===(sd==="home"?g.ap:g.hp))){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
           out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
   return out.home.length||out.away.length?out:null;
 }
@@ -10444,6 +10446,10 @@ function snap(u){return JSON.parse(JSON.stringify(u))}
    the injury stayed on the slot (Muse: "promote the healthy backup and the
    roster shows him as OUT"). */
 function swapDepth(sea,i){
+  // round 82: two roles traded (baseball's staff: a starter to the closer's job and back), kept like a promotion
+  if(typeof i==="object"&&i.j!==undefined){ const R=sea.roster&&sea.roster[S.myTeam], a=i.i, b=i.j; if(!R||!R[a]||!R[b])return;
+    const before=rosterElo(R), t=R[a]; R[a]=R[b]; R[b]=t; sea.talent.base[S.myTeam]+=rosterElo(R)-before;
+    (sea.talent.inj[S.myTeam]||[]).forEach(e=>{ if(e.idx===a)e.idx=b; else if(e.idx===b)e.idx=a }); return }
   const moveInj=typeof i==="object"; if(moveInj)i=i.i;
   const R=sea.roster&&sea.roster[S.myTeam];
   if(!R||!R[i]||!R[BK(i)])return;
@@ -10493,6 +10499,9 @@ function fireCoord(side){
   save(); render();
 }
 
+function swapRoles(a,b){
+  S.promos=S.promos||{}; const k=SEA.step; S.promos[k]=S.promos[k]||[]; S.promos[k].push({i:a,j:b});
+  swapDepth(SEA,{i:a,j:b}); save(); render() }
 function promote(i){
   S.promos=S.promos||{};
   const k=SEA.step;
@@ -11775,6 +11784,7 @@ function seatBadge(){
   return `<span class="seat cool">Secure</span>`;
 }
 
+let ROLE_SEL=null;   // round 82: the first of two pitchers tapped to trade roles
 let teamTab="overview", rosterSort={g:null,c:-1,dir:-1};
 /* round 79: the roster's season stats, sortable by any column (Ian: "sortable roster"). One table per kind of player
    (the columns a hitter and a pitcher keep differ); tap a heading to sort by it, again to flip the order. */
@@ -11847,6 +11857,7 @@ function rosterView(){
       :S.featuredLast&&S.featuredLast.year===SEA.year-1&&(!S.featuredLast.team||S.featuredLast.team===my)&&!S.off?`Featuring lasts a season, so it reset when this one began (last season: ${esc(S.featuredLast.n)}). Tap a starter to feature him.`
       :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
   if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
+  if(typeof staffRolesHTML==="function")h+=staffRolesHTML();   // baseball: the rotation and the bullpen's roles (round 82)
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
@@ -13627,6 +13638,8 @@ function render0(){
     scoreWk=(v===SEA.weeks.length-1)?null:v; if(view!=="scores")view="scores"; render() });
   const rw=document.querySelector("[data-rewatch]");
   if(rw)rw.onclick=()=>{const g=heroGame(), st=flash&&flash.step; if(g){ startWatch(g); if(watch)watch.step=st }};
+  document.querySelectorAll("[data-role]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const i=+b.dataset.role;
+    if(ROLE_SEL===null){ ROLE_SEL=i; render() } else if(ROLE_SEL===i){ ROLE_SEL=null; render() } else { const a=ROLE_SEL; ROLE_SEL=null; swapRoles(a,i) } });
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)
