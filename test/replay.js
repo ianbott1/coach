@@ -17,12 +17,11 @@ for(const [f,team] of GAMES.filter(g=>!only||g[0].startsWith(only))){
   A.SEA.weeks.forEach((W,s)=>W.games.forEach(gm=>{ if(gm.drives||gm.hp===undefined||gm.home===A.SEA.userTeam||gm.away===A.SEA.userTeam)return; n++; const isPost=!!(gm.title||gm.cup||s>=(A.SEA.regWeeks||1e9)); if(isPost)post++;
     const r=A.replayGame(gm,s); if(!r)return; rep++; if(isPost)postRep++;
     const sheet=(A.gameSheet(gm,s)||'').replace(/<[^>]+>/g,' ');
-    // a goal whose stamped scorer got no line in that game is the credit's gap (soccer's teamLines skips a scorer not
-    // on its list: 2 goals in a season), not the replay's: counted apart
+    // (round 82: the 2 a season that once missed were the box score reading the other game of a cup week: fixed there)
     if(/hockey|soccer/.test(f)){ const goals=sheet.match(/\S+ (?:ST|W|CM|CB|FB|C|LW|RW|D) \d+/g)||[]; r.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=='goal'||!e.nm||e.dp)return; named++; if(sheet.indexOf(sur(e.nm))>=0)nameOk++; else gap++ })) }
     if(/football/.test(f)){ A.driveScript(r,r.drives).forEach(row=>{ if(!(row.pts>=6))return; const m=/^([A-Z][\w'.-]+(?: [A-Z][\w'.-]+)*) /.exec(row.text||''); if(!m)return; named++; if(sheet.indexOf(sur(m[1]))>=0)nameOk++ }) } }));
   const h1=hash();
   ok(n>0&&rep===n,`${f}: ${rep} of ${n} computer games replay to their score (${postRep} of ${post} in the postseason or a cup)`);
-  if(named)ok(nameOk+gap===named&&gap<=Math.max(3,named*0.001),`${f}: names on the replays agree with the box score (${nameOk} of ${named}; ${gap} the box score itself never credited)`);
+  if(named)ok(nameOk===named,`${f}: names on the replays agree with the box score (${nameOk} of ${named})`);
   ok(h0===h1,`${f}: replaying them all changes nothing`) }
 console.log(bad?`MISMATCH ${bad}`:'MATCH any game in the league can be watched'); process.exit(bad?1:0);
