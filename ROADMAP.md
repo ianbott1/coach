@@ -64,20 +64,31 @@ on numbers they can't trust and a sport they read rather than watch.
 - Not done from this list: player stats in the live panel (the players' lines are credited when the game ends);
   a converted fourth down has no clip (only a failed try). Not reproduced: the Div/Conf column against records.
 
-## Rounds 80-82: watching
+## Round 80: watching (done)
+- Football: a pick run back to where the next drive starts (read ahead in the engine, no draws); a clip for a fourth
+  down made; defenders chase a breakaway (61 of 66 long touchdowns chased; 0 before). Engine 8: a drive after a
+  strategy call keeps its start (it drew it again on resuming).
+- Hockey line changes: the scorer's line and pair, the assist on the ice making the last pass, the second unit its share
+  (the scoring dot wore the scorer's name in 16 of 74 goals before; 74 of 74 now).
+- Basketball rotations: the bench in for its stretches, the shooter's dot the man named (106 of 142 before; all now).
+- Testing: a quick tier (about 6 minutes) on every change; the full suite (about 90) at a release.
+
+## Round 81 (in progress)
+- Punts and their returns as clips (every punt in every-chance and full; long returns in key moments).
+- Soccer: Player of the Month and your Goal of the Month; a diving keeper no longer grows.
+
+## Still to come: watching
 - **Replay the whole game** (Ian's top item; highlights stay the default).
-- Motion, not stills: goals, shots, passes and the ball in play animated; the surface stays up behind call cards; a
-  watch rhythm between calls (pro basketball, baseball); college football's field to the pro standard.
-- Clock, down and distance, count and outs, penalties and power plays on the surface.
-- Football: defenders pursue a breakaway; turnover returns; punts, kick returns, blocks shown.
-- Hockey line changes and basketball rotations in the game (and shown).
+- Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
+  college football's field to the pro standard; clock, down and distance, count and outs on the surface.
+- Football: kick returns, blocks shown.
 
 ## Later: depth
 - Player attributes by category (as Football Manager) that drive performance and develop over time.
 - In-season trades and offers, with deadlines and caps: make an offer, ask what they'd want, counter.
 - Baseball staff: a five-man rotation and a bench of starters; a bullpen of set-up and middle relievers with roles you
   assign (closer, set-up, middle, long), instead of one backup per slot.
-- Awards: player, coach and goal of the month; a top-five goals reel.
+- Awards: coach of the month, other sports' monthly awards; a top-five goals reel.
 - Decisions: late calls with clock, timeouts and fouls; stakes shown on options; scouting with sample sizes and ties
   shown as ties.
 
