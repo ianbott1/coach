@@ -7,7 +7,7 @@
      node test/trades.js [--fleece]      last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'),path=require('path');
 const G=process.env.ONLY?[[process.env.ONLY,process.env.TEAM]]:[['football-coach-pro.html','Kansas City'],['basketball-coach-pro.html','Boston'],['hockey-coach-pro.html','Boston'],['soccer-coach.html','Arsenal'],['baseball-coach-pro.html','Seattle']];
-const FLEECE=process.argv.includes('--fleece');
+const FLEECE=process.argv.includes('--fleece'), FL=[];
 (async()=>{const b=await chromium.launch();let bad=0;const ok=(c,m)=>{if(!c){bad++;console.log('  FAIL',m)}};
 for(const [f,team] of G){const p=await b.newPage({viewport:{width:1265,height:900}}),errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto('file://'+path.join(process.env.DIST||path.join(__dirname,'..','dist'),f));await p.waitForTimeout(400);
@@ -32,10 +32,27 @@ await p.click('[data-tdgo]');await p.waitForTimeout(40);await p.click('[data-tdg
 const post=await p.evaluate(([x])=>{const M=SEA.roster[S.myTeam],T=SEA.roster[x.t];return {mineHas:M.some(q=>q&&q.n===x.qn),theyHave:T.some(q=>q&&q.n===x.gn),dm:SEA.talent.base[S.myTeam]-x.bm-(rosterElo(M)-x.em),dt:SEA.talent.base[x.t]-x.bt-(rosterElo(T)-x.et),done:document.body.innerText.includes('Done.'),log:JSON.stringify(S.promos)}},[pre]);
 ok(post.mineHas&&post.theyHave,`${pre.gn} to ${pre.t}, ${pre.qn} to you`); ok(Math.abs(post.dm)<1e-6&&Math.abs(post.dt)<1e-6,`both strengths move by the change in rosterElo (${post.dm}, ${post.dt})`);
 ok(post.done,'the tab says it is done'); ok(/"tr":/.test(post.log),'kept in the save');
+// the other club's games before the trade still replay to their scores, with the box score's names
+const wr=await p.evaluate(([x])=>{ let n=0,okk=0; for(let s=0;s<SEA.step;s++){ const W=SEA.weeks[s]; if(!W)continue; W.games.forEach(g=>{ if((g.home!==x.t&&g.away!==x.t)||g.home===S.myTeam||g.away===S.myTeam||g.hp===undefined)return; n++; try{ if(replayGame(g,s))okk++ }catch(e){} }) } return {n,okk} },[pre]);
+ok(wr.n>0&&wr.okk===wr.n,`${pre.t}'s games before the trade still replay to their scores (${wr.okk} of ${wr.n})`);
 // a reload plays it again, 20 steps on
 const rl=await p.evaluate(()=>{for(let i=0;i<20&&SEA.phase==="week";i++)simAdvance();const snap=()=>JSON.stringify([SEA.rec,NAMES.map(t=>SEA.roster[t].map(q=>q&&q.n)),NAMES.map(t=>Math.round(SEA.talent.base[t]*1000))]);
   const a=snap(); rebuild(); return a===snap()});
 ok(rl,'a reload gives back the same season, trade and all');
+// an injured starter, his healthy backup traded for a better man: the new man starts, the injury stays with the injured
+const inj=await p.evaluate(()=>{ const my=S.myTeam, R=SEA.roster[my]; let res=null;
+  for(let s=0;s<POS.length&&!res;s++){ const k=BK(s); if(!R[s]||!R[k]||tdHurt(my,s)||tdHurt(my,k))continue;
+    tdClubs().forEach(t=>{ if(res||tdRecent(t))return; SEA.roster[t].forEach((q,b)=>{ if(res||!q||tdGrp(b)!==tdGrp(k)||tdHurt(t,b)||q.r<=R[s].r)return;
+      // their side too: the man they get must start for them, over a man of theirs we injure
+      const T=SEA.roster[t], ts=b%POS.length, tk=BK(ts), other=b===ts?tk:ts; if(!T[other]||tdHurt(t,other)||R[k].r<=T[other].r)return;
+      SEA.talent.inj[my].push({m:-1,w:9,k:POS[s].p,idx:s,who:R[s].n,rating:R[s].r}); SEA.talent.inj[t].push({m:-1,w:9,k:POS[ts].p,idx:other,who:T[other].n,rating:T[other].r});
+      const d=tdDeal(t,k,b); if(!d||!d.yes){ SEA.talent.inj[my].pop(); SEA.talent.inj[t].pop(); return }
+      const hm=R[s].n, ht=T[other].n; tdDo(d);
+      const where=(tm,nm)=>{ const e=SEA.talent.active(tm).find(e=>e.who===nm); return e?SEA.roster[tm][e.idx]&&SEA.roster[tm][e.idx].n:null };
+      res={mine:where(my,hm)===hm, theirs:where(t,ht)===ht, starts:SEA.roster[my][s].n===q.n, t:t} }) }) }
+  return res });
+if(inj){ ok(inj.mine&&inj.theirs,`after a trade reorders a pair, each injury is still on the injured man (yours ${inj.mine}, ${inj.t}'s ${inj.theirs})`); ok(inj.starts,'the better man starts') }
+else console.log('   (no deal found for the injury case this time)');
 // after the deadline (or the window): closed
 const shut=await p.evaluate(()=>{let n=0;while(tdState().open&&SEA.phase==="week"&&n<300){simAdvance();n++} return {open:tdState().open,why:tdState().why,tab:(view='team',teamTab='trades',render(),!document.querySelector('[data-tdshop]'))}});
 ok(!shut.open&&shut.tab,'closed after the deadline: '+shut.why);
@@ -47,10 +64,20 @@ const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry
   const inU=(t,nm)=>U.roster[t]&&U.roster[t].some(q=>q&&q.n===nm);
   let g=null; NAMES.forEach(t=>{ const q=U.roster[t].find(q=>q&&q.n===x.qn); if(q)g=q });
   const where=NAMES.filter(t=>U.roster[t].some(q=>q&&q.n===x.gn)); const H=S.history[S.history.length-1], L=H&&H.league; const fate=L?['released','retired','signed','resigned','left','gone'].filter(k=>JSON.stringify(L[k]||'').includes(x.gn)):[];
-  return {banked,carried,where,fate,block:LEAGUE.ui.offseasonBlock&&S.off?LEAGUE.ui.offseasonBlock():null,year:SEA.year,phase:SEA.phase,mine:inU(S.myTeam,x.qn),theirs:inU(x.t,x.gn),hist:g&&g.hist?g.hist.slice(-1)[0]:null}},[pre]);
-console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
-// fleece: the best offer every chance, to the deadline, in a fresh career
-if(FLEECE){ const fl=await p.evaluate(([team])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
+  const pr=U.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn), ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })();
+  return {ordered,banked,carried,where,fate,block:LEAGUE.ui.offseasonBlock&&S.off?LEAGUE.ui.offseasonBlock():null,year:SEA.year,phase:SEA.phase,mine:inU(S.myTeam,x.qn),theirs:inU(x.t,x.gn),hist:g&&g.hist?g.hist.slice(-1)[0]:null}},[pre]);
+console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); ok(nx.ordered,'next season the better of the two at his spot starts'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
+// fleece: every deal any club would take (any of yours, any of theirs at the spot), the best each day, to the deadline
+for(const obj of ['now+later','now']){ const fl=await p.evaluate(([team,obj])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
+  const my=S.myTeam, r0=teamRating(SEA.roster[my]), f0=tdVal(SEA.roster[my],true); let k=0;
+  while(tdState().open&&SEA.phase==="week"){ const R=SEA.roster[my]; let best=null, bv=0.05;
+    tdClubs().forEach(t=>{ if(tdRecent(t))return; SEA.roster[t].forEach((q,b)=>{ if(!q||tdHurt(t,b))return; R.forEach((g,a)=>{ if(!g||tdGrp(a)!==tdGrp(b)||tdHurt(my,a))return;
+      const d=tdDeal(t,a,b); if(!d||!d.yes)return; const v=obj==='now'?d.now:d.now+d.fut; if(v>bv){bv=v;best=d} }) }) });
+    if(best){tdDo(best);k++} else simAdvance() }
+  return {k,gain:teamRating(SEA.roster[my])-r0,fut:(tdVal(SEA.roster[my],true)-f0)/R_SLOPE}},[team,obj]);
+  console.log(`   fleece (${obj}): ${fl.k} trades, team rating ${fl.gain>=0?'+':''}${fl.gain.toFixed(2)} now, ${fl.fut>=0?'+':''}${fl.fut.toFixed(2)} in two years`);
+  FL.push({f,obj,...fl}) }
+if(false){ const fl=await p.evaluate(([team])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
   const r0=teamRating(SEA.roster[S.myTeam]), b0=SEA.talent.base[S.myTeam]; let k=0, fut=0;
   while(tdState().open&&SEA.phase==="week"){ const R=SEA.roster[S.myTeam]; let best=null; R.forEach((q,i)=>{ if(!q)return; tdOffers(i).forEach(d=>{ if(d.now>0&&(!best||d.now>best.now))best=d }) });
     if(best){fut+=best.fut;tdDo(best);k++} else simAdvance() }

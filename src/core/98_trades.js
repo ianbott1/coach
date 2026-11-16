@@ -32,8 +32,10 @@ function tdState(){
 }
 const tdGrp=i=>POS[i%POS.length].p.replace(/\d+$/,"");      // baseball's SP, SP2 and SP3 are all starters
 function tdHurt(t,i){ return SEA.talent.active(t).some(e=>e.idx===i) }
+// a man whose deal ends this season counts for 40% of himself in two years (he may re-sign; he may not: a rental)
 function tdFut(p){ const a=p.age||27, young=Math.max(0,27-a)/5;
-  return Math.max(30,p.r+(p.pot!=null&&p.pot>p.r?(p.pot-p.r)*0.5*young:0)-Math.max(0,a-29)*1.5) }
+  const f=Math.max(30,p.r+(p.pot!=null&&p.pot>p.r?(p.pot-p.r)*0.5*young:0)-Math.max(0,a-29)*1.5);
+  return p.k&&p.k.yrs<=1?f*0.4:f }
 // a club's own reading of a roster: the starters, and a little for the man behind each (in case)
 function tdVal(R,fut){ let s=0; POS.forEach((P,i)=>{ const v=x=>x?(fut?tdFut(x):x.r):0, x=v(R[i]), y=v(R[BK(i)]); s+=P.w*(0.88*Math.max(x,y)+0.12*Math.min(x,y)) }); return ratingToElo(s) }   // the better of the two starts (in two years too)
 // where a club stands: 1 is a contender, 0 out of it (the share of the season gone tempers it early)
@@ -78,7 +80,8 @@ function tdApply(sea,x){
   const a=M[x.a]&&M[x.a].n===x.gn?x.a:M.findIndex(p=>p&&p.n===x.gn), b=T[x.b]&&T[x.b].n===x.qn?x.b:T.findIndex(p=>p&&p.n===x.qn);
   if(a<0||b<0)return false;
   const e0=rosterElo(M), f0=rosterElo(T), give=M[a], get=T[b];
-  [[M,a,get],[T,b,give]].forEach(([R,i,p])=>{ R[i]=p; const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z } });
+  [[M,a,get,my],[T,b,give,x.t]].forEach(([R,i,p,tm])=>{ R[i]=p; const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z;
+    (sea.talent.inj[tm]||[]).forEach(e=>{ if(e.idx===s)e.idx=k; else if(e.idx===k)e.idx=s }) } });   // an injury goes with the man, not the slot
   sea.talent.base[my]+=rosterElo(M)-e0; sea.talent.base[x.t]+=rosterElo(T)-f0;
   get.tdFrom=x.t; give.tdFrom=my; return true }
 function tdDo(d){
@@ -90,7 +93,8 @@ function tdCarry(u){
   const L=tdLog(); Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     const a=M.findIndex(p=>p&&p.n===x.gn), b=T.findIndex(p=>p&&p.n===x.qn); if(a<0||b<0)return;
-    const g=M[a], q=T[b]; M[a]=q; T[b]=g; [q,g].forEach(p=>{ p.yrsHere=0; p.joined=SEA.year }) })) }
+    const g=M[a], q=T[b]; M[a]=q; T[b]=g; [q,g].forEach(p=>{ p.yrsHere=0; p.joined=SEA.year });
+    [[M,a],[T,b]].forEach(([R,i])=>{ const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z } }) })) }
 function tdTrades(){ const L=tdLog(); return [].concat(...Object.keys(L).sort((a,b)=>a-b).map(k=>L[k])).filter(x=>x.y===undefined||x.y===SEA.year) }
 
 /* the Trades tab */
