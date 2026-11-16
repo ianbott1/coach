@@ -15,14 +15,18 @@ const HL_SPORT=(function(){
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
     const close=Math.abs((d.h||0)-(d.a||0))<=8;
-    if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return [mk(L,d)] }
+    // round 80: a fourth down they went for and made plays too, before what the drive came to (Ian: "fourth-down plays
+    // always shown"; round 79 showed only the failed ones)
+    const conv=mode!=="goals"&&d.converted===true&&/converted on fourth and (\d+)/.test(d.note||"")?[mkConv(L,d)]:[];
+    if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return conv.concat([mk(L,d)]) }
     if(mode==="goals")return [];
+    if(conv.length&&k!=="FG"&&k!=="MISS"&&k!=="INT"&&k!=="FUM"&&k!=="DOWNS")return conv;
     const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
-    if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return [mkKick(L,d)];
-    if(k==="INT")return [mkPick(L,d)];   // round 70: every turnover (Ian: "I didn't see any turnovers")
-    if(k==="FUM")return [mkFum(L,d)];
-    if(k==="DOWNS"&&ENGINE_V>=7)return [mkDowns(L,d)];   // round 79: a fourth-down try that fails is shown (Ian: "fourth-down plays always shown")
-    return [];
+    if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return conv.concat([mkKick(L,d)]);
+    if(k==="INT")return conv.concat([mkPick(L,d)]);   // round 70: every turnover (Ian: "I didn't see any turnovers")
+    if(k==="FUM")return conv.concat([mkFum(L,d)]);
+    if(k==="DOWNS"&&ENGINE_V>=7)return conv.concat([mkDowns(L,d)]);   // round 79: a fourth-down try that fails is shown (Ian: "fourth-down plays always shown")
+    return conv;
   }
   // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
   // linebacker, corner, safety); the rest of the eleven take free numbers in their position's range. Key below.
@@ -38,13 +42,21 @@ const HL_SPORT=(function(){
     const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
     return Object.assign(base(L,d),{kind:good?"fg":"miss",los,kicker:typeof kickerName==="function"?kickerName(d.home?L.g.home:L.g.away):null,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
       endY:good?0.5+wide*(0.005+r()*0.03):0.5+wide*(0.085+r()*0.05),startY:hook?(good?0.5+wide*0.09:0.5-wide*0.02):0.5,base:3400,reveal:0.82}) }
-  function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.stall||50)), len=Math.round(3+r()*8);
+  function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.lost||d.stall||50)), len=Math.round(3+r()*8);
     const m=/recovered by (.*)$/.exec(rowText(L,d));
     return Object.assign(base(L,d),{kind:"fum",pass:false,los,rcv:1,len,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:m?surname(m[1]):"",base:3200,reveal:0.66}) }
   function mkDowns(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?23:37))>>>0), los=Math.max(20,Math.min(97,d.stall||(d.start||30)+20+Math.round(r()*20))), tg0=d.togo||+((/fourth and (\d+)/.exec(d.note||"")||[])[1])||2, tg=Math.max(1,Math.min(9,tg0)), len=Math.max(0,tg-1-Math.floor(r()*Math.min(3,tg)));
     return Object.assign(base(L,d),{kind:"downs",pass:false,los,rcv:1,len,togo:tg,catchY:Math.min(99,los+len),lane:0.4+r()*0.2,who:"",base:3000,reveal:0.86}) }
-  function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(50,Math.min(90,d.stall||70));
-    const rcv=r()<0.6?2:3, len=Math.round(8+r()*Math.min(25,100-los-2));
+  function mkConv(L,d){ const r=mulberry32(((d.n||1)*7919+(d.start||0)*131+(d.home?41:43))>>>0), tg=Math.max(1,Math.min(9,+(/converted on fourth and (\d+)/.exec(d.note||"")||[0,2])[1])),
+      los=Math.max(25,Math.min(90,(d.start||25)+12+Math.round(r()*30))), len=tg+Math.round(r()*Math.min(6,95-los-tg));
+    return Object.assign(base(L,d),{kind:"conv",pass:false,los,rcv:1,len,togo:tg,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:"",base:3000,reveal:0.86}) }
+  // round 80: the pick from where the ball was lost (d.lost), run back to where they took over (d.retTo: the next drive's
+  // start, read ahead in the engine), with the passing side chasing him; the catch comes earlier to leave the run room
+  function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(30,Math.min(90,d.lost||d.stall||70));
+    const rcv=r()<0.6?2:3; let len=Math.round(8+r()*Math.min(25,100-los-2));
+    let ret=null; if(d.retTo!=null){ const end=100-d.retTo; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
+    if(ret!=null){ const m=/intercepted by (.*)$/.exec(rowText(L,d)), f=ret>3?0.6:0.86;
+      return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-d.retTo}) }
     const m=/intercepted by (.*)$/.exec(rowText(L,d));
     return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
   /* the run of play's line for this drive (driveScript draws its words in drive order from the game's seed, so the
@@ -137,7 +149,7 @@ const HL_SPORT=(function(){
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
     if(c.kind==="fg"||c.kind==="miss")return kickFrame(x,W,H,c,t);
-    const snap=0.18, throwT=0.5, tEnd=0.86;
+    const sf=(c.f||0.86)/0.86, snap=0.18*sf, throwT=0.5*sf, tEnd=0.86*sf;   // (round 80: a pick with a return catches earlier)
     // the ball: snapped, then a drop and a throw, or a handoff and a run
     let bx,by,z=0;
     const qb=[c.los-5-(t>snap?Math.min(1,(t-snap)/(throwT-snap))*2:0),0.5];
@@ -154,6 +166,10 @@ const HL_SPORT=(function(){
         if(i>=6){ yd+=runS*1.5 } else if(i>=2){ yd+=runS*Math.min(18,c.len*0.7); y=hlLerp(y,0.5,runS*0.2) } }
       return [yd,y] });
     const def=DEF.map((p,i)=>{ let yd=c.los+p[0], y=p[1]; if(t>snap){ const k=i<4?0.15:0.45*runS; yd=hlLerp(yd,bx,k*0.6); y=hlLerp(y,by,k) } return [yd,y] });
+    // round 80: pursuit (Ian: nobody chased a breakaway): once the ball is in the runner's hands the back seven take
+    // angles on him and end a few yards behind, the deep men closest
+    if((c.kind==="td"||c.kind==="conv")&&t>(c.pass?throwT:snap)){ const q=carrierAt(runS), w=hlEase(Math.min(1,(t-(c.pass?throwT:snap))/(tEnd-(c.pass?throwT:snap))))*0.9;
+      for(let i=4;i<11;i++){ const gap=(i>=9?1.0:i>=7?1.7:2.5)+(i%3)*0.5+(c.len>25?0.8:0); def[i]=[hlLerp(def[i][0],q[0]-gap,w),hlLerp(def[i][1],q[1]+(i%2?0.06:-0.06)*(1-w*0.5),w)] } }
     // a contested ball: the corner on the receiver's hip the whole way (round 70: Ian, too many blown coverages)
     if(c.pass&&c.tight&&t>snap&&c.kind!=="int"){ const j=c.rcv===2?7:8, q=carrierAt(runS), lag=0.9+0.6*Math.sin(runS*5); def[j]=[q[0]-lag,q[1]+(c.rcv===2?0.035:-0.035)] }
     // a fumble: the carrier is hit, the ball comes loose, a defender falls on it
@@ -161,16 +177,21 @@ const HL_SPORT=(function(){
       bx=hit[0]+hlEase(u)*4.5; by=hit[1]+hlEase(u)*(hit[1]<0.5?0.07:-0.07)+Math.sin(u*9)*0.012; z=Math.abs(Math.sin(u*Math.PI*3))*0.012*(1-u); def[j]=[hlLerp(def[j][0],bx,Math.min(1,u*1.4)),hlLerp(def[j][1],by,Math.min(1,u*1.4))] }
     // a pick: the nearest defensive back jumps the route and takes it the other way
     if(c.kind==="int"&&t>throwT){ const tg=carrierAt(Math.min(1,runS+0.05)), j=c.rcv===2?7:8, s=Math.min(1,(t-throwT)/(tEnd-throwT));
-      def[j]=[hlLerp(def[j][0],tg[0]+0.8,hlEase(s)),hlLerp(def[j][1],tg[1],hlEase(s))]; if(t>tEnd){ const u=(t-tEnd)/(1-tEnd); def[j]=[tg[0]+0.8-u*12,tg[1]]; bx=def[j][0]; by=def[j][1]; z=0 } }
+      def[j]=[hlLerp(def[j][0],tg[0]+0.8,hlEase(s)),hlLerp(def[j][1],tg[1],hlEase(s))];
+      if(t>tEnd){ const u=(t-tEnd)/(1-tEnd), run=c.ret!=null?c.ret:12, cy=tg[0]+0.8-hlEase(u)*run, cyl=hlLerp(tg[1],0.5,hlEase(u)*0.5); def[j]=[cy,cyl]; bx=cy; by=cyl; z=0;
+        // round 80: the passing side gives chase, his own men run with him
+        if(c.ret!=null){ off.forEach((p,i)=>{ const k=u*(i<2||i>=6?0.35:0.6); off[i]=[hlLerp(p[0],cy+2+(i%4)*1.2,k),hlLerp(p[1],cyl+((i%3)-1)*0.09,k)] });
+          def.forEach((p,i)=>{ if(i!==j){ const k=u*0.3; def[i]=[hlLerp(p[0],cy-2-(i%3)*1.5,k),hlLerp(p[1],cyl+((i%2)?0.14:-0.14),k)] } }) } } }
     const r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    const tag=i=>t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
-    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[i]}:null) });
+    const tag=i=>!(c.kind==="int"&&t>tEnd)&&t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
+    const dtag=i=>c.kind==="int"&&t>tEnd&&i===(c.rcv===2?7:8)?"INT":"";   // round 80: the man running it back
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)",dtag(i),c.defN?{num:c.defN[i]}:null) });
     off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i),c.offN?{num:c.offN[i]}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} ball`;   // round 67: no "12 yards out" before it's done
     const te=c.kind==="fum"?c.reveal:tEnd;
-    const end=t>=te&&c.kind==="downs"?`STOPPED! ${c.len?c.len+" yard"+(c.len===1?"":"s")+",":"No gain,"} ${c.togo} needed`:t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
-    if(c.kind==="downs"){ const [mx,my]=P(W,H,c,Math.min(99.5,c.los+c.togo),0), [mx2,my2]=P(W,H,c,Math.min(99.5,c.los+c.togo),1); x.save(); x.strokeStyle="#F2D24B"; x.lineWidth=2; x.beginPath(); x.moveTo(mx,my); x.lineTo(mx2,my2); x.stroke(); x.restore() }   // the line to gain
+    const end=t>=te&&c.kind==="conv"?`FIRST DOWN! ${c.len} yards on fourth and ${c.togo}`:t>=te&&c.kind==="int"&&c.ret!=null&&t>=0.97?`INTERCEPTED!${c.who?" "+c.who+",":""} ${c.ret?"returned "+c.ret+" yard"+(c.ret===1?"":"s"):"no return"}`:t>=te&&c.kind==="downs"?`STOPPED! ${c.len?c.len+" yard"+(c.len===1?"":"s")+",":"No gain,"} ${c.togo} needed`:t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
+    if(c.kind==="downs"||c.kind==="conv"){ const [mx,my]=P(W,H,c,Math.min(99.5,c.los+c.togo),0), [mx2,my2]=P(W,H,c,Math.min(99.5,c.los+c.togo),1); x.save(); x.strokeStyle="#F2D24B"; x.lineWidth=2; x.beginPath(); x.moveTo(mx,my); x.lineTo(mx2,my2); x.stroke(); x.restore() }   // the line to gain
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink);
   }
   const headClock=c=>c&&c.hd||null;

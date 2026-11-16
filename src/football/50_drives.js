@@ -392,6 +392,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
                  converted:(res.converted===undefined?null:res.converted),
                  togo:res.togo||null};
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
+    /* round 80: a turnover's return is drawn with the next drive's start (nextStart, its first draw); for the clip, the
+       same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
+       the ball was lost (stall) and where they took over (retTo, from their own goal). */
+    if((res.kind==="INT"||res.kind==="FUM")&&res.stall!=null){ drive.lost=res.stall; try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
     st.drives.push(drive);
     st.prev=res.kind; st.at=res.stall; st.i++; st.pend=null; st.stage=null;
     return drive;
@@ -556,6 +560,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       if(dp){
         used[dp.k]=true; called();
         st.stage="strategy"; st.pend={q:q,start:start,k:dp.k};
+        // round 80 (engine 8): the drive starts where it stood when the call came (it drew its start again on resuming,
+        // so a pick's return in the clip and the drive after a call could disagree)
+        if(ENGINE_V>=8)st.startHold=start;
         return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
       }
     }

@@ -1,10 +1,15 @@
 {
- "fp": "ed5aedc9bd02de30",
+ "fp": "814e58be97b17cbd",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
    "from": null,
    "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  },
+  {
+   "fp": "814e58be97b17cbd",
+   "from": "ed5aedc9bd02de30",
+   "note": "Round 80: engine number 8 in the universe only (field-by-field: only the universe differs)"
   }
  ],
  "result": {
@@ -18,7 +23,7 @@
     "poll": "7b7f3d8727aeca30",
     "heis": "95efb282beb2b16c",
     "history": "9c83b384bb87e07e",
-    "universe": "e9b9f85b1c0cac82",
+    "universe": "d3aed31c414d25d6",
     "screens": "161c06fedd6fb3a9"
    }
   ]

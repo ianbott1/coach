@@ -1,25 +1,30 @@
 {
- "fp": "8832b5880900579a",
+ "fp": "de74a0d63db6ee61",
  "log": [
   {
    "fp": "8832b5880900579a",
    "from": null,
    "note": "First quick-tier fingerprint (round 80): one career's first season, same build as round 79's release"
+  },
+  {
+   "fp": "de74a0d63db6ee61",
+   "from": "8832b5880900579a",
+   "note": "Round 80 (engine 8): a drive after a strategy call starts where it stood (it drew its start again); your games' results move"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "04d85b4f5a0631dc",
-    "post": "cff1ff9f4adfd38a",
-    "champion": "Notre Dame",
-    "rec": "90c8147b35906c6f",
-    "poll": "b5723de932ba10e7",
-    "heis": "58b3932bdaf791ee",
-    "history": "0ef0014165a8a0dc",
-    "universe": "c442637244704f45",
-    "screens": "81b79dfeb4b96034"
+    "games": "c8ddc523461fda9a",
+    "post": "b76860142c60bd7e",
+    "champion": "Oregon",
+    "rec": "0181203f86b17f94",
+    "poll": "eac26627dd99b438",
+    "heis": "fb6327d7e61b1261",
+    "history": "1d6ba277acbd15f1",
+    "universe": "09919f30aae50660",
+    "screens": "843488f808b463bd"
    }
   ]
  }
