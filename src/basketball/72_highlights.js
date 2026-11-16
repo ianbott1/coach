@@ -38,7 +38,18 @@ const HL_SPORT=(function(){
     const rec=W.map((w,i)=>{ if(i===W.length-1)return idx; let b=0,bd=9; ATT.forEach((p,j)=>{ if(j===idx)return; const dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=j} }); return b });
     const inks=hlKits(g.home,g.away).map(k=>k.fill), last=e.k==="last"||e.k==="lastmiss";
     // round 67: every man on the floor by number and name (Ian: only the ball carrier was named)
-    const opp=e.side==="home"?g.away:g.home, an=hlNamed(tm,[0,1,2,3,4]), dn=hlNamed(opp,[0,1,2,3,4]), kits=hlKits(g.home,g.away);
+    // round 80: rotations (Ian): who's on the floor follows the stretch: starters to open each half and to close, the bench
+    // in for the late first and third quarters and the start of the second and fourth (about the bench's fifth of the
+    // minutes), each position on its own rhythm; the shooter's man is the one the run of play names, starter or backup
+    const opp=e.side==="home"?g.away:g.home, seg=d&&typeof d.seg==="number"?d.seg:-1;
+    const BENCH_P=[0,0.45,0.3,0.05,0,0.45,0.3,0.05];
+    const floor=(team,salt,shooter)=>{ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
+      let h=0; for(const ch of team+salt)h=(h*31+ch.charCodeAt(0))>>>0;
+      return [0,1,2,3,4].map(i=>{ const st=hurt.has(i)?-1:i, b=R[bk(i)]&&!hurt.has(bk(i))?bk(i):-1;
+        if(shooter&&i===idx){ const n=nm; if(b>=0&&R[b].n===n)return b; if(st>=0)return st; return b>=0?b:i }
+        const x=(((h+i*97+(seg+1)*53)%100)+0.5)/100, benchIn=seg>=0&&x<(BENCH_P[seg%8]||0);
+        return st<0?(b>=0?b:i):benchIn&&b>=0?b:st }) };
+    const an=hlNamed(tm,floor(tm,"a",true)), dn=hlNamed(opp,floor(opp,"d",false)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[e.side==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[e.side==="home"?1:0],list:dn.filter(Boolean)}];
     return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,an,dn,legend,
       andOne:kind==="inside",text:""};
