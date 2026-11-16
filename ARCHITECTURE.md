@@ -358,6 +358,59 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 78: trust breakers (the testers' feedback, verified in a real browser first).
+- Box score button: Enter and Space on the focused toggle went to the page's "advance" shortcut and started the next
+  game. A focused control (summary, button, link, select, role=button) now keeps Space and Enter. test/boxclick.js
+  presses it by keyboard, mouse and touch in all seven (it fails on round 77). Rewatch shows the box score.
+- Kicking: measured, not a current-engine bug: in a season begun before round 71 (engine 1), 39 of 91 kicks were over
+  60 yards; on the current engine 0 of 58. Left as is, so old saves replay.
+- College basketball's false final: not reproduced (9 of 9 overtimes played out before the final; 197 games' live and
+  recorded scores matched on engines 1, 3 and 6). An overtime the engine hands back at the end (hockey's, soccer's)
+  now plays out a stretch at a time when its highlights can't play (live.tailQ; 44 of 44 hockey overtimes).
+
+Round 79: games you can open (engine 7, schedV 4).
+- Scores: every played game opens its box score (gameSheet, core 96_moments: each side's players by statCols group,
+  from their game logs, so the computer's games have one too). Baseball leads with the decisions (sportSheetNote:
+  "W: x (w-l)  L: y (w-l)  S: z (n)"); a decision the unnamed set-up men took reads "W: Houston bullpen" (15 of 45
+  games had no W or L line before that).
+- Next-game card: sportNextExtra hook; baseball's probable starters with W-L and ERA. ownMark no longer says
+  "Featuring"; Balanced's "Play your game." gone in every sport. The bullpen call names your starter (pullCall sp).
+- Baseball (engine 7): a man who has pinch-hit can't pinch-hit again (benchFree; 648 games: 21 with a repeat
+  before, 0 after). schedV 4: packSeries avoids a second series straight against the same club, taking a day off
+  instead while there's room (seven straight against one club in 60% of club-seasons before, 5% over 40 seasons
+  after; bs-calibrate's back-to-back check now at most 5 a season, was ~18).
+- In-game: "Game stats so far" (liveStatsHTML: the sport's box team table from the stretches played, as the screen
+  holds them during a highlight), all seven, open or shut through redraws (test/livestats.js).
+- Roster: season stats sortable by any column (rosterStatsHTML; test/rostersort.js). The team page opens on its
+  schedule (standings team click).
+- Skip stops once for a close finish (ffLateStop at the sport's lateFloor window) and for an overtime the engine hands
+  back. test/skipfinish.js: on round 78 Skip jumped a close finish in two of seven games; now none.
+- Football: kickerName (a name per club from the career's seed, drawing nothing the season uses) on field goals, the
+  kick clip and the game-winner line; fbClock, one game clock for the live header, the run of play and the calls
+  (engine 7 seasons); a failed fourth-down try plays as a clip (mkDowns); the scouting call says "Before your first
+  drive" when they had the ball first.
+- Soccer: the corner's taker stays at the flag until he's struck it. Knockouts: hockey's playoff tie and soccer's cup
+  tie no longer offer "the point" (sudden death, extra time), staff lines too (dp.ko). A goal with no wins in it
+  reads as itself (soccer showed "Target: 0 wins" on every club).
+- Hockey and basketball clips: a man who takes the puck or ball twice goes to each spot (rec.indexOf found his first
+  only; 13 of 46 hockey clips and 14 of 31 basketball clips passed to empty space).
+- Football (engine 7): the run of play's draw is seeded by the fixture (fbScriptSeed: the two sides and the year), not
+  watchSeed's final score. A live game has no final score, so its clips named one scorer and the box score, the
+  player's line and the rewatch another: 18 of 29 pro and 21 of 32 college touchdowns; now 0 of 89. The live panel's
+  scoring rows no longer change with each tick.
+- Scores' box sheets are drawn when opened (gameSheetHTML gives a toggle with data-sheet; SHEETS[id] draws it on
+  toggle, bindSheets after every render): a busy college basketball day's Scores was 1.6 MB with every sheet drawn
+  (84 KB on round 78), now 109 KB. test/sheets.js: no empty toggle, on an engine-3 season (only your own games have a
+  box there: no game logs) and through a new season into its postseason.
+- Tests changed after they failed, each measured: migrate.js normalises this round's screen moves; regressions 30
+  checks the odds no longer mention featuring (Ian asked for it gone); bs-players pools its engine sample over three
+  seeds (the steal rate ran 77.4-82.3% by seed at 1,500 games; pooled 79.3%, round 78 79.5%).
+- Goldens: football, basketball, hockey and soccer results identical to round 78 field by field (games, playoffs,
+  champion, records, poll, awards, history); the universe differs only by its engine stamp; screens re-recorded.
+  Baseball's results move (engine 7, schedV 4); football's awards race and history move with its players' lines
+  (games, records, poll and champion identical). Suite: 105 of 105. engine-replay now also replays round 77's pages (engine 6).
+- Not reproduced: the Div/Conf column against records (it matches the games in every sport, in season and after).
+
 Round 77: baseball's running game and named relievers (engine 6); college basketball's scoring. (The "what if"
 replay was dropped: the call grades already answer it from many replays, and one replay against a grade would only
 undercut it.)
