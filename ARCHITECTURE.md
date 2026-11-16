@@ -358,6 +358,33 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 81: watch any game in the league; punts; soccer's monthly awards.
+- Any game this season, any league (Ian: as Football Manager). Before each computer game the season keeps where its dice
+  stood and what it was played with (Season._rp: rng a/sp, both strengths, the game's options as text), not saved: a
+  load replays the season and keeps them again. replayGame (core 96) plays it again on a tap and shows it only when it
+  ends on the recorded score. After the credit, the names it put on the plays (football's d.by, the scorers and
+  assists) are kept too (E.st) and put back, so a replay names the box score's men after injuries and moves. Measured,
+  a whole season and postseason in all seven (test/replay.js): every computer game replays to its score (over 15,000,
+  bowls, March, the series, cup ties to penalties, October); names agree (hockey 6,344, football 5,886, soccer 10,343
+  of 10,345: the two are goals soccer's credit never gave a line, its own gap); replaying changes nothing (the dice,
+  records, ratings and every line hashed before and after). Memory 0.4-2.4 MB a season, baseball 5.3 (its lineups;
+  4.7 KB a game as objects, 2.3 as text); the season sims no slower. Earlier seasons can't be watched.
+- Scores: Watch on every computer game (watchBtnHTML); the rewatch ends with who won (watchRes), the box score under
+  it, a Watch row for the depth (Goals only, Key moments, Every chance, Text only). test/watchany.js (browser, all
+  seven): plays to the score with clips, a neutral result, Back to Scores, the career unchanged.
+- Box scores keep the men who have moved clubs since (boxLines(g,step,true) reads every roster's logs for that game).
+- Found by the full suite and fixed before shipping: the name stamp was put between the credit's if and its else and
+  took the else, so every user game was credited twice and engine-3 seasons' computer games not at all (older seasons,
+  reported cases and recruiting failed). The lines-add-up check (statsum) joined the quick tier: it sees that.
+- Punts as clips (every punt in every chance and full, a long return in key moments): the flight, the coverage, the
+  return to where they take over (retTo, read ahead as for picks), a fair catch or a touchback; fb-clips checks every
+  punt ends at the next drive's start.
+- Soccer: Player of the Month (your division, from the game logs) and your Goal of the Month (a late winner or
+  equaliser first, from games you watched), on the home screen for two weeks after a month ends and above the leaders
+  (leagues/epl/99_months.js; test/months.js). A diving keeper is laid out, not grown (1.9x long before).
+- Goldens: soccer (the awards card), college and pro football and hockey (the Watch button): screens only, field by
+  field and line by line. Suite 108 of 111, those three.
+
 Round 80: watching (engine 8), and a faster test loop.
 - Football clips: a pick is run back to where the next drive starts. The engine draws a turnover's return with the next
   drive's start (nextStart, that step's first draw); push() reads it ahead on a copy of the dice (cp.a, cp.sp) into

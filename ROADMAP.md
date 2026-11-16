@@ -73,12 +73,12 @@ on numbers they can't trust and a sport they read rather than watch.
 - Basketball rotations: the bench in for its stretches, the shooter's dot the man named (106 of 142 before; all now).
 - Testing: a quick tier (about 6 minutes) on every change; the full suite (about 90) at a release.
 
-## Round 81 (in progress)
-- Punts and their returns as clips (every punt in every-chance and full; long returns in key moments).
-- Soccer: Player of the Month and your Goal of the Month; a diving keeper no longer grows.
+## Round 81 (done)
+- Watch any game in the league this season (replayed on a tap from its own dice, to its recorded score).
+- Punts and their returns as clips. Soccer: Player of the Month and your Goal of the Month; a diving keeper no longer grows.
+- Next: soccer's credit gap (a goal stamped to a man with no line, about 2 a season: engine 9).
 
 ## Still to come: watching
-- **Replay the whole game** (Ian's top item; highlights stay the default).
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
   college football's field to the pro standard; clock, down and distance, count and outs on the surface.
 - Football: kick returns, blocks shown.

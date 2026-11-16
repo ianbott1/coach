@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="0eed0b1";
+<script>const BUILD_ID="fe5a344";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -4646,7 +4646,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     /* round 80: a turnover's return is drawn with the next drive's start (nextStart, its first draw); for the clip, the
        same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
        the ball was lost (stall) and where they took over (retTo, from their own goal). */
-    if((res.kind==="INT"||res.kind==="FUM")&&res.stall!=null){ drive.lost=res.stall; try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
+    if((res.kind==="INT"||res.kind==="FUM"||res.kind==="PUNT")&&res.stall!=null){   // (round 81: a punt's flight and return too)
+      drive.lost=res.stall; try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
     st.drives.push(drive);
     st.prev=res.kind; st.at=res.stall; st.i++; st.pend=null; st.stage=null;
     return drive;
@@ -5467,12 +5468,15 @@ const HL_SPORT=(function(){
     const conv=mode!=="goals"&&d.converted===true&&/converted on fourth and (\d+)/.test(d.note||"")?[mkConv(L,d)]:[];
     if(k==="TD"){ if(mode==="goals"&&!(d.q>=4&&close))return []; return conv.concat([mk(L,d)]) }
     if(mode==="goals")return [];
-    if(conv.length&&k!=="FG"&&k!=="MISS"&&k!=="INT"&&k!=="FUM"&&k!=="DOWNS")return conv;
+    if(conv.length&&k!=="FG"&&k!=="MISS"&&k!=="INT"&&k!=="FUM"&&k!=="DOWNS"&&k!=="PUNT")return conv;
     const all=mode==="all"||mode==="full";   // round 68: every kick and every pick
     if(k==="FG"||k==="MISS"&&(all||(d.stall||0)>=62))return conv.concat([mkKick(L,d)]);
     if(k==="INT")return conv.concat([mkPick(L,d)]);   // round 70: every turnover (Ian: "I didn't see any turnovers")
     if(k==="FUM")return conv.concat([mkFum(L,d)]);
-    if(k==="DOWNS"&&ENGINE_V>=7)return conv.concat([mkDowns(L,d)]);   // round 79: a fourth-down try that fails is shown (Ian: "fourth-down plays always shown")
+    if(k==="DOWNS"&&ENGINE_V>=7)return conv.concat([mkDowns(L,d)]);
+    // round 81: punts and their returns (Ian), from where it was kicked to where they took over (d.retTo, read ahead):
+    // every punt in "every chance" and the full game, a long return (15+) in key moments
+    if(k==="PUNT"&&retTo(L,d)!=null&&(d.lost!=null||d.stall!=null)){ const c=mkPunt(L,d); if(all||c.ret>=15)return conv.concat([c]) }   // round 79: a fourth-down try that fails is shown (Ian: "fourth-down plays always shown")
     return conv;
   }
   // round 67: numbers. The tracked man at each position wears his own (QB, RB, both WRs, a lineman; edge, tackle,
@@ -5499,11 +5503,19 @@ const HL_SPORT=(function(){
     return Object.assign(base(L,d),{kind:"conv",pass:false,los,rcv:1,len,togo:tg,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:"",base:3000,reveal:0.86}) }
   // round 80: the pick from where the ball was lost (d.lost), run back to where they took over (d.retTo: the next drive's
   // start, read ahead in the engine), with the passing side chasing him; the catch comes earlier to leave the run room
+  // where they took over: read ahead in the engine, or (a game played before round 80, or simmed) the next drive's start
+  function retTo(L,d){ if(d.retTo!=null)return d.retTo; const i=(L.drives||[]).indexOf(d), nx=i>=0?L.drives[i+1]:null; return nx&&nx.start!=null&&(d.lost!=null||d.stall!=null)?nx.start:null }
+  function mkPunt(L,d){ const rt=retTo(L,d), lost=d.lost!=null?d.lost:d.stall, r=mulberry32(((d.n||1)*7919+(lost||0)*131+(d.home?47:53))>>>0), los=Math.max(5,Math.min(70,lost)), end=100-rt;
+    const tb=rt===20&&los+40>=95, fair=!tb&&r()<0.25;
+    let land=tb?104:fair?end:Math.min(99,end+Math.round(2+r()*Math.min(14,99-end)));
+    if(land<=los+15)land=Math.min(99,los+30);
+    const ret=tb||fair?0:Math.max(0,land-end);
+    return Object.assign(base(L,d),{kind:"punt",los,land,end,ret,tb,fair,lane:0.35+r()*0.3,who:"",base:3600+ret*35,reveal:0.95}) }
   function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(30,Math.min(90,d.lost||d.stall||70));
     const rcv=r()<0.6?2:3; let len=Math.round(8+r()*Math.min(25,100-los-2));
-    let ret=null; if(d.retTo!=null){ const end=100-d.retTo; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
+    let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
     if(ret!=null){ const m=/intercepted by (.*)$/.exec(rowText(L,d)), f=ret>3?0.6:0.86;
-      return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-d.retTo}) }
+      return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-rtp}) }
     const m=/intercepted by (.*)$/.exec(rowText(L,d));
     return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400,reveal:0.86}) }
   /* the run of play's line for this drive (driveScript draws its words in drive order from the game's seed, so the
@@ -5561,6 +5573,29 @@ const HL_SPORT=(function(){
       const k=c.kits[team===c.hm?0:1]; x.save(); x.globalAlpha=0.78; x.fillStyle=k.fill; x.fillRect(l,tp,w,h); x.globalAlpha=1;
       const nm=String(team).toUpperCase(), fs=Math.max(8,Math.min(w*0.62,h/Math.max(4,nm.length)*1.25)); x.translate(l+w/2,tp+h/2); x.rotate(l<W/2?-Math.PI/2:Math.PI/2);
       x.font=`800 ${fs}px 'Barlow Condensed',Impact,sans-serif`; x.textAlign="center"; x.textBaseline="middle"; x.fillStyle=k.num; x.globalAlpha=0.9; x.fillText(nm,0,1,h*0.92); x.restore() }) }
+  // a punt: the snap back to the punter, the ball up and away, the coverage team down the field, the returner under it and
+  // back to where they take over (or a fair catch, or a touchback)
+  function puntFrame(x,W,H,c,t){
+    const snap=0.12, kick=0.24, landT=0.58, tEnd=0.92, pY=c.los-13, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    let bx,by,z=0; const ret=c.ret, rs=Math.max(0,Math.min(1,(t-landT)/(tEnd-landT)));
+    const retAt=s=>[hlLerp(c.land,c.end,hlEase(s)),hlLerp(c.lane,0.5,hlEase(s)*0.4)];
+    if(t<snap){ bx=c.los; by=0.5 } else if(t<kick){ const s=(t-snap)/(kick-snap); bx=hlLerp(c.los,pY,s); by=0.5 }
+    else if(t<landT){ const s=(t-kick)/(landT-kick); bx=hlLerp(pY,c.land,s); by=hlLerp(0.5,c.lane,s); z=Math.sin(s*Math.PI)*0.16 }
+    else if(c.tb){ bx=Math.min(110,c.land+rs*4); by=c.lane } else { const q=retAt(rs); bx=q[0]; by=q[1] }
+    // the punting side: a line of eleven, the gunners wide, all running down the field after the kick
+    const off=[...Array(11)].map((_,i)=>{ if(i===0)return t<kick?[pY,0.5]:[pY+(t-kick)*8,0.5];
+      const y0=i<=2?(i===1?0.06:0.94):0.3+(i-3)*0.055, y1=c.lane+((i%5)-2)*0.07, s=Math.max(0,Math.min(1,(t-snap)/(landT-snap))), fy=hlLerp(c.los,c.land-3-(i%4)*2,hlEase(s)*(i<=2?1:0.85));
+      const chase=Math.max(0,Math.min(1,(t-landT)/(tEnd-landT))); const q=retAt(chase);
+      return t<=snap?[c.los-0.5,y0]:[hlLerp(fy,q[0]+2+(i%3),chase*0.7),hlLerp(hlLerp(y0,y1,s),q[1]+((i%2)?0.05:-0.05),chase*0.7)] });
+    const def=[...Array(11)].map((_,i)=>{ if(i===0){ return t<landT?[c.land,c.lane]:c.tb?[c.land,c.lane]:retAt(rs) }
+      const y=0.2+(i-1)*0.065, d0=i<=6?c.los+1:c.land-12-(i%3)*4, s=Math.max(0,Math.min(1,(t-snap)/(landT-snap)));
+      return [hlLerp(d0,c.land-8-(i%4)*3,s*(i<=6?0.7:0.4))-(t>landT?rs*Math.min(ret,10)*0.5:0),hlLerp(y,c.lane+((i%3)-1)*0.12,s*0.5)] });
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)",i===0&&t>landT-0.08?"PR":"",c.defN?{num:c.defN[i%c.defN.length]}:null) });
+    off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",i===0&&t<landT?"P":"",c.offN?{num:c.offN[i%c.offN.length]}:null) });
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} punt`, yds=Math.min(100,c.land)-c.los;
+    const end=t>=tEnd?(c.tb?`PUNT, ${Math.min(99,yds)} yards: touchback`:c.fair?`PUNT, ${yds} yards: fair catch`:`PUNT, ${yds} yards: returned ${ret} yard${ret===1?"":"s"}`):null;
+    hlCaption(x,W,H,top,end,null) }
   function kickFrame(x,W,H,c,t){
     const snap=0.15, kick=0.3, tEnd=c.reveal, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     const holder=[c.los-7,0.5], kicker=[c.los-9.5+Math.min(1,Math.max(0,(t-snap)/(kick-snap)))*2.3,0.47];
@@ -5596,6 +5631,7 @@ const HL_SPORT=(function(){
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
     if(c.kind==="fg"||c.kind==="miss")return kickFrame(x,W,H,c,t);
+    if(c.kind==="punt")return puntFrame(x,W,H,c,t);
     const sf=(c.f||0.86)/0.86, snap=0.18*sf, throwT=0.5*sf, tEnd=0.86*sf;   // (round 80: a pick with a return catches earlier)
     // the ball: snapped, then a drop and a throw, or a handoff and a run
     let bx,by,z=0;
@@ -5765,7 +5801,7 @@ function watchView(){
              INT:"INT",FUM:"FUMBLE",HALF:"HALF",END:"END"};
   return `<div class="watchwrap">
     <div class="wtop ${done?(mine>theirs?'win':'loss'):''}">
-      <div class="wlabel">${done?`FINAL &middot; ${mine>theirs?"WIN":"LOSS"}`
+      <div class="wlabel">${done?`FINAL &middot; ${watchRes(g,mine,theirs)}`
         :!done&&watch.hlClock&&typeof HL!=="undefined"&&HL.cur?`<span class="live"></span>${esc(watch.hlClock)}`:kick?`<span class="live"></span>KICKOFF &middot; ${esc(g.title||g.site||(g.home===my?"at home":"on the road"))}`
         :`<span class="live"></span>Q${q} ${esc(cur.clock)} &middot; drive ${cur.n}`}</div>
       <div class="wscore">
@@ -6041,6 +6077,7 @@ function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameSta
 /* a whole number split among weights, one unit at a time (a weight of "rest" takes what the tracked players don't) */
 function splitDraw(rng,n,w){ const out=w.map(()=>0), T=w.reduce((t,x)=>t+Math.max(0,x),0); if(!(T>0))return out;
   for(let k=0;k<n;k++){ let u=rng.r()*T; for(let i=0;i<w.length;i++){ u-=Math.max(0,w[i]); if(u<0||i===w.length-1){ out[i]++; break } } } return out }
+let REPLAY_ON=true;   // round 81: keep each computer game's dice to watch it later
 class Season{
   constructor(u,seed){
     this.rng=new RNG(seed);
@@ -6240,6 +6277,12 @@ class Season{
     if(LEAGUE.tracksOT||LEAGUE.draws||LEAGUE.postFull)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
     // what the sport knows about the two sides before kick-off (soccer: each club's usual approach)
     if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step)});
+    /* round 81: any game in the league can be watched (Ian: "Football Manager ... you can watch the full game"). Before a
+       computer game is played, where the dice stood and what it was played with are kept (the season's own copy, not
+       saved: a load replays the season and keeps them again), so it can be played again from the same dice on a tap
+       and shown, without storing a single play. replayGame (core 96) checks it ends the same. */
+    if(!isUser&&REPLAY_ON){ if(!this._rp)Object.defineProperty(this,"_rp",{value:new Map(),writable:true,enumerable:false});
+      this._rp.set(this.step+"|"+a+"|"+b+"|"+(cup?1:0),{ra:this.rng.a,rs:this.rng.sp,eh:eloH,ea:eloA,go:gopts?JSON.stringify(gopts):null}) }   // (as text: baseball's lineups cost 4.7 KB a game as objects)
     const gs=playGame(this.rng,eloH,eloA,
       this.userTeam===a?plan:"balanced",
       this.userTeam===b?plan:"balanced",
@@ -6261,7 +6304,11 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
-    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+    if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function"){ this._creditV4(a,b,hp,ap,gs.drives);   // round 74
+      // round 81: the names the credit put on the plays (football's who-played, the scorers and assists), kept with the
+      // dice so a replay names the same men as the box score even after injuries and moves. (Inside this branch: placed
+      // between the if and its else, it took the else for itself, and every user game was credited twice.)
+      if(!isUser&&this._rp){ const E=this._rp.get(this.step+"|"+a+"|"+b+"|"+(cup?1:0)); if(E)E.st=JSON.stringify((gs.drives||[]).map(d=>[d.by||0,(d.ev||[]).map(e=>e.nm||e.an||e.dp||e.un?[e.nm||0,e.an||0,e.dp||0,e.un||0]:0)])) } }
     else if(this.roster){
       [[a,hp,ap],[b,ap,hp]].forEach(pair=>{
         const tm=pair[0], pf=pair[1], pa=pair[2];
@@ -7624,6 +7671,7 @@ function leadersView(){
   let h=`<div class="subtabs" style="flex-wrap:wrap">${[[-1,"All"]].concat(LEADERS.map((L,i)=>[i,L.l])).map(([i,l])=>`<button class="subtab" data-lead="${i}" aria-pressed="${leadCat===i}">${esc(l)}</button>`).join("")}</div>`;
   if(leadCat>=0&&LEADERS[leadCat]){ const L=LEADERS[leadCat]; return `<div style="padding:0 12px">`+h+`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,25),3)+`</div>` }
   LEADERS.forEach(L=>{ h+=`<div class="grouphead">${esc(L.l)}</div>`+statTable(["","Player","Team",""],board(L,5),3) });
+  if(typeof sportLeadersExtra==="function")h=sportLeadersExtra()+h;   // round 81: soccer's monthly awards
   return `<div style="padding:0 12px">${h}${LEAGUE.groupFilter?`<div class="fnote">Your division.</div>`:""}</div>` }
 /* ============ the staff's voices, varied across games (round 47) ============ */
 /* Muse (round 20): Pearl's pre-kickoff line and the capybara's half-time line were word for word the same in all
@@ -8926,14 +8974,17 @@ function boxHTML(g,open,step){
   if(!MOMENTS_ON||!g||!g.drives||!g.drives.length||typeof sportBox!=="function")return "";
   let b=""; try{ b=sportBox(g)||"" }catch(e){ b="" } if(!b)return "";
   // round 74: the players' lines, where they come from the game's own record (engine 4) and so add up to it
-  let p=""; try{ const L=boxLines(g,step); if(L&&typeof sportBoxPlayers==="function")p=(typeof sportSheetNote==="function"?sportSheetNote(g,L):"")+(sportBoxPlayers(g,L)||"") }catch(e){ p="" }
+  let p=""; try{ const L=boxLines(g,step,true); if(L&&typeof sportBoxPlayers==="function")p=(typeof sportSheetNote==="function"?sportSheetNote(g,L):"")+(sportBoxPlayers(g,L)||"") }catch(e){ p="" }
   return `<details class="boxscore"${open?" open":""}><summary>Box score</summary>${b}${p}</details>` }
 /* each side's players' lines for one game, from their game logs (round 74): [{n, i (roster place), pos, s (the line)}] */
-function boxLines(g,step){
+// all (round 81): also the men who have moved clubs since (their row for that game is in their log wherever they are
+// now): for a box score drawn when opened; the Scores toggle asks only the club's own roster
+function boxLines(g,step,all){
   if(typeof ENGINE_V==="undefined"||ENGINE_V<4||step===undefined||step===null||typeof SEA==="undefined"||!SEA||!SEA.roster)return null;
   const out={home:[],away:[]}, w=glStride();
   ["home","away"].forEach(sd=>{ const tm=g[sd], oi=NAMES.indexOf(sd==="home"?g.away:g.home), hf=sd==="home"?1:0;
-    (SEA.roster[tm]||[]).forEach((p,i)=>{ if(!p||!p.gl)return;
+    const pool=all?NAMES.filter(t=>t===tm||t!==(sd==="home"?g.away:g.home)).flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
+    pool.forEach(([p,i])=>{ if(!p||!p.gl)return;
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
         if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
           out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
@@ -8952,7 +9003,7 @@ function boxTeams(g,rows,homeFirst){ const A=tAb(g.away), H=tAb(g.home);
    every player's line is logged, so any game this season has its box: each side's players by position group, with
    the columns their player pages use, and the sport's own note (baseball's decisions). Engine 4 seasons on. */
 function gameSheet(g,step){
-  const BL=boxLines(g,step); if(!BL)return "";
+  const BL=boxLines(g,step,true); if(!BL)return "";
   const side=sd=>{ const groups=[]; BL[sd].forEach(x=>{ const cols=typeof statCols==="function"?statCols(x.pos):[], key=cols.map(c=>c[0]).join("|");
       const o=Object.assign({g:1},x.s); if(!Object.keys(x.s).some(k=>x.s[k]))return;
       let G=groups.find(y=>y.key===key); if(!G){ G={key:key,cols:cols,rows:[]}; groups.push(G) }
@@ -8961,6 +9012,18 @@ function gameSheet(g,step){
   const note=typeof sportSheetNote==="function"?sportSheetNote(g,BL):"";
   return note+side("away")+side("home");
 }
+
+/* round 81: watch a computer game. Played again from the dice it was played on (Season._rp), with what it was played
+   with; shown only when it ends exactly as recorded. Nothing is stored: the drives live as long as the watch. */
+function replayGame(g,step){
+  try{ if(!SEA||!SEA._rp||g.drives)return g.drives?g:null;
+    const k=[step,g.home,g.away,g.cup?1:0].join("|"), E=SEA._rp.get(k); if(!E)return null;
+    const r=new RNG(0); r.a=E.ra; r.sp=E.rs;
+    const gs=playGame(r,E.eh,E.ea,"balanced","balanced",E.go?JSON.parse(E.go):null);
+    const h=gs.h, a=gs.a, hp=g.hp!==undefined?g.hp:g.h, ap=g.ap!==undefined?g.ap:g.a;
+    if(h!==hp||a!==ap)return null;
+    if(E.st){ const st=JSON.parse(E.st); (gs.drives||[]).forEach((d,i)=>{ const x=st[i]; if(!x)return; if(x[0])d.by=x[0]; (d.ev||[]).forEach((e,j)=>{ const y=x[1]&&x[1][j]; if(!y)return; if(y[0])e.nm=y[0]; if(y[1])e.an=y[1]; if(y[2])e.dp=y[2]; if(y[3])e.un=y[3] }) }) }
+    return Object.assign({},g,{drives:gs.drives,replayed:true}) }catch(e){ return null } }
 /* ============ feel: sound, touch, motion ============ */
 /* Everything here is a flourish on top of the game: nothing in it changes a
    result, and every part of it fails quietly where it isn't available (no
@@ -9369,11 +9432,12 @@ function hlKit(team,alt){
 function hlPlayer(x,px,py,r,kit,o){
   o=o||{}; x.save(); if(o.alpha!=null)x.globalAlpha=o.alpha;
   // a keeper's dive: the body laid out along the dive, a blur behind it
-  if(o.dive){ const a=o.dive.ang, k=1+o.dive.k*0.9; x.translate(px,py); x.rotate(a);
-    x.beginPath(); x.ellipse(r*0.3,r*0.4,r*k*1.05,r*0.8,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
-    for(let q=2;q>=1;q--){ x.globalAlpha=(o.alpha!=null?o.alpha:1)*0.18*q; x.beginPath(); x.ellipse(-q*r*0.7*o.dive.k,0,r*k,r*0.85,0,0,Math.PI*2); x.fillStyle=kit.fill; x.fill() }
+  // round 80: laid out, not grown (Ian: the goalie grew as he dived): longer by up to 45% and thinner, about the same size
+  if(o.dive){ const a=o.dive.ang, k=1+o.dive.k*0.45, wd=0.9/Math.sqrt(k); x.translate(px,py); x.rotate(a);
+    x.beginPath(); x.ellipse(r*0.3,r*0.4,r*k*1.02,r*wd*0.95,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
+    for(let q=2;q>=1;q--){ x.globalAlpha=(o.alpha!=null?o.alpha:1)*0.12*q; x.beginPath(); x.ellipse(-q*r*0.45*o.dive.k,0,r*k,r*wd,0,0,Math.PI*2); x.fillStyle=kit.fill; x.fill() }
     x.globalAlpha=o.alpha!=null?o.alpha:1; const g=x.createLinearGradient(0,-r,0,r); g.addColorStop(0,hlShade(kit.fill,0.25)); g.addColorStop(1,hlShade(kit.fill,-0.3));
-    x.beginPath(); x.ellipse(0,0,r*k,r*0.85,0,0,Math.PI*2); x.fillStyle=g; x.fill(); x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
+    x.beginPath(); x.ellipse(0,0,r*k,r*wd,0,0,Math.PI*2); x.fillStyle=g; x.fill(); x.lineWidth=Math.max(1,r*0.2); x.strokeStyle=kit.trim; x.stroke();
     x.restore(); return }
   x.beginPath(); x.ellipse(px+r*0.28,py+r*0.38,r*1.02,r*0.82,0,0,Math.PI*2); x.fillStyle="rgba(0,0,0,.28)"; x.fill();
   if(o.hot){ const ph=(HLK.now%900)/900, rr=r*(1.55+0.35*Math.sin(ph*Math.PI*2));
@@ -11188,8 +11252,14 @@ function gameLine(g,mine,step){
   return `<article class="${cls}"><div class="edge" style="${mine?`background:${teamInk(g.winner)}`:""}"></div><div class="gbody">
     ${LEAGUE.homeFirst?side(g.home,g.hp,g.hrank,hw&&!g.draw,g.hseed,g.hrec)+side(g.away,g.ap,g.arank,!hw&&!g.draw,g.aseed,g.arec)
       :side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)+side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
-    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}</div></article>`;
+    ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}${watchBtnHTML(g,step)}</div></article>`;
 }
+/* round 81: watch any game in the league: a computer game this season is played again from its own dice on the tap
+   (replayGame) and shown as a rewatch; nothing is kept */
+function watchBtnHTML(g,step){ if(step===undefined||step===null||g.drives||g.hp===undefined||!SEA||!SEA._rp||!SEA.roster)return "";
+  if(!SEA._rp.has([step,g.home,g.away,g.cup?1:0].join("|")))return "";
+  const id=++sheetN; WATCHG[id]=[g,step]; return `<button class="rewatch wgame" data-watchg="${id}">Watch</button>` }
+let WATCHG={};
 /* round 79: tap a played game for its box score: yours with the full box (the play-by-play is kept), any other from
    the players' logs */
 function gameSheetHTML(g,mine,step){ if(step===undefined||step===null||g.hp===undefined||typeof boxHTML!=="function")return "";
@@ -11210,6 +11280,10 @@ function watchSeed(g){
   return (g.hp*7919 + g.ap*104729 + (g.week||0)*131 + (g.home.length*17) + g.away.length)>>>0;
 }
 
+/* round 81: a game that isn't yours ends with who won, not WIN or LOSS (mine is the away side's score then) */
+function watchRes(g,mine,theirs,pens){ const my=S.myTeam; if(g.home===my||g.away===my)return mine>theirs?"WIN":"LOSS";
+  if(mine===theirs&&!pens&&!g.pens)return "DRAW"; const homeWon=theirs>mine||(mine===theirs&&(g.pens==="home"||g.pens===g.home));
+  return esc(String(homeWon?g.home:g.away).toUpperCase())+" WIN" }
 function speedMult(){
   const k=S.watchSpeed||"normal";
   const f=SPEEDS.find(s=>s[0]===k);
@@ -13262,7 +13336,9 @@ function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=doc
   const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
 function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
   const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
-function render(){ SHEETS={}; try{ return render0() }finally{ bindSheets(); fitBar(); miniBar(); finalIntoView() } }
+function render(){ SHEETS={}; WATCHG={}; try{ return render0() }finally{ bindSheets(); bindWatchG(); fitBar(); miniBar(); finalIntoView() } }
+function bindWatchG(){ try{ document.querySelectorAll("[data-watchg]").forEach(b=>b.onclick=()=>{ const x=WATCHG[b.dataset.watchg]; if(!x)return;
+  const g=replayGame(x[0],x[1]); if(!g){ b.textContent="Can't replay this one"; b.disabled=true; return } startWatch(g); if(watch){ watch.step=x[1]; watch.other=true; try{ window.scrollTo(0,0) }catch(e){} } }) }catch(e){} }   // (the game opens at its top, not where Scores was scrolled)
 function render0(){
   if(handoff&&S.myTeam){
     el("app").innerHTML=handoffView();
@@ -13332,8 +13408,12 @@ function render0(){
     // round 78: the box score under a rewatch too (Ian: "When I click rewatch I cannot see the box score"); it opens
     // by itself once the rewatch reaches the end
     const wbox=typeof boxHTML==="function"?boxHTML(watch.g,watch.i>=watch.script.length,watch.step):"";
-    el("app").innerHTML=watchView()+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
+    // round 81: how much of it to watch, as on the live screen (Highlights, Every chance: every moment the game had)
+    const depth=typeof hlCan==="function"&&hlCan()&&watch.i<watch.script.length?`<div class="liveplan" style="max-width:760px;margin:8px auto 0;padding:0 16px"><div class="fnote" style="margin:6px 0 4px">Watch</div>
+      <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
+    el("app").innerHTML=watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
     if(typeof hlMount==="function")hlMount();
+    document.querySelectorAll("[data-whl]").forEach(x=>x.onclick=()=>{ S.highlights=x.dataset.whl; save(); if(typeof hlSkip==="function"&&HL.cur)hlSkip(); watch.hl=undefined; watch.hlWait=false; tickWatch() });
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
     const st=el("wstep"); if(st)st.onclick=()=>{watch.paused=true;S.watchStep=true;stepWatch()};
