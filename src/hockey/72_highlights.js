@@ -28,7 +28,13 @@ const HL_SPORT=(function(){
   function mk(L,e,kind,rows,d){ d=d||{};
     const g=L.g, attSide=kind==="goal"?e.side:(e.side==="home"?"away":"home"), tm=attSide==="home"?g.home:g.away, u=e.u||0;
     const r=mulberry32(((e.m||0)*7919+u*131+(attSide==="home"?17:29))>>>0);
-    const shooter=kind==="goal"?hkGoalNames(tm,e).n:hkSkater(tm,u), unit=unitOf(u);
+    const GN=kind==="goal"?hkGoalNames(tm,e):null, shooter=GN?GN.n:hkSkater(tm,u);
+    // round 80: line changes (Ian): the men on the ice are the line and pair the scorer and his assist play on, the
+    // first or the second, and in a chance the shift the clock and your ice time give; a fourth-line goal has no names.
+    // The scorer is the dot that shoots (it was a slot by draw, wearing the first line's numbers).
+    const R0=(SEA.roster&&SEA.roster[tm])||[], ix=n=>{ if(!n)return -1; for(let i=0;i<R0.length;i++)if(R0[i]&&R0[i].n===n)return i; return -1 };
+    const si=ix(shooter), ai=GN?ix(GN.a):-1, nP=typeof POS!=="undefined"?POS.length:6, posOf=i=>i<0?-1:i%nP, lineOf=i=>i<0?-1:(i>=nP?1:0);
+    let unit=unitOf(u); if(GN&&si>=0&&posOf(si)<5)unit=["C","LW","RW","D","D2"][posOf(si)];
     const row=rows.find(x=>x.m===e.m+"'"&&(kind==="goal"?/GOAL|EMPTY/.test(x.tag):!x.tag&&/save|robs|denied|gloves|stretches/i.test(x.text)));
     const text=row?row.text:"", T=text.toLowerCase();
     let plan=e.so?"so":e.en?"en":e.pp?"pp":/tips|point/.test(T)?"point":/two-on-one|walks in alone/.test(T)?"rush":/jams|crease|loose puck|bats|skate/.test(T)?"cycle":/one-times|circle/.test(T)?"pp"
@@ -49,8 +55,25 @@ const HL_SPORT=(function(){
     const nm=shooter?String(shooter).split(" ").slice(-1)[0]:"";
     // round 67: numbers on every man and a key under the rink; slots G, D, D, C, LW, RW are roster places 5, 3, 4, 0, 1, 2
     // the goalie in net is the one playing (round 71: the backup once he's in, or when he started)
-    const gIn=sd=>!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd])), slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
-    const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home, SL=slots(attSide), an=hlNamed(tm,SL), dn=hlNamed(opp,slots(defSide)), kits=hlKits(g.home,g.away);
+    const gIn=sd=>!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd]));
+    const shift=(team,grp,salt)=>{ const dep=typeof deployOf==="function"?deployOf(SEA,team):{}, k=dep[grp]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[grp]&&DEPLOY[grp].opts[k]?DEPLOY[grp].opts[k].b:0.3;
+      return (((u*37+(e.m||0)*11+salt)%100)+0.5)/100<(1-b)?0:1 };   // first unit about its share of the ice
+    const pickLine=(team,grp,a,b,salt)=>{ const la=lineOf(a), lb=lineOf(b), want=x=>x>=0&&(grp==="f"?posOf(x)<3:posOf(x)>=3&&posOf(x)<5);
+      return want(a)?la:want(b)?lb:shift(team,grp,salt) };
+    const fL=GN&&GN.depth?1:pickLine(tm,"f",si,ai,3), dL=pickLine(tm,"d",si,ai,7);
+    const at=(i,l)=>{ const j=l?(typeof BK==="function"?BK(i):i+nP):i; return R0[j]?j:i };   // a man missing: the other line's
+    const slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
+    const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home;
+    const SL=[slots(attSide)[0],at(3,dL),at(4,dL),at(0,fL),at(1,fL),at(2,fL)];
+    // the assist from the other line: he's out there too (a shift on the change), at his own place if the scorer isn't
+    // in it, else beside him
+    if(GN&&ai>=0&&!GN.depth&&SL.indexOf(ai)<0&&posOf(ai)<5){ const own=[3,4,5,1,2][posOf(ai)], grp=posOf(ai)<3?[3,4,5]:[1,2], shot=UNIT[unit]||3;
+      const k=own!==shot?own:grp.find(x=>x!==shot); if(k!=null)SL[k]=ai }
+    const Ro=(SEA.roster&&SEA.roster[opp])||[], atO=(i,l)=>{ const j=l?(typeof BK==="function"?BK(i):i+nP):i; return Ro[j]?j:i }, oF=shift(opp,"f",13), oD=shift(opp,"d",19);
+    const an=hlNamed(tm,SL), dn=hlNamed(opp,[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)]), kits=hlKits(g.home,g.away);
+    if(GN&&GN.depth){ an[3]=an[4]=an[5]=null }   // the fourth line: the roster doesn't carry them
+    // the assist is the pass before the shot, when he's out there
+    if(GN&&ai>=0&&rec.length>=2&&plan!=="so"){ const aSlot=[3,4,5,1,2][posOf(ai)]; if(aSlot!=null&&aSlot!==sIdx)rec[rec.length-2]=aSlot }
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
     const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>{ const N=hkGoalNames(x.side==="home"?g.home:g.away,x); return N.depth?null:N.n }):0;
     return {gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
