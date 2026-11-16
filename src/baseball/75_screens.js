@@ -257,3 +257,19 @@ function readTextBase(e){
     :`You planned for the wrong lineup: they came out ${A(e.truth)}.`;
   return "";
 }
+
+/* round 82: the pitching staff by role (Ian: restructure the rotation and the bullpen). Five starters turn a game each
+   (the three at the top and the two behind the first two); the closer; the set-up man (the 8th, the 9th when the closer
+   rests); the long man (in early when a starter is knocked out). Tap one pitcher, then another, and they trade jobs:
+   kept with the day it was done, as a promotion is, so a reload plays the season the same way. A job's weight in the
+   team's strength goes with it: an ace in the bullpen pitches less. */
+const BS_ROLES=()=>[[BS_SP[0],"Starter 1"],[BS_SP[1],"Starter 2"],[BS_SP[2],"Starter 3"],[BK(BS_SP[0]),"Starter 4"],[BK(BS_SP[1]),"Starter 5"],
+  [BS_CL,"Closer"],[BK(BS_CL),"Set-up"],[BK(BS_SP[2]),"Long relief"]];
+function staffRolesHTML(){
+  if(S.off||!SEA||!SEA.roster)return ""; const my=S.myTeam, R=SEA.roster[my]||[], hurt={}; SEA.talent.active(my).forEach(e=>hurt[e.idx]=e);
+  const rows=BS_ROLES().map(([i,lab],k)=>{ const p=R[i]; if(!p)return ""; const sel=ROLE_SEL===i, line=p.st2&&p.st2.g?statLine(p.st2.gs?"SP":"CL",p.st2):"";
+    return `${k===5?`<div class="fnote" style="margin:10px 0 2px">Bullpen</div>`:""}<div class="prow2${sel?" feat":""}" style="align-items:center">
+      <div class="pmain"><div class="pname"><span style="color:var(--muted);font-size:12px;display:inline-block;min-width:78px">${esc(lab)}</span>${plLink(my,p.n)}${hurt[i]?` <span class="outtag">OUT ${outFor(hurt[i].w)}</span>`:""}</div>
+        ${line?`<div class="psub">${esc(line)}</div>`:""}</div>
+      <button class="promo" data-role="${i}" aria-pressed="${sel}">${sel?"Cancel":ROLE_SEL!==null?"Swap here":"Move"}</button><span class="prate">${p.r}</span></div>` }).join("");
+  return `<div class="grouphead">Pitching staff</div><div class="note">${ROLE_SEL!==null?`Now tap the job to give ${esc((R[ROLE_SEL]||{}).n||"")}: the two trade places.`:"Five starters take a game each; the closer has the 9th, the set-up man the 8th, the long man comes in early. Tap Move, then another pitcher, to trade their jobs."}</div><div class="card" style="padding:6px 12px">${rows}</div>` }
