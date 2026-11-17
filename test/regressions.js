@@ -458,7 +458,7 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   api.view('team'); const t2=strip(global.__nodes.app.innerHTML); ok(!new RegExp(api.S.career.name+' is your new head coach').test(t2),'college football: your own move reads as someone else taking the job') }
 
 /* 69. soccer: the board warns before it fires you, and a hot seat names the target you missed (Grokbot: Secure to fired) */
-{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['seatBadge','objectivesHTML'])}); A.newDynasty('Queens Park Rangers',3,'T'); let fired=0, lastEnd='', named=0, hot=0;
+{ const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP.concat(['seatBadge','objectivesHTML'])}); A.newDynasty('Queens Park Rangers',8,'T'); let fired=0, lastEnd='', named=0, hot=0;   // seed 8 (round 85: engine 9's deadline deals moved seed 3's career off the sack)
   for(let y=0;y<3;y++){ let g=0; while(A.SEA.phase!=='done'&&g++<2000)A.SEA.advance(); lastEnd=strip(A.seatBadge());
     if(/HOT SEAT/.test(lastEnd)){ hot++; if(/target \(/.test(A.seatBadge())&&lastEnd.trim()==="HOT SEAT")named++ }   // round 31: just HOT SEAT on the badge (Ian); the reason, target named, on hover and in the objectives
     A.openOffseason(); if(A.S.off.act.userOpen){ fired++; break } for(let c=0;c<6&&A.S.off;c++)A.commitOffseason() }
