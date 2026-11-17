@@ -131,7 +131,8 @@ function tdDo(d){
   TD_UI={done:x}; save(); render() }
 // at the season's end, into the universe's rosters (next season's): the same two men, found by name
 function tdCarry(u){
-  if(u._tdc===SEA.year)return; u._tdc=SEA.year;   // once a season (round 85: at the season's end, on a reload, at the summer's commit)
+  // once a season (round 85: at the season's end, on a reload, at the summer's commit); kept off the save (not enumerable)
+  if(u._tdc===SEA.year)return; Object.defineProperty(u,"_tdc",{value:SEA.year,writable:true,configurable:true,enumerable:false});
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
   ((SEA&&SEA.cpuTr)||[]).forEach(x=>(L[x.step]=L[x.step]||[]).push(x));   // and the computer's clubs' (round 85), after yours on deadline day
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
