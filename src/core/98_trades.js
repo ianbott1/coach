@@ -12,7 +12,7 @@
    other's slot and the better of the two at that spot starts. Both clubs' strength moves by what the sim reads (the
    change in rosterElo). At the season's end the trade is put into next season's rosters too (tdCarry), and a man's
    season goes into his career with the club he finished with. The computer's clubs don't trade with each other yet,
-   so nothing changes for a season with no trades in it. */
+  , so nothing changes for a season with no trades in it. In a shared seat each coach trades for his own club; a reload replays every coach's moves in turn order (round 84). */
 const TD_PREM=2;                // elo: what a club wants over even before it says yes
 const TD_GAP=7;                 // steps between two trades with the same club (a week of football is one step)
 const TD_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -22,7 +22,6 @@ function tdDay(s){ const D=LEAGUE.dates||[], m0=TD_MON.indexOf(String(D[0]||"Jan
 function tdState(){
   const T=LEAGUE.trade; if(!T||!SEA||!SEA.roster)return {open:false,why:""};
   if(SEA.phase!=="week")return {open:false,why:"Trades are closed until next season."};
-  if(typeof isHotSeat==="function"&&isHotSeat())return {open:false,why:"Trades aren't in a shared-seat career yet."};
   if(SEA.half)return {open:false,why:"Not in the middle of a cup week: after its second game."};
   const today=(LEAGUE.dates||[])[SEA.step]||"";
   if(T.window){ const m=today.split(" ")[0]; if(T.window.indexOf(m)>=0)return {open:true,why:`The January window: open until ${T.shut}.`};
@@ -63,7 +62,7 @@ function tdDeal(t,a,b){
   return {t:t,a:a,b:b,give:give,get:get,score:score,yes:score>=TD_PREM&&!over&&fair,over:over,fair:fair,w:w,now:now,fut:fut}
 }
 // kept among the promotions (S.promos), so a reload replays a trade and a promotion on one day in the order they were made
-const tdLog=()=>{ const L=S.promos||{}, o={}; Object.keys(L).forEach(k=>{ const v=L[k].filter(x=>x&&x.tr).map(x=>x.tr); if(v.length)o[k]=v }); return o };
+const tdLog=(P)=>{ const L=P||S.promos||{}, o={}; Object.keys(L).forEach(k=>{ const v=L[k].filter(x=>x&&x.tr).map(x=>x.tr); if(v.length)o[k]=v }); return o };
 function tdRecent(t){ const L=tdLog(); return Object.keys(L).some(k=>SEA.step-(+k)<TD_GAP&&L[k].some(x=>x.t===t)) }
 function tdClubs(){ const my=S.myTeam, H=typeof nflHumans==="function"?nflHumans():[my];
   return NAMES.filter(t=>t!==my&&H.indexOf(t)<0&&SEA.roster[t]&&(!LEAGUE.trade.sameDiv||CONF[t]===CONF[my])) }
@@ -95,7 +94,8 @@ function tdDo(d){
   TD_UI={done:x}; save(); render() }
 // at the season's end, into the universe's rosters (next season's): the same two men, found by name
 function tdCarry(u){
-  const L=tdLog(); Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
+  const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
+  Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     const a=M.findIndex(p=>p&&p.n===x.gn), b=T.findIndex(p=>p&&p.n===x.qn); if(a<0||b<0)return;
     const g=M[a], q=T[b]; M[a]=q; T[b]=g; [q,g].forEach(p=>{ p.yrsHere=0; p.joined=SEA.year });

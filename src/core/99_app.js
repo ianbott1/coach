@@ -400,20 +400,21 @@ function snap(u){return JSON.parse(JSON.stringify(u))}
    Promotions saved before Nov 2026 (plain numbers) replay as they were played:
    the injury stayed on the slot (Muse: "promote the healthy backup and the
    roster shows him as OUT"). */
-function swapDepth(sea,i){
+function swapDepth(sea,i,team){
+  const tm=team||S.myTeam;   // round 84: whose move it is (a shared seat replays every coach's)
   if(i&&i.tr){ if(typeof tdApply==="function")tdApply(sea,i.tr); return }   // round 83: a trade, kept in its place among the day's moves
   // round 82: two roles traded (baseball's staff: a starter to the closer's job and back), kept like a promotion
-  if(typeof i==="object"&&i.j!==undefined){ const R=sea.roster&&sea.roster[S.myTeam], a=i.i, b=i.j; if(!R||!R[a]||!R[b])return;
-    const before=rosterElo(R), t=R[a]; R[a]=R[b]; R[b]=t; sea.talent.base[S.myTeam]+=rosterElo(R)-before;
-    (sea.talent.inj[S.myTeam]||[]).forEach(e=>{ if(e.idx===a)e.idx=b; else if(e.idx===b)e.idx=a }); return }
+  if(typeof i==="object"&&i.j!==undefined){ const R=sea.roster&&sea.roster[tm], a=i.i, b=i.j; if(!R||!R[a]||!R[b])return;
+    const before=rosterElo(R), t=R[a]; R[a]=R[b]; R[b]=t; sea.talent.base[tm]+=rosterElo(R)-before;
+    (sea.talent.inj[tm]||[]).forEach(e=>{ if(e.idx===a)e.idx=b; else if(e.idx===b)e.idx=a }); return }
   const moveInj=typeof i==="object"; if(moveInj)i=i.i;
-  const R=sea.roster&&sea.roster[S.myTeam];
+  const R=sea.roster&&sea.roster[tm];
   if(!R||!R[i]||!R[BK(i)])return;
   // by the change, not recomputed: the season's strength isn't rosterElo alone, so a swap and a swap back left it
   // somewhere else (Muse: a restored lineup read 83% then 66%; college football 33% then 28%, and stayed there)
   const before=rosterElo(R), t=R[i]; R[i]=R[BK(i)]; R[BK(i)]=t;
-  sea.talent.base[S.myTeam]+=rosterElo(R)-before;
-  if(moveInj)(sea.talent.inj[S.myTeam]||[]).forEach(e=>{
+  sea.talent.base[tm]+=rosterElo(R)-before;
+  if(moveInj)(sea.talent.inj[tm]||[]).forEach(e=>{
     if(e.idx===i){ e.idx=BK(i); e.m0=e.m; e.m=0 }
     else if(e.idx===BK(i)){ e.idx=i; if(e.m0!=null){ e.m=e.m0; delete e.m0 } } });
 }
@@ -458,6 +459,9 @@ function fireCoord(side){
 function swapRoles(a,b){
   S.promos=S.promos||{}; const k=SEA.step; S.promos[k]=S.promos[k]||[]; S.promos[k].push({i:a,j:b});
   swapDepth(SEA,{i:a,j:b}); save(); render() }
+// [team, promotions, firings] for each coach, in turn order (one coach: just yours)
+function coachMoves(){ if(!isHotSeat())return [[S.myTeam,S.promos,S.fires]];
+  return S.coaches.map((c,j)=>j===(S.turn||0)?[S.myTeam,S.promos,S.fires]:[c.myTeam,c.promos,c.fires]) }
 function promote(i){
   S.promos=S.promos||{};
   const k=SEA.step;
@@ -488,8 +492,9 @@ function rebuild(){
   for(let n=0;n<S.steps;n++){
     const i=SEA.step, first=!SEA.half;          // the step being played (a cup week's two parts share one)
     if(CL&&first)CL.ch.forEach(c=>{ if(c.s===i){ if(c.k==="f")SEA.featured=c.v; else SEA.deploy=c.v } });
-    if(first&&S.promos&&S.promos[i])S.promos[i].forEach(k=>swapDepth(SEA,k));
-    if(first&&S.fires&&S.fires[i])S.fires[i].forEach(sd=>SEA.fireCoordinator(S.myTeam,sd));
+    // round 84: every coach's promotions, trades and firings, in turn order (a shared seat dropped the other coach's
+    // on a reload: measured, his strength came back 19 elo off in pro basketball)
+    if(first)coachMoves().forEach(([tm,P,F])=>{ if(P&&P[i])P[i].forEach(k=>swapDepth(SEA,k,tm)); if(F&&F[i])F[i].forEach(sd=>SEA.fireCoordinator(tm,sd)) });
     const ans=(S.calls&&S.calls[callKey(i,SEA.year)+(SEA.half?"#1":"")])||[]; let ai=0;
     const pl=S.played&&S.played[callKey(i,SEA.year)];
     // recorded answers replay a game only for old saves that kept no live
