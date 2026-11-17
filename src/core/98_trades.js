@@ -42,10 +42,11 @@ function tdState(){
 }
 const tdGrp=i=>POS[i%POS.length].p.replace(/\d+$/,"");      // baseball's SP, SP2 and SP3 are all starters
 function tdHurt(t,i){ return SEA.talent.active(t).some(e=>e.idx===i) }
-// a man whose deal ends this season counts for 40% of himself in two years (he may re-sign; he may not: a rental)
+// a man whose deal ends this season counts for 40% of himself in two years (he may re-sign; he may not: a rental); 80%
+// at 26 or younger (round 85: a rebuilding club had sold a 63-rated 23-year-old for a 53-rated 31-year-old)
 function tdFut(p){ const a=p.age||27, young=Math.max(0,27-a)/5;
   const f=Math.max(30,p.r+(p.pot!=null&&p.pot>p.r?(p.pot-p.r)*0.5*young:0)-Math.max(0,a-29)*1.5);
-  return p.k&&p.k.yrs<=1?f*0.4:f }
+  return p.k&&p.k.yrs<=1?f*(a<=26?0.8:0.4):f }   // a young man re-signs more often than not (round 85)
 // a club's own reading of a roster: the starters, and a little for the man behind each (in case)
 function tdVal(R,fut){ let s=0; POS.forEach((P,i)=>{ const v=x=>x?(fut?tdFut(x):x.r):0, x=v(R[i]), y=v(R[BK(i)]); s+=P.w*(0.88*Math.max(x,y)+0.12*Math.min(x,y)) }); return ratingToElo(s) }   // the better of the two starts (in two years too)
 // where a club stands: 1 is a contender, 0 out of it (the share of the season gone tempers it early)
@@ -132,6 +133,7 @@ function tdDo(d){
 function tdCarry(u){
   if(u._tdc===SEA.year)return; u._tdc=SEA.year;   // once a season (round 85: at the season's end, on a reload, at the summer's commit)
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
+  ((SEA&&SEA.cpuTr)||[]).forEach(x=>(L[x.step]=L[x.step]||[]).push(x));   // and the computer's clubs' (round 85), after yours on deadline day
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
@@ -153,6 +155,7 @@ function tradesView(){
   let h=`<div class="note">${esc(st.why)} Up to ${TD_MAX} trades a season: one for one at the same position, or two for two (a pair at each of two positions). A club weighs now against two years ahead by where it stands, under the cap, and you always give a little more than you get.</div>`;
   const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
   if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${nm2(x.gn,x.gn2)} to ${esc(x.t)}, ${nm2(x.qn,x.qn2)} to you.</div>` }
+  if(typeof cpuTradesHTML==="function")h+=cpuTradesHTML();   // round 85: the computer's clubs' deadline deals
   const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${nm2(x.gn,x.gn2)} to ${esc(x.t)} for ${nm2(x.qn,x.qn2)}</div>`).join("")}</div>`;
   if(!st.open)return h;
   const cap=LEAGUE.taxLine||LEAGUE.cap; if(cap&&R.some(p=>p&&p.k))h+=`<div class="note">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;

@@ -480,6 +480,7 @@ function rebuild(){
   U.userTeam=S.myTeam;
   if(S.schedLock&&S.schedLock.year===U.year)U.schedLock=S.schedLock;
   SEA=new Season(U,S.seasonSeed);
+  SEA.humans=isHotSeat()?S.coaches.map(c=>c.myTeam):[S.myTeam];   // round 85: clubs the computer's deadline deals leave alone
   if(SEA._lock&&!(S.schedLock&&S.schedLock.year===U.year)){ S.schedLock=SEA._lock; lockNew=true }   // kept from now on
   delete U.schedLock;
   SEA.userTeam=S.myTeam;
@@ -2125,6 +2126,7 @@ function nextUpHTML(my,rk){
   // the race, late in the season (round 57, baseball: magic numbers and the scoreboard; both testers lost interest by September)
   if(LEAGUE.ui.raceCard&&SEA.phase==="week")try{ h+=LEAGUE.ui.raceCard(my)||"" }catch(e){}
   if(typeof tdOfferCard==="function"&&SEA.phase==="week")try{ h+=tdOfferCard() }catch(e){}   // round 84: a trade offer near the deadline
+  if(typeof cpuNewsCard==="function")try{ h+=cpuNewsCard() }catch(e){}   // round 85: deadline deals around the league
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
   // the days you're off, so the card shows your next game, not an open date

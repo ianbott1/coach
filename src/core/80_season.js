@@ -279,6 +279,7 @@ class Season{
   advance(){
     this.prevRank=this.rankMap();
     const p=this.phase;
+    if(p==="week"&&!this.half&&ENGINE_V>=9&&typeof cpuDeadline==="function")cpuDeadline(this);   // round 85: deadline day, before its games
     // a cup week (LEAGUE.splitCup) is two advances on one step: the league
     // round, then the midweek cup ties, each played and shown on its own
     if(p==="week"&&LEAGUE.splitCup){
