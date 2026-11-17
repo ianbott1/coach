@@ -320,6 +320,11 @@
    "fp": "3d3127fea1f45419",
    "from": "130b297acda6d40c",
    "note": "Round 80 (engine 8): a drive after a strategy call keeps its start; both coaches' football games move (records plausible: 9-4/6-7, 14-2/7-6, 14-2/8-5)"
+  },
+  {
+   "fp": "3d3127fea1f45419",
+   "from": "3d3127fea1f45419",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
   }
  ],
  "out": [

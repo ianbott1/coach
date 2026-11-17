@@ -1,5 +1,5 @@
 {
- "fp": "baa65abb4c4a6017",
+ "fp": "7243e0fe966039a0",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -305,6 +305,11 @@
    "fp": "baa65abb4c4a6017",
    "from": "3bc2c15b9bd91d58",
    "note": "Round 74: a veteran keeps his name over a new arrival (engine 4)"
+  },
+  {
+   "fp": "7243e0fe966039a0",
+   "from": "baa65abb4c4a6017",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
   }
  ],
  "out": [
@@ -314,20 +319,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "49-26-9",
+      "rec": "48-27-9",
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "08aa3a873f6ffcd4"
+     "book": "154942ad1988831f"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "52-24-8",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "52-22-10",
+      "result": "Lost in the conference final",
+      "grade": "A"
      },
-     "book": "80289e44e7dc2f11"
+     "book": "49a18e2b59b975ad"
     }
    ]
   },
@@ -337,20 +342,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-36-16",
+      "rec": "41-38-5",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "5d7e8e4106f4013d"
+     "book": "6ab0d9331f92b22e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "32-39-13",
-      "result": "Losing season",
-      "grade": "C-"
+      "rec": "46-31-7",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "338bd002cf3ae115"
+     "book": "8343776058e28a58"
     }
    ]
   },
@@ -360,20 +365,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-32-12",
+      "rec": "37-30-17",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "D"
      },
-     "book": "ee8639eb0c5a3985"
+     "book": "82ed784e6e8f3adc"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "43-34-7",
-      "result": "Missed the playoffs",
-      "grade": "B+"
+      "rec": "42-33-9",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "5ec27a2c80520b08"
+     "book": "6b782062473f999e"
     }
    ]
   }

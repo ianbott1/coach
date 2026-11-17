@@ -295,6 +295,11 @@
    "fp": "fcb0ed75e5dd17d4",
    "from": "b78a8020f814a7d4",
    "note": "Round 77: engine 6"
+  },
+  {
+   "fp": "fcb0ed75e5dd17d4",
+   "from": "fcb0ed75e5dd17d4",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
   }
  ],
  "out": [

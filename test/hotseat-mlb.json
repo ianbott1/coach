@@ -1,5 +1,5 @@
 {
- "fp": "2a0357d7f18e72cd",
+ "fp": "27341bfa2106eb70",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -90,6 +90,11 @@
    "fp": "2a0357d7f18e72cd",
    "from": "61a1cded2dea1c69",
    "note": "Round 80: two seasons, not three (the test's length, for speed); the two seasons are identical to round 79's first two (83-79/82-80, 79-83/86-76)"
+  },
+  {
+   "fp": "27341bfa2106eb70",
+   "from": "2a0357d7f18e72cd",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
   }
  ],
  "out": [
@@ -99,20 +104,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "83-79",
-      "result": "Lost in the wild-card series",
-      "grade": "B-"
+      "rec": "86-76",
+      "result": "Lost in the division series",
+      "grade": "B"
      },
-     "book": "0440bcf65c7dc334"
+     "book": "324237c6391d8ba2"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "82-80",
-      "result": "Lost in the wild-card series",
-      "grade": "B-"
+      "rec": "80-82",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "442f000f1b9654e6"
+     "book": "3e04220377990a58"
     }
    ]
   },
@@ -122,20 +127,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "79-83",
+      "rec": "68-94",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "6b50a51a665f8863"
+     "book": "f87d6ac4e4fb0ace"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "86-76",
-      "result": "Lost in the division series",
-      "grade": "B"
+      "rec": "85-77",
+      "result": "Lost in the championship series",
+      "grade": "B+"
      },
-     "book": "4a24c989e3235e83"
+     "book": "52b40f4ff698f8e9"
     }
    ]
   }

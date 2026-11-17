@@ -1,5 +1,5 @@
 {
- "fp": "d166e7a0a29da288",
+ "fp": "b73c70bb96a80875",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -285,6 +285,11 @@
    "fp": "d166e7a0a29da288",
    "from": "8893fe593448382d",
    "note": "Round 75: engine 5 (baseball's players; basketball's star scoring)"
+  },
+  {
+   "fp": "b73c70bb96a80875",
+   "from": "d166e7a0a29da288",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
   }
  ],
  "out": [
@@ -294,20 +299,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "42-40",
+      "rec": "48-34",
       "result": "Lost in the first round",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "0557e7ce7749b769"
+     "book": "fd26a67c653b6dce"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "44-38",
+      "rec": "45-37",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "4ba190870ec7621d"
+     "book": "2ef53da3c914f5bc"
     }
    ]
   },
@@ -317,20 +322,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "36-46",
-      "result": "Lost in the play-in",
-      "grade": "D"
+      "rec": "21-61",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "dba8bf6e05d4b6a9"
+     "book": "6919d103a1a1d917"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "39-43",
+      "rec": "37-45",
       "result": "Lost in the first round",
       "grade": "C-"
      },
-     "book": "0916fe3a67229138"
+     "book": "3c7ed518d453f19d"
     }
    ]
   },
@@ -340,20 +345,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-50",
-      "result": "Lost in the play-in",
-      "grade": "D"
+      "rec": "23-59",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "b92be39f6aab6e70"
+     "book": "f253dbc040238d88"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "48-34",
-      "result": "Lost in the conference semifinals",
-      "grade": "B"
+      "rec": "36-46",
+      "result": "Lost in the play-in",
+      "grade": "D"
      },
-     "book": "a03dca4d0c11c5a6"
+     "book": "d96d57ed6d598fc3"
     }
    ]
   }
