@@ -55,7 +55,9 @@ function boxLines(g,step,all){
   if(typeof ENGINE_V==="undefined"||ENGINE_V<4||step===undefined||step===null||typeof SEA==="undefined"||!SEA||!SEA.roster)return null;
   const out={home:[],away:[]}, w=glStride();
   ["home","away"].forEach(sd=>{ const tm=g[sd], oi=NAMES.indexOf(sd==="home"?g.away:g.home), hf=sd==="home"?1:0;
-    const pool=all?NAMES.filter(t=>t===tm||t!==(sd==="home"?g.away:g.home)).flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
+    // every roster, the opponent's too (round 85: a man traded to the club he'd played against left the box score of that
+    // game); his row's opponent and ground already say which side he was on
+    const pool=all?NAMES.flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
     pool.forEach(([p,i])=>{ if(!p||!p.gl)return;
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
         // (round 82: and the score: a cup week can hold a league game and a cup tie with the same club at the same ground,

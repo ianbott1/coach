@@ -30,8 +30,9 @@ for(const [team,seed] of [['Brentford',3],['Coventry City',4],['Bradford City',5
     ok(r&&(r.done||/retired/.test(r.why)),`${my}: an affordable bid for ${x.n} (${x.fee}M of ${kitty.toFixed(1)}M) didn't go through${r?": "+r.why:""}`);
     if(r&&r.done){ ok(onRoster(A,my,x.n),`${my}: ${x.n} bought but not in the squad`); ok(!onRoster(A,x.team,x.n),`${my}: ${x.n} still at ${x.team}`) } });
   cant.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out); ok(r&&!r.done&&/more than you had/.test(r.why),`${my}: a bid beyond the kitty for ${x.n} went through or gave no reason`) });
-  if(sell){ const r=L.find(e=>e.out&&e.n===sell.n); ok(r&&r.done,`${my}: the sale of ${sell.n} didn't go through`);
-    ok(!onRoster(A,my,sell.n)&&onRoster(A,sell.team,sell.n),`${my}: ${sell.n} wasn't sold to ${sell.team}`) }
+  if(sell){ const r=L.find(e=>e.out&&e.n===sell.n), gone=r&&!r.done&&/retired/.test(r.why);   // a man who retires first can't be sold (as for a bid)
+    ok(r&&(r.done||gone),`${my}: the sale of ${sell.n} didn't go through${r?": "+r.why:""}`);
+    if(!gone)ok(!onRoster(A,my,sell.n)&&onRoster(A,sell.team,sell.n),`${my}: ${sell.n} wasn't sold to ${sell.team}`) }
   const left=A.S.history[A.S.history.length-1].league.kittyLeft;
   ok(Math.abs(((A.U.kitty&&A.U.kitty[my])||0)-Math.round(left*0.5*10)/10)<0.11,`${my}: carried ${A.U.kitty&&A.U.kitty[my]} of ${left} left (want half)`);
   const W=mkt.filter(x=>x.willing&&x.starter), fees=W.map(x=>x.fee).sort((a,b)=>a-b), gain=W.filter(x=>x.fee<=kitty).map(x=>x.r-A.U.roster[my][x.i].r);

@@ -46,9 +46,9 @@ function season(team,seed,dep){
   return {pts:2*S2.rec[team][0]+((S2.otl||{})[team]||0), c:(R[0].st2||{}).pts||0, all:all};
 }
 { const t=A.NAMES.slice().sort((a,b)=>A.U.roster[a][0].r-A.U.roster[b][0].r)[Math.floor(A.NAMES.length/2)];   // a mid-rated centre
-  const r={}; for(const k of ['bal','ride','roll']){ r[k]={c:0,all:0,pts:0}; for(const sd of [7,19,31,43]){ const x=season(t,sd,k==='bal'?null:{f:k}); r[k].c+=x.c; r[k].all+=x.all; r[k].pts+=x.pts/4 } }
+  const r={}; for(const k of ['bal','ride','roll']){ r[k]={c:0,all:0,pts:0}; for(const sd of [7,19,31,43,55,67,79,91]){ const x=season(t,sd,k==="bal"?null:{f:k}); r[k].c+=x.c; r[k].all+=x.all; r[k].pts+=x.pts/8 } }
   const sh=k=>100*r[k].c/Math.max(1,r[k].all);
-  console.log(`  ${t}'s top centre, points per 100 team goals: ${sh('ride').toFixed(1)} riding, ${sh('bal').toFixed(1)} balanced, ${sh('roll').toFixed(1)} rolling | team points ${r.ride.pts.toFixed(0)} / ${r.bal.pts.toFixed(0)} / ${r.roll.pts.toFixed(0)} (four seasons each, luck included)`);
+  console.log(`  ${t}'s top centre, points per 100 team goals: ${sh('ride').toFixed(1)} riding, ${sh('bal').toFixed(1)} balanced, ${sh('roll').toFixed(1)} rolling | team points ${r.ride.pts.toFixed(0)} / ${r.bal.pts.toFixed(0)} / ${r.roll.pts.toFixed(0)} (eight seasons each, luck included: four were too few, round 85)`);
   ok(sh('ride')>sh('bal')&&sh('bal')>sh('roll'),`${t}: the top centre's points per team goal don't follow his ice time`) }
 // 6. ice time grows players: the same season, then one summer rolled or ridden
 { const run=dep=>{ const B=load({file:D,expose:EXP.concat(['openOffseason','commitOffseason'])}); B.newDynasty('Carolina',11,'T'); const S2=B.SEA; let g=0;
