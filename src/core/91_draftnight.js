@@ -73,6 +73,14 @@ function draftScore(style,R,p){
         :style==="upside"?p.pot*1.2+p.r*0.2+nflGain(R,p)*0.3
         :p.r+(p.pot-p.r)*0.45+nflGain(R,p)*0.5;
 }
+/* round 86: first-round picks traded in the season (u.pickOwn, set as the season ends from its trades: {y, own:{club:
+   the club that now holds its first-round pick}}). One reading for every part of the draft: the draft, the screen, the
+   mock, the teams between two picks. A club can hold two first-rounders, or none. */
+function pickOwnMap(u){ const P=u&&u.pickOwn; return P&&P.y===u.year?P.own||{}:{} }
+function dnOwnerAt(order,u,overall){ const N=order.length, rd=Math.ceil(overall/N), orig=order[(overall-1)%N], own=pickOwnMap(u);
+  return rd===1&&own[orig]?own[orig]:orig }
+function dnPicksOf(t,order,u,rounds){ order=order||dnOrder(); u=u||U; rounds=rounds||LEAGUE.offseason.draftRounds; const out=[];
+  for(let o=1;o<=order.length*rounds;o++)if(dnOwnerAt(order,u,o)===t)out.push(o); return out }
 function draftNight(u,rec,elo,users,rounds,stopFor){
   users=users||{};
   const rng=draftRng(u), order=nflDraftOrder(rec,elo,rng), N=order.length;
@@ -80,10 +88,9 @@ function draftNight(u,rec,elo,users,rounds,stopFor){
   const used={}, picks=[]; let boardGone=null;
   // each team's roster with its rookies placed as they're taken, so a later pick sees an earlier one (as before)
   const RR={}, rosterOf=t=>RR[t]||(RR[t]=u.roster[t].slice());
-  const nextOf=(t,overall)=>{ const i=order.indexOf(t); if(i<0)return null;
-    for(let r2=1;r2<=rounds;r2++){ const o=(r2-1)*N+i+1; if(o>overall)return o } return null };
+  const nextOf=(t,overall)=>{ for(let o=overall+1;o<=N*rounds;o++)if(dnOwnerAt(order,u,o)===t)return o; return null };
   for(let rd=1;rd<=rounds;rd++)for(let k=0;k<N;k++){
-    const t=order[k], R=rosterOf(t), ch=users[t]||null, overall=(rd-1)*N+k+1;
+    const overall=(rd-1)*N+k+1, t=dnOwnerAt(order,u,overall), R=rosterOf(t), ch=users[t]||null;
     const style=(ch&&ch.draft)||"bpa";
     const scout=(2.5-orgEdge(u,t)*1.4)*DRAFT_K.fog;     // how often a team misjudges a prospect
     // your staff work from your scouts' read, as you do (workouts included): beating them is judgment, not
@@ -191,7 +198,7 @@ function dnMock(avail,ahead,key,teams,t){
   return gone;
 }
 /* the teams picking between two overall picks (exclusive), from the order */
-function dnTeamsBetween(order,a,b){ const out=[], N=order.length; for(let o=a+1;o<b;o++)out.push(order[(o-1)%N]); return out }
+function dnTeamsBetween(order,a,b){ const out=[]; for(let o=a+1;o<b;o++)out.push(dnOwnerAt(order,U,o)); return out }
 /* the labels, one rule everywhere */
 function dnLabel(g,at){ return g>0.75?`<span class="dgone">likely gone${at?" by #"+at:""}</span>`:g>0.25?`<span class="dmaybe">might ${at?"last to #"+at:"be there"}</span>`:`<span class="dthere">likely there${at?" at #"+at:""}</span>` }
 /* the lottery, in words (basketball, hockey) */
@@ -199,14 +206,21 @@ function dnLotteryLine(){
   const before=nflDraftOrder(SEA.rec,SEA.elo), after=dnOrder(), t=dnTeam();
   if(before.join()===after.join())return "";
   const a=after.indexOf(t)+1, b=before.indexOf(t)+1;
-  const top=after[0]===t?"You won the lottery: the first pick is yours.":`${esc(after[0])} won the lottery and picks first.`;
-  const you=a===b?`You stay at ${ordinal(a)}.`:a<b?`You move up from ${ordinal(b)} to ${ordinal(a)}.`:`You drop from ${ordinal(b)} to ${ordinal(a)}.`;
-  return `<div class="bnews flag"><b>Draft lottery.</b> ${top} ${after[0]===t||a===b?"":you}</div>`;
+  // round 86: a pick that changed hands in a trade goes to the club holding it
+  const holder=dnOwnerAt(after,U,1), gaveMine=pickOwnMap(U)[t];
+  const top=holder===t?(after[0]===t?"You won the lottery: the first pick is yours.":`${esc(after[0])} won the lottery, and the first pick is yours (theirs came to you in a trade).`)
+    :`${esc(after[0])} won the lottery${holder!==after[0]?`, and ${esc(holder)} hold the pick (a trade)`:" and picks first"}.`;
+  const you=gaveMine?`Your own pick lands at ${ordinal(a)}, for ${esc(gaveMine)}.`:a===b?`You stay at ${ordinal(a)}.`:a<b?`You move up from ${ordinal(b)} to ${ordinal(a)}.`:`You drop from ${ordinal(b)} to ${ordinal(a)}.`;
+  return `<div class="bnews flag"><b>Draft lottery.</b> ${top} ${holder===t||(a===b&&!gaveMine)?"":you}</div>`;
 }
 /* the offseason screen's draft section: your slot, the lottery, and the way in */
 function dnSectionHTML(){
-  const t=dnTeam(), o=dnOrder().indexOf(t)+1, P=S.off.picks, R=LEAGUE.offseason.draftRounds;
-  let h=dnLotteryLine()+`<div class="note">You pick ${ordinal(o)} in each round${R>1?` (${nOf(R,"pick")} in all)`:""}.</div>`;
+  const t=dnTeam(), mineP=dnPicksOf(t), o=mineP[0]||0, P=S.off.picks, R=mineP.length;
+  // round 86: picks you hold, a traded first-rounder included (two, or none)
+  const N0=dnOrder().length, own=pickOwnMap(U), plain=Object.keys(own).every(k=>own[k]!==t&&k!==t);
+  const pickTxt=plain?`You pick ${ordinal(o)} in each round${R>1?` (${nOf(R,"pick")} in all)`:""}.`
+    :`Your picks: ${mineP.map(x=>"#"+x).join(", ")}${mineP.filter(x=>x<=N0).length===2?" (two in the first round: one came in a trade)":mineP.every(x=>x>N0)?" (your first-rounder went in a trade)":""}.`;
+  let h=dnLotteryLine()+`<div class="note">${pickTxt}</div>`;
   if(!dnOn())return h;
   const made=(P.hand||[]).length, done=P.handDone||made>=R;
   h+=`<button class="advance gold dnopen" data-dnopen="1">${done?"Draft night: see your class":made?`Draft night: back to pick ${made+1} of ${R}`:"Go to draft night"}</button>`;

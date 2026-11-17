@@ -51,8 +51,8 @@ function nflBoardHTML(P){
   const val=p=>dnVal(dnRead(p.pid));       // your scouts' read, sharpened where you've held a workout
   // a mock draft from your scouts' numbers: who's likely gone before your first pick (Grokbot: make the
   // draft a decision, not a list). Your scouts' estimates only, so it gives nothing hidden away
-  const ahead=dnOrder().indexOf(dnTeam());            // the real order, lottery included
-  const gone=dnMock(C.list.map(p=>{ const x=dnRead(p.pid); return Object.assign({},p,{v:dnVal(x),sr:x.sr,spot:x.spot}) }),ahead,(((U.seed||0)*2246822519)^(SEA.year*31337))>>>0,dnOrder());   // core/91_draftnight
+  const ahead=(dnPicksOf(dnTeam())[0]||1)-1;   // round 86: your first pick, a traded one included            // the real order, lottery included
+  const gone=dnMock(C.list.map(p=>{ const x=dnRead(p.pid); return Object.assign({},p,{v:dnVal(x),sr:x.sr,spot:x.spot}) }),ahead,(((U.seed||0)*2246822519)^(SEA.year*31337))>>>0,dnTeamsBetween(dnOrder(),0,ahead+1));   // the clubs holding the picks ahead (round 86)   // core/91_draftnight
   // once draft night has picks, the board says who went where (Grokbot: the board kept listing drafted players)
   const took=(()=>{ const H=S.off.picks.hand; if(!dnOn()||!H||!H.length)return null; const o={}; dnState().picks.forEach(d=>o[d.pid]=d); return o })();
   const avail=p=>took&&took[p.pid]?`<span class="dgone">${took[p.pid].team===dnTeam()?"yours":"taken"} at #${took[p.pid].overall}${took[p.pid].team===dnTeam()?"":" by "+esc(took[p.pid].team)}</span>`:ahead<=0?"":dnLabel(gone[p.pid]||0,0);
@@ -105,7 +105,7 @@ function nflTargetsHTML(P,room){
   return h;
 }
 function nflPickSlot(){
-  const o=dnOrder().indexOf(dnTeam())+1;
+  const o=dnPicksOf(dnTeam())[0]||0;
   return ordinal(o);                  // 21st, not 21th
 }
 
