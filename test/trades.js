@@ -32,6 +32,15 @@ await p.click('[data-tdgo]');await p.waitForTimeout(40);await p.click('[data-tdg
 const post=await p.evaluate(([x])=>{const M=SEA.roster[S.myTeam],T=SEA.roster[x.t];return {mineHas:M.some(q=>q&&q.n===x.qn),theyHave:T.some(q=>q&&q.n===x.gn),dm:SEA.talent.base[S.myTeam]-x.bm-(rosterElo(M)-x.em),dt:SEA.talent.base[x.t]-x.bt-(rosterElo(T)-x.et),done:document.body.innerText.includes('Done.'),log:JSON.stringify(S.promos)}},[pre]);
 ok(post.mineHas&&post.theyHave,`${pre.gn} to ${pre.t}, ${pre.qn} to you`); ok(Math.abs(post.dm)<1e-6&&Math.abs(post.dt)<1e-6,`both strengths move by the change in rosterElo (${post.dm}, ${post.dt})`);
 ok(post.done,'the tab says it is done'); ok(/"tr":/.test(post.log),'kept in the save');
+// two for two (round 84): four men move, both rosters whole, kept and replayed below with the rest
+const pk=await p.evaluate(([x])=>{ const C=tdClubs(); let d=null; for(const t of C){ if(tdRecent(t)||t===x.t)continue; const R=SEA.roster[S.myTeam];
+    for(let a=0;a<R.length&&!d;a++){ if(!R[a]||tdHurt(S.myTeam,a)||R[a].n===x.qn)continue; const L=tdPackages(t,a,null).filter(z=>z.give2.n!==x.qn); if(L.length)d=L[0] } if(d)break }
+  if(!d)return {none:true}; const n0=SEA.roster[S.myTeam].filter(Boolean).length, nt=SEA.roster[d.t].filter(Boolean).length; tdDo(d);
+  const M=SEA.roster[S.myTeam], T=SEA.roster[d.t];
+  window.__pk={t:d.t,give:[d.give.n,d.give2.n],get:[d.get.n,d.get2.n]};
+  return {moved:[d.get.n,d.get2.n].every(n=>M.some(q=>q&&q.n===n))&&[d.give.n,d.give2.n].every(n=>T.some(q=>q&&q.n===n)),whole:M.filter(Boolean).length===n0&&T.filter(Boolean).length===nt,
+    line:`${d.give.n} and ${d.give2.n} to ${d.t} for ${d.get.n} and ${d.get2.n}`} },[pre]);
+if(pk.none)console.log('   (no two for two this time)'); else { ok(pk.moved&&pk.whole,'two for two: four men move, both rosters whole ('+pk.line+')') }
 // the other club's games before the trade still replay to their scores, with the box score's names
 const wr=await p.evaluate(([x])=>{ let n=0,okk=0; for(let s=0;s<SEA.step;s++){ const W=SEA.weeks[s]; if(!W)continue; W.games.forEach(g=>{ if((g.home!==x.t&&g.away!==x.t)||g.home===S.myTeam||g.away===S.myTeam||g.hp===undefined)return; n++; try{ if(replayGame(g,s))okk++ }catch(e){} }) } return {n,okk} },[pre]);
 ok(wr.n>0&&wr.okk===wr.n,`${pre.t}'s games before the trade still replay to their scores (${wr.okk} of ${wr.n})`);
@@ -58,7 +67,7 @@ const shut=await p.evaluate(()=>{let n=0;while(tdState().open&&SEA.phase==="week
 ok(!shut.open&&shut.tab,'closed after the deadline: '+shut.why);
 // next season: the traded men where they went, their seasons banked
 const S_TEAM=()=>team;
-const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry=function(u){ orig(u); carried={mine:u.roster[S.myTeam].some(q=>q&&q.n===x.qn),theirs:u.roster[x.t].some(q=>q&&q.n===x.gn)}; const pr=u.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn); carried.ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })() }; const run0=LEAGUE.offseason.run; let banked=null; LEAGUE.offseason.run=function(u,...rest){ const q=u.roster[S.myTeam].find(q=>q&&q.n===x.qn); banked=q&&q.hist?q.hist.slice(-1)[0]:null; LEAGUE.offseason.run=run0; return run0.call(this,u,...rest) }; let n=0;while(SEA.phase!=="done"&&n<500){simAdvance();n++} try{ openOffseason(); const O=S.off; if(O&&O.act&&O.act.userOpen)O.move=S.myTeam;
+const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry=function(u){ orig(u); carried={mine:u.roster[S.myTeam].some(q=>q&&q.n===x.qn),theirs:u.roster[x.t].some(q=>q&&q.n===x.gn)}; const pr=u.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn); const K=window.__pk; carried.pk=!K||(K.get.every(n=>u.roster[S.myTeam].some(q=>q&&q.n===n))&&K.give.every(n=>u.roster[K.t].some(q=>q&&q.n===n))); carried.ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })() }; const run0=LEAGUE.offseason.run; let banked=null; LEAGUE.offseason.run=function(u,...rest){ const q=u.roster[S.myTeam].find(q=>q&&q.n===x.qn); banked=q&&q.hist?q.hist.slice(-1)[0]:null; LEAGUE.offseason.run=run0; return run0.call(this,u,...rest) }; let n=0;while(SEA.phase!=="done"&&n<500){simAdvance();n++} try{ openOffseason(); const O=S.off; if(O&&O.act&&O.act.userOpen)O.move=S.myTeam;
     if(LEAGUE.ui.offseasonBlock()!==null&&O.picks&&O.picks.resign)Object.keys(O.picks.resign).forEach(k=>O.picks.resign[k]=false);   // under the cap: let the expiring go
     commitOffseason() }catch(e){return {err:'offseason '+e.message}}
   const inU=(t,nm)=>U.roster[t]&&U.roster[t].some(q=>q&&q.n===nm);
@@ -66,7 +75,7 @@ const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry
   const where=NAMES.filter(t=>U.roster[t].some(q=>q&&q.n===x.gn)); const H=S.history[S.history.length-1], L=H&&H.league; const fate=L?['released','retired','signed','resigned','left','gone'].filter(k=>JSON.stringify(L[k]||'').includes(x.gn)):[];
   const pr=U.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn), ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })();
   return {ordered,banked,carried,where,fate,block:LEAGUE.ui.offseasonBlock&&S.off?LEAGUE.ui.offseasonBlock():null,year:SEA.year,phase:SEA.phase,mine:inU(S.myTeam,x.qn),theirs:inU(x.t,x.gn),hist:g&&g.hist?g.hist.slice(-1)[0]:null}},[pre]);
-console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); ok(nx.carried&&nx.carried.ordered,'carried into next season, the better of the two at his spot starts'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
+console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.pk,'the two for two is carried into next season too'); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); ok(nx.carried&&nx.carried.ordered,'carried into next season, the better of the two at his spot starts'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
 // an offer that comes to you near the deadline, on the home screen: it helps you now or later; Not now hides it; Trade takes it
 { const o=await p.evaluate(([team])=>{newDynasty(team,11,'O');S.title=false;S.guide=false;let n=0,shown=0,help=0,first=null;
     while(SEA.phase==="week"&&n++<400){ if(tdState().open){ view='home';TD_UI={};render(); const c=document.querySelector('[data-tdno]'); if(c){ shown++; const d=tdIncoming()||null; if(!first)first={step:SEA.step}; } } else if(shown)break;
@@ -88,10 +97,12 @@ for(const obj of ['now+later','now']){ const fl=await p.evaluate(([team,obj])=>{
   while(tdState().open&&SEA.phase==="week"){ const R=SEA.roster[my]; let best=null, bv=0.05;
     tdClubs().forEach(t=>{ if(tdRecent(t))return; SEA.roster[t].forEach((q,b)=>{ if(!q||tdHurt(t,b))return; R.forEach((g,a)=>{ if(!g||tdGrp(a)!==tdGrp(b)||tdHurt(my,a))return;
       const d=tdDeal(t,a,b); if(!d||!d.yes)return; const v=obj==='now'?d.now:d.now+d.fut; if(v>bv){bv=v;best=d} }) }) });
+    // and every two for two (round 84), on every fifth day of the daily leagues
+    if(!LEAGUE.daily||SEA.step%5===0)tdClubs().forEach(t=>{ if(tdRecent(t))return; tdPackages(t,null,null).forEach(d=>{ const v=obj==='now'?d.now:d.now+d.fut; if(v>bv){bv=v;best=d} }) });
     if(best){tdDo(best);k++} else simAdvance() }
   return {k,gain:teamRating(SEA.roster[my])-r0,fut:(tdVal(SEA.roster[my],true)-f0)/R_SLOPE}},[team,obj]);
   console.log(`   fleece (${obj}): ${fl.k} trades, team rating ${fl.gain>=0?'+':''}${fl.gain.toFixed(2)} now, ${fl.fut>=0?'+':''}${fl.fut.toFixed(2)} in two years`);
-  FL.push({f,obj,...fl}); if(obj==='now+later')ok(fl.gain+fl.fut<=0.05,`no coach comes out ahead now and later together by trading (${(fl.gain+fl.fut).toFixed(2)})`) }
+  FL.push({f,obj,...fl}); if(obj==='now')ok(fl.k<=3&&fl.gain<=6,`going all in: at most three trades, at most +6 now (${fl.k}, ${fl.gain.toFixed(2)})`); if(obj==='now+later')ok(fl.gain+fl.fut<=0.05,`no coach comes out ahead now and later together by trading (${(fl.gain+fl.fut).toFixed(2)})`) }
 if(false){ const fl=await p.evaluate(([team])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
   const r0=teamRating(SEA.roster[S.myTeam]), b0=SEA.talent.base[S.myTeam]; let k=0, fut=0;
   while(tdState().open&&SEA.phase==="week"){ const R=SEA.roster[S.myTeam]; let best=null; R.forEach((q,i)=>{ if(!q)return; tdOffers(i).forEach(d=>{ if(d.now>0&&(!best||d.now>best.now))best=d }) });

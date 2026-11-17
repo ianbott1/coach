@@ -14,6 +14,16 @@
    season goes into his career with the club he finished with. The computer's clubs don't trade with each other yet,
   , so nothing changes for a season with no trades in it. In a shared seat each coach trades for his own club; a reload replays every coach's moves in turn order (round 84). */
 const TD_PREM=2;                // elo: what a club wants over even before it says yes
+const TD_SPREAD=0.3;          // how far a contender (0.55+) and a club out of it (0.55-) lean to now or later
+/* round 84, measured: a coach going all in for now (the best deal for now each day, two for two included, to the
+   deadline) gained hockey +9.1 team rating (clubs' spread, one standard deviation: 3.5), basketball +7.0 (3.3),
+   baseball +5.1 (1.7), football +4.2 (2.7): a mid club past the league's best in one season. Two dials, measured:
+   - a premium in proportion to the strength a club gives up now (TD_PROP): a big deal costs more than a small one
+   - three trades a season (TD_MAX): the deadline market isn't deep; most of the gain came in the first two or three
+   With both: hockey +5.5 (for -20.8 in two years), basketball +5.3 (-17.4), football +3.9 (-13.4), baseball +2.4
+   (-4.0), soccer +1.3 (-14.9). How the clubs lean (TD_SPREAD 0.15 or 0.3) made no difference: deals come early. */
+const TD_PROP=1;
+const TD_MAX=3;
 const TD_GAP=7;                 // steps between two trades with the same club (a week of football is one step)
 const TD_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function tdDay(s){ const D=LEAGUE.dates||[], m0=TD_MON.indexOf(String(D[0]||"Jan 1").split(" ")[0]); const [m,d]=String(s||"").split(" ");
@@ -24,9 +34,10 @@ function tdState(){
   if(SEA.phase!=="week")return {open:false,why:"Trades are closed until next season."};
   if(SEA.half)return {open:false,why:"Not in the middle of a cup week: after its second game."};
   const today=(LEAGUE.dates||[])[SEA.step]||"";
-  if(T.window){ const m=today.split(" ")[0]; if(T.window.indexOf(m)>=0)return {open:true,why:`The January window: open until ${T.shut}.`};
+  if(T.window){ const m=today.split(" ")[0]; if(T.window.indexOf(m)>=0)return tdTrades().length>=TD_MAX?{open:false,why:`You've made ${TD_MAX} deals this window, the most a club makes.`}:{open:true,why:`The January window: open until ${T.shut}.`};
     return {open:false,why:tdDay(today)<tdDay(T.window[0]+" 1")?"The transfer window opens in January.":"The January window has shut."} }
   if(tdDay(today)>tdDay(T.by))return {open:false,why:`The trade deadline (${T.by}) has passed.`};
+  if(tdTrades().length>=TD_MAX)return {open:false,why:`You've made ${TD_MAX} trades this season, the most a club makes.`};
   return {open:true,why:`The trade deadline is ${T.by}.`};
 }
 const tdGrp=i=>POS[i%POS.length].p.replace(/\d+$/,"");      // baseball's SP, SP2 and SP3 are all starters
@@ -42,16 +53,20 @@ function tdWin(t){
   const rec=SEA.rec||{}, pct=x=>{ const r=rec[x]||[0,0]; return ((r[0]||0)+5)/((r[0]||0)+(r[1]||0)+10) };
   const peers=NAMES.filter(x=>CONF[x]===CONF[t]||!LEAGUE.trade.sameDiv), mine=pct(t), rank=peers.filter(x=>pct(x)>mine).length/Math.max(1,peers.length-1);
   const gone=Math.min(1,SEA.step/Math.max(1,(LEAGUE.dates||[]).length*0.5));
-  return 0.55+(rank<0.35?0.3:rank>0.65?-0.3:0)*gone }
+  return 0.55+(rank<0.35?TD_SPREAD:rank>0.65?-TD_SPREAD:0)*gone }
 // the two rosters after the swap: each man in the other's slot, the better of the two at that spot starting
 function tdAfter(R,i,p){ const X=R.slice(); X[i]=p; const s=i%POS.length, b=BK(s); if(X[s]&&X[b]&&X[b].r>X[s].r){ const t=X[s]; X[s]=X[b]; X[b]=t } return X }
 function tdPay(R){ return R.reduce((s,p)=>s+(p&&p.k&&p.k.sal||0),0) }
 // the deal from both sides: a = my slot, b = their slot
-function tdDeal(t,a,b){
-  const my=S.myTeam, M=SEA.roster[my], T=SEA.roster[t], give=M[a], get=T[b];
+// round 84: two for two, a pair at each of two positions (a2, b2): a guard and a forward for a forward and a guard, or
+// two good men for a star and a throw-in. Both rosters stay whole (no call-ups, no one released mid-season).
+function tdDeal(t,a,b,a2,b2){
+  const my=S.myTeam, M=SEA.roster[my], T=SEA.roster[t], give=M[a], get=T[b], two=a2!=null&&b2!=null;
   if(!give||!get||tdGrp(a)!==tdGrp(b))return null;
-  const M2=tdAfter(M,a,get), T2=tdAfter(T,b,give), w=tdWin(t);
-  const score=w*(tdVal(T2,false)-tdVal(T,false))+(1-w)*(tdVal(T2,true)-tdVal(T,true));
+  if(two&&(!M[a2]||!T[b2]||tdGrp(a2)!==tdGrp(b2)||tdGrp(a2)===tdGrp(a)))return null;
+  let M2=tdAfter(M,a,get), T2=tdAfter(T,b,give); const w=tdWin(t);
+  if(two){ M2=tdAfter(M2,a2,T[b2]); T2=tdAfter(T2,b2,M[a2]) }
+  const dNow=tdVal(T2,false)-tdVal(T,false), score=w*dNow+(1-w)*(tdVal(T2,true)-tdVal(T,true))-TD_PROP*Math.max(0,-dNow);
   const cap=LEAGUE.taxLine||LEAGUE.cap, over=cap?[[M,M2],[T,T2]].some(([x,y])=>tdPay(y)>cap&&tdPay(y)>tdPay(x)):false;
   const now=teamRating(M2)-teamRating(M), fut=(tdVal(M2,true)-tdVal(M,true))/R_SLOPE;
   // and it won't give you more than you give, now and in two years counted together: it will swap one for the other
@@ -59,7 +74,9 @@ function tdDeal(t,a,b){
   // gained in both, 16 trades for +4.3 now and +10.7 in two years in basketball, buying now from clubs out of it and
   // selling it dear to contenders)
   const fair=now+fut<=-0.01;
-  return {t:t,a:a,b:b,give:give,get:get,score:score,yes:score>=TD_PREM&&!over&&fair,over:over,fair:fair,w:w,now:now,fut:fut}
+  const d={t:t,a:a,b:b,give:give,get:get,score:score,yes:score>=TD_PREM&&!over&&fair,over:over,fair:fair,w:w,now:now,fut:fut};
+  if(two)Object.assign(d,{a2:a2,b2:b2,give2:M[a2],get2:T[b2]});
+  return d
 }
 // kept among the promotions (S.promos), so a reload replays a trade and a promotion on one day in the order they were made
 const tdLog=(P)=>{ const L=P||S.promos||{}, o={}; Object.keys(L).forEach(k=>{ const v=L[k].filter(x=>x&&x.tr).map(x=>x.tr); if(v.length)o[k]=v }); return o };
@@ -79,17 +96,36 @@ function tdAsk(t,b){
   const list=[]; SEA.roster[my].forEach((p,a)=>{ if(!p||tdGrp(a)!==tdGrp(b)||tdHurt(my,a))return; const d=tdDeal(t,a,b); if(d&&d.yes)list.push(d) });
   return {list:list.sort((x,y)=>y.now-x.now||y.fut-x.fut)} }
 // carry a trade out: on the season's rosters (also as a reload replays it)
+// two for two around one man: yours at a (shop) or theirs at b (ask); the second pair at any other position
+function tdPackages(t,a,b){
+  const my=S.myTeam, M=SEA.roster[my], T=SEA.roster[t], out=[];
+  const As=a!=null?[a]:M.map((p,i)=>i).filter(i=>M[i]&&(b==null||tdGrp(i)===tdGrp(b))&&!tdHurt(my,i));
+  const Bs=a1=>b!=null?[b]:T.map((p,i)=>i).filter(i=>T[i]&&tdGrp(i)===tdGrp(a1)&&!tdHurt(t,i));   // both open: every pair (the fleece)
+  As.forEach(a1=>Bs(a1).forEach(b1=>M.forEach((p,a2)=>{ if(!p||tdGrp(a2)===tdGrp(a1)||tdHurt(my,a2))return;
+    if(a==null&&b==null&&a2<a1)return;
+    T.forEach((q,b2)=>{ if(!q||tdGrp(b2)!==tdGrp(a2)||tdHurt(t,b2))return; const d=tdDeal(t,a1,b1,a2,b2); if(d&&d.yes)out.push(d) }) })));
+  return out }
+// the best of those for you: a package that helps you now or later, one a club, the three best
+function tdShopTwo(a){ const out=[]; tdClubs().forEach(t=>{ if(tdRecent(t))return; let best=null;
+    tdPackages(t,a,null).forEach(d=>{ if((d.now>0||d.fut>0)&&(!best||d.now+d.fut>best.now+best.fut))best=d }); if(best)out.push(best) });
+  return out.sort((x,y)=>(y.now+y.fut)-(x.now+x.fut)).slice(0,3) }
+function tdAskTwo(t,b){ if(tdRecent(t)||tdHurt(t,b))return []; return tdPackages(t,null,b).sort((x,y)=>(y.now+y.fut)-(x.now+x.fut)).slice(0,3) }
+const tdGo=d=>`${esc(d.t)}|${d.a}|${d.b}`+(d.give2?`|${d.a2}|${d.b2}`:"");
 function tdApply(sea,x){
   const my=x.my||S.myTeam, M=sea.roster[my], T=sea.roster[x.t]; if(!M||!T)return false;
-  const a=M[x.a]&&M[x.a].n===x.gn?x.a:M.findIndex(p=>p&&p.n===x.gn), b=T[x.b]&&T[x.b].n===x.qn?x.b:T.findIndex(p=>p&&p.n===x.qn);
-  if(a<0||b<0)return false;
-  const e0=rosterElo(M), f0=rosterElo(T), give=M[a], get=T[b];
-  [[M,a,get,my],[T,b,give,x.t]].forEach(([R,i,p,tm])=>{ R[i]=p; const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z;
-    (sea.talent.inj[tm]||[]).forEach(e=>{ if(e.idx===s)e.idx=k; else if(e.idx===k)e.idx=s }) } });   // an injury goes with the man, not the slot
+  const find=(R,i,n)=>R[i]&&R[i].n===n?i:R.findIndex(p=>p&&p.n===n);
+  const pairs=[[find(M,x.a,x.gn),find(T,x.b,x.qn)]]; if(x.gn2)pairs.push([find(M,x.a2,x.gn2),find(T,x.b2,x.qn2)]);
+  if(pairs.some(([a,b])=>a<0||b<0))return false;
+  const e0=rosterElo(M), f0=rosterElo(T);
+  pairs.forEach(([a,b])=>{ const give=M[a], get=T[b];
+    [[M,a,get,my],[T,b,give,x.t]].forEach(([R,i,p,tm])=>{ R[i]=p; const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z;
+      (sea.talent.inj[tm]||[]).forEach(e=>{ if(e.idx===s)e.idx=k; else if(e.idx===k)e.idx=s }) } });   // an injury goes with the man, not the slot
+    get.tdFrom=x.t; give.tdFrom=my });
   sea.talent.base[my]+=rosterElo(M)-e0; sea.talent.base[x.t]+=rosterElo(T)-f0;
-  get.tdFrom=x.t; give.tdFrom=my; return true }
+  return true }
 function tdDo(d){
   S.promos=S.promos||{}; const k=SEA.step, x={t:d.t,a:d.a,b:d.b,gn:d.give.n,qn:d.get.n,my:S.myTeam,y:SEA.year,d:(LEAGUE.dates||[])[k]||""};
+  if(d.give2)Object.assign(x,{a2:d.a2,b2:d.b2,gn2:d.give2.n,qn2:d.get2.n});
   if(!tdApply(SEA,x))return; (S.promos[k]=S.promos[k]||[]).push({tr:x});
   TD_UI={done:x}; save(); render() }
 // at the season's end, into the universe's rosters (next season's): the same two men, found by name
@@ -97,9 +133,10 @@ function tdCarry(u){
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
-    const a=M.findIndex(p=>p&&p.n===x.gn), b=T.findIndex(p=>p&&p.n===x.qn); if(a<0||b<0)return;
-    const g=M[a], q=T[b]; M[a]=q; T[b]=g; [q,g].forEach(p=>{ p.yrsHere=0; p.joined=SEA.year });
-    [[M,a],[T,b]].forEach(([R,i])=>{ const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z } }) })) }
+    [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
+      const a=M.findIndex(p=>p&&p.n===gn), b=T.findIndex(p=>p&&p.n===qn); if(a<0||b<0)return;
+      const g=M[a], q=T[b]; M[a]=q; T[b]=g; [q,g].forEach(p=>{ p.yrsHere=0; p.joined=SEA.year });
+      [[M,a],[T,b]].forEach(([R,i])=>{ const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z } }) }) })) }
 function tdTrades(){ const L=tdLog(); return [].concat(...Object.keys(L).sort((a,b)=>a-b).map(k=>L[k])).filter(x=>x.y===undefined||x.y===SEA.year) }
 
 /* the Trades tab */
@@ -107,19 +144,23 @@ let TD_UI={};
 function tdLine(d,mine){ const sg=v=>(v>=0?"+":"")+v.toFixed(1);
   return `<span style="color:${d.now>=0?"var(--good,#7fd17f)":"var(--bad,#e88)"}">${sg(d.now)} now</span>, <span style="color:var(--muted)">${sg(d.fut)} in two years</span>` }
 function tdPl(t,p,i){ return `${plLink(t,p.n)} <span style="color:var(--muted)">${esc(POS[i%POS.length].p)} ${p.r}${p.age?`, ${p.age}`:""}${p.k&&p.k.sal?`, $${p.k.sal.toFixed(1)}M`:""}</span>` }
+function tdTwoRows(L,my){ if(!L.length)return "";
+  return `<div class="fnote" style="margin-top:8px">Two for two:</div>`+L.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)} and ${tdPl(my,d.give2,d.a2)}</div>
+    <div class="psub">for ${esc(d.t)}${/s$/.test(d.t)?"'":"'s"} ${tdPl(d.t,d.get,d.b)} and ${tdPl(d.t,d.get2,d.b2)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${tdGo(d)}">Trade</button></div>`).join("") }
 function tradesView(){
   const my=S.myTeam, st=tdState(), R=SEA.roster[my];
-  let h=`<div class="note">${esc(st.why)} One of yours for one of theirs at the same position. A club answers from the deal: how much it helps them now and in two years, weighed by where they stand (a contender wants now, a club out of it wants later), under the cap.</div>`;
-  if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${esc(x.gn)} to ${esc(x.t)}, ${esc(x.qn)} to you.</div>` }
-  const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${esc(x.gn)} to ${esc(x.t)} for ${esc(x.qn)}</div>`).join("")}</div>`;
+  let h=`<div class="note">${esc(st.why)} One of yours for one of theirs at the same position, or two for two (a pair at each of two positions: a guard and a forward for a forward and a guard, or two good men for a star and a throw-in). A club answers from the deal: how much it helps them now and in two years, weighed by where they stand (a contender wants now, a club out of it wants later), under the cap.</div>`;
+  const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
+  if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${nm2(x.gn,x.gn2)} to ${esc(x.t)}, ${nm2(x.qn,x.qn2)} to you.</div>` }
+  const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${nm2(x.gn,x.gn2)} to ${esc(x.t)} for ${nm2(x.qn,x.qn2)}</div>`).join("")}</div>`;
   if(!st.open)return h;
   const cap=LEAGUE.taxLine||LEAGUE.cap; if(cap&&R.some(p=>p&&p.k))h+=`<div class="note">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;
   // shop one of mine
   h+=`<div class="grouphead">Shop a player</div>`;
   if(TD_UI.shop!=null&&R[TD_UI.shop]){ const a=TD_UI.shop, O=tdOffers(a);
     h+=`<div class="card" style="padding:8px 12px"><div style="margin-bottom:6px">Offers for ${tdPl(my,R[a],a)} <button class="promo" data-tdshop="-1">Back</button></div>`+
-      (O.length?O.map((d,k)=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${esc(d.t)}: ${tdPl(d.t,d.get,d.b)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${esc(d.t)}|${d.a}|${d.b}">Trade</button></div>`).join(""):
-        `<div class="fnote">No club would give you a better man at his spot, now or in two years, for him.</div>`)+`</div>` }
+      (O.length?O.map((d,k)=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${esc(d.t)}: ${tdPl(d.t,d.get,d.b)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${tdGo(d)}">Trade</button></div>`).join(""):
+        `<div class="fnote">No club would give you a better man at his spot, now or in two years, for him.</div>`)+tdTwoRows(tdShopTwo(a),my)+`</div>` }
   else h+=`<div class="card" style="padding:6px 12px">${R.map((p,i)=>p&&!tdHurt(my,i)?`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,p,i)}</div></div><button class="promo" data-tdshop="${i}">Shop</button></div>`:"").join("")}</div>`;
   // ask about one of theirs
   const C=tdClubs(), t=TD_UI.club&&C.indexOf(TD_UI.club)>=0?TD_UI.club:null;
@@ -129,7 +170,7 @@ function tradesView(){
       h+=`<div style="margin:8px 0">${t} on ${tdPl(t,T[b],b)} <button class="promo" data-tdask="-1">Back</button></div>`+
         (A.hurt?`<div class="fnote">He's injured: not now.</div>`:A.recent?`<div class="fnote">They've traded with you in the last ${TD_GAP} ${LEAGUE.daily?"days":"weeks"}: not yet.</div>`:
          A.list.length?`<div class="fnote">They'd take any of these for him:</div>`+A.list.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${esc(t)}|${d.a}|${d.b}">Trade</button></div>`).join(""):
-         `<div class="fnote">Nobody of yours at his position would get him${tdWin(t)>0.7?": they're contending and he helps them win now":""}.</div>`) }
+         `<div class="fnote">Nobody of yours at his position would get him${tdWin(t)>0.7?": they're contending and he helps them win now":""}.</div>`)+(A.hurt||A.recent?"":tdTwoRows(tdAskTwo(t,b),my)) }
     else h+=T.map((q,b)=>q?`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(t,q,b)}${tdHurt(t,b)?` <span class="outtag">OUT</span>`:""}</div></div>${tdHurt(t,b)?"":`<button class="promo" data-tdask="${b}">Ask</button>`}</div>`:"").join("") }
   return h+`</div>` }
 function bindTrades(){
@@ -137,7 +178,7 @@ function bindTrades(){
   document.querySelectorAll("[data-tdask]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdask; TD_UI={club:TD_UI.club,ask:i<0?null:i}; render() });
   document.querySelectorAll("[data-tdno]").forEach(b=>b.onclick=()=>{ TD_UI={no:b.dataset.tdno}; render() });
   document.querySelectorAll("[data-tdclub]").forEach(s=>s.onchange=()=>{ TD_UI={club:s.value||null}; render() });
-  document.querySelectorAll("[data-tdgo]").forEach(b=>b.onclick=()=>{ const [t,a,c]=b.dataset.tdgo.split("|"), d=tdDeal(t,+a,+c);
+  document.querySelectorAll("[data-tdgo]").forEach(b=>b.onclick=()=>{ const [t,a,c,a2,c2]=b.dataset.tdgo.split("|"), d=a2!==undefined?tdDeal(t,+a,+c,+a2,+c2):tdDeal(t,+a,+c);
     if(!d||!d.yes||!tdState().open)return; tapTwice(b,"Confirm",()=>tdDo(d)) });
 }
 
