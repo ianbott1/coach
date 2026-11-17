@@ -135,7 +135,44 @@ function tradesView(){
 function bindTrades(){
   document.querySelectorAll("[data-tdshop]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdshop; TD_UI={shop:i<0?null:i,club:TD_UI.club}; render() });
   document.querySelectorAll("[data-tdask]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdask; TD_UI={club:TD_UI.club,ask:i<0?null:i}; render() });
+  document.querySelectorAll("[data-tdno]").forEach(b=>b.onclick=()=>{ TD_UI={no:b.dataset.tdno}; render() });
   document.querySelectorAll("[data-tdclub]").forEach(s=>s.onchange=()=>{ TD_UI={club:s.value||null}; render() });
   document.querySelectorAll("[data-tdgo]").forEach(b=>b.onclick=()=>{ const [t,a,c]=b.dataset.tdgo.split("|"), d=tdDeal(t,+a,+c);
     if(!d||!d.yes||!tdState().open)return; tapTwice(b,"Confirm",()=>tdDo(d)) });
 }
+
+/* round 84: offers that come to you. In the last stretch before the deadline (the last three weeks of football, the
+   last three weeks of the daily leagues, every third day; the window's last two weeks in soccer) the club that most
+   wants one of your men comes to you, on the home screen. Which club: the one whose best deal it scores highest; which
+   man of theirs it offers: of the men it would give for him, the best for you. The same rules as any deal, so there's
+   no free lunch: you give a little more than you get, now and later together. Not now hides it till the next one. */
+function tdLastOpen(){ const T=LEAGUE.trade, D=LEAGUE.dates||[]; let last=-1;
+  for(let k=0;k<D.length;k++){ const m=String(D[k]).split(" ")[0]; if(T.window?T.window.indexOf(m)>=0:tdDay(D[k])<=tdDay(T.by))last=k }
+  return last }
+function tdIncoming(){
+  const st=tdState(); if(!st.open)return null; const last=tdLastOpen(), left=last-SEA.step;
+  const span=LEAGUE.daily?21:LEAGUE.trade.window?2:3; if(left<0||left>=span)return null; if(LEAGUE.daily&&left%3)return null;
+  // only an offer that helps you now or later (measured: the club's keenest deal was most often a lowball that cost you
+  // both, a 70 for a 52 at -2.7 now and -8.5 later), and not one already made to you this season
+  const my=S.myTeam, R=SEA.roster[my], seen=(S.tdShown&&S.tdShown.y===SEA.year?S.tdShown.k:[]); let pick=null;
+  tdClubs().forEach(t=>{ if(tdRecent(t))return; const T=SEA.roster[t];
+    R.forEach((g,a)=>{ if(!g||tdHurt(my,a)||seen.indexOf(t+"|"+g.n)>=0)return; T.forEach((q,b)=>{ if(!q||tdGrp(a)!==tdGrp(b)||tdHurt(t,b))return; const d=tdDeal(t,a,b);
+      if(d&&d.yes&&(d.now>0||d.fut>0)&&(!pick||d.score>pick.score))pick=d }) }) });
+  if(!pick)return null;
+  // the man of theirs best for you, of those they'd give for him
+  let best=pick; SEA.roster[pick.t].forEach((q,b)=>{ if(!q||tdGrp(b)!==tdGrp(pick.a)||tdHurt(pick.t,b))return; const d=tdDeal(pick.t,pick.a,b); if(d&&d.yes&&(d.now>0||d.fut>0)&&d.now+d.fut>best.now+best.fut)best=d });
+  return best }
+// an offer shown is remembered for the season (only what's offered: it changes nothing a reload plays)
+function tdMark(d){ if(!S.tdShown||S.tdShown.y!==SEA.year)S.tdShown={y:SEA.year,s:{},k:[]};
+  const key=d.t+"|"+d.give.n; if(S.tdShown.s[SEA.step]===undefined){ S.tdShown.s[SEA.step]=key; if(S.tdShown.k.indexOf(key)<0)S.tdShown.k.push(key) } }
+function tdOfferCard(){
+  if(!LEAGUE.trade||!SEA.roster)return ""; const k=SEA.year+"|"+SEA.step; if(TD_UI.no===k)return "";
+  const sh=S.tdShown&&S.tdShown.y===SEA.year?S.tdShown:null; let d=null;
+  if(sh&&sh.s[SEA.step]!==undefined){ const [t,gn]=String(sh.s[SEA.step]).split("|"), R=SEA.roster[S.myTeam], a=R.findIndex(p=>p&&p.n===gn);
+    if(a>=0&&t){ let best=null; SEA.roster[t].forEach((q,b)=>{ if(!q||tdGrp(b)!==tdGrp(a)||tdHurt(t,b))return; const x=tdDeal(t,a,b); if(x&&x.yes&&(x.now>0||x.fut>0)&&(!best||x.now+x.fut>best.now+best.fut))best=x }); d=best } }
+  else { d=tdIncoming(); if(d)tdMark(d) }
+  if(!d)return ""; const my=S.myTeam;
+  return `<div class="card" style="padding:10px 12px;margin:8px 0"><div class="olab">A trade offer &middot; ${esc(tdState().why)}</div>
+    <div style="margin:6px 0">${esc(d.t)} want ${tdPl(my,d.give,d.a)}. They'd give ${tdPl(d.t,d.get,d.b)}.</div>
+    <div class="psub" style="margin-bottom:6px">Your team: ${tdLine(d)}</div>
+    <button class="promo" data-tdgo="${esc(d.t)}|${d.a}|${d.b}">Trade</button> <button class="promo" data-tdno="${k}">Not now</button></div>` }

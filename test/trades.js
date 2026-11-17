@@ -67,6 +67,21 @@ const nx=await p.evaluate(([x])=>{ const orig=tdCarry; let carried=null; tdCarry
   const pr=U.roster[S.myTeam], pi=pr.findIndex(q=>q&&q.n===x.qn), ordered=pi<0||(()=>{ const s0=pi%POS.length, k=BK(s0); return !pr[s0]||!pr[k]||pr[s0].r>=pr[k].r })();
   return {ordered,banked,carried,where,fate,block:LEAGUE.ui.offseasonBlock&&S.off?LEAGUE.ui.offseasonBlock():null,year:SEA.year,phase:SEA.phase,mine:inU(S.myTeam,x.qn),theirs:inU(x.t,x.gn),hist:g&&g.hist?g.hist.slice(-1)[0]:null}},[pre]);
 console.log('   next season:',JSON.stringify(nx).slice(0,300)); ok(nx.carried&&nx.carried.mine&&nx.carried.theirs,'at the season\'s end the traded men are put where they went'); ok(nx.carried&&nx.carried.ordered,'carried into next season, the better of the two at his spot starts'); if(!(nx.mine&&nx.theirs))console.log('   (one has moved on in the offseason since: '+nx.where.join(', ')+')'); ok(nx.banked&&nx.banked.t===S_TEAM(nx)&&nx.banked.s&&nx.banked.s.g>0,'his season banked with the club he finished with');
+// an offer that comes to you near the deadline, on the home screen: it helps you now or later; Not now hides it; Trade takes it
+{ const o=await p.evaluate(([team])=>{newDynasty(team,11,'O');S.title=false;S.guide=false;let n=0,shown=0,help=0,first=null;
+    while(SEA.phase==="week"&&n++<400){ if(tdState().open){ view='home';TD_UI={};render(); const c=document.querySelector('[data-tdno]'); if(c){ shown++; const d=tdIncoming()||null; if(!first)first={step:SEA.step}; } } else if(shown)break;
+      if(first&&first.step===SEA.step)break; simAdvance() }
+    if(!first)return {shown:0};
+    const card=document.querySelector('[data-tdgo]').closest('.card').innerText, go=document.querySelector('[data-tdgo]').dataset.tdgo.split('|'), d=tdDeal(go[0],+go[1],+go[2]);
+    return {shown,card:card.replace(/\s+/g,' ').slice(0,160),helps:d.now>0||d.fut>0,yes:d.yes,go,gn:d.give.n,qn:d.get.n} },[team]);
+  ok(o.shown>0,'a club comes with an offer before the deadline');
+  if(o.shown){ ok(o.helps&&o.yes,'the offer helps you now or later, and the club would make it: '+o.card);
+    await p.click('[data-tdno]');await p.waitForTimeout(50); ok(!(await p.$('[data-tdgo]')),'Not now hides it');
+    await p.evaluate(()=>{TD_UI={};render()}); const again=await p.evaluate(()=>{const b=document.querySelector('[data-tdgo]');return b?b.dataset.tdgo:null});
+    ok(again===o.go.join('|'),'the same offer that day after a redraw');
+    await p.click('[data-tdgo]');await p.waitForTimeout(40);await p.click('[data-tdgo]');await p.waitForTimeout(80);
+    const tk=await p.evaluate(([gn,qn,t])=>SEA.roster[S.myTeam].some(q=>q&&q.n===qn)&&SEA.roster[t].some(q=>q&&q.n===gn),[o.gn,o.qn,o.go[0]]);
+    ok(tk,'Trade on the card makes the trade'); } }
 // fleece: every deal any club would take (any of yours, any of theirs at the spot), the best each day, to the deadline
 for(const obj of ['now+later','now']){ const fl=await p.evaluate(([team,obj])=>{newDynasty(team,7,'F');S.title=false;S.guide=false;let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++}
   const my=S.myTeam, r0=teamRating(SEA.roster[my]), f0=tdVal(SEA.roster[my],true); let k=0;
