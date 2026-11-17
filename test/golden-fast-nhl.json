@@ -1,5 +1,5 @@
 {
- "fp": "3c8ffacaab2ae3a1",
+ "fp": "1958e9fb162d95ce",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -15,6 +15,11 @@
    "fp": "3c8ffacaab2ae3a1",
    "from": "ed34e3e1df8df19e",
    "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
+  },
+  {
+   "fp": "1958e9fb162d95ce",
+   "from": "3c8ffacaab2ae3a1",
+   "note": "round 84: a trade offer card on the home screen near the deadline (screens only)"
   }
  ],
  "result": {
@@ -29,7 +34,7 @@
     "heis": "d51c9d0a44f4d257",
     "history": "bd9b6fef6652f8a2",
     "universe": "86f3305b0f7ac9fa",
-    "screens": "1456d43dc0ff5a08"
+    "screens": "5b25fd402e46f223"
    }
   ]
  }
