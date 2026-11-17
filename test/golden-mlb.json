@@ -1,5 +1,5 @@
 {
- "fp": "cecea7022cbf31b3",
+ "fp": "f40363369147cb98",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -135,59 +135,64 @@
    "fp": "cecea7022cbf31b3",
    "from": "dd30fb5d4448a513",
    "note": "round 84: the trade offer card near the deadline (screens only; every other field equal to round 83)"
+  },
+  {
+   "fp": "f40363369147cb98",
+   "from": "cecea7022cbf31b3",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "da304814c70e495b",
-    "post": "ff01c5adba769c50",
-    "champion": "Cleveland",
-    "rec": "1debeb7fe763363c",
-    "poll": "b9cf44c8b62b3829",
-    "heis": "f1fe02d2875be662",
-    "history": "4e46de7d8f091498",
-    "universe": "1b268e0988a77935",
-    "screens": "d2630a25d79e58f4"
+    "games": "59667198203a6f3e",
+    "post": "995ab55f6d99032d",
+    "champion": "LA Dodgers",
+    "rec": "f6653acd04e32d03",
+    "poll": "19ee0db409aab6a8",
+    "heis": "3b415ccc1701eee0",
+    "history": "ab88e4a8cda02b56",
+    "universe": "d3671adcc1c7c9ab",
+    "screens": "a4cf6fe9f2c3f3e9"
    },
    {
     "year": 2027,
-    "games": "1713fd69dce0f507",
-    "post": "b394d6427603d4cc",
+    "games": "e667158b951b086e",
+    "post": "d4d06708d45ccc1c",
     "champion": "Philadelphia",
-    "rec": "39424201dbc45986",
-    "poll": "0899f742989ae573",
-    "heis": "e4ea92f1e796e3f0",
-    "history": "919e508517fbd2e7",
-    "universe": "fa8652f997fd83d3",
-    "screens": "ca924d6982d76878"
+    "rec": "fc02839ca8fad3b6",
+    "poll": "66c55889e7c025d1",
+    "heis": "92939c6b5a949d5c",
+    "history": "ecd88b4879bbb31b",
+    "universe": "00afb7b3e4ef37bf",
+    "screens": "d0a1b3347c2d3b49"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "ccc34f6e3eb8d248",
-    "post": "5a792160d89f7ca6",
-    "champion": "Philadelphia",
-    "rec": "432703e5045a268d",
-    "poll": "f6df34f4efde18cc",
-    "heis": "e141371eeedc6dad",
-    "history": "7588a3f9ce4d9c23",
-    "universe": "de93d8cbbbdfc9f6",
-    "screens": "e1c11bdeab7d67a6"
+    "games": "9cd8d460bacd6206",
+    "post": "f514b3f6f367b802",
+    "champion": "Chicago Cubs",
+    "rec": "6c28ac929dfc786f",
+    "poll": "720aec6ac1272243",
+    "heis": "95424a32c25a35fc",
+    "history": "528120ff14a05a63",
+    "universe": "bebc807879eebf3c",
+    "screens": "a0feba1330897f3e"
    },
    {
     "year": 2027,
-    "games": "513ec1f09c4c6634",
-    "post": "8617c24c6ab05ae0",
-    "champion": "Toronto",
-    "rec": "390f907946b2bfdc",
-    "poll": "3e4eb58a2929347c",
-    "heis": "4b7071637130b79f",
-    "history": "0dc2317e658af3db",
-    "universe": "770383327b891c4a",
-    "screens": "dfbe86d69de42886"
+    "games": "f62ef3dc7d21f1a9",
+    "post": "5411e71d247fa37a",
+    "champion": "LA Angels",
+    "rec": "90e53692e4d38321",
+    "poll": "94cf5f0b766a2fbf",
+    "heis": "80526e16a93de1fa",
+    "history": "e6aa503abfec5e2b",
+    "universe": "3e28d6475f370e98",
+    "screens": "8dabc4dd9f5c41b1"
    }
   ],
   "schedules#60": [

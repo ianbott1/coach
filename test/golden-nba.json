@@ -1,5 +1,5 @@
 {
- "fp": "ff5802f7f5e37a69",
+ "fp": "4ae49135cc8073f7",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -470,59 +470,64 @@
    "fp": "ff5802f7f5e37a69",
    "from": "baf9203b7324b4d7",
    "note": "round 83: the Trades tab on the team page (screens only; every other field equal to round 82, checked field by field and line by line)"
+  },
+  {
+   "fp": "4ae49135cc8073f7",
+   "from": "ff5802f7f5e37a69",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e0e086261ba22831",
-    "post": "a57be48f38981355",
-    "champion": "Boston",
-    "rec": "7cf56586281e6707",
-    "poll": "c59e0f03e33ee607",
-    "heis": "b0d3643fe51f45b0",
-    "history": "11e26240f996104f",
-    "universe": "cca8a49595379c8d",
-    "screens": "b6cb86fb4b48cf9f"
+    "games": "2a5f58ba58d191ec",
+    "post": "025fc57f91bd26f3",
+    "champion": "Detroit",
+    "rec": "1d501d4a38ca1d37",
+    "poll": "35bb34ecb75f8e39",
+    "heis": "e40f57ce863b1ebd",
+    "history": "8aafa685f87e75a0",
+    "universe": "591e3c0c9b3a6e01",
+    "screens": "823ce97aabe61563"
    },
    {
     "year": 2027,
-    "games": "dcd5bc23564f302c",
-    "post": "4d99ef68ae687181",
-    "champion": "Minnesota",
-    "rec": "5fea15af50425ac8",
-    "poll": "9a7e04392147ca1c",
-    "heis": "9b52fd1a0f4ab380",
-    "history": "4b0cac710915f705",
-    "universe": "8fa05e8f9fd9570f",
-    "screens": "7c844502b441443d"
+    "games": "59182b33980670b6",
+    "post": "b326ced05ec79ab0",
+    "champion": "Denver",
+    "rec": "57bf46ccdb6b1640",
+    "poll": "51a9028c2b197639",
+    "heis": "4a14fd9b0773921d",
+    "history": "7a5082dc8fb7ffcb",
+    "universe": "736608647a9a0460",
+    "screens": "782699c40216f526"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "ba1ac86991514c4f",
-    "post": "194727b00c757f93",
+    "games": "002a4260a6f9d02f",
+    "post": "ac01c1c76a1c4ba0",
     "champion": "Golden State",
-    "rec": "86366a27040f99f8",
-    "poll": "bf00d73c5c30aec1",
-    "heis": "7ce35292c0cefdbc",
-    "history": "35d3573cfa5d992d",
-    "universe": "b12608ea3a50664d",
-    "screens": "8355f16b041e7fb4"
+    "rec": "eb9cc6f5c27b9052",
+    "poll": "4b87166e47b9b805",
+    "heis": "851a737ba7e446f7",
+    "history": "082ebedbebddba66",
+    "universe": "34fe0a92750d1be3",
+    "screens": "21e98bcb4b77d5be"
    },
    {
     "year": 2027,
-    "games": "ed6e6715ea0045f0",
-    "post": "429f12b4d5596980",
-    "champion": "Houston",
-    "rec": "ff2425a7dab123cf",
-    "poll": "a56a7ec192ee0a12",
-    "heis": "b33dc7f0c33ee345",
-    "history": "6cba2ceb938a56c1",
-    "universe": "b86491c9f2b7ca4f",
-    "screens": "cd0bd32c2890cb21"
+    "games": "101be5a31ded9745",
+    "post": "73c4adb2ccec5c17",
+    "champion": "Milwaukee",
+    "rec": "926c5cf0df723d6d",
+    "poll": "53d64ea50ee1ad2c",
+    "heis": "6eb245c65bb96a4c",
+    "history": "9e1dc26fc914acad",
+    "universe": "a3c21755f313692c",
+    "screens": "eeb01c850e6f47ce"
    }
   ],
   "schedules#60": [

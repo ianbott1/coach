@@ -1,5 +1,5 @@
 {
- "fp": "218e7c8ac6d1c80b",
+ "fp": "2f667e96e87a69d7",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -519,6 +519,11 @@
    "fp": "218e7c8ac6d1c80b",
    "from": "4f1a14ac45836324",
    "note": "Round 81: screens only (the Watch button on computer games in Scores); results identical to round 80 field by field"
+  },
+  {
+   "fp": "2f667e96e87a69d7",
+   "from": "218e7c8ac6d1c80b",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
   }
  ],
  "result": {
@@ -532,7 +537,7 @@
     "poll": "eac26627dd99b438",
     "heis": "fb6327d7e61b1261",
     "history": "1d6ba277acbd15f1",
-    "universe": "09919f30aae50660",
+    "universe": "0b2ddefec0fdfb71",
     "screens": "843488f808b463bd"
    },
    {
@@ -544,7 +549,7 @@
     "poll": "07eddb6654e6d1f0",
     "heis": "3bcd98b514f4ac19",
     "history": "9f205048bc998ba6",
-    "universe": "13b329b37baa1917",
+    "universe": "d81d066286143c8a",
     "screens": "a71873d02a05cf34"
    },
    {
@@ -556,7 +561,7 @@
     "poll": "151a4c049424e90f",
     "heis": "d97c1f876bb0ee53",
     "history": "38b6e9892477c09c",
-    "universe": "450b95e37dd62e6a",
+    "universe": "69c6cadc27cf70c2",
     "screens": "bf7514657b8f4a04"
    },
    {
@@ -568,7 +573,7 @@
     "poll": "8f434b3082bc1e1d",
     "heis": "00fe65a1b14bf0b0",
     "history": "b0891eac2ebec711",
-    "universe": "ccfc52e4203cb182",
+    "universe": "58e0b882e3c97005",
     "screens": "0152d221bd61b971"
    }
   ],
@@ -582,7 +587,7 @@
     "poll": "10c737db39573824",
     "heis": "b1dcfea1725f9435",
     "history": "2c81c0584f26fca9",
-    "universe": "0505f53546a06a8f",
+    "universe": "dcce78e5c903afe7",
     "screens": "1538da2dd60a8348"
    },
    {
@@ -594,7 +599,7 @@
     "poll": "5a87262e88e003c7",
     "heis": "cc98bc9f446bc2a7",
     "history": "f4f375fe60064fdc",
-    "universe": "ee6dbad2bfebf523",
+    "universe": "2e03975084412fa5",
     "screens": "72ea523b341f909a"
    },
    {
@@ -606,7 +611,7 @@
     "poll": "f51ec11b46b66a71",
     "heis": "87b40da714db974e",
     "history": "10867eb5c2925ba2",
-    "universe": "655a215c00157cec",
+    "universe": "f82a8eefd7baa841",
     "screens": "88813b3a9c93adb8"
    },
    {
@@ -618,7 +623,7 @@
     "poll": "3327f00a2853102d",
     "heis": "e0b0d2169e29dc95",
     "history": "f0079e8e4030a915",
-    "universe": "4f5acc6353178cc9",
+    "universe": "dc2781d91aab914f",
     "screens": "32f664bdcf7689f6"
    }
   ],
@@ -632,7 +637,7 @@
     "poll": "9966f8db95556fcb",
     "heis": "7ac8698aceb64dd3",
     "history": "be5535d11b2f7c5c",
-    "universe": "27de83046258ff9c",
+    "universe": "a808a762b34e5757",
     "screens": "7014d0037d279524"
    },
    {
@@ -644,7 +649,7 @@
     "poll": "4eb15aef17f0ec37",
     "heis": "bf31bc257f665440",
     "history": "ff3621517caa7b22",
-    "universe": "763563837290d253",
+    "universe": "06d59eb68d6ea290",
     "screens": "fbbe46d8f7cb30c8"
    },
    {
@@ -656,7 +661,7 @@
     "poll": "d57daab6087c7eea",
     "heis": "e7cffd2fe8a51fe1",
     "history": "ea1e938e0065d52a",
-    "universe": "f13eaa666381ea6f",
+    "universe": "32bfbcce0a7b30ab",
     "screens": "e89d0cd303fec0d4"
    }
   ],
@@ -670,7 +675,7 @@
     "poll": "ae5dc7f06d41099a",
     "heis": "4028327a7c28dd86",
     "history": "8bf044cd846a91c9",
-    "universe": "d1c1c46c165f5d9f",
+    "universe": "f2e79bdf9fb1eb37",
     "screens": "1a94b2265a06123c"
    },
    {
@@ -682,7 +687,7 @@
     "poll": "d512a7e52981340c",
     "heis": "970902ef12bf93ef",
     "history": "1be2118b0aacca6f",
-    "universe": "59d5a6b755b654df",
+    "universe": "13740432cf78962c",
     "screens": "605b052c055a2882"
    },
    {
@@ -694,7 +699,7 @@
     "poll": "41a12b5f1db3b811",
     "heis": "96cf624e9f741c10",
     "history": "183c2d68fdef8251",
-    "universe": "0762bb548d3e90a0",
+    "universe": "5c55a8944d4f2412",
     "screens": "3f522aa860992d58"
    }
   ],

@@ -1,5 +1,5 @@
 {
- "fp": "c5d4a2853df61118",
+ "fp": "e2d3833f95f89209",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -485,59 +485,64 @@
    "fp": "c5d4a2853df61118",
    "from": "6d389009bc9b6d17",
    "note": "round 84: the trade offer card near the deadline (screens only; every other field equal to round 83)"
+  },
+  {
+   "fp": "e2d3833f95f89209",
+   "from": "c5d4a2853df61118",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "93ec3829af2af484",
-    "post": "069f03be48f6481c",
-    "champion": "Los Angeles",
-    "rec": "d601cb8345b59261",
-    "poll": "e3747dc9606f9bbb",
-    "heis": "d51c9d0a44f4d257",
-    "history": "bd9b6fef6652f8a2",
-    "universe": "86f3305b0f7ac9fa",
-    "screens": "5b25fd402e46f223"
+    "games": "2447228c2ca38269",
+    "post": "ba79cfb5df3b35a1",
+    "champion": "Vegas",
+    "rec": "852ea3252f2380c6",
+    "poll": "9c900e0c49cec45e",
+    "heis": "c48530eb33a8c90d",
+    "history": "f63d5527dd12ad02",
+    "universe": "df94ba9b40b8dcfb",
+    "screens": "570dcab259b6a674"
    },
    {
     "year": 2027,
-    "games": "f0eb7e55558acbe5",
-    "post": "0deb8494e988d69a",
-    "champion": "Winnipeg",
-    "rec": "956ecb96aa5644fd",
-    "poll": "e00a2cb2c68e4b55",
-    "heis": "d1fdb803b5057b06",
-    "history": "22201acf6615b881",
-    "universe": "d2dc21bd1b0c6253",
-    "screens": "fc95a925d835292b"
+    "games": "b55ccab5cba9b80a",
+    "post": "5f6b7f4e55265e6e",
+    "champion": "Toronto",
+    "rec": "848c9b19752217d6",
+    "poll": "faecdf82a70741b7",
+    "heis": "fc61ba1ef26eaecc",
+    "history": "a8b0669c37569c08",
+    "universe": "f7148e6f2ed226fa",
+    "screens": "dc0b851fc80e38bd"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "ddea645c52997b49",
-    "post": "485630c3285b86e2",
+    "games": "077d2112e785a930",
+    "post": "fc5571651f238e66",
     "champion": "Calgary",
-    "rec": "0821186290baa32f",
-    "poll": "ce192d6ab471baa0",
-    "heis": "3736f327dd14c2f7",
-    "history": "3bbd33116075645d",
-    "universe": "519f6fc70eea2c3e",
-    "screens": "a52d2dd36d56f95d"
+    "rec": "798d7879cd732773",
+    "poll": "5ec6ae6965d82c1c",
+    "heis": "e81b20c0addeab8d",
+    "history": "4232e5c8e35a4ed0",
+    "universe": "2544d578a9729cbc",
+    "screens": "1510078d058fb24d"
    },
    {
     "year": 2027,
-    "games": "dff86dcaa54b6a97",
-    "post": "737093357eb8a465",
-    "champion": "Vegas",
-    "rec": "fcfb85d3934b7007",
-    "poll": "4843de1a770205f9",
-    "heis": "9cf823451da811f1",
-    "history": "fd614c26996f05b2",
-    "universe": "027281bd12ca7386",
-    "screens": "0949d9f1977a0118"
+    "games": "a5a5331cdd291ff7",
+    "post": "8bb32a760e9a34b8",
+    "champion": "Carolina",
+    "rec": "fb0e1e95a3102edf",
+    "poll": "cf3cbf240344ccc6",
+    "heis": "58c3067d6a9a6dd3",
+    "history": "f61e35a53b2daccf",
+    "universe": "715c2c90d815d688",
+    "screens": "5873e245ca20ce46"
    }
   ],
   "schedules#60": [

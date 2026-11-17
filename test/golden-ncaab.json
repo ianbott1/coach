@@ -1,5 +1,5 @@
 {
- "fp": "356ac22bb681bffd",
+ "fp": "edced14d722d516c",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -495,6 +495,11 @@
    "fp": "356ac22bb681bffd",
    "from": "ab795602f0b8e23e",
    "note": "Round 80: engine number 8 in the universe (the one-season dumps differ in the universe only); clip changes draw nothing"
+  },
+  {
+   "fp": "edced14d722d516c",
+   "from": "356ac22bb681bffd",
+   "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
   }
  ],
  "result": {
@@ -508,7 +513,7 @@
     "poll": "5e83e3ec28f66ef4",
     "heis": "2cf4aebe2d39055b",
     "history": "259c3e0fa871b237",
-    "universe": "94def3669f23ab14",
+    "universe": "e7b3539260d2161b",
     "screens": "97cdf24b98571c93"
    },
    {
@@ -520,7 +525,7 @@
     "poll": "f465e142cb52b139",
     "heis": "c8f41de2dcb0a4f7",
     "history": "33abdbbb920cb934",
-    "universe": "7946907935761b36",
+    "universe": "a4626ca19b2e11ea",
     "screens": "0bd6c146b107b0b5"
    }
   ],
@@ -534,7 +539,7 @@
     "poll": "535bf9b537c8c7a6",
     "heis": "e21cc39fcc2f01f4",
     "history": "4a2a918f2781b39e",
-    "universe": "03619eac5a2f871b",
+    "universe": "e64d52989679a1e2",
     "screens": "2ba3e310c9e8b3c2"
    },
    {
@@ -546,7 +551,7 @@
     "poll": "6ac009bf5476fcf9",
     "heis": "2118334fedce7383",
     "history": "1f96c5d61306b950",
-    "universe": "79ddea23421841fa",
+    "universe": "7a413d26c77ae60d",
     "screens": "ee190dcd7e8e1748"
    }
   ],
@@ -560,7 +565,7 @@
     "poll": "36c47d6e24ac2fca",
     "heis": "7f76a7dc93990fa1",
     "history": "1cbe9e195694e5f6",
-    "universe": "2ec1fb527ee8e7de",
+    "universe": "8c213e974eae9741",
     "screens": "761c9b97d28ac29a"
    },
    {
@@ -572,7 +577,7 @@
     "poll": "d0d46c3c2c34a4fe",
     "heis": "a79563ff5420807b",
     "history": "70cf924bb5cf00c3",
-    "universe": "6f4374f6d425940a",
+    "universe": "eafded671ac6b5a2",
     "screens": "9172cc716c6a1fef"
    }
   ],
