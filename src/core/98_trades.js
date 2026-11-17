@@ -130,6 +130,7 @@ function tdDo(d){
   TD_UI={done:x}; save(); render() }
 // at the season's end, into the universe's rosters (next season's): the same two men, found by name
 function tdCarry(u){
+  if(u._tdc===SEA.year)return; u._tdc=SEA.year;   // once a season (round 85: at the season's end, on a reload, at the summer's commit)
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;

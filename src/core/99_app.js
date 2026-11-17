@@ -510,7 +510,12 @@ function rebuild(){
   SEA.plan=plan;
   replayCarousel();
   auditTrophies();
+  carryTrades();   // round 85: a reload after the season's end, the same
 }
+// the season's trades into next season's rosters, once, as soon as the season is over (round 85: before, at the summer's
+// commit only, so the offseason's screens showed the man you'd traded away on your re-sign list, and a re-sign choice
+// kept by slot fell on the man who'd taken his place)
+function carryTrades(){ if(SEA&&SEA.phase==="done"&&typeof tdCarry==="function")tdCarry(U) }
 /* Opening the offseason runs the league's coaching carousel, and it changes the league itself:
    head coaches hired and fired, coordinators hired away, every coach's record. A reload rebuilt
    the league from the season's start without it, so a coordinator hired away was still on your
@@ -969,6 +974,7 @@ function doAdvance(){
 
 function openOffseason(){
   if(SEA.phase!=="done")return;
+  carryTrades();   // round 85: the season's trades are in next season's rosters before any offseason screen reads them
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
   if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
   const my=S.myTeam, C=S.career;
