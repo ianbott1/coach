@@ -1,5 +1,5 @@
 {
- "fp": "d4d4bca8141924cf",
+ "fp": "dd30fb5d4448a513",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -125,6 +125,11 @@
    "fp": "d4d4bca8141924cf",
    "from": "9ecb5f7f3d4d86f0",
    "note": "Round 80: engine number 8 in the universe (the one-season dumps differ in the universe only); clip changes draw nothing"
+  },
+  {
+   "fp": "dd30fb5d4448a513",
+   "from": "d4d4bca8141924cf",
+   "note": "round 83: the Trades tab on the team page (screens only; every other field equal to round 82, checked field by field and line by line)"
   }
  ],
  "result": {
@@ -139,7 +144,7 @@
     "heis": "f1fe02d2875be662",
     "history": "4e46de7d8f091498",
     "universe": "1b268e0988a77935",
-    "screens": "61edbe6701d37a7f"
+    "screens": "d2630a25d79e58f4"
    },
    {
     "year": 2027,
@@ -151,7 +156,7 @@
     "heis": "e4ea92f1e796e3f0",
     "history": "919e508517fbd2e7",
     "universe": "fa8652f997fd83d3",
-    "screens": "817cb59aafb3c6df"
+    "screens": "9e9b8003750f5bb6"
    }
   ],
   "Colorado#777": [
@@ -165,7 +170,7 @@
     "heis": "e141371eeedc6dad",
     "history": "7588a3f9ce4d9c23",
     "universe": "de93d8cbbbdfc9f6",
-    "screens": "6cf3970626e6fa94"
+    "screens": "eb700946fce0f157"
    },
    {
     "year": 2027,
@@ -177,7 +182,7 @@
     "heis": "4b7071637130b79f",
     "history": "0dc2317e658af3db",
     "universe": "770383327b891c4a",
-    "screens": "9810e34ad039634e"
+    "screens": "dfbe86d69de42886"
    }
   ],
   "schedules#60": [

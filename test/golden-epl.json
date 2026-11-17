@@ -1,5 +1,5 @@
 {
- "fp": "81c7d4d8cf828987",
+ "fp": "70fadd5849f0482b",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -460,6 +460,11 @@
    "fp": "81c7d4d8cf828987",
    "from": "e2b9e5694f054b39",
    "note": "Round 81: screens only (the monthly awards card on the home screen); results identical (one-season dump: screens only)"
+  },
+  {
+   "fp": "70fadd5849f0482b",
+   "from": "81c7d4d8cf828987",
+   "note": "round 83: the Trades tab on the team page (screens only; every other field equal to round 82, checked field by field and line by line)"
   }
  ],
  "result": {
@@ -474,7 +479,7 @@
     "heis": "95efb282beb2b16c",
     "history": "9c83b384bb87e07e",
     "universe": "d3aed31c414d25d6",
-    "screens": "5212a724ae0ce973"
+    "screens": "14916d849a588347"
    },
    {
     "year": 2027,
@@ -486,7 +491,7 @@
     "heis": "d63de9aad16e90be",
     "history": "0b8d14311862a525",
     "universe": "d0469e0d58debfe1",
-    "screens": "bfb0208b6da15a91"
+    "screens": "72b60234e5a912ed"
    }
   ],
   "Wrexham#777": [
@@ -500,7 +505,7 @@
     "heis": "1c65ec2264b022a0",
     "history": "ed5265d673f940fb",
     "universe": "dcae71857f7fcbc5",
-    "screens": "e0adb883174cdfc2"
+    "screens": "9b043dc723bd96f8"
    },
    {
     "year": 2027,
@@ -512,7 +517,7 @@
     "heis": "6c62922cdeac8984",
     "history": "b9b742b66f61704b",
     "universe": "64a3fc8f20e7127e",
-    "screens": "3463765c456ae549"
+    "screens": "bfe4648edd942730"
    }
   ],
   "schedules#60": [
