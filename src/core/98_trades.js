@@ -149,7 +149,7 @@ function tdTwoRows(L,my){ if(!L.length)return "";
     <div class="psub">for ${esc(d.t)}${/s$/.test(d.t)?"'":"'s"} ${tdPl(d.t,d.get,d.b)} and ${tdPl(d.t,d.get2,d.b2)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${tdGo(d)}">Trade</button></div>`).join("") }
 function tradesView(){
   const my=S.myTeam, st=tdState(), R=SEA.roster[my];
-  let h=`<div class="note">${esc(st.why)} One of yours for one of theirs at the same position, or two for two (a pair at each of two positions: a guard and a forward for a forward and a guard, or two good men for a star and a throw-in). A club answers from the deal: how much it helps them now and in two years, weighed by where they stand (a contender wants now, a club out of it wants later), under the cap.</div>`;
+  let h=`<div class="note">${esc(st.why)} Up to ${TD_MAX} trades a season: one for one at the same position, or two for two (a pair at each of two positions). A club weighs now against two years ahead by where it stands, under the cap, and you always give a little more than you get.</div>`;
   const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
   if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${nm2(x.gn,x.gn2)} to ${esc(x.t)}, ${nm2(x.qn,x.qn2)} to you.</div>` }
   const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${nm2(x.gn,x.gn2)} to ${esc(x.t)} for ${nm2(x.qn,x.qn2)}</div>`).join("")}</div>`;
