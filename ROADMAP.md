@@ -96,9 +96,14 @@ on numbers they can't trust and a sport they read rather than watch.
 - Engine 9: the computer's clubs trade with each other on deadline day (buyers gain 0.5 to 2.5 points of win share after;
   the standings' spread unchanged). Fixed: the offseason's screens now see the season's trades; a box score keeps a man
   traded to the club he'd played.
-- Next: draft picks in deals (a round of its own: draft night assumes one pick a round). Then FM-style attributes, from a
-  written design agreed first.
 - Open: baseball's HR leader under 40 in a quarter of seasons (MLB's overall leader rarely is): power a touch low.
+
+## Round 86 (done)
+- First-round picks in deals, with a man for a man, in the four drafting games; a club can hold two first-rounders or
+  none; draft night, the mock and the lottery line follow the pick. Fixed: the mock crashed with no first-rounder.
+- Next: FM-style attributes, from a written design agreed first.
+- Open dials: all-in trading strength (TD_MAX, TD_PROP); picks only as a sweetener (no pick-for-pick or pick-alone deals,
+  no later rounds, no computer-to-computer pick deals: those would be engine code).
 
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);

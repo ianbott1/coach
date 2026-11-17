@@ -358,6 +358,20 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 86: first-round picks in deals (football, basketball, hockey, baseball; soccer has no draft).
+- A pick goes with a man: their pick with their man (tdShopPick), or yours with yours (tdAskPick); tdDeal(...,pk) with
+  pk 'mine' or 'theirs'. Valued by each club's own lights as the prospect the pick should bring (the class drawn on a
+  copy, tdClassSorted, cached; the slot from today's win% rank, tdPickSlot) placed in that club's roster two years on
+  (tdPickVal, in the future side of the sum). The fairness rule and premiums are unchanged. One pick a season per club:
+  next summer's first-rounder (tdPickHeld).
+- Ownership: tdCarry writes u.pickOwn={y,own:{origClub:holder}} from the season's trades. One reading for everything
+  (core 91_draftnight.js): pickOwnMap, dnOwnerAt(order,u,overall), dnPicksOf(t). The draft, draft night (yours on the
+  clock, the teams between), the mock, the lottery line ("your own pick lands at Nth, for X") and "Your picks: #22, #23,
+  #52" all read it. With no pick traded the map is empty and everything reduces to the old order (goldens unchanged).
+- Fixed on the way: the mock crashed when your first pick was in round 2 (it took the whole order as the teams ahead).
+- test/picks.js (quick tier): basketball and football, both directions: the holder makes the pick, the club without one
+  skips to round 2, the draft runs out, a reload drafts the same, the summer commits.
+
 Round 85: engine 9, the computer's clubs trade on deadline day; trades reach the offseason's screens; picks deferred.
 - Engine 9 (core 98_trades_cpu.js, Season.advance before deadline day's games): the top 30% of clubs buy now from the
   bottom 35% (soccer within each division): one man for one at the same position, when both come out ahead by their own
