@@ -1,5 +1,5 @@
 {
- "fp": "ecdbbe3b478407ef",
+ "fp": "c33b40e9f4cd035e",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -20,21 +20,26 @@
    "fp": "ecdbbe3b478407ef",
    "from": "67facf34e5e150e0",
    "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
+  },
+  {
+   "fp": "c33b40e9f4cd035e",
+   "from": "ecdbbe3b478407ef",
+   "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "62ee10096ce74575",
-    "post": "dff1ed81ff99c860",
+    "games": "758b6b6c9906414a",
+    "post": "91eb524b2df827f9",
     "champion": "Manchester City",
-    "rec": "16f1943b22f7d95b",
-    "poll": "7b7f3d8727aeca30",
-    "heis": "95efb282beb2b16c",
-    "history": "9c83b384bb87e07e",
-    "universe": "d3aed31c414d25d6",
-    "screens": "14916d849a588347"
+    "rec": "06614fa5bf4b13db",
+    "poll": "9098d255c69f2b4a",
+    "heis": "6c4fdf4a019d15b8",
+    "history": "555984f42054e524",
+    "universe": "85d2577e17983bf3",
+    "screens": "92891ec79767ee40"
    }
   ]
  }

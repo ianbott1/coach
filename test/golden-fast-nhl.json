@@ -1,5 +1,5 @@
 {
- "fp": "1958e9fb162d95ce",
+ "fp": "c1000d5773f7c7f5",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -20,21 +20,26 @@
    "fp": "1958e9fb162d95ce",
    "from": "3c8ffacaab2ae3a1",
    "note": "round 84: a trade offer card on the home screen near the deadline (screens only)"
+  },
+  {
+   "fp": "c1000d5773f7c7f5",
+   "from": "1958e9fb162d95ce",
+   "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "93ec3829af2af484",
-    "post": "069f03be48f6481c",
-    "champion": "Los Angeles",
-    "rec": "d601cb8345b59261",
-    "poll": "e3747dc9606f9bbb",
-    "heis": "d51c9d0a44f4d257",
-    "history": "bd9b6fef6652f8a2",
-    "universe": "86f3305b0f7ac9fa",
-    "screens": "5b25fd402e46f223"
+    "games": "2447228c2ca38269",
+    "post": "ba79cfb5df3b35a1",
+    "champion": "Vegas",
+    "rec": "852ea3252f2380c6",
+    "poll": "9c900e0c49cec45e",
+    "heis": "c48530eb33a8c90d",
+    "history": "f63d5527dd12ad02",
+    "universe": "df94ba9b40b8dcfb",
+    "screens": "570dcab259b6a674"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "5e5c73f498661e6b",
+ "fp": "b1b354352f3c6999",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -15,21 +15,26 @@
    "fp": "5e5c73f498661e6b",
    "from": "0c123f2dcf352e6e",
    "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
+  },
+  {
+   "fp": "b1b354352f3c6999",
+   "from": "5e5c73f498661e6b",
+   "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e0e086261ba22831",
-    "post": "a57be48f38981355",
-    "champion": "Boston",
-    "rec": "7cf56586281e6707",
-    "poll": "c59e0f03e33ee607",
-    "heis": "b0d3643fe51f45b0",
-    "history": "11e26240f996104f",
-    "universe": "cca8a49595379c8d",
-    "screens": "b6cb86fb4b48cf9f"
+    "games": "2a5f58ba58d191ec",
+    "post": "025fc57f91bd26f3",
+    "champion": "Detroit",
+    "rec": "1d501d4a38ca1d37",
+    "poll": "35bb34ecb75f8e39",
+    "heis": "e40f57ce863b1ebd",
+    "history": "8aafa685f87e75a0",
+    "universe": "591e3c0c9b3a6e01",
+    "screens": "823ce97aabe61563"
    }
   ]
  }

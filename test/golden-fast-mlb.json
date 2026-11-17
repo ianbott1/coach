@@ -1,5 +1,5 @@
 {
- "fp": "beae8ab12b014ab5",
+ "fp": "15ca5ce4eb83824e",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -15,21 +15,26 @@
    "fp": "beae8ab12b014ab5",
    "from": "aab3fe8677adbf47",
    "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
+  },
+  {
+   "fp": "15ca5ce4eb83824e",
+   "from": "beae8ab12b014ab5",
+   "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "da304814c70e495b",
-    "post": "ff01c5adba769c50",
-    "champion": "Cleveland",
-    "rec": "1debeb7fe763363c",
-    "poll": "b9cf44c8b62b3829",
-    "heis": "f1fe02d2875be662",
-    "history": "4e46de7d8f091498",
-    "universe": "1b268e0988a77935",
-    "screens": "d2630a25d79e58f4"
+    "games": "59667198203a6f3e",
+    "post": "995ab55f6d99032d",
+    "champion": "LA Dodgers",
+    "rec": "f6653acd04e32d03",
+    "poll": "19ee0db409aab6a8",
+    "heis": "3b415ccc1701eee0",
+    "history": "ab88e4a8cda02b56",
+    "universe": "d3671adcc1c7c9ab",
+    "screens": "a4cf6fe9f2c3f3e9"
    }
   ]
  }

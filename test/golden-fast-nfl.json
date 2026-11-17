@@ -1,5 +1,5 @@
 {
- "fp": "dfd03bafe79602dd",
+ "fp": "432786a6c46fc011",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -15,21 +15,26 @@
    "fp": "dfd03bafe79602dd",
    "from": "b66a174b96a41d33",
    "note": "round 83: the Trades tab on the team page (screens only, checked field by field and line by line)"
+  },
+  {
+   "fp": "432786a6c46fc011",
+   "from": "dfd03bafe79602dd",
+   "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "6621282988517221",
-    "post": "6e76643a18e0c92b",
+    "games": "a6b82e6e0d6c5280",
+    "post": "c5eaab8dab942b6f",
     "champion": "Philadelphia",
-    "rec": "4082031d9f032e06",
-    "poll": "7ffc5c0c277ca1a5",
-    "heis": "50ab316ec737fb3c",
-    "history": "e9a9ed20826fbf57",
-    "universe": "521a517f0cf43a89",
-    "screens": "d2c3dd6ba960b2f8"
+    "rec": "f1c7678087d81bd6",
+    "poll": "afe47965d5288bb6",
+    "heis": "6f51d62e0cdc6d73",
+    "history": "b530b5523cc94ea4",
+    "universe": "79ebcf457a68203a",
+    "screens": "7c6f32bad65736d5"
    }
   ]
  }
