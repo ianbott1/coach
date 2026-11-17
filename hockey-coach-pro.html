@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="a74d04d";
+<script>const BUILD_ID="6f6e133";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1577,12 +1577,13 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=8;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=9;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
                                       // 7: round 79, baseball: a pinch hitter can't pinch-hit twice
                                       // 8: round 80, football: a drive after a strategy call starts where it stood
+                                      // 9: round 85, the computer's clubs trade with each other on deadline day (core 98_trades_cpu)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -4390,6 +4391,7 @@ class Season{
   advance(){
     this.prevRank=this.rankMap();
     const p=this.phase;
+    if(p==="week"&&!this.half&&ENGINE_V>=9&&typeof cpuDeadline==="function")cpuDeadline(this);   // round 85: deadline day, before its games
     // a cup week (LEAGUE.splitCup) is two advances on one step: the league
     // round, then the midweek cup ties, each played and shown on its own
     if(p==="week"&&LEAGUE.splitCup){
@@ -6780,7 +6782,9 @@ function boxLines(g,step,all){
   if(typeof ENGINE_V==="undefined"||ENGINE_V<4||step===undefined||step===null||typeof SEA==="undefined"||!SEA||!SEA.roster)return null;
   const out={home:[],away:[]}, w=glStride();
   ["home","away"].forEach(sd=>{ const tm=g[sd], oi=NAMES.indexOf(sd==="home"?g.away:g.home), hf=sd==="home"?1:0;
-    const pool=all?NAMES.filter(t=>t===tm||t!==(sd==="home"?g.away:g.home)).flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
+    // every roster, the opponent's too (round 85: a man traded to the club he'd played against left the box score of that
+    // game); his row's opponent and ground already say which side he was on
+    const pool=all?NAMES.flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
     pool.forEach(([p,i])=>{ if(!p||!p.gl)return;
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
         // (round 82: and the score: a cup week can hold a league game and a cup tie with the same club at the same ground,
@@ -7835,10 +7839,11 @@ function tdState(){
 }
 const tdGrp=i=>POS[i%POS.length].p.replace(/\d+$/,"");      // baseball's SP, SP2 and SP3 are all starters
 function tdHurt(t,i){ return SEA.talent.active(t).some(e=>e.idx===i) }
-// a man whose deal ends this season counts for 40% of himself in two years (he may re-sign; he may not: a rental)
+// a man whose deal ends this season counts for 40% of himself in two years (he may re-sign; he may not: a rental); 80%
+// at 26 or younger (round 85: a rebuilding club had sold a 63-rated 23-year-old for a 53-rated 31-year-old)
 function tdFut(p){ const a=p.age||27, young=Math.max(0,27-a)/5;
   const f=Math.max(30,p.r+(p.pot!=null&&p.pot>p.r?(p.pot-p.r)*0.5*young:0)-Math.max(0,a-29)*1.5);
-  return p.k&&p.k.yrs<=1?f*0.4:f }
+  return p.k&&p.k.yrs<=1?f*(a<=26?0.8:0.4):f }   // a young man re-signs more often than not (round 85)
 // a club's own reading of a roster: the starters, and a little for the man behind each (in case)
 function tdVal(R,fut){ let s=0; POS.forEach((P,i)=>{ const v=x=>x?(fut?tdFut(x):x.r):0, x=v(R[i]), y=v(R[BK(i)]); s+=P.w*(0.88*Math.max(x,y)+0.12*Math.min(x,y)) }); return ratingToElo(s) }   // the better of the two starts (in two years too)
 // where a club stands: 1 is a contender, 0 out of it (the share of the season gone tempers it early)
@@ -7923,7 +7928,10 @@ function tdDo(d){
   TD_UI={done:x}; save(); render() }
 // at the season's end, into the universe's rosters (next season's): the same two men, found by name
 function tdCarry(u){
+  // once a season (round 85: at the season's end, on a reload, at the summer's commit); kept off the save (not enumerable)
+  if(u._tdc===SEA.year)return; Object.defineProperty(u,"_tdc",{value:SEA.year,writable:true,configurable:true,enumerable:false});
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
+  ((SEA&&SEA.cpuTr)||[]).forEach(x=>(L[x.step]=L[x.step]||[]).push(x));   // and the computer's clubs' (round 85), after yours on deadline day
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
@@ -7945,6 +7953,7 @@ function tradesView(){
   let h=`<div class="note">${esc(st.why)} Up to ${TD_MAX} trades a season: one for one at the same position, or two for two (a pair at each of two positions). A club weighs now against two years ahead by where it stands, under the cap, and you always give a little more than you get.</div>`;
   const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
   if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${nm2(x.gn,x.gn2)} to ${esc(x.t)}, ${nm2(x.qn,x.qn2)} to you.</div>` }
+  if(typeof cpuTradesHTML==="function")h+=cpuTradesHTML();   // round 85: the computer's clubs' deadline deals
   const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${nm2(x.gn,x.gn2)} to ${esc(x.t)} for ${nm2(x.qn,x.qn2)}</div>`).join("")}</div>`;
   if(!st.open)return h;
   const cap=LEAGUE.taxLine||LEAGUE.cap; if(cap&&R.some(p=>p&&p.k))h+=`<div class="note">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;
@@ -8010,6 +8019,58 @@ function tdOfferCard(){
     <div style="margin:6px 0">${esc(d.t)} want ${tdPl(my,d.give,d.a)}. They'd give ${tdPl(d.t,d.get,d.b)}.</div>
     <div class="psub" style="margin-bottom:6px">Your team: ${tdLine(d)}</div>
     <button class="promo" data-tdgo="${esc(d.t)}|${d.a}|${d.b}">Trade</button> <button class="promo" data-tdno="${k}">Not now</button></div>` }
+/* round 85 (engine 9): the computer's clubs trade with each other on deadline day. The clubs at the top buy now from
+   the clubs at the bottom: one man for one at the same position, the buyer's younger or cheaper man for the seller's
+   better one now, when both come out ahead by their own lights (the buyer leans to now, the seller to later). Each club
+   makes one deal at most; at most one deal for every eight clubs. Your clubs (and every coach's in a shared seat) take no
+   part. Nothing is drawn: the deals come from the rosters and the records on that day, so a reload makes them again.
+
+   This is engine code: a season on engine 9 replays these deals on a reload, so the rules here are frozen (the CT_*
+   values and the ct* readings below are their own, apart from the user's trades, which can be tuned without changing a
+   computer deal). Changing them needs an engine bump. */
+const CT_BUY=0.85, CT_SELL=0.25, CT_PREM=2, CT_PROP=1, CT_PER=8;
+function ctFut(p){ const a=p.age||27, young=Math.max(0,27-a)/5;
+  const f=Math.max(30,p.r+(p.pot!=null&&p.pot>p.r?(p.pot-p.r)*0.5*young:0)-Math.max(0,a-29)*1.5);
+  return p.k&&p.k.yrs<=1?f*(a<=26?0.8:0.4):f }   // a young man re-signs more often than not (round 85)
+function ctVal(R,fut){ let s=0; POS.forEach((P,i)=>{ const v=x=>x?(fut?ctFut(x):x.r):0, x=v(R[i]), y=v(R[BK(i)]); s+=P.w*(0.88*Math.max(x,y)+0.12*Math.min(x,y)) }); return ratingToElo(s) }
+function ctAfter(R,i,p){ const X=R.slice(); X[i]=p; const s=i%POS.length, b=BK(s); if(X[s]&&X[b]&&X[b].r>X[s].r){ const t=X[s]; X[s]=X[b]; X[b]=t } return X }
+function ctPay(R){ return R.reduce((s,p)=>s+(p&&p.k&&p.k.sal||0),0) }
+const ctGrp=i=>POS[i%POS.length].p.replace(/\d+$/,"");
+// deadline day: the last day trades are open (the league's deadline, or soccer's January window)
+function ctDeadline(){ const T=LEAGUE.trade, D=LEAGUE.dates||[]; if(!T)return -1; let last=-1;
+  const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], m0=M.indexOf(String(D[0]||"Jan 1").split(" ")[0]);
+  const day=s=>{ const [m,d]=String(s||"").split(" "); return ((M.indexOf(m)-m0+12)%12)*31+(+d||0) };
+  for(let k=0;k<D.length;k++){ const m=String(D[k]).split(" ")[0]; if(T.window?T.window.indexOf(m)>=0:day(D[k])<=day(T.by))last=k }
+  return last }
+function ctScore(sea,A,give,i,get,w){   // club A gives the man at slot i, gets "get": what it makes of that
+  const R=sea.roster[A], R2=ctAfter(R,i,get), dNow=ctVal(R2,false)-ctVal(R,false);
+  return {s:w*dNow+(1-w)*(ctVal(R2,true)-ctVal(R,true))-CT_PROP*Math.max(0,-dNow),R2:R2} }
+function cpuDeadline(sea){
+  if(!LEAGUE.trade||!sea.roster||sea._ctDone===sea.year)return;
+  if(sea.step!==ctDeadline())return; sea._ctDone=sea.year;
+  const humans=sea.humans||[], cap=LEAGUE.taxLine||LEAGUE.cap, rec=sea.rec||{};
+  const pct=t=>{ const r=rec[t]||[0,0]; return ((r[0]||0)+5)/((r[0]||0)+(r[1]||0)+10) };
+  const hurt=(t,i)=>sea.talent.active(t).some(e=>e.idx===i);
+  const groups={}; NAMES.forEach(t=>{ const g=LEAGUE.trade.sameDiv?CONF[t]:"all"; (groups[g]=groups[g]||[]).push(t) });
+  const out=[], used={}, most=Math.max(1,Math.round(NAMES.length/CT_PER));
+  Object.keys(groups).sort().forEach(g=>{
+    const clubs=groups[g].filter(t=>humans.indexOf(t)<0&&sea.roster[t]).sort((a,b)=>pct(b)-pct(a)||(a<b?-1:1)), n=clubs.length;
+    const buyers=clubs.slice(0,Math.round(n*0.3)), sellers=clubs.slice(n-Math.round(n*0.35));
+    buyers.forEach(B=>{ if(out.length>=most||used[B])return; let best=null;
+      sellers.forEach(Sl=>{ if(used[Sl]||Sl===B)return; const RB=sea.roster[B], RS=sea.roster[Sl];
+        RB.forEach((p,a)=>{ if(!p||hurt(B,a))return; RS.forEach((q,b)=>{ if(!q||ctGrp(a)!==ctGrp(b)||hurt(Sl,b))return;
+          const xb=ctScore(sea,B,p,a,q,CT_BUY); if(xb.s<CT_PREM)return; const xs=ctScore(sea,Sl,q,b,p,CT_SELL); if(xs.s<CT_PREM)return;
+          if(cap&&((ctPay(xb.R2)>cap&&ctPay(xb.R2)>ctPay(RB))||(ctPay(xs.R2)>cap&&ctPay(xs.R2)>ctPay(RS))))return;
+          const v=xb.s+xs.s; if(!best||v>best.v)best={v:v,B:B,Sl:Sl,a:a,b:b,gn:p.n,qn:q.n} }) }) });
+      if(best){ used[best.B]=used[best.Sl]=1; const x={my:best.B,t:best.Sl,a:best.a,b:best.b,gn:best.gn,qn:best.qn,y:sea.year,d:(LEAGUE.dates||[])[sea.step]||"",cpu:1,step:sea.step};
+        if(tdApply(sea,x))out.push(x) } }) });
+  sea.cpuTr=out }
+// the deals of the day, for the news (a buyer's new man, his old club)
+function cpuTradesHTML(){ const L=((SEA&&SEA.cpuTr)||[]).filter(x=>!LEAGUE.trade.sameDiv||CONF[x.my]===CONF[S.myTeam]); if(!L.length)return "";   // soccer: your division's
+  return `<div class="grouphead">Around the league: deadline deals</div><div class="card" style="padding:6px 12px">`+L.map(x=>{ const g=SEA.roster[x.my].find(p=>p&&p.n===x.qn), q=SEA.roster[x.t].find(p=>p&&p.n===x.gn);
+    return `<div style="margin:4px 0">${esc(x.my)} get ${g?plLink(x.my,g.n):esc(x.qn)}${g?` <span style="color:var(--muted)">${esc(POS[SEA.roster[x.my].indexOf(g)%POS.length].p)} ${g.r}</span>`:""} from ${esc(x.t)} for ${q?plLink(x.t,q.n):esc(x.gn)}${q?` <span style="color:var(--muted)">${q.r}, ${q.age||""}</span>`:""}</div>` }).join("")+`</div>` }
+// on the home screen for a while after deadline day (three weeks of football, a week of the daily leagues)
+function cpuNewsCard(){ const L=(SEA&&SEA.cpuTr)||[]; if(!L.length||SEA.phase!=="week")return ""; const k=SEA.step-L[0].step; if(k<1||k>(LEAGUE.daily?7:3))return ""; return cpuTradesHTML() }
 /* ============ state ============ */
 /* Each game keeps its own save slots. All three games live on one website,
    so they share the browser's storage: the slots used to be shared too, and a
@@ -8492,6 +8553,7 @@ function rebuild(){
   U.userTeam=S.myTeam;
   if(S.schedLock&&S.schedLock.year===U.year)U.schedLock=S.schedLock;
   SEA=new Season(U,S.seasonSeed);
+  SEA.humans=isHotSeat()?S.coaches.map(c=>c.myTeam):[S.myTeam];   // round 85: clubs the computer's deadline deals leave alone
   if(SEA._lock&&!(S.schedLock&&S.schedLock.year===U.year)){ S.schedLock=SEA._lock; lockNew=true }   // kept from now on
   delete U.schedLock;
   SEA.userTeam=S.myTeam;
@@ -8522,7 +8584,12 @@ function rebuild(){
   SEA.plan=plan;
   replayCarousel();
   auditTrophies();
+  carryTrades();   // round 85: a reload after the season's end, the same
 }
+// the season's trades into next season's rosters, once, as soon as the season is over (round 85: before, at the summer's
+// commit only, so the offseason's screens showed the man you'd traded away on your re-sign list, and a re-sign choice
+// kept by slot fell on the man who'd taken his place)
+function carryTrades(){ if(SEA&&SEA.phase==="done"&&typeof tdCarry==="function")tdCarry(U) }
 /* Opening the offseason runs the league's coaching carousel, and it changes the league itself:
    head coaches hired and fired, coordinators hired away, every coach's record. A reload rebuilt
    the league from the season's start without it, so a coordinator hired away was still on your
@@ -8981,6 +9048,7 @@ function doAdvance(){
 
 function openOffseason(){
   if(SEA.phase!=="done")return;
+  carryTrades();   // round 85: the season's trades are in next season's rosters before any offseason screen reads them
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
   if(S.off&&S.off.year===SEA.year)return;      // already booked this coach
   const my=S.myTeam, C=S.career;
@@ -10131,6 +10199,7 @@ function nextUpHTML(my,rk){
   // the race, late in the season (round 57, baseball: magic numbers and the scoreboard; both testers lost interest by September)
   if(LEAGUE.ui.raceCard&&SEA.phase==="week")try{ h+=LEAGUE.ui.raceCard(my)||"" }catch(e){}
   if(typeof tdOfferCard==="function"&&SEA.phase==="week")try{ h+=tdOfferCard() }catch(e){}   // round 84: a trade offer near the deadline
+  if(typeof cpuNewsCard==="function")try{ h+=cpuNewsCard() }catch(e){}   // round 85: deadline deals around the league
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
   // the days you're off, so the card shows your next game, not an open date
