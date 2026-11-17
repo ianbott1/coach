@@ -1,5 +1,5 @@
 {
- "fp": "b1f85864d07efd96",
+ "fp": "d87b284062ad24fd",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -540,6 +540,11 @@
    "fp": "b1f85864d07efd96",
    "from": "96d616139350217f",
    "note": "round 83: the Trades tab on the team page (screens only; every other field equal to round 82, checked field by field and line by line)"
+  },
+  {
+   "fp": "d87b284062ad24fd",
+   "from": "b1f85864d07efd96",
+   "note": "round 84: the trade offer card near the deadline (screens only; every other field equal to round 83)"
   }
  ],
  "result": {
@@ -654,7 +659,7 @@
     "heis": "e36ae416173ff87c",
     "history": "50202481e4da8182",
     "universe": "106035ec701bf053",
-    "screens": "6d8f7a4478dd8988"
+    "screens": "257d3738d495b4ed"
    },
    {
     "year": 2027,
@@ -666,7 +671,7 @@
     "heis": "c07c744f65cb45cf",
     "history": "f8c7645ed99660f5",
     "universe": "41d86a571469ef20",
-    "screens": "af02eb5991ef2548"
+    "screens": "79c3ffe1d97bf453"
    },
    {
     "year": 2028,
@@ -678,7 +683,7 @@
     "heis": "c43a4b34bbeac895",
     "history": "63ecb4300e0a2b9b",
     "universe": "2d443202fa79a298",
-    "screens": "7c5d4edee39fe891"
+    "screens": "411dce711ff6b3ab"
    }
   ],
   "NY Giants#31337": [
@@ -692,7 +697,7 @@
     "heis": "694c401564ca068c",
     "history": "8a6eb7a67e9b4ba0",
     "universe": "7a85d2ccc973dab8",
-    "screens": "7178cc4c63e17bf5"
+    "screens": "4bbfb644ff6d9a2b"
    },
    {
     "year": 2027,
@@ -704,7 +709,7 @@
     "heis": "d6fb366481d1dd23",
     "history": "84229155c1763a5f",
     "universe": "8cd771b2ee1a1765",
-    "screens": "d64702bdb283ab61"
+    "screens": "4f031e8983a5176d"
    },
    {
     "year": 2028,

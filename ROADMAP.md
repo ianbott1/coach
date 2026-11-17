@@ -87,8 +87,12 @@ on numbers they can't trust and a sport they read rather than watch.
 - Trades in the season, five pro games: shop a player or ask about one of theirs; one for one at the same position;
   deadlines and soccer's January window; the cap; a club never gives more than you give, now and later together.
 - Fixed: a promoted or re-roled man's season was left out of his career (shipped in round 82 for the staff roles).
-- Next (round 84): two-for-one and cross-position deals, player plus pick where the sport has picks, offers coming to you
-  near the deadline, the computer's clubs trading with each other (a new engine version), shared-seat careers.
+
+## Round 84 (done)
+- Offers that come to you near the deadline; two for two (cross-position and consolidation); shared seats replay every
+  coach's moves (trades on there); all-in buying priced up (a premium for big deals, three trades a season).
+- Next (round 85): the computer's clubs trading with each other at the deadline (engine 9), draft picks in deals.
+  Then FM-style attributes, from a written design agreed first.
 
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);

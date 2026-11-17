@@ -1,5 +1,5 @@
 {
- "fp": "dd30fb5d4448a513",
+ "fp": "cecea7022cbf31b3",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -130,6 +130,11 @@
    "fp": "dd30fb5d4448a513",
    "from": "d4d4bca8141924cf",
    "note": "round 83: the Trades tab on the team page (screens only; every other field equal to round 82, checked field by field and line by line)"
+  },
+  {
+   "fp": "cecea7022cbf31b3",
+   "from": "dd30fb5d4448a513",
+   "note": "round 84: the trade offer card near the deadline (screens only; every other field equal to round 83)"
   }
  ],
  "result": {
@@ -156,7 +161,7 @@
     "heis": "e4ea92f1e796e3f0",
     "history": "919e508517fbd2e7",
     "universe": "fa8652f997fd83d3",
-    "screens": "9e9b8003750f5bb6"
+    "screens": "ca924d6982d76878"
    }
   ],
   "Colorado#777": [
@@ -170,7 +175,7 @@
     "heis": "e141371eeedc6dad",
     "history": "7588a3f9ce4d9c23",
     "universe": "de93d8cbbbdfc9f6",
-    "screens": "eb700946fce0f157"
+    "screens": "e1c11bdeab7d67a6"
    },
    {
     "year": 2027,

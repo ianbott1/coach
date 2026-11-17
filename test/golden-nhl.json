@@ -1,5 +1,5 @@
 {
- "fp": "6d389009bc9b6d17",
+ "fp": "c5d4a2853df61118",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -480,6 +480,11 @@
    "fp": "6d389009bc9b6d17",
    "from": "1417645fc89929b9",
    "note": "round 83: the Trades tab on the team page (screens only; every other field equal to round 82, checked field by field and line by line)"
+  },
+  {
+   "fp": "c5d4a2853df61118",
+   "from": "6d389009bc9b6d17",
+   "note": "round 84: the trade offer card near the deadline (screens only; every other field equal to round 83)"
   }
  ],
  "result": {
@@ -494,7 +499,7 @@
     "heis": "d51c9d0a44f4d257",
     "history": "bd9b6fef6652f8a2",
     "universe": "86f3305b0f7ac9fa",
-    "screens": "1456d43dc0ff5a08"
+    "screens": "5b25fd402e46f223"
    },
    {
     "year": 2027,
@@ -506,7 +511,7 @@
     "heis": "d1fdb803b5057b06",
     "history": "22201acf6615b881",
     "universe": "d2dc21bd1b0c6253",
-    "screens": "5362d3c2e88fb031"
+    "screens": "fc95a925d835292b"
    }
   ],
   "Edmonton#777": [
@@ -520,7 +525,7 @@
     "heis": "3736f327dd14c2f7",
     "history": "3bbd33116075645d",
     "universe": "519f6fc70eea2c3e",
-    "screens": "8060200bf1ff3324"
+    "screens": "a52d2dd36d56f95d"
    },
    {
     "year": 2027,
@@ -532,7 +537,7 @@
     "heis": "9cf823451da811f1",
     "history": "fd614c26996f05b2",
     "universe": "027281bd12ca7386",
-    "screens": "10775c9e786da1e9"
+    "screens": "0949d9f1977a0118"
    }
   ],
   "schedules#60": [

@@ -358,6 +358,32 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 84: trades as a market: offers that come to you, two for two, shared seats; the all-in price.
+- Shared seats (core 99_app): a reload replayed only the coach whose turn it was, so the other coach's promotions,
+  firings and (now) trades were lost (measured, pro basketball: his strength came back 19 elo off). coachMoves() gives
+  every coach's [team, promotions, firings] in turn order; rebuild replays them all, swapDepth takes the team, tdCarry
+  carries every coach's trades. Trades are on in shared seats. test/hotseat-moves.js (fails on round 83).
+- Offers that come to you (tdIncoming, tdOfferCard; home screen under the race card): in the last three weeks before
+  the deadline (football each week; the daily leagues every third day; soccer the window's last two weeks), the club
+  keenest on one of your men, with the man of theirs best for you among those it would give. Only an offer that helps
+  you now or later (the keenest deal was most often a lowball costing both: a 70 for a 52 at -2.7 now, -8.5 later),
+  never the same club and man twice in a season (S.tdShown, which plays no part in a reload). Not now hides it.
+- Two for two (tdDeal with a2/b2, tdPackages, tdShopTwo, tdAskTwo): a pair at each of two positions, so a deal can move
+  value between positions (a guard and a forward for a forward and a guard) or consolidate (two good men for a star and
+  a throw-in). Not the call-up plan first described: packages keep both rosters whole, with no one invented or released
+  mid-season (a released man's season would fall out of his career). The same rules as a single deal.
+- The price of going all in (measured with the best deal for now each day, packages included, to the deadline): hockey
+  +9.1 team rating, basketball +7.0, baseball +5.1, football +4.2, against clubs' spread (one standard deviation) of
+  3.5, 3.3, 1.7 and 2.7: a mid club past the league's best in one season. (Round 83's "hockey +7.5 at a price" was
+  reported without that comparison.) Now a club asks a premium in proportion to the strength it gives up now
+  (TD_PROP 1) and a club makes at most three trades a season (TD_MAX): hockey +5.5 (for -20.8 in two years),
+  basketball +5.3 (-17.4), football +3.9 (-13.4), baseball +2.4 (-4.0), soccer +1.3 (-14.9). How far clubs lean
+  (TD_SPREAD) made no difference. Still enough to lift a club a long way for a season: a dial for Ian.
+- Tests: trades.js adds the offer card (helps you, Not now, the same offer on a redraw, Trade takes it), a two for two
+  (four men move, rosters whole, carried into next season) and the all-in bound; hotseat-moves.js. Goldens: the offer
+  card on three games' home screens (screens only; every other field equal to round 83). Suite 120 of 120 apart from
+  those, 86 minutes.
+
 Round 83: trades in the season (the five pro games); careers banked by the man.
 - Trades (core 98_trades.js; Ian: "make an offer, ask what they'd want, with deadlines and caps"). Football, basketball,
   hockey and baseball to the league's deadline (LEAGUE.trade.by: Nov 5, Feb 5, Mar 6, Jul 31), soccer in the January
