@@ -358,6 +358,36 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 85: engine 9, the computer's clubs trade on deadline day; trades reach the offseason's screens; picks deferred.
+- Engine 9 (core 98_trades_cpu.js, Season.advance before deadline day's games): the top 30% of clubs buy now from the
+  bottom 35% (soccer within each division): one man for one at the same position, when both come out ahead by their own
+  lights (buyer 0.85 now, seller 0.25; premium 2 elo plus one per elo of strength given up now; the cap); each club one
+  deal at most, one deal for every eight clubs. Nothing drawn: a reload makes the same deals. Your clubs, and every coach's
+  in a shared seat (SEA.humans), take no part. Frozen rules (CT_*, ctVal, ctFut), apart from the user's trades, so tuning
+  the user's market changes no computer deal; changing them needs an engine bump. News: the home screen for a while after
+  deadline day, and the Trades tab (soccer: your division's). Carried into next season with the user's (tdCarry).
+- Measured, engine 8 against 9 on the same seeds (16 a game): nothing differs before deadline day (an engine-8 build of
+  round 85 matches round 84's goldens, full, short and shared-seat, field by field, apart from the offer card's screens);
+  after it buyers win 0.5 to 2.5 points more of their games, the standings' spread is unchanged in all five games, the
+  best record and the champion move as luck after the deadline does. statsum, replay, watchany, months, sheets pass on it.
+- Found by engine 9 (each a real bug for the user's trades since round 83 as well):
+  - the offseason's screens read next season's rosters before the season's trades were in them (they went in at the
+    summer's commit): the man you traded away was on your re-sign list, the man you got missing, and a re-sign choice
+    kept by slot fell on whoever had his slot. carryTrades() now puts them in as the season ends (openOffseason, and on
+    a reload), once (a marker kept off the save: on the universe it had changed every fingerprint).
+  - a box score left out a man traded to the club he'd played against (boxLines skipped the opponent's roster; his row's
+    opponent and ground already say which side he was on): 9 of 10,286 soccer goals had no scorer in the box.
+  - statsum filed a traded man's earlier games under his new club (617 team-games for 570 played in football).
+- Tests moved by engine 9's dice, each checked: transfers.js (a man who retires before his sale passes, as for a bid);
+  lines.js (eight seasons: the ice-time order was within noise on four, 27.8 to 26.8 on round 84, 27.2 to 27.3 now);
+  regressions' soccer firing case on seed 8; bs-players judges the HR leader on the seasons' average (14 seasons each:
+  under 40 in a quarter of seasons on engine 8 and 9 alike, means 42.9 and 42.4: baseball's power a touch low against
+  MLB's leaders, on the roadmap, not retuned). engine-replay now replays engines 7 and 8 (rounds 79 and 84) too.
+- An expiring man of 26 or younger counts for 80% of himself in two years (40% older): a rebuilding club had sold a
+  63-rated 23-year-old for a 53-rated 31-year-old.
+- Draft picks in deals: deferred. They reach into draft night (your slot, your picks each round, the mock, the lottery
+  view all assume one pick a round), so they want their own round.
+
 Round 84: trades as a market: offers that come to you, two for two, shared seats; the all-in price.
 - Shared seats (core 99_app): a reload replayed only the coach whose turn it was, so the other coach's promotions,
   firings and (now) trades were lost (measured, pro basketball: his strength came back 19 elo off). coachMoves() gives

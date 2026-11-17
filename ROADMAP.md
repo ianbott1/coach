@@ -91,8 +91,14 @@ on numbers they can't trust and a sport they read rather than watch.
 ## Round 84 (done)
 - Offers that come to you near the deadline; two for two (cross-position and consolidation); shared seats replay every
   coach's moves (trades on there); all-in buying priced up (a premium for big deals, three trades a season).
-- Next (round 85): the computer's clubs trading with each other at the deadline (engine 9), draft picks in deals.
-  Then FM-style attributes, from a written design agreed first.
+
+## Round 85 (done)
+- Engine 9: the computer's clubs trade with each other on deadline day (buyers gain 0.5 to 2.5 points of win share after;
+  the standings' spread unchanged). Fixed: the offseason's screens now see the season's trades; a box score keeps a man
+  traded to the club he'd played.
+- Next: draft picks in deals (a round of its own: draft night assumes one pick a round). Then FM-style attributes, from a
+  written design agreed first.
+- Open: baseball's HR leader under 40 in a quarter of seasons (MLB's overall leader rarely is): power a touch low.
 
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
