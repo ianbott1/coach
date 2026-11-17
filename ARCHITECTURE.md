@@ -358,6 +358,35 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 83: trades in the season (the five pro games); careers banked by the man.
+- Trades (core 98_trades.js; Ian: "make an offer, ask what they'd want, with deadlines and caps"). Football, basketball,
+  hockey and baseball to the league's deadline (LEAGUE.trade.by: Nov 5, Feb 5, Mar 6, Jul 31), soccer in the January
+  window within your division. One of yours for one of theirs at the same position (tdGrp: baseball's SP, SP2, SP3 are
+  one), healthy men only; the Trades tab on your team page: Shop one of yours (each club's best man at the spot that
+  helps you, now or in two years), or Ask about one of theirs (who of yours they'd take). Two taps to trade.
+- A club answers from the deal alone, no dice (tdDeal): its roster now and in two years (tdVal: the better of each pair
+  starting, 0.12 for the man behind; tdFut: the young toward their ceiling, a step lost a year past 29, a man whose deal
+  ends counted at 40% in two years), weighed by where it stands (tdWin: 0.85 contending, 0.25 out of it, tempered early).
+  It says yes when that is worth TD_PREM over even, it fits under the cap, it hasn't traded with you in TD_GAP steps,
+  and you don't come out ahead now and later together (fair: now+fut <= -0.01). Measured before that last rule: a coach
+  taking the best of every deal any club would take, each day to the deadline, gained in both (basketball 16 trades,
+  +4.3 team rating now and +10.7 in two years; baseball +1.8 and +9.8), buying now from clubs out of it and selling it
+  dear to contenders. After it, none gains in both; going all in still buys now at a price (hockey +7.5 now for -18.8).
+- Kept among the day's promotions (S.promos {tr:...}), so a reload plays trades and promotions in the order made;
+  swapDepth hands a trade to tdApply. Each man takes the other's slot, the better of the pair starts, an injury moves
+  with its man, both clubs' strength moves by the change in rosterElo. tdCarry puts the season's trades into next
+  season's rosters at endSeason, before the careers are banked. The computer's clubs don't trade with each other, so a
+  season with no trades in it plays as before (no engine change). Not in shared-seat careers (their promotions aren't
+  replayed for the other coach either).
+- Careers (bankCareers) now find the man by name in his club, not the same slot: a promoted man, the one he replaced,
+  and baseball's pitchers who traded jobs lost their season before (test/careers-moved.js: 0 of 4 on round 82, 4 of 4).
+  This was a bug shipped in round 82 (the staff roles) and before it for every promotion.
+- Tests: trades.js (browser, five games: offers, asks, two-tap trade, both strengths, kept and replayed 20 steps on,
+  the other club's earlier games still replay to their scores, an injury stays on its man, shut at the deadline,
+  carried into next season with the better man starting, his season banked with the club he finished with, and the
+  exhaustive fleece bounded); careers-moved.js. Goldens: the five pro games' screens (the Trades tab), checked field by
+  field and line by line. Suite 119 of 119 apart from those five.
+
 Round 82: baseball's pitching staff by role; the soccer "credit gap" found to be the box score.
 - Baseball (Ian: a five-man rotation, a bullpen whose roles you assign). The roster's Pitching staff card
   (staffRolesHTML, baseball 75_screens) names each job by its slot: Starters 1-5 (SP, SP2, SP3, BK(SP), BK(SP2), as

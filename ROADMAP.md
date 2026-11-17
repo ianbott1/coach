@@ -83,6 +83,13 @@ on numbers they can't trust and a sport they read rather than watch.
 - Testing: two browsers at once measured slower on two cores; back to one.
 - Next: in-season trades (about two rounds). Then attributes by category, from a written design agreed first.
 
+## Round 83 (done)
+- Trades in the season, five pro games: shop a player or ask about one of theirs; one for one at the same position;
+  deadlines and soccer's January window; the cap; a club never gives more than you give, now and later together.
+- Fixed: a promoted or re-roled man's season was left out of his career (shipped in round 82 for the staff roles).
+- Next (round 84): two-for-one and cross-position deals, player plus pick where the sport has picks, offers coming to you
+  near the deadline, the computer's clubs trading with each other (a new engine version), shared-seat careers.
+
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
   college football's field to the pro standard; clock, down and distance, count and outs on the surface.
@@ -90,7 +97,6 @@ on numbers they can't trust and a sport they read rather than watch.
 
 ## Later: depth
 - Player attributes by category (as Football Manager) that drive performance and develop over time.
-- In-season trades and offers, with deadlines and caps: make an offer, ask what they'd want, counter.
 - Baseball staff, further: a middle reliever and a sixth starter would need roster slots (the 8 pitcher slots are
   four jobs and their backups today); fatigue and pitch counts carried between days.
 - Awards: coach of the month, other sports' monthly awards; a top-five goals reel.
