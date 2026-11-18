@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="dd6779e";
+<script>const BUILD_ID="8248a36";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -1602,7 +1602,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=10;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=11;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -5986,7 +5986,7 @@ function attrTeamShape(t){
   const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(x=>CONF[x]===CONF[t]):NAMES;
   const val=x=>{ const R=SEA.roster[x]||[], s={}, n={}; for(let i=0;i<POS.length;i++){ const p=R[i], A=p&&attrOf(p); if(!A)continue; Object.keys(A).forEach(k=>{ s[k]=(s[k]||0)+A[k]; n[k]=(n[k]||0)+1 }) }
     const o={}; Object.keys(s).forEach(k=>o[k]=s[k]/n[k]); return o };
-  const V={}; teams.forEach(x=>V[x]=val(x)); const mine=V[t]||{};
+  const V={}; teams.forEach(x=>V[x]=typeof sportShape==="function"&&sportShape(x)||val(x)); const mine=V[t]||{};   // round 88: where the engine reads a team's shape, rank that
   const rk=Object.keys(mine).map(k=>({k:k,r:1+teams.filter(x=>V[x][k]!=null&&V[x][k]>mine[k]).length}));
   if(!rk.length)return null; rk.sort((a,b)=>a.r-b.r||(a.k<b.k?-1:1));
   return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }
@@ -8795,7 +8795,7 @@ const LATE_FLOOR_ON=true;
 function ffLateStop(L){
   try{ if(!L||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
-    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=(F.skip||F.close) }catch(e){ return false } }   // round 88: Skip's own margin where a finish turns within one stretch (basketball)
 function lateFloorDue(L,any){
   try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
@@ -10327,7 +10327,9 @@ function confWord(){ return LEAGUE.text.champsWord||(LEAGUE.id==="cfb"||LEAGUE.i
 /* a win chance as shown: never 100% or 0% (Ian: "a 100% win chance vs Phoenix"; nothing in sport is certain, and
    the engine's own tails reach 99.6%) */
 function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
-function withPlan(pl,fn){ const was=plan; plan=pl; try{ return fn() }finally{ plan=was } }
+const PLAN_OUT=[];   // round 88: the plan you picked, under any withPlan (the chance is the balanced curve plus your plan's fit)
+function withPlan(pl,fn){ const was=plan; PLAN_OUT.push(was); plan=pl; try{ return fn() }finally{ plan=was; PLAN_OUT.pop() } }
+function planPicked(){ return PLAN_OUT.length?PLAN_OUT[0]:plan }
 function oddsHTML(me,opp,atHome,neutral,wp){
   if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
@@ -10357,12 +10359,14 @@ function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):40
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%
    to 35%), and those ratings were badly calibrated (pro basketball's 96% won 87%, its 5% won 24%). Measured over
    four seasons a league, the engine's number holds: 95% wins 92-96%, 5% wins 2-6%. One number, every screen, and
-   the same whichever plan is picked (Ian, round 33; the hub and roster screen disagreed by plan: Muse). */
+   the same whichever plan is picked (Ian, round 33; the hub and roster screen disagreed by plan: Muse). Round 88
+   (Ian): where a roster's shape makes a plan worth something (basketball, engine 11: shooters on "let it fly"), the
+   chance adds that fit for the plan you've picked (sportPlanFit, measured), and the plan rows say which suits you. */
 function gameEdge(me,opp,atHome,neutral){
   const hm=atHome||neutral, g={home:hm?me:opp, away:hm?opp:me, neutral:!!neutral};
   const ku=SEA.userTeam, kf=SEA.featured, kd=SEA.deploy;
   if(S.myTeam){ SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null }
-  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return hm?d:-d }
+  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return (hm?d:-d)+(me===S.myTeam&&typeof sportPlanFit==="function"?sportPlanFit(me,planPicked()):0) }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
 }
 /* when an injury drags the chance down, say whose and by how much (Instinct: 13% in a playoff game with the starting
@@ -10836,6 +10840,10 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
+  const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
+  if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
+  return planFitOld(wp,kept) }
+function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
   return "";

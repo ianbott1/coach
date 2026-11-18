@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="91aa2fb";
+<script>const BUILD_ID="b6306f4";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -1057,7 +1057,7 @@ const LEAGUE={
     "Michigan State","Baylor","Texas","UCLA","Villanova","Purdue","Tennessee","Arkansas","Florida","Illinois",
     "Real Madrid","Partizan","ASVEL","Mega Basket","Joventut","Ratiopharm Ulm","Overtime Elite","G League Ignite"],
   awards:{mvp:"MVP", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},
-  tuning:{century:500, unbeaten:0.85, /* round 60: achievements (unbeaten: as rare as a perfect college football season, ~0.6% of team-seasons) */ wpK:{safe:274,balanced:280,aggressive:290}, softWp:[200,0.5],   /* round 39: the gap per possession 0.0006 -> 0.00052 (best records ran ~70, one 77-5; favourites 73.6% -> 70.2%) and the shown chance softened like the engine (refit 250 -> 280) */   /* round 32: pace held to ±8% (the plans moved scoring 20 points and wins little); safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{bb11:{sht:0.0225,pd:0.022,fin:0.022,id:0.0218,ath:0.011,athd:0.00825,ply:0.0158,reb:0.018,sta:0.0428,shr:0.02},   /* round 88: engine 11, a point of each attribute worth a rating point (BB11, scratch r88/marg.js) */ century:500, unbeaten:0.85, /* round 60: achievements (unbeaten: as rare as a perfect college football season, ~0.6% of team-seasons) */ wpK:{safe:274,balanced:280,aggressive:290}, softWp:[200,0.5],   /* round 39: the gap per possession 0.0006 -> 0.00052 (best records ran ~70, one 77-5; favourites 73.6% -> 70.2%) and the shown chance softened like the engine (refit 250 -> 280) */   /* round 32: pace held to ±8% (the plans moved scoring 20 points and wins little); safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     hfa:60, gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
     /* the pro game (docs/NBA.md): 48 minutes in quarters, ~99 possessions */
     bb:{pace:99,paceSd:2.5,two:0.557,three:0.370,foul2:0.13,foul3:0.02,ft:0.785,and1:0.09,oreb:0.24,foulOut:6,starFouls:3.0,teamFouls:20,
@@ -1132,7 +1132,7 @@ const LEAGUE={
 };
 /* ============ sport: basketball ============ */
 const SPORT={
-  lateFloor:{late:(D,d)=>D.length>=SEGS-1, close:6},   // round 71: the last segment, within two scores
+  lateFloor:{late:(D,d)=>D.length>=SEGS-1, close:6, skip:12},   // round 88: Skip stops within 12 as the last stretch starts: one in fifteen close finishes came back from 7-12 inside it, where Skip can't stop   // round 71: the last segment, within two scores
   margins:{close:3,rout:20,crush:25,blow:32},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"RUN",                 // the flash when you score
   id:"basketball",
@@ -1275,7 +1275,7 @@ function teamLines(rng,c){
   c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0;
     if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u),"tpm"); t3-- }
     if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
-  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
+  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)*bbLean(s.x.pl,k)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
   ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
   const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
   share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));
@@ -1284,6 +1284,13 @@ function teamLines(rng,c){
   Object.keys(extra).forEach(nm=>{ const x=at[nm]; out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:fin(extra[nm])}) });
   return out;
 }
+/* round 88 (engine 11): who takes the shares leans with his attributes: the shooters the threes, the finishers the
+   buckets inside and the free throws, the rebounders the boards, the playmakers the assists, the perimeter stoppers the
+   steals, the rim protectors the blocks. A lean of one league spread is BB_ATK more of the share (e^0.35, 1.4x). The
+   team's totals are the engine's, so nothing here moves a result. */
+const BB_ATK=0.35, BB_LEANK={tpm:"sht",pts2:"fin",pts1:"fin",reb:"reb",ast:"ply",stl:"pd",blk:"id"};
+function bbLean(p,k){ if(ENGINE_V<11||typeof attrOf!=="function"||!p)return 1; const a=BB_LEANK[k], A=a&&attrOf(p); if(!A||A[a]==null)return 1;
+  return Math.exp(BB_ATK*(A[a]-p.r)/(attrScale().s*ATTR_SPREAD)) }
 /* the shares of made twos and free throws: the scorers' share of points (pts2, pts1 read ROLE.pts) */
 function ROLE_FT(sl){ sl.forEach(s=>{ if(s.R.pts2===undefined){ s.R=Object.assign({},s.R,{pts2:s.R.pts,pts1:s.R.pts}) } }) }
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
@@ -1308,8 +1315,8 @@ const PERG=k=>({v:s=>s.g?(s[k]||0)/s.g:0,f:v=>v.toFixed(1),min:(s,G)=>s.g>=Math.
 const LEADERS=[Object.assign({l:"Points per game"},PERG("pts")),Object.assign({l:"Rebounds per game"},PERG("reb")),Object.assign({l:"Assists per game"},PERG("ast")),
   Object.assign({l:"Steals per game"},PERG("stl")),Object.assign({l:"Blocks per game"},PERG("blk")),{l:"Three-pointers made",v:s=>s.tpm||0}];
 
-/* round 87: attributes (core 93_attrs): guards, wings and bigs weigh them differently. Not yet in the game engine:
-   they make up the rating and grow with age (round 88 plays them). */
+/* round 87: attributes (core 93_attrs): guards, wings and bigs weigh them differently. Round 88 (engine 11) plays
+   them: the team's shape on the floor in each possession (50_game BB11), and who takes the shares in the box. */
 const ATTRS={
   name:{sht:"Shooting",fin:"Finishing",ply:"Playmaking",reb:"Rebounding",pd:"Perimeter D",id:"Interior D",ath:"Athleticism",sta:"Stamina"},
   desc:{sht:"threes and mid-range",fin:"at the rim",ply:"assists, fewer turnovers",reb:"both glasses",pd:"guarding the ball",id:"protecting the rim",
@@ -1320,7 +1327,9 @@ const ATTRS={
      B:{sht:.08,fin:.2,ply:.06,reb:.22,pd:.05,id:.2,ath:.13,sta:.06}},
   lean:{},
   role:{sht:"Shooter",fin:"Slasher",ply:"Playmaker",reb:"Glass cleaner",pd:"Perimeter stopper",id:"Rim protector",ath:"Athlete",sta:"Motor"},
-  roleBy:{B:{sht:"Stretch big",ply:"Playmaking big"}, G:{ply:"Floor general"}}
+  roleBy:{B:{sht:"Stretch big",ply:"Playmaking big"}, G:{ply:"Floor general"}},
+  plays:()=>ENGINE_V>=11,
+  train:{Guards:{groups:["G"],keys:["sht","fin","ply","pd","ath"]}, Wings:{groups:["W"],keys:["sht","fin","ply","reb","pd","ath"]}, Bigs:{groups:["B"],keys:["fin","reb","id","sht","ath"]}}
 };
 /* ============ storage ============ */
 /* Where saves live. Inside Claude's artifact viewer that is window.storage;
@@ -1504,7 +1513,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=10;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=11;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -2789,6 +2798,14 @@ const BB_COLLEGE = {
    minutes in quarters, faster, with better shooting */
 const BB = Object.assign({}, BB_COLLEGE,
   (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bb)||{});
+/* engine 11 (round 88): what a point of team shape (gameCtx sh, a lean in rating points weighed by position and minutes)
+   moves. c: each term's rate change per point, set so a point of any attribute is worth the same margin (measured on
+   common dice: scratch r88/marg.js); a: how loud shapes are (one league sd of team Shooting moves the three-point rate
+   by about two points). shr (three-point share) is a signature only. */
+const BB11_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
+const BB11=Object.assign({a:+(BB11_ENV("BB11_A")||2.5),
+  c:Object.assign({sht:0.0165,pd:0.0163,fin:0.0158,id:0.016,ath:0.0083,athd:0.0062,ply:0.0125,reb:0.0138,sta:0.036,shr:0.02},   // college; the pros: LEAGUE.tuning.bb11
+    (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bb11)||{}, BB11_ENV("BB11_C")?JSON.parse(BB11_ENV("BB11_C")):{})});
 /* Calibrated on its own (test/bb-engine.js: 20,000 games, league spread sd
    160 Elo, home court 105 Elo): 72.8 points and 69 possessions a team, mean
    margin 11.9, game noise 12.7, home teams 59.2% (2.7 points) between equal
@@ -2830,7 +2847,7 @@ function possession(rng, edge, mode, st, pressed, m){
       if(!three&&rng.r()<BB.and1){st.fta++; if(rng.r()<BB.ft){pts++;st.ftm++}}
       return pts;
     }
-    if(rng.r() >= BB.oreb) return 0;                  // defense rebounds
+    if(rng.r() >= BB.oreb+(m.or||0)) return 0;        // defense rebounds (engine 11: the two sides' Rebounding)
     st.oreb++;
   }
   return 0;
@@ -3016,6 +3033,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(dp)queueCall(side,dp);
     });
   };
+  // engine 11: the shapes (gameCtx sh), as each possession's modifier: a side's offense against the other's defense
+  const SH=bbV11()&&ctx.sh&&ctx.sh.home&&ctx.sh.away?ctx.sh:null;
+  const shAdd=(m,sd,s)=>{ const X=SH[sd], Y=SH[other(sd)], c=BB11.c, a=BB11.a;
+    const ds=a*c.shr*X.sht, d3=a*c.sht*X.sht;   // more threes, and better ones: the extra the two earn together is taken back (ds*d3/share), so a lean holds its worth
+    m.share+=ds; m.p3+=d3-ds*d3/(0.38+ds)-a*c.pd*Y.pd; m.p2+=a*(c.fin*X.fin-c.id*Y.id+c.ath*X.ath);
+    m.to+=a*(c.athd*Y.ath-c.ply*X.ply); m.or=(m.or||0)+a*c.reb*(X.reb-Y.reb);
+    if(s>=SEGS-2){ m.p2+=a*c.sta*X.sta; m.p3+=a*c.sta*X.sta*2/3 } };   // the closing minutes: who still has legs
   const starOn=(X,s)=>!X.out&&!(s<X.sitTo);
   const playSeg=(s)=>{
     const n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
@@ -3035,6 +3059,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const rH=st.rest&&st.rest.home?BB.benchPull*0.5:0, rA=st.rest&&st.rest.away?BB.benchPull*0.5:0;   // a rested side's bench, for the last few minutes
     const ehH=g.eH-(onH?0:so)+(onA?0:sd)-rH+rA, ehA=-g.eH-(onA?0:so)+(onH?0:sd)-rA+rH;
     const modH=styleMod(H.off,A.def,A.prepd), modA=styleMod(A.off,H.def,H.prepd);
+    if(SH){ shAdd(modH,"home",s); shAdd(modA,"away",s) }   // engine 11: each side's shape against the other's
     let dh=0,da=0, nA=n;
     const pressH=st.late.home==="press", pressA=st.late.away==="press";
     const nn=(pressH||pressA)?Math.round(n*BB.pressPace):n;
@@ -3178,7 +3203,35 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
 /* each team's usual offense this season, and the seed for its scouting report */
 function clubStyle(t,year){ return STYLE_KEYS[strHash(t+"|"+year)%STYLE_KEYS.length] }
 function clubClose(t,year){ return STYLE_KEYS[strHash(t+"|close|"+year)%STYLE_KEYS.length] }   // what they go to in a close finish
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:bbV11()?{home:bbShapeT(h),away:bbShapeT(a)}:undefined} }
+/* round 88, engine 11: the team's shape on the floor. Each man's lean (an attribute against his own rating) counts by
+   how much his position uses it (his group's weight) and by his minutes (a position's share, starters 80%, the bench
+   20%; a hurt starter's minutes go to his backup, a hurt backup's to a walk-on, who brings no lean). A man's leans
+   weigh to nothing (his weights sum his attributes to his rating), so with each attribute worth the same per point
+   in the engine (BB11), a lean changes how a team plays and not what it's worth. */
+const BB_SHK=["sht","fin","ply","reb","pd","id","ath","sta"];
+function bbV11(){ return ENGINE_V>=11 }
+function bbShapeOf(R,H){ const T={}; BB_SHK.forEach(k=>T[k]=0); if(!R||typeof attrOf!=="function")return T;
+  const add=(p,m)=>{ if(!p||!(m>0))return; const A=attrOf(p); if(!A)return; const W=ATTRS.w[attrGrp(p)]||{}; BB_SHK.forEach(k=>{ if(A[k]!=null&&W[k])T[k]+=m*W[k]*(A[k]-p.r) }) };
+  POS.forEach((P,i)=>{ const hs=H&&H.has(i), hb=H&&H.has(BK(i));
+    if(hs)add(hb?null:R[BK(i)],P.w); else { add(R[i],P.w*(1-BENCH)); if(!hb)add(R[BK(i)],P.w*BENCH) } });
+  BB_SHK.forEach(k=>T[k]=Math.round(T[k]*1000)/1000); return T }
+/* the plan's fit (Ian, round 88: the chance moves with it, the plan rows say it): Shooting is realised on threes and
+   Finishing on twos, so a plan that shoots more threes is worth more to a shooting side. Measured (scratch r88/fit2.js,
+   40,000 games a cell, both leagues alike): per point of lean, in rating points per point of BB11.a, on top of balanced */
+const BB11_FIT={safe:{sht:-0.37,fin:0.24}, aggressive:{sht:0.65,fin:-0.30}};
+function sportPlanFit(t,pl){ if(!bbV11()||!BB11_FIT[pl])return 0; const T=bbShapeT(t), F=BB11_FIT[pl];
+  return R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin) }
+function sportShape(t){ return bbV11()?bbShapeT(t):null }
+/* in words, on the plan rows: which plan your shape suits, once the difference is worth about a point and a half of
+   win chance (a lean of half a league spread) */
+function sportPlanFitLine(t,pl){ if(!bbV11()||typeof PLANS==="undefined")return "";
+  const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}, best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
+  const lean=x=>x==="aggressive"?"shooters":"finishers";
+  if(best!==pl&&v[best]-v[pl]>=12)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean(best)}: <b>${esc(PLANS[best].l)}</b>${best==="aggressive"?", with its threes,":""} suits it.`;
+  return best===pl&&pl!=="balanced"&&v[pl]>=12?`This plan suits your ${lean(pl)}.`:"" }
+function bbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return bbShapeOf(SEA.roster[t],H) }catch(e){ return bbShapeOf(null) } }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
@@ -5428,7 +5481,7 @@ function attrTeamShape(t){
   const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(x=>CONF[x]===CONF[t]):NAMES;
   const val=x=>{ const R=SEA.roster[x]||[], s={}, n={}; for(let i=0;i<POS.length;i++){ const p=R[i], A=p&&attrOf(p); if(!A)continue; Object.keys(A).forEach(k=>{ s[k]=(s[k]||0)+A[k]; n[k]=(n[k]||0)+1 }) }
     const o={}; Object.keys(s).forEach(k=>o[k]=s[k]/n[k]); return o };
-  const V={}; teams.forEach(x=>V[x]=val(x)); const mine=V[t]||{};
+  const V={}; teams.forEach(x=>V[x]=typeof sportShape==="function"&&sportShape(x)||val(x)); const mine=V[t]||{};   // round 88: where the engine reads a team's shape, rank that
   const rk=Object.keys(mine).map(k=>({k:k,r:1+teams.filter(x=>V[x][k]!=null&&V[x][k]>mine[k]).length}));
   if(!rk.length)return null; rk.sort((a,b)=>a.r-b.r||(a.k<b.k?-1:1));
   return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }
@@ -8275,7 +8328,7 @@ const LATE_FLOOR_ON=true;
 function ffLateStop(L){
   try{ if(!L||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
-    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=(F.skip||F.close) }catch(e){ return false } }   // round 88: Skip's own margin where a finish turns within one stretch (basketball)
 function lateFloorDue(L,any){
   try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
@@ -9807,7 +9860,9 @@ function confWord(){ return LEAGUE.text.champsWord||(LEAGUE.id==="cfb"||LEAGUE.i
 /* a win chance as shown: never 100% or 0% (Ian: "a 100% win chance vs Phoenix"; nothing in sport is certain, and
    the engine's own tails reach 99.6%) */
 function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
-function withPlan(pl,fn){ const was=plan; plan=pl; try{ return fn() }finally{ plan=was } }
+const PLAN_OUT=[];   // round 88: the plan you picked, under any withPlan (the chance is the balanced curve plus your plan's fit)
+function withPlan(pl,fn){ const was=plan; PLAN_OUT.push(was); plan=pl; try{ return fn() }finally{ plan=was; PLAN_OUT.pop() } }
+function planPicked(){ return PLAN_OUT.length?PLAN_OUT[0]:plan }
 function oddsHTML(me,opp,atHome,neutral,wp){
   if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
@@ -9837,12 +9892,14 @@ function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):40
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%
    to 35%), and those ratings were badly calibrated (pro basketball's 96% won 87%, its 5% won 24%). Measured over
    four seasons a league, the engine's number holds: 95% wins 92-96%, 5% wins 2-6%. One number, every screen, and
-   the same whichever plan is picked (Ian, round 33; the hub and roster screen disagreed by plan: Muse). */
+   the same whichever plan is picked (Ian, round 33; the hub and roster screen disagreed by plan: Muse). Round 88
+   (Ian): where a roster's shape makes a plan worth something (basketball, engine 11: shooters on "let it fly"), the
+   chance adds that fit for the plan you've picked (sportPlanFit, measured), and the plan rows say which suits you. */
 function gameEdge(me,opp,atHome,neutral){
   const hm=atHome||neutral, g={home:hm?me:opp, away:hm?opp:me, neutral:!!neutral};
   const ku=SEA.userTeam, kf=SEA.featured, kd=SEA.deploy;
   if(S.myTeam){ SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null }
-  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return hm?d:-d }
+  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return (hm?d:-d)+(me===S.myTeam&&typeof sportPlanFit==="function"?sportPlanFit(me,planPicked()):0) }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
 }
 /* when an injury drags the chance down, say whose and by how much (Instinct: 13% in a playoff game with the starting
@@ -10316,6 +10373,10 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
+  const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
+  if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
+  return planFitOld(wp,kept) }
+function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
   return "";
