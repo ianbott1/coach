@@ -1,5 +1,5 @@
 {
- "fp": "27341bfa2106eb70",
+ "fp": "3d608e259f148729",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -95,6 +95,11 @@
    "fp": "27341bfa2106eb70",
    "from": "2a0357d7f18e72cd",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
+  },
+  {
+   "fp": "3d608e259f148729",
+   "from": "27341bfa2106eb70",
+   "note": "Round 87: engine 10, baseball's attributes play (Power/Contact/Eye, Stuff/Control/Stamina, Fielding, Speed/Arm). An engine-9 build of round 87 matches round 86 field by field apart from screens"
   }
  ],
  "out": [
@@ -104,20 +109,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "86-76",
-      "result": "Lost in the division series",
-      "grade": "B"
+      "rec": "79-83",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "324237c6391d8ba2"
+     "book": "5dcf0c963afad67c"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "80-82",
+      "rec": "78-84",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "3e04220377990a58"
+     "book": "4385b90ade90cdea"
     }
    ]
   },
@@ -127,20 +132,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "68-94",
+      "rec": "58-104",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "f87d6ac4e4fb0ace"
+     "book": "cac82cdf9ec64399"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "85-77",
-      "result": "Lost in the championship series",
-      "grade": "B+"
+      "rec": "86-76",
+      "result": "Missed the postseason",
+      "grade": "B"
      },
-     "book": "52b40f4ff698f8e9"
+     "book": "f546bcdbe57ede7c"
     }
    ]
   }

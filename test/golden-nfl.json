@@ -1,5 +1,5 @@
 {
- "fp": "9b47495c8969e340",
+ "fp": "d71cff3c664ac519",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -550,6 +550,11 @@
    "fp": "9b47495c8969e340",
    "from": "d87b284062ad24fd",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
+  },
+  {
+   "fp": "d71cff3c664ac519",
+   "from": "9b47495c8969e340",
+   "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
   }
  ],
  "result": {
@@ -563,8 +568,8 @@
     "poll": "afe47965d5288bb6",
     "heis": "6f51d62e0cdc6d73",
     "history": "b530b5523cc94ea4",
-    "universe": "79ebcf457a68203a",
-    "screens": "7c6f32bad65736d5"
+    "universe": "1f7d4df6bafa2600",
+    "screens": "61e4b14f16bb7d74"
    },
    {
     "year": 2027,
@@ -575,8 +580,8 @@
     "poll": "7eb7e82c8d1e2281",
     "heis": "40b5f390f8e9caf3",
     "history": "b19c72389a24f0f2",
-    "universe": "b6ce245917b03aae",
-    "screens": "cce8cf5d958932f2"
+    "universe": "5c1026ae8e0c8780",
+    "screens": "ec1b982c21d9e275"
    },
    {
     "year": 2028,
@@ -587,8 +592,8 @@
     "poll": "1432afb3dd84118b",
     "heis": "2e055e62dd099f26",
     "history": "f48c62a414002924",
-    "universe": "de14d2e94d8fa2f3",
-    "screens": "bf1128894344f195"
+    "universe": "796076c039b6c8a5",
+    "screens": "799aa5adc46b45a5"
    },
    {
     "year": 2029,
@@ -599,8 +604,8 @@
     "poll": "dffa99688feb9e01",
     "heis": "bd96c2684a9e3f6f",
     "history": "eebab6f64667fef0",
-    "universe": "a9030c6849bfbafb",
-    "screens": "0d9c688553b4f278"
+    "universe": "12f45510818c787f",
+    "screens": "d9c902d529b6a54c"
    }
   ],
   "Tennessee#2024": [
@@ -613,8 +618,8 @@
     "poll": "054ee814abde2bca",
     "heis": "a0c7b8b35289cf74",
     "history": "e466dc8c989c8a56",
-    "universe": "0a7e38e2d43935ab",
-    "screens": "f57c6d2a47e17c52"
+    "universe": "3102c1ac9b39435f",
+    "screens": "26fedcfb47b9f732"
    },
    {
     "year": 2027,
@@ -625,8 +630,8 @@
     "poll": "8c695555dc7725dd",
     "heis": "da058a777571a4b6",
     "history": "ae8623a6cf63a28a",
-    "universe": "5ae8dbab73b2d61c",
-    "screens": "62bf72549050469c"
+    "universe": "0b27883dbf8959f6",
+    "screens": "e5d55cdefc4327dc"
    },
    {
     "year": 2028,
@@ -637,8 +642,8 @@
     "poll": "1778dfae612de05c",
     "heis": "260c7c7c0e81f6b5",
     "history": "59b3923c88401491",
-    "universe": "b4522d44eacd6246",
-    "screens": "656a2474cb965ba4"
+    "universe": "41926f1c0be5d048",
+    "screens": "282b1b490ce29e45"
    },
    {
     "year": 2029,
@@ -649,8 +654,8 @@
     "poll": "b21b03832626e02c",
     "heis": "5817e3a2e813fb34",
     "history": "fd43af40687b09c5",
-    "universe": "381bc49434f9427d",
-    "screens": "376eec6e30aaa3dd"
+    "universe": "ab2542fadec634fc",
+    "screens": "751c143b75c9eaba"
    }
   ],
   "Detroit#777": [
@@ -663,8 +668,8 @@
     "poll": "fbc6863ae5160958",
     "heis": "9b39b63665b7d281",
     "history": "36a454b993ff7a9e",
-    "universe": "9fa428d01671c102",
-    "screens": "e87f99ad8740ae78"
+    "universe": "bb155aeab6cb2225",
+    "screens": "054d071a318d5e1b"
    },
    {
     "year": 2027,
@@ -675,8 +680,8 @@
     "poll": "59de984e48133c2a",
     "heis": "5c889e1341623ad4",
     "history": "d3e772f56956258c",
-    "universe": "0df5a50717bf1b4a",
-    "screens": "3b0ad479157a31f1"
+    "universe": "423cb200f3fe7580",
+    "screens": "f762c57ce546ad79"
    },
    {
     "year": 2028,
@@ -687,8 +692,8 @@
     "poll": "2ea98825aae46523",
     "heis": "fe1cda17fce66261",
     "history": "4aaa70155f042578",
-    "universe": "9169a5b5e6876bf0",
-    "screens": "85718c9a961fcf2e"
+    "universe": "1f0d4f57c658beef",
+    "screens": "8857a1e117dc7fca"
    }
   ],
   "NY Giants#31337": [
@@ -701,8 +706,8 @@
     "poll": "5b826eddf0db0c4a",
     "heis": "4fc045803b982099",
     "history": "7ed43f7c42ecf112",
-    "universe": "b12d074bf7f1af7a",
-    "screens": "6bc10dcb86c68b1e"
+    "universe": "d428efa0280df856",
+    "screens": "2de40304e662e175"
    },
    {
     "year": 2027,
@@ -713,8 +718,8 @@
     "poll": "26632128e66c7f87",
     "heis": "ec1fdc4a291f271b",
     "history": "612c15259b38984e",
-    "universe": "2641bb2313f684d9",
-    "screens": "6db3a5a0862af49d"
+    "universe": "acdaf0c6127c7d6e",
+    "screens": "4f002a5e14c997ea"
    },
    {
     "year": 2028,
@@ -725,8 +730,8 @@
     "poll": "6a0704304ae53d5f",
     "heis": "bf4ca1f4e064c033",
     "history": "11d70c0de7a54383",
-    "universe": "b6146608458579e7",
-    "screens": "6007527cc93213e1"
+    "universe": "e1f5e36e981b2c5a",
+    "screens": "7e9a30eafe86baf5"
    }
   ],
   "schedules#60": [

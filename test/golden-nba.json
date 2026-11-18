@@ -1,5 +1,5 @@
 {
- "fp": "4ae49135cc8073f7",
+ "fp": "8606564884786f79",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -475,6 +475,11 @@
    "fp": "4ae49135cc8073f7",
    "from": "ff5802f7f5e37a69",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
+  },
+  {
+   "fp": "8606564884786f79",
+   "from": "4ae49135cc8073f7",
+   "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
   }
  ],
  "result": {
@@ -488,8 +493,8 @@
     "poll": "35bb34ecb75f8e39",
     "heis": "e40f57ce863b1ebd",
     "history": "8aafa685f87e75a0",
-    "universe": "591e3c0c9b3a6e01",
-    "screens": "823ce97aabe61563"
+    "universe": "79c30215f4dfd085",
+    "screens": "724a5cd822313965"
    },
    {
     "year": 2027,
@@ -500,8 +505,8 @@
     "poll": "51a9028c2b197639",
     "heis": "4a14fd9b0773921d",
     "history": "7a5082dc8fb7ffcb",
-    "universe": "736608647a9a0460",
-    "screens": "782699c40216f526"
+    "universe": "f52e77ef5e773498",
+    "screens": "7cb180112cc56b9d"
    }
   ],
   "Detroit#777": [
@@ -514,8 +519,8 @@
     "poll": "4b87166e47b9b805",
     "heis": "851a737ba7e446f7",
     "history": "082ebedbebddba66",
-    "universe": "34fe0a92750d1be3",
-    "screens": "21e98bcb4b77d5be"
+    "universe": "58f6af68f685bd2d",
+    "screens": "a5e1bd953acb53b3"
    },
    {
     "year": 2027,
@@ -526,8 +531,8 @@
     "poll": "53d64ea50ee1ad2c",
     "heis": "6eb245c65bb96a4c",
     "history": "9e1dc26fc914acad",
-    "universe": "a3c21755f313692c",
-    "screens": "eeb01c850e6f47ce"
+    "universe": "79734866d8505383",
+    "screens": "fe6c7ebd4a9842f7"
    }
   ],
   "schedules#60": [

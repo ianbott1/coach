@@ -1,5 +1,5 @@
 {
- "fp": "90b4c0b45f6969f7",
+ "fp": "52281f9ac8fb7ffb",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -470,6 +470,11 @@
    "fp": "90b4c0b45f6969f7",
    "from": "70fadd5849f0482b",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
+  },
+  {
+   "fp": "52281f9ac8fb7ffb",
+   "from": "90b4c0b45f6969f7",
+   "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
   }
  ],
  "result": {
@@ -483,7 +488,7 @@
     "poll": "9098d255c69f2b4a",
     "heis": "6c4fdf4a019d15b8",
     "history": "555984f42054e524",
-    "universe": "85d2577e17983bf3",
+    "universe": "046835b542b9fe3b",
     "screens": "92891ec79767ee40"
    },
    {
@@ -495,7 +500,7 @@
     "poll": "696370ceffdbf148",
     "heis": "f90d4c0e0d25007a",
     "history": "a311b35e44a71ca3",
-    "universe": "4e3418aed43a13d2",
+    "universe": "372a3eefcb16f416",
     "screens": "fcafd0577d0b69bd"
    }
   ],
@@ -509,7 +514,7 @@
     "poll": "3bfd1e96b74bf407",
     "heis": "040d157c1c226a3d",
     "history": "c46c11b4649431ff",
-    "universe": "78b719e6bbc62930",
+    "universe": "bab2651013221c4c",
     "screens": "4b5d94b49e5aebca"
    },
    {
@@ -521,7 +526,7 @@
     "poll": "2e253495874512f7",
     "heis": "6c50ba67d013b1cf",
     "history": "4a0cf2fbfffe1ec0",
-    "universe": "0bc755d12118f6cd",
+    "universe": "94a5a90a936ec43c",
     "screens": "0b32fe582bc09bcc"
    }
   ],

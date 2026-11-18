@@ -1,5 +1,5 @@
 {
- "fp": "c1000d5773f7c7f5",
+ "fp": "d0f8622909993102",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -25,6 +25,11 @@
    "fp": "c1000d5773f7c7f5",
    "from": "1958e9fb162d95ce",
    "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
+  },
+  {
+   "fp": "d0f8622909993102",
+   "from": "c1000d5773f7c7f5",
+   "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
   }
  ],
  "result": {
@@ -38,8 +43,8 @@
     "poll": "9c900e0c49cec45e",
     "heis": "c48530eb33a8c90d",
     "history": "f63d5527dd12ad02",
-    "universe": "df94ba9b40b8dcfb",
-    "screens": "570dcab259b6a674"
+    "universe": "c2c6e72667ec0bf7",
+    "screens": "2970bfe1a03538c6"
    }
   ]
  }

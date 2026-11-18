@@ -1,5 +1,5 @@
 {
- "fp": "f40363369147cb98",
+ "fp": "808b6ae4ff5f8177",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -140,59 +140,64 @@
    "fp": "f40363369147cb98",
    "from": "cecea7022cbf31b3",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
+  },
+  {
+   "fp": "808b6ae4ff5f8177",
+   "from": "f40363369147cb98",
+   "note": "Round 87: engine 10, baseball's attributes play (Power/Contact/Eye, Stuff/Control/Stamina, Fielding, Speed/Arm). An engine-9 build of round 87 matches round 86 field by field apart from screens"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "59667198203a6f3e",
-    "post": "995ab55f6d99032d",
-    "champion": "LA Dodgers",
-    "rec": "f6653acd04e32d03",
-    "poll": "19ee0db409aab6a8",
-    "heis": "3b415ccc1701eee0",
-    "history": "ab88e4a8cda02b56",
-    "universe": "d3671adcc1c7c9ab",
-    "screens": "a4cf6fe9f2c3f3e9"
+    "games": "60ccc756a48a1a47",
+    "post": "5e0fe4dc085a2dbb",
+    "champion": "Texas",
+    "rec": "6c6fb3ee020c15d0",
+    "poll": "ef882af51f3262c7",
+    "heis": "66f26d873ae5048f",
+    "history": "083412b3ebbf4097",
+    "universe": "5926b5d17078a855",
+    "screens": "ff60399c044a24a9"
    },
    {
     "year": 2027,
-    "games": "e667158b951b086e",
-    "post": "d4d06708d45ccc1c",
-    "champion": "Philadelphia",
-    "rec": "fc02839ca8fad3b6",
-    "poll": "66c55889e7c025d1",
-    "heis": "92939c6b5a949d5c",
-    "history": "ecd88b4879bbb31b",
-    "universe": "00afb7b3e4ef37bf",
-    "screens": "d0a1b3347c2d3b49"
+    "games": "1601c4cc3595a95a",
+    "post": "f549787450d3581f",
+    "champion": "Milwaukee",
+    "rec": "6a554e76765c7c05",
+    "poll": "a4610ed83d0f311f",
+    "heis": "61420132dca2d9a9",
+    "history": "b091eb46cbc25620",
+    "universe": "31c3036e8c1e4742",
+    "screens": "b92bebacda7e7600"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "9cd8d460bacd6206",
-    "post": "f514b3f6f367b802",
-    "champion": "Chicago Cubs",
-    "rec": "6c28ac929dfc786f",
-    "poll": "720aec6ac1272243",
-    "heis": "95424a32c25a35fc",
-    "history": "528120ff14a05a63",
-    "universe": "bebc807879eebf3c",
-    "screens": "a0feba1330897f3e"
+    "games": "53c454c445caf974",
+    "post": "776cee8c28bfb805",
+    "champion": "LA Dodgers",
+    "rec": "395b03e5df5a54d5",
+    "poll": "3d241b5e0176fd0b",
+    "heis": "682449cbdaf8fbe5",
+    "history": "7b15639434cdb66b",
+    "universe": "e021e26bb7894e40",
+    "screens": "81bd449b08cdda84"
    },
    {
     "year": 2027,
-    "games": "f62ef3dc7d21f1a9",
-    "post": "5411e71d247fa37a",
-    "champion": "LA Angels",
-    "rec": "90e53692e4d38321",
-    "poll": "94cf5f0b766a2fbf",
-    "heis": "80526e16a93de1fa",
-    "history": "e6aa503abfec5e2b",
-    "universe": "3e28d6475f370e98",
-    "screens": "8dabc4dd9f5c41b1"
+    "games": "a7767015abf91707",
+    "post": "19d7a56eb5ed5a11",
+    "champion": "LA Dodgers",
+    "rec": "14b1b4966cc88e9a",
+    "poll": "a133bdd8d193d51b",
+    "heis": "69ef1f816846ca83",
+    "history": "a76408fcd690bb26",
+    "universe": "7bc1a677fd7b52a5",
+    "screens": "d9bc15be0ab945e1"
    }
   ],
   "schedules#60": [

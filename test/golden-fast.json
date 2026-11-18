@@ -1,5 +1,5 @@
 {
- "fp": "d2adc14aefee248f",
+ "fp": "c3b49aefb89629e8",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -15,6 +15,11 @@
    "fp": "d2adc14aefee248f",
    "from": "de74a0d63db6ee61",
    "note": "round 85: the universe's engine stamp 9 only (an engine-8 build matches round 84 exactly)"
+  },
+  {
+   "fp": "c3b49aefb89629e8",
+   "from": "d2adc14aefee248f",
+   "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
   }
  ],
  "result": {
@@ -28,8 +33,8 @@
     "poll": "eac26627dd99b438",
     "heis": "fb6327d7e61b1261",
     "history": "1d6ba277acbd15f1",
-    "universe": "0b2ddefec0fdfb71",
-    "screens": "843488f808b463bd"
+    "universe": "eaca6819eaf5a5ef",
+    "screens": "81f02a307bb3b26b"
    }
   ]
  }

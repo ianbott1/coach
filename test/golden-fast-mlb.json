@@ -1,5 +1,5 @@
 {
- "fp": "15ca5ce4eb83824e",
+ "fp": "6108e6eca507858f",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -20,21 +20,26 @@
    "fp": "15ca5ce4eb83824e",
    "from": "beae8ab12b014ab5",
    "note": "round 85: engine 9, the computer's clubs trade on deadline day (an engine-8 build matches round 84 apart from hockey's offer card)"
+  },
+  {
+   "fp": "6108e6eca507858f",
+   "from": "15ca5ce4eb83824e",
+   "note": "Round 87: engine 10, baseball's attributes play (Power/Contact/Eye, Stuff/Control/Stamina, Fielding, Speed/Arm). An engine-9 build of round 87 matches round 86 field by field apart from screens"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "59667198203a6f3e",
-    "post": "995ab55f6d99032d",
-    "champion": "LA Dodgers",
-    "rec": "f6653acd04e32d03",
-    "poll": "19ee0db409aab6a8",
-    "heis": "3b415ccc1701eee0",
-    "history": "ab88e4a8cda02b56",
-    "universe": "d3671adcc1c7c9ab",
-    "screens": "a4cf6fe9f2c3f3e9"
+    "games": "60ccc756a48a1a47",
+    "post": "5e0fe4dc085a2dbb",
+    "champion": "Texas",
+    "rec": "6c6fb3ee020c15d0",
+    "poll": "ef882af51f3262c7",
+    "heis": "66f26d873ae5048f",
+    "history": "083412b3ebbf4097",
+    "universe": "5926b5d17078a855",
+    "screens": "ff60399c044a24a9"
    }
   ]
  }

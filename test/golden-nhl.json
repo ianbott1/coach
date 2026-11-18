@@ -1,5 +1,5 @@
 {
- "fp": "e2d3833f95f89209",
+ "fp": "9ce6f84b8b90e9b7",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -490,6 +490,11 @@
    "fp": "e2d3833f95f89209",
    "from": "c5d4a2853df61118",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day); an engine-8 build matches round 84 apart from the offer cards' screens"
+  },
+  {
+   "fp": "9ce6f84b8b90e9b7",
+   "from": "e2d3833f95f89209",
+   "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
   }
  ],
  "result": {
@@ -503,8 +508,8 @@
     "poll": "9c900e0c49cec45e",
     "heis": "c48530eb33a8c90d",
     "history": "f63d5527dd12ad02",
-    "universe": "df94ba9b40b8dcfb",
-    "screens": "570dcab259b6a674"
+    "universe": "c2c6e72667ec0bf7",
+    "screens": "2970bfe1a03538c6"
    },
    {
     "year": 2027,
@@ -515,8 +520,8 @@
     "poll": "faecdf82a70741b7",
     "heis": "fc61ba1ef26eaecc",
     "history": "a8b0669c37569c08",
-    "universe": "f7148e6f2ed226fa",
-    "screens": "dc0b851fc80e38bd"
+    "universe": "f3ee7de612b1ec7c",
+    "screens": "c31c639182f68bfd"
    }
   ],
   "Edmonton#777": [
@@ -529,8 +534,8 @@
     "poll": "5ec6ae6965d82c1c",
     "heis": "e81b20c0addeab8d",
     "history": "4232e5c8e35a4ed0",
-    "universe": "2544d578a9729cbc",
-    "screens": "1510078d058fb24d"
+    "universe": "d802b8e1f78e4e3b",
+    "screens": "4fac889221dae3fa"
    },
    {
     "year": 2027,
@@ -541,8 +546,8 @@
     "poll": "cf3cbf240344ccc6",
     "heis": "58c3067d6a9a6dd3",
     "history": "f61e35a53b2daccf",
-    "universe": "715c2c90d815d688",
-    "screens": "5873e245ca20ce46"
+    "universe": "cff10bb0c4fce675",
+    "screens": "d53cec5245859d1f"
    }
   ],
   "schedules#60": [
