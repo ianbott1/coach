@@ -100,7 +100,7 @@ function attrTeamShape(t){
   const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(x=>CONF[x]===CONF[t]):NAMES;
   const val=x=>{ const R=SEA.roster[x]||[], s={}, n={}; for(let i=0;i<POS.length;i++){ const p=R[i], A=p&&attrOf(p); if(!A)continue; Object.keys(A).forEach(k=>{ s[k]=(s[k]||0)+A[k]; n[k]=(n[k]||0)+1 }) }
     const o={}; Object.keys(s).forEach(k=>o[k]=s[k]/n[k]); return o };
-  const V={}; teams.forEach(x=>V[x]=val(x)); const mine=V[t]||{};
+  const V={}; teams.forEach(x=>V[x]=typeof sportShape==="function"&&sportShape(x)||val(x)); const mine=V[t]||{};   // round 88: where the engine reads a team's shape, rank that
   const rk=Object.keys(mine).map(k=>({k:k,r:1+teams.filter(x=>V[x][k]!=null&&V[x][k]>mine[k]).length}));
   if(!rk.length)return null; rk.sort((a,b)=>a.r-b.r||(a.k<b.k?-1:1));
   return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }

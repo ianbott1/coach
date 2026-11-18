@@ -47,6 +47,14 @@ const BB_COLLEGE = {
    minutes in quarters, faster, with better shooting */
 const BB = Object.assign({}, BB_COLLEGE,
   (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bb)||{});
+/* engine 11 (round 88): what a point of team shape (gameCtx sh, a lean in rating points weighed by position and minutes)
+   moves. c: each term's rate change per point, set so a point of any attribute is worth the same margin (measured on
+   common dice: scratch r88/marg.js); a: how loud shapes are (one league sd of team Shooting moves the three-point rate
+   by about two points). shr (three-point share) is a signature only. */
+const BB11_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
+const BB11=Object.assign({a:+(BB11_ENV("BB11_A")||2.5),
+  c:Object.assign({sht:0.0165,pd:0.0163,fin:0.0158,id:0.016,ath:0.0083,athd:0.0062,ply:0.0125,reb:0.0138,sta:0.036,shr:0.02},   // college; the pros: LEAGUE.tuning.bb11
+    (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bb11)||{}, BB11_ENV("BB11_C")?JSON.parse(BB11_ENV("BB11_C")):{})});
 /* Calibrated on its own (test/bb-engine.js: 20,000 games, league spread sd
    160 Elo, home court 105 Elo): 72.8 points and 69 possessions a team, mean
    margin 11.9, game noise 12.7, home teams 59.2% (2.7 points) between equal
@@ -88,7 +96,7 @@ function possession(rng, edge, mode, st, pressed, m){
       if(!three&&rng.r()<BB.and1){st.fta++; if(rng.r()<BB.ft){pts++;st.ftm++}}
       return pts;
     }
-    if(rng.r() >= BB.oreb) return 0;                  // defense rebounds
+    if(rng.r() >= BB.oreb+(m.or||0)) return 0;        // defense rebounds (engine 11: the two sides' Rebounding)
     st.oreb++;
   }
   return 0;
@@ -274,6 +282,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(dp)queueCall(side,dp);
     });
   };
+  // engine 11: the shapes (gameCtx sh), as each possession's modifier: a side's offense against the other's defense
+  const SH=bbV11()&&ctx.sh&&ctx.sh.home&&ctx.sh.away?ctx.sh:null;
+  const shAdd=(m,sd,s)=>{ const X=SH[sd], Y=SH[other(sd)], c=BB11.c, a=BB11.a;
+    const ds=a*c.shr*X.sht, d3=a*c.sht*X.sht;   // more threes, and better ones: the extra the two earn together is taken back (ds*d3/share), so a lean holds its worth
+    m.share+=ds; m.p3+=d3-ds*d3/(0.38+ds)-a*c.pd*Y.pd; m.p2+=a*(c.fin*X.fin-c.id*Y.id+c.ath*X.ath);
+    m.to+=a*(c.athd*Y.ath-c.ply*X.ply); m.or=(m.or||0)+a*c.reb*(X.reb-Y.reb);
+    if(s>=SEGS-2){ m.p2+=a*c.sta*X.sta; m.p3+=a*c.sta*X.sta*2/3 } };   // the closing minutes: who still has legs
   const starOn=(X,s)=>!X.out&&!(s<X.sitTo);
   const playSeg=(s)=>{
     const n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
@@ -293,6 +308,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const rH=st.rest&&st.rest.home?BB.benchPull*0.5:0, rA=st.rest&&st.rest.away?BB.benchPull*0.5:0;   // a rested side's bench, for the last few minutes
     const ehH=g.eH-(onH?0:so)+(onA?0:sd)-rH+rA, ehA=-g.eH-(onA?0:so)+(onH?0:sd)-rA+rH;
     const modH=styleMod(H.off,A.def,A.prepd), modA=styleMod(A.off,H.def,H.prepd);
+    if(SH){ shAdd(modH,"home",s); shAdd(modA,"away",s) }   // engine 11: each side's shape against the other's
     let dh=0,da=0, nA=n;
     const pressH=st.late.home==="press", pressA=st.late.away==="press";
     const nn=(pressH||pressA)?Math.round(n*BB.pressPace):n;
@@ -436,7 +452,35 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
 /* each team's usual offense this season, and the seed for its scouting report */
 function clubStyle(t,year){ return STYLE_KEYS[strHash(t+"|"+year)%STYLE_KEYS.length] }
 function clubClose(t,year){ return STYLE_KEYS[strHash(t+"|close|"+year)%STYLE_KEYS.length] }   // what they go to in a close finish
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:bbV11()?{home:bbShapeT(h),away:bbShapeT(a)}:undefined} }
+/* round 88, engine 11: the team's shape on the floor. Each man's lean (an attribute against his own rating) counts by
+   how much his position uses it (his group's weight) and by his minutes (a position's share, starters 80%, the bench
+   20%; a hurt starter's minutes go to his backup, a hurt backup's to a walk-on, who brings no lean). A man's leans
+   weigh to nothing (his weights sum his attributes to his rating), so with each attribute worth the same per point
+   in the engine (BB11), a lean changes how a team plays and not what it's worth. */
+const BB_SHK=["sht","fin","ply","reb","pd","id","ath","sta"];
+function bbV11(){ return ENGINE_V>=11 }
+function bbShapeOf(R,H){ const T={}; BB_SHK.forEach(k=>T[k]=0); if(!R||typeof attrOf!=="function")return T;
+  const add=(p,m)=>{ if(!p||!(m>0))return; const A=attrOf(p); if(!A)return; const W=ATTRS.w[attrGrp(p)]||{}; BB_SHK.forEach(k=>{ if(A[k]!=null&&W[k])T[k]+=m*W[k]*(A[k]-p.r) }) };
+  POS.forEach((P,i)=>{ const hs=H&&H.has(i), hb=H&&H.has(BK(i));
+    if(hs)add(hb?null:R[BK(i)],P.w); else { add(R[i],P.w*(1-BENCH)); if(!hb)add(R[BK(i)],P.w*BENCH) } });
+  BB_SHK.forEach(k=>T[k]=Math.round(T[k]*1000)/1000); return T }
+/* the plan's fit (Ian, round 88: the chance moves with it, the plan rows say it): Shooting is realised on threes and
+   Finishing on twos, so a plan that shoots more threes is worth more to a shooting side. Measured (scratch r88/fit2.js,
+   40,000 games a cell, both leagues alike): per point of lean, in rating points per point of BB11.a, on top of balanced */
+const BB11_FIT={safe:{sht:-0.37,fin:0.24}, aggressive:{sht:0.65,fin:-0.30}};
+function sportPlanFit(t,pl){ if(!bbV11()||!BB11_FIT[pl])return 0; const T=bbShapeT(t), F=BB11_FIT[pl];
+  return R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin) }
+function sportShape(t){ return bbV11()?bbShapeT(t):null }
+/* in words, on the plan rows: which plan your shape suits, once the difference is worth about a point and a half of
+   win chance (a lean of half a league spread) */
+function sportPlanFitLine(t,pl){ if(!bbV11()||typeof PLANS==="undefined")return "";
+  const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}, best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
+  const lean=x=>x==="aggressive"?"shooters":"finishers";
+  if(best!==pl&&v[best]-v[pl]>=12)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean(best)}: <b>${esc(PLANS[best].l)}</b> suits it.`;
+  return best===pl&&pl!=="balanced"&&v[pl]>=12?`This plan suits your ${lean(pl)}.`:"" }
+function bbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return bbShapeOf(SEA.roster[t],H) }catch(e){ return bbShapeOf(null) } }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

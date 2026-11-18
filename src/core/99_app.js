@@ -1551,7 +1551,9 @@ function confWord(){ return LEAGUE.text.champsWord||(LEAGUE.id==="cfb"||LEAGUE.i
 /* a win chance as shown: never 100% or 0% (Ian: "a 100% win chance vs Phoenix"; nothing in sport is certain, and
    the engine's own tails reach 99.6%) */
 function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
-function withPlan(pl,fn){ const was=plan; plan=pl; try{ return fn() }finally{ plan=was } }
+const PLAN_OUT=[];   // round 88: the plan you picked, under any withPlan (the chance is the balanced curve plus your plan's fit)
+function withPlan(pl,fn){ const was=plan; PLAN_OUT.push(was); plan=pl; try{ return fn() }finally{ plan=was; PLAN_OUT.pop() } }
+function planPicked(){ return PLAN_OUT.length?PLAN_OUT[0]:plan }
 function oddsHTML(me,opp,atHome,neutral,wp){
   if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
@@ -1581,12 +1583,14 @@ function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):40
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%
    to 35%), and those ratings were badly calibrated (pro basketball's 96% won 87%, its 5% won 24%). Measured over
    four seasons a league, the engine's number holds: 95% wins 92-96%, 5% wins 2-6%. One number, every screen, and
-   the same whichever plan is picked (Ian, round 33; the hub and roster screen disagreed by plan: Muse). */
+   the same whichever plan is picked (Ian, round 33; the hub and roster screen disagreed by plan: Muse). Round 88
+   (Ian): where a roster's shape makes a plan worth something (basketball, engine 11: shooters on "let it fly"), the
+   chance adds that fit for the plan you've picked (sportPlanFit, measured), and the plan rows say which suits you. */
 function gameEdge(me,opp,atHome,neutral){
   const hm=atHome||neutral, g={home:hm?me:opp, away:hm?opp:me, neutral:!!neutral};
   const ku=SEA.userTeam, kf=SEA.featured, kd=SEA.deploy;
   if(S.myTeam){ SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null }
-  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return hm?d:-d }
+  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return (hm?d:-d)+(me===S.myTeam&&typeof sportPlanFit==="function"?sportPlanFit(me,planPicked()):0) }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
 }
 /* when an injury drags the chance down, say whose and by how much (Instinct: 13% in a playoff game with the starting
@@ -2060,6 +2064,8 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
+  const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits
+  if(rf)return `<div class="pland planfit">${rf}</div>`;
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
   return "";

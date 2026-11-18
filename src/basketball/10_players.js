@@ -94,7 +94,7 @@ function teamLines(rng,c){
   c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0;
     if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u),"tpm"); t3-- }
     if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
-  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
+  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)*bbLean(s.x.pl,k)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
   ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
   const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
   share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));
@@ -103,6 +103,13 @@ function teamLines(rng,c){
   Object.keys(extra).forEach(nm=>{ const x=at[nm]; out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:fin(extra[nm])}) });
   return out;
 }
+/* round 88 (engine 11): who takes the shares leans with his attributes: the shooters the threes, the finishers the
+   buckets inside and the free throws, the rebounders the boards, the playmakers the assists, the perimeter stoppers the
+   steals, the rim protectors the blocks. A lean of one league spread is BB_ATK more of the share (e^0.35, 1.4x). The
+   team's totals are the engine's, so nothing here moves a result. */
+const BB_ATK=0.35, BB_LEANK={tpm:"sht",pts2:"fin",pts1:"fin",reb:"reb",ast:"ply",stl:"pd",blk:"id"};
+function bbLean(p,k){ if(ENGINE_V<11||typeof attrOf!=="function"||!p)return 1; const a=BB_LEANK[k], A=a&&attrOf(p); if(!A||A[a]==null)return 1;
+  return Math.exp(BB_ATK*(A[a]-p.r)/(attrScale().s*ATTR_SPREAD)) }
 /* the shares of made twos and free throws: the scorers' share of points (pts2, pts1 read ROLE.pts) */
 function ROLE_FT(sl){ sl.forEach(s=>{ if(s.R.pts2===undefined){ s.R=Object.assign({},s.R,{pts2:s.R.pts,pts1:s.R.pts}) } }) }
 function addStats(dst,src){dst.g=(dst.g||0)+1; Object.keys(src).forEach(k=>dst[k]=(dst[k]||0)+src[k])}
@@ -127,8 +134,8 @@ const PERG=k=>({v:s=>s.g?(s[k]||0)/s.g:0,f:v=>v.toFixed(1),min:(s,G)=>s.g>=Math.
 const LEADERS=[Object.assign({l:"Points per game"},PERG("pts")),Object.assign({l:"Rebounds per game"},PERG("reb")),Object.assign({l:"Assists per game"},PERG("ast")),
   Object.assign({l:"Steals per game"},PERG("stl")),Object.assign({l:"Blocks per game"},PERG("blk")),{l:"Three-pointers made",v:s=>s.tpm||0}];
 
-/* round 87: attributes (core 93_attrs): guards, wings and bigs weigh them differently. Not yet in the game engine:
-   they make up the rating and grow with age (round 88 plays them). */
+/* round 87: attributes (core 93_attrs): guards, wings and bigs weigh them differently. Round 88 (engine 11) plays
+   them: the team's shape on the floor in each possession (50_game BB11), and who takes the shares in the box. */
 const ATTRS={
   name:{sht:"Shooting",fin:"Finishing",ply:"Playmaking",reb:"Rebounding",pd:"Perimeter D",id:"Interior D",ath:"Athleticism",sta:"Stamina"},
   desc:{sht:"threes and mid-range",fin:"at the rim",ply:"assists, fewer turnovers",reb:"both glasses",pd:"guarding the ball",id:"protecting the rim",
@@ -139,5 +146,7 @@ const ATTRS={
      B:{sht:.08,fin:.2,ply:.06,reb:.22,pd:.05,id:.2,ath:.13,sta:.06}},
   lean:{},
   role:{sht:"Shooter",fin:"Slasher",ply:"Playmaker",reb:"Glass cleaner",pd:"Perimeter stopper",id:"Rim protector",ath:"Athlete",sta:"Motor"},
-  roleBy:{B:{sht:"Stretch big",ply:"Playmaking big"}, G:{ply:"Floor general"}}
+  roleBy:{B:{sht:"Stretch big",ply:"Playmaking big"}, G:{ply:"Floor general"}},
+  plays:()=>ENGINE_V>=11,
+  train:{Guards:{groups:["G"],keys:["sht","fin","ply","pd","ath"]}, Wings:{groups:["W"],keys:["sht","fin","ply","reb","pd","ath"]}, Bigs:{groups:["B"],keys:["fin","reb","id","sht","ath"]}}
 };
