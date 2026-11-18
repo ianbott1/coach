@@ -541,11 +541,11 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
   new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
   const PL=['safe','balanced','aggressive'], FITLINE=/Your roster leans to|Your roster doesn't suit|This plan suits your/;
   let lined=0, moved=0;
-  for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['football-coach.html','Alabama']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
+  for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['soccer-coach.html','Arsenal'],['soccer-coach.html','Wrexham'],['soccer-coach.html','Liverpool'],['hockey-coach-pro.html','Boston'],['hockey-coach-pro.html','Edmonton'],['hockey-coach-pro.html','Toronto'],['football-coach.html','Alabama']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
     const shown={}, lines={}, edge={}, fit={}; let h='';
     PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
     ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you to try a plan`);
-    const fits=/basketball/.test(f)&&api.ENGV()>=11;
+    const fits=(/basketball/.test(f)&&api.ENGV()>=11)||(/hockey|soccer/.test(f)&&api.ENGV()>=12);   // round 89: hockey and soccer on engine 12
     if(!fits){ ok(new Set(Object.values(shown)).size===1&&shown.balanced,`${f}: the chance before the game moves with the plan (${PL.map(p=>shown[p]).join(' / ')})`);
       ok(!PL.some(p=>lines[p]),`${f}: a plan line where no plan fits`); continue }
     // engine 11 basketball: the edge moves by the fit and nothing else, and the fit is the measured one for the roster's shape
@@ -556,15 +556,17 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
       if(lines[p])lined++;
       ok(lines[p]===want,`${f} ${tm}: under ${p} a plan line ${lines[p]?'shows':'is missing'} (fits ${PL.map(q=>q+' '+fit[q].toFixed(1)).join(', ')})`) });
     console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo`) }
-  console.log(`  plan fit: the chance moved for ${moved} of 6 basketball rosters, a plan line showed ${lined} times`) }
+  console.log(`  plan fit: the chance moved for ${moved} rosters, a plan line showed ${lined} times`) }
 /* 79. the chance before a game is the engine's, from the lineup you picked: a backup started moves it as much as it
    moves the game (Muse: 12% -> 12% with a point guard 26 worse; the game charged it in full), on every screen */
 for(const [f,team] of [['basketball-coach-pro.html','Detroit'],['basketball-coach.html','Duke'],['football-coach.html','Alabama'],['soccer-coach.html','Arsenal'],['hockey-coach-pro.html','Toronto']]){
-  const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','wpScale'])}); A.newDynasty(team,11,'T');
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','wpScale','cpuPlanOf','sportPlanFit','sportPlanFitC'])}); A.newDynasty(team,11,'T');
   for(let i=0;i<3;i++)A.SEA.advance();
   const my=A.S.myTeam, g=A.SEA.sched.find(x=>x.week>=A.SEA.step&&(x.home===my||x.away===my)); if(!g)continue;
   const opp=g.home===my?g.away:g.home, home=g.home===my;
-  const eng=()=>{ A.SEA.userTeam=my; const e=A.SEA.matchupElo(g,'balanced'), d=home?e.h-e.a:e.a-e.h; return 1/(1+Math.pow(10,-d/A.wpScale('balanced'))) };
+  // round 89 (engine 12): the computer's club plays the plan its roster suits, and the game charges that fit
+  const oppFit=()=>{ if(typeof A.cpuPlanOf!=='function')return 0; const e=A.SEA.matchupElo(g,'balanced'), d=home?e.h-e.a:e.a-e.h, op=A.cpuPlanOf(opp,-d); return op==='balanced'?0:(A.sportPlanFitC||A.sportPlanFit)(opp,op) };
+  const eng=()=>{ A.SEA.userTeam=my; const e=A.SEA.matchupElo(g,'balanced'), d=(home?e.h-e.a:e.a-e.h)-oppFit(); return 1/(1+Math.pow(10,-d/A.wpScale('balanced'))) };
   const R=A.SEA.roster[my]; let bi=-1,gap=0; for(let i=0;i<A.POS.length;i++){ const a=R[i],b=R[A.BK(i)]; if(a&&b&&a.r-b.r>gap){gap=a.r-b.r;bi=i} }
   const w0=A.winProb(my,opp,home,g.neutral); ok(Math.abs(w0-eng())<1e-9,`${f}: the chance shown (${w0.toFixed(3)}) isn't the engine's (${eng().toFixed(3)})`);
   A.swapDepth(A.SEA,bi); const w1=A.winProb(my,opp,home,g.neutral);
