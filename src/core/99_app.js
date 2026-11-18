@@ -1834,10 +1834,11 @@ function rosterView(){
   if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
   if(typeof staffRolesHTML==="function")h+=staffRolesHTML();   // baseball: the rotation and the bullpen's roles (round 82)
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
+  if(typeof attrShapeHTML==="function")h+=attrShapeHTML(my);   // round 87: the team's shape
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    const tag=p=>`${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    const tag=p=>`${typeof attrRole==="function"&&attrRole(p)?`<span class="roletag" style="color:var(--vote)">${esc(attrRole(p))}</span> &middot; `:""}${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
     return `<div class="depth ${inj?'out':''}">
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
@@ -3490,7 +3491,7 @@ function render0(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+LEAGUE.ui.offseasonScreen():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
       (playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
@@ -3621,6 +3622,7 @@ function render0(){
     if(ROLE_SEL===null){ ROLE_SEL=i; render() } else if(ROLE_SEL===i){ ROLE_SEL=null; render() } else { const a=ROLE_SEL; ROLE_SEL=null; swapRoles(a,i) } });
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
+  document.querySelectorAll("[data-train]").forEach(b=>b.onclick=()=>{ const [g,k]=b.dataset.train.split("|"); attrTrainSet(g,k); save(); render() });   // round 87: training focus
   document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;

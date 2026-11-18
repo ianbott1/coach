@@ -231,7 +231,7 @@ function dnRowHTML(p,t,label,canPick){
   const x=dnRead(p.pid,t), wk=S.off.picks.workouts||[];
   return `<div class="drow dnrow">
     <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${label||""}${x.wk?` <span class="dthere">worked out</span>`:x.unsure?` <span class="dmaybe">scouts unsure</span>`:""}</div>
-      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`} &middot; ${dnFit(p,t)}</div></div>
+      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`}${typeof attrRoleRead==="function"&&attrRoleRead(p,x,t)?` &middot; looks like a ${esc(attrRoleRead(p,x,t).toLowerCase())}`:""} &middot; ${dnFit(p,t)}</div></div>
     ${!x.wk&&wk.length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
     ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}" data-dnname="${esc(p.n||"")}">Draft</button>`:""}</div>`;
 }

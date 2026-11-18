@@ -144,7 +144,9 @@ function ordw(n){ return ["","1st","2nd","3rd","4th","5th","6th","7th","8th","9t
 function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   ctx=ctx||{}; const fav=ctx.fav||{};
   // engine 10: a player's attributes from the game's context (by side and name), and his rating
-  const AT=bsV10()&&ctx.at?ctx.at:null, atOf=(side,nm)=>AT&&AT[side]&&nm?AT[side][nm]||null:null;
+  const AT=bsV10()&&ctx.at?ctx.at:null, atMemo={home:{},away:{}};
+  const atOf=(side,nm)=>{ if(!AT||!AT[side]||!nm)return null; const M=atMemo[side]; if(M[nm]!==undefined)return M[nm]; const v=AT[side][nm];
+    if(!v)return (M[nm]=null); if(!Array.isArray(v))return (M[nm]=v); const o={}; attrKeys(v[0]).forEach((k,j)=>o[k]=v[j+1]); return (M[nm]=o) };
   const rOf=(side,nm)=>ctx.rate&&ctx.rate[side]&&nm?ctx.rate[side][nm]:null;
   const spTire=sd=>{ const n=ctx.sp&&ctx.sp[sd]&&ctx.sp[sd].n, a=atOf(sd,n), r=rOf(sd,n); return a&&a.sta!=null&&r!=null?Math.exp(-BS10.sta*(a.sta-r)-bsHalfVar(BS10.sta)):1 };   // engine 10: how fast he tires
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
@@ -391,11 +393,15 @@ function spCtx(t,step){
     const k=(step+strHash(t))%5, idx=k<3?BS_SP[k]:BK(BS_SP[k-3]), p=R[idx]; if(!p)return null;
     const mean=(R[BS_SP[0]].r+R[BS_SP[1]].r+R[BS_SP[2]].r+(R[BK(BS_SP[0])]||R[BS_SP[0]]).r+(R[BK(BS_SP[1])]||R[BS_SP[1]]).r)/5;
     return {n:p.n, q:(p.r-mean)*(bsV5()?BS5.q:0.012)} }catch(e){ return null } }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
-  lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
-  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h),away:bsAttrs(a)}:undefined} }
-/* engine 10: every man's attributes by name, as the engine reads them (rounded: the rating scale's own integers) */
-function bsAttrs(t){ try{ const o={}; (SEA.roster[t]||[]).forEach(p=>{ if(!p||!p.n)return; const A=typeof attrOf==="function"?attrOf(p):null; if(A)o[p.n]=A }); return o }catch(e){ return {} } }
+function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
+  lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
+  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h,step,LH,BH),away:bsAttrs(a,step,LA,BA)}:undefined} }
+/* engine 10: the attributes of the men the engine reads today (the nine, the bench bat, the day's starter, the long man
+   and the set-up man), by name, as [group, values in the group's order]: kept with each computer game for its replay
+   (round 81), so short */
+function bsAttrs(t,step,lu,bench){ try{ const R=SEA.roster[t]||[], want=new Set((lu||[]).concat([bench])); const sp=spCtx(t,step), pc=penCtx(t);
+    if(sp)want.add(sp.n); if(pc){ if(pc.long)want.add(pc.long.n); if(pc.setup)want.add(pc.setup.n) }
+    const o={}; R.forEach(p=>{ if(!p||!p.n||!want.has(p.n)||o[p.n])return; const A=typeof attrOf==="function"?attrOf(p):null; if(!A)return; const g=attrGrp(p); o[p.n]=[g].concat(attrKeys(g).map(k=>A[k])) }); return o }catch(e){ return {} } }
 /* engine 6: the named relievers: the long man (the third starter's backup) and the set-up man (the closer's), healthy,
    each with his edge by rating against the rotation's top three, as a starter's is */
 function penCtx(t){ try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t], H=hurtSet(t), cl=POS.findIndex(P=>P.p==="CL");

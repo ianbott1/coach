@@ -65,10 +65,17 @@ function attrOf(p){ if(!attrOn()||!p)return null; const g=attrGrp(p), K=attrKeys
   const o={}; K.forEach((k,j)=>o[k]=v[j]); return o }
 function attrShow(v){ const S=attrScale(); return Math.max(1,Math.min(20,Math.round(11+(v-S.m)/S.s*3))) }
 /* the role: the attribute he leans on most against his own rating (a label of his shape, not a mechanic) */
-function attrRole(p){ const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g);
+function attrRole(p){ return attrRoleOf(p,attrOf(p)) }
+function attrRoleOf(p,A){ if(!A)return ""; const g=attrGrp(p), K=attrKeys(g);
   let best=null, bd=-1e9; K.forEach(k=>{ const d=A[k]-p.r-((ATTRS.lean&&ATTRS.lean[g]&&ATTRS.lean[g][k])||0); if(d>bd){ bd=d; best=k } });
   if(bd<attrScale().s*0.35)return ATTRS.allRound&&ATTRS.allRound[g]||"All-rounder";
   const O=ATTRS.roleBy&&ATTRS.roleBy[g]; return (O&&O[best])||ATTRS.role[best]||"" }
+/* a prospect, as your scouts see him (round 87: fog where the rating is already fogged, the draft): each attribute read
+   with an error of its own, wider when the scouts are unsure, narrow after a workout; the same read every time */
+function attrRoleRead(p,x,team){ const A=attrOf(p); if(!A)return ""; x=x||{};
+  const sd=attrScale().s*ATTR_SPREAD*(x.wk?0.3:x.unsure?1.0:0.55), R={};
+  Object.keys(A).forEach(k=>{ const r=new RNG((strHash("aread|"+((typeof U!=="undefined"&&U&&U.seed)||0)+"|"+(team||"")+"|"+(p.pid!=null?p.pid:p.n)+"|"+k)>>>0)||1); R[k]=A[k]+r.gauss(0,sd) });
+  return attrRoleOf(p,R) }
 /* the player's page: his attributes in three bands, 1-20, last summer's change beside each, what each one does */
 const ATTR_BANDS=[["t","Technical"],["m","Mental"],["p","Physical"]];
 function attrColor(v){ return v>=16?"var(--turf)":v>=12?"var(--bone)":v>=8?"var(--muted)":"var(--flag)" }
@@ -85,3 +92,30 @@ function attrGridHTML(p){
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
     <div class="attrgrid" style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px">${cols}</div>
     <div class="fnote" style="margin:4px 0 10px">1-20 against the league. Together they make up his rating (${p.r}); ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
+/* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
+   division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
+function attrTeamShape(t){
+  if(!attrOn()||!SEA||!SEA.roster)return null;
+  const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(x=>CONF[x]===CONF[t]):NAMES;
+  const val=x=>{ const R=SEA.roster[x]||[], s={}, n={}; for(let i=0;i<POS.length;i++){ const p=R[i], A=p&&attrOf(p); if(!A)continue; Object.keys(A).forEach(k=>{ s[k]=(s[k]||0)+A[k]; n[k]=(n[k]||0)+1 }) }
+    const o={}; Object.keys(s).forEach(k=>o[k]=s[k]/n[k]); return o };
+  const V={}; teams.forEach(x=>V[x]=val(x)); const mine=V[t]||{};
+  const rk=Object.keys(mine).map(k=>({k:k,r:1+teams.filter(x=>V[x][k]!=null&&V[x][k]>mine[k]).length}));
+  if(!rk.length)return null; rk.sort((a,b)=>a.r-b.r||(a.k<b.k?-1:1));
+  return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }
+function attrShapeHTML(t){ const S0=attrTeamShape(t); if(!S0)return "";
+  const nm=x=>`${esc(ATTRS.name[x.k])} ${ordinal(x.r)}`;
+  return `<div class="note"><b>Your shape:</b> ${S0.best.map(nm).join(", ")} of ${S0.n}${S0.worst&&S0.best.indexOf(S0.worst)<0?`; ${nm(S0.worst)}`:""}. ${attrPlays()?"Each plays in the game as its name says.":"For now they show who your players are and how they'll grow; this game's engine doesn't read them yet."}</div>` }
+/* training focus (the summer's development, your team only): one attribute for each training group, or balanced. The
+   chosen one takes ATTR_FOCUS times its share of a gain (the rest a little less), so the rating moves as it would
+   have: nothing is free, only where it lands. Offered where attributes play (ATTRS.plays). */
+function attrTrainOn(){ return attrOn()&&typeof ATTRS.plays==="function"&&!!ATTRS.train }
+function attrTrainHTML(){
+  if(!attrTrainOn()||!S||!S.off)return ""; const T=S.train||{};
+  const row=(gname,G)=>{ const cur=T[G.groups[0]]||"";
+    return `<div style="margin:6px 0"><div class="fnote" style="margin-bottom:4px">${esc(gname)}</div><div class="subtabs" style="flex-wrap:wrap">${[["","Balanced"]].concat(G.keys.map(k=>[k,ATTRS.name[k]])).map(([k,l])=>
+      `<button class="subtab" data-train="${esc(gname)}|${k}" aria-pressed="${cur===k}">${esc(l)}</button>`).join("")}</div></div>` };
+  return `<div class="card" style="padding:8px 12px;margin:8px 0"><div class="grouphead" style="margin-top:0">Training focus</div>
+    <div class="fnote">Where this ${OFFW()}'s development lands on your players. The focus takes half again its usual share of a gain and the rest a little less, so a player's rating moves as it would have: you choose what kind of player he grows into.</div>
+    ${Object.keys(ATTRS.train).map(g=>row(g,ATTRS.train[g])).join("")}</div>` }
+function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.train=Object.assign({},S.train||{}); G.groups.forEach(g=>{ if(k)S.train[g]=k; else delete S.train[g] }) }

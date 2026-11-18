@@ -157,5 +157,6 @@ const ATTRS={
     stf:"Power arm",ctl:"Control artist",sta:"Workhorse"},
   roleBy:{C:{fld:"Defensive catcher",arm:"Defensive catcher"}},
   allRound:{P:"Steady arm"},
-  plays:()=>ENGINE_V>=10
+  plays:()=>ENGINE_V>=10,
+  train:{Hitters:{groups:["C","IF","OF","DH"],keys:["con","pow","eye","spd","fld"]}, Pitchers:{groups:["P"],keys:["stf","ctl","sta"]}}
 };
