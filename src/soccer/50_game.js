@@ -53,7 +53,7 @@ const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tunin
    (SC12.pw): taking the game to them is a passing game, sitting deep a game of pace on the break and of shape. */
 const SC12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
 const SC12=Object.assign({a:+(SC12_ENV("SC12_A")||2.5),
-  c:Object.assign({fin:0.0476,pas:0.0478,pac:0.0478,tck:0.0513,pos:0.0513,hedO:0.0249,hedD:0.0249,han:0.0512,sta:0.12,staL:0.05},   // measured: a point of any is worth SC12.a rating points of result (league points; equal goal margin first, r89 marg-sc.js, then by value, fitv.js, 100,000 games)
+  c:Object.assign({fin:0.0476,pas:0.0478,pac:0.0478,tck:0.0513,pos:0.0513,hedO:0.0249,hedD:0.0249,han:0.0512,sta:0.0972,staL:0.0405},   // measured: a point of any is worth SC12.a rating points of result (league points; equal goal margin first, r89 marg-sc.js, then by value, fitv.js, 100,000 games)
     SC12_ENV("SC12_C")?JSON.parse(SC12_ENV("SC12_C")):{}),
   pw:Object.assign({safe:{pas:1.4,pac:0.7,tck:1.15}, aggressive:{pac:2.0,pas:0.7,pos:1.75}},
     SC12_ENV("SC12_PW")?JSON.parse(SC12_ENV("SC12_PW")):{})});
@@ -69,8 +69,8 @@ function scShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x
    shape (SC12.pw). Measured (scratch r89 fit-sc.js, 150,000 games a cell): per point of lean, in rating points per
    point of SC12.a, on top of balanced; SC12_FIT on a person's path (the plan also picks a person's approach), SC12_FITC
    on the computer's */
-const SC12_FIT={safe:{fin:0.046,pas:0.306,pac:-0.154,tck:0.170,hed:0.048,sta:0,pos:0.061,han:0.063}, aggressive:{fin:-0.217,pas:-0.336,pac:0.183,tck:-0.274,hed:-0.236,sta:0,pos:0.047,han:-0.277}};
-const SC12_FITC={safe:{fin:0.025,pas:0.286,pac:-0.169,tck:0.134,hed:0.031,sta:0,pos:0.034,han:0.030}, aggressive:{fin:-0.156,pas:-0.278,pac:0.274,tck:-0.169,hed:-0.162,sta:0,pos:0.170,han:-0.171}};
+const SC12_FIT={safe:{fin:0.046,pas:0.306,pac:-0.154,tck:0.170,hed:0.048,sta:0.04,pos:0.061,han:0.063}, aggressive:{fin:-0.217,pas:-0.336,pac:0.183,tck:-0.274,hed:-0.236,sta:-0.02,pos:0.047,han:-0.277}};
+const SC12_FITC={safe:{fin:0.025,pas:0.286,pac:-0.169,tck:0.134,hed:0.031,sta:0.04,pos:0.034,han:0.030}, aggressive:{fin:-0.156,pas:-0.278,pac:0.274,tck:-0.169,hed:-0.162,sta:-0.02,pos:0.170,han:-0.171}};
 /* a plan's own worth at a gap, no lean, in league points: Elo on the balanced curve [at even, per Elo of gap] (pv.js,
    60,000 games a point). Sitting deep costs about 25 at even (draws: a point, not three) and pays only an underdog */
 const SC12_SHIFT={safe:[7.3,0.026], aggressive:[-25.1,-0.163]};
