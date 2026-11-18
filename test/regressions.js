@@ -532,15 +532,31 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     const P=(A.S.played[key]||[]).filter(p=>p.team===A.S.myTeam); P.forEach(p=>(p.impact||[]).forEach(c=>{ if(AU.length&&p.impact.length>L.replay.length-AU.length)graded++ })) }
   console.log(`  ${f}: ${asked} situation calls asked, ${auto} left to the assistant (not in reach)`);
   ok(outside===0,`${f}: ${outside} situation calls asked outside a game in reach`); ok(graded===0,`${f}: an assistant's not-in-reach answer weighed as yours`) }
-/* 78. the chance before the game doesn't move with the gameplan, and no line tells you which plan to pick (Ian) */
-{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8').replace('liveTick, answerLive,','liveTick, answerLive, setPlan(p){plan=p},'); const m={exports:{}};
+/* 78. the chance before the game doesn't move with the gameplan, and no line tells you which plan to pick (Ian). Round 88
+   (Ian: "words, number moves"): on engine 11 a basketball roster's shape makes one plan worth more than another (fit,
+   measured: scratch r88 fit.js), so there the chance moves by exactly that fit and nothing else, and a line names the
+   plan the roster suits only once the gap is worth 12 Elo, as a fact about the roster, never "try X"; everywhere else the
+   old rule holds */
+{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8').replace('liveTick, answerLive,','liveTick, answerLive, setPlan(p){plan=p}, fitOf(p){return typeof sportPlanFit==="function"?sportPlanFit(S.myTeam,p):0}, edgeAt(p){const g=SEA.nextGame(S.myTeam); if(!g)return null; return withPlan(p,()=>gameEdge(S.myTeam,g.home===S.myTeam?g.away:g.home,g.home===S.myTeam,!!g.neutral))}, ENGV(){return ENGINE_V},'); const m={exports:{}};
   new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
-  for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.html','Southampton'],['football-coach.html','Alabama']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
-    const seen=new Set(); let h='';
-    ['safe','balanced','aggressive'].forEach(pl=>{ api.setPlan(pl); h=api.view('team'); seen.add((h.match(/class="opct">([^<]*)</)||[])[1]) });
-    ok(seen.size===1&&[...seen][0],`${f}: the chance before the game moves with the plan (${[...seen].join(' / ')})`);
-    ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you which plan to pick`) } }
-
+  const PL=['safe','balanced','aggressive'], FITLINE=/Your roster leans to|Your roster doesn't suit|This plan suits your/;
+  let lined=0, moved=0;
+  for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['football-coach.html','Alabama']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
+    const shown={}, lines={}, edge={}, fit={}; let h='';
+    PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
+    ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you to try a plan`);
+    const fits=/basketball/.test(f)&&api.ENGV()>=11;
+    if(!fits){ ok(new Set(Object.values(shown)).size===1&&shown.balanced,`${f}: the chance before the game moves with the plan (${PL.map(p=>shown[p]).join(' / ')})`);
+      ok(!PL.some(p=>lines[p]),`${f}: a plan line where no plan fits`); continue }
+    // engine 11 basketball: the edge moves by the fit and nothing else, and the fit is the measured one for the roster's shape
+    ok(fit.balanced===0&&PL.every(p=>edge[p]!==null&&Math.abs(edge[p]-edge.balanced-fit[p])<1e-9),`${f} ${tm}: the chance's edge moves by other than the plan's fit (${PL.map(p=>(edge[p]-edge.balanced).toFixed(2)+' vs '+fit[p].toFixed(2)).join(', ')})`);
+    if(new Set(Object.values(shown)).size>1)moved++;
+    // a line exactly when another plan is 12 Elo better, or this one is the best by 12
+    PL.forEach(p=>{ const best=Math.max(...PL.map(q=>fit[q])), want=best-fit[p]>=12||(p!=='balanced'&&fit[p]===best&&fit[p]>=12);
+      if(lines[p])lined++;
+      ok(lines[p]===want,`${f} ${tm}: under ${p} a plan line ${lines[p]?'shows':'is missing'} (fits ${PL.map(q=>q+' '+fit[q].toFixed(1)).join(', ')})`) });
+    console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo`) }
+  console.log(`  plan fit: the chance moved for ${moved} of 6 basketball rosters, a plan line showed ${lined} times`) }
 /* 79. the chance before a game is the engine's, from the lineup you picked: a backup started moves it as much as it
    moves the game (Muse: 12% -> 12% with a point guard 26 worse; the game charged it in full), on every screen */
 for(const [f,team] of [['basketball-coach-pro.html','Detroit'],['basketball-coach.html','Duke'],['football-coach.html','Alabama'],['soccer-coach.html','Arsenal'],['hockey-coach-pro.html','Toronto']]){
