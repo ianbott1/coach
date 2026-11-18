@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="86f7ea2";
+<script>const BUILD_ID="95fbf96";
 /* ============ league: pro baseball ============ */
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
@@ -1322,6 +1322,33 @@ const LEADERS=[
   {l:"Wins",pos:STARTERS,v:s=>s.w||0},{l:"Strikeouts",pos:STARTERS.concat(["CL"]),v:s=>s.k||0},{l:"Saves",pos:["CL"],v:s=>s.sv||0}];
 const STAT_FMT={ip:ipStr};
 function STAT_EXTRA(pos){ return isPitcher(pos)?[["ERA",s=>s.ip?(s.er*27/s.ip).toFixed(2):"-"]]:[["AVG",s=>s.ab?(s.h/s.ab).toFixed(3).replace(/^0/,""):"-"]] }
+
+/* round 87: attributes (core 93_attrs). Hitters and pitchers have their own; every pitcher weighs alike, so a job
+   traded on the staff (swapRoles) changes nothing about him. Engine 10 plays them (50_game: the hitter's line, the
+   pitcher's strikeouts and walks, his stamina, the steal). */
+const ATTRS={
+  name:{con:"Contact",pow:"Power",eye:"Eye",spd:"Speed",fld:"Fielding",arm:"Arm",stf:"Stuff",ctl:"Control",sta:"Stamina"},
+  desc:{con:"singles, and fewer strikeouts",pow:"home runs and doubles",eye:"walks, and fewer strikeouts",spd:"steals and taking the extra base",
+    fld:"outs on balls in play",arm:"throwing out base stealers",stf:"strikeouts",ctl:"fewer walks",sta:"batters faced before he tires"},
+  band:{con:"t",pow:"t",eye:"m",spd:"p",fld:"t",arm:"p",stf:"p",ctl:"m",sta:"p"},
+  group:p=>/^(SP|CL)/.test(p)?"P":p==="C"?"C":p==="DH"?"DH":/^(LF|CF|RF)$/.test(p)?"OF":"IF",
+  /* weights by run value (round 87), measured on the engine's own dice (one attribute up three points, nothing taken
+     away, nine hitters or one starter, 10,000 games: scratch marg.js): a point of Power is worth 0.42 of a hitter's
+     edge, Contact 0.28, Eye 0.25, Fielding 0.045, Speed next to nothing (a steal is a step: few points cross one); a
+     point of Stuff 0.47 of a pitcher's, Control 0.42, Stamina 0.11 (the average of a point up and a point down:
+     a walk too many costs more than one saved gains). So the rating, which the trade screens, free agency
+     and the chance to win all read, is worth the same however a player leans (test/attrs-bs.js). A catcher's Arm, like
+     Speed, is a step in the steal: priced as little. */
+  w:{C:{con:.27,pow:.40,eye:.24,spd:.01,fld:.04,arm:.04}, IF:{con:.277,pow:.416,eye:.252,spd:.01,fld:.045},
+     OF:{con:.277,pow:.416,eye:.252,spd:.01,fld:.045}, DH:{con:.29,pow:.44,eye:.27}, P:{stf:.47,ctl:.42,sta:.11}},
+  lean:{C:{spd:-6}, IF:{}, OF:{spd:3}, DH:{}, P:{}},
+  role:{con:"Contact hitter",pow:"Power bat",eye:"Patient hitter",spd:"Speedster",fld:"Glove first",arm:"Cannon arm",
+    stf:"Power arm",ctl:"Control artist",sta:"Workhorse"},
+  roleBy:{C:{fld:"Defensive catcher",arm:"Defensive catcher"}},
+  allRound:{P:"Steady arm"},
+  plays:()=>ENGINE_V>=10,
+  train:{Hitters:{groups:["C","IF","OF","DH"],keys:["con","pow","eye","spd","fld"]}, Pitchers:{groups:["P"],keys:["stf","ctl","sta"]}}
+};
 /* ============ storage ============ */
 /* Where saves live. Inside Claude's artifact viewer that is window.storage;
    anywhere else (the published site, a file opened locally) it is the
@@ -1504,7 +1531,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=9;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=10;   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -2857,6 +2884,29 @@ const BS6={stamCut:+((typeof process!=="undefined"&&process.env&&process.env.BS6
 const BS_SPEED6=[["a burner",0.14,"burn"],["fast",0.08,"fast"],["fast",0.08,"fast"],["fast",0.08,"fast"],["fast",0.08,"fast"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],
   ["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["slow",-0.12,"slow"],["slow",-0.12,"slow"],["slow",-0.12,"slow"],["slow",-0.12,"slow"]];
 function bsV6(){ return ENGINE_V>=6 }
+/* round 87 (engine 10): the players' attributes (core 93_attrs) play. Each comes in through the game's context
+   (gameCtx: ctx.at, by name, as ctx.rate does), never from a roster mid-game.
+   - A hitter's edge over his lineup splits by attribute where engine 5 split it by rating: Power his home runs and a
+     fifth of his doubles, Contact his singles, most of his doubles and half his strikeouts, Eye his walks and the other
+     half. A hitter whose attributes all equal his rating bats exactly as on engine 9.
+   - A pitcher's shape (against his own rating, so it adds nothing to how good he is): Stuff strikeouts and fewer hits,
+     Control fewer walks and fewer home runs; Stamina how fast he tires past his eighteenth batter (letting a
+     tiring starter face more batters was measured to cost runs: by then the bullpen is better).
+   - The nine's Fielding (each man's against his rating) shades the singles they allow; Speed and a catcher's Arm set
+     the steal, where a hash of the name did.
+   Each term is recentred for its spread (exp is convex: a spread with no mean would add runs). Sizes by run value:
+   two players of one rating are worth about the same however they lean (test/attrs-bs.js). */
+const BS10={stf:+((typeof process!=="undefined"&&process.env&&process.env.BS10_S)||0.016), ctl:+((typeof process!=="undefined"&&process.env&&process.env.BS10_C)||0.0229),
+  fld:+((typeof process!=="undefined"&&process.env&&process.env.BS10_F)||0.05), sta:+((typeof process!=="undefined"&&process.env&&process.env.BS10_T)||0.03),
+  s2pow:0.2};
+function bsV10(){ return ENGINE_V>=10 }
+function bsSig(){ return (typeof attrScale==="function"?attrScale().s:5.8)*(typeof ATTR_SPREAD!=="undefined"?ATTR_SPREAD:0.8) }
+const bsHalfVar=m=>0.5*m*m*bsSig()*bsSig();
+// speed and arm from the attributes: about as many burners, fast, average and slow runners (and strong, average and
+// weak arms) as the name hash gave, by where his attribute stands in the league
+function bsZ(v){ const S=typeof attrScale==="function"?attrScale():{m:59,s:5.8}; return (v-S.m)/Math.sqrt(S.s*S.s+bsSig()*bsSig()) }
+function bsSpeedAt(v){ const z=bsZ(v); return z>1.645?BS_SPEED6[0]:z>0.674?BS_SPEED6[1]:z<-0.842?BS_SPEED6[19]:BS_SPEED6[10] }
+function bsArmAt(v){ const z=bsZ(v); return z>0.524?BS_ARM[0]:z<-0.842?BS_ARM[9]:BS_ARM[5] }
 const BS6_RP=+((typeof process!=="undefined"&&process.env&&process.env.BS6_RP)||50);
 function bsTired(){ return ENGINE_V>=3?BS_TIRED3:BS.tired }
 function bsPen(){ return bsV5()?BS5.pen:ENGINE_V>=3?BS_PEN3:BS.pen }
@@ -2933,12 +2983,18 @@ function ordw(n){ return ["","1st","2nd","3rd","4th","5th","6th","7th","8th","9t
 
 function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   ctx=ctx||{}; const fav=ctx.fav||{};
+  // engine 10: a player's attributes from the game's context (by side and name), and his rating
+  const AT=bsV10()&&ctx.at?ctx.at:null, atMemo={home:{},away:{}};
+  const atOf=(side,nm)=>{ if(!AT||!AT[side]||!nm)return null; const M=atMemo[side]; if(M[nm]!==undefined)return M[nm]; const v=AT[side][nm];
+    if(!v)return (M[nm]=null); if(!Array.isArray(v))return (M[nm]=v); const o={}; attrKeys(v[0]).forEach((k,j)=>o[k]=v[j+1]); return (M[nm]=o) };
+  const rOf=(side,nm)=>ctx.rate&&ctx.rate[side]&&nm?ctx.rate[side][nm]:null;
+  const spTire=sd=>{ const n=ctx.sp&&ctx.sp[sd]&&ctx.sp[sd].n, a=atOf(sd,n), r=rOf(sd,n); return a&&a.sta!=null&&r!=null?Math.exp(-BS10.sta*(a.sta-r)-bsHalfVar(BS10.sta)):1 };   // engine 10: how fast he tires
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1);
   const other=s=>s==="home"?"away":"home";
   const SPc=(ctx.sp)||{};
   const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,BS.form), bf:0, ra:0,
-      stam:BS.stamina[0]+rng.int(BS.stamina[1]-BS.stamina[0]+1)-(bsV6()?BS6.stamCut:0)}, pen:false, closer:false, bat:0,
+      stam:BS.stamina[0]+rng.int(BS.stamina[1]-BS.stamina[0]+1)-(bsV6()?BS6.stamCut:0), tm:spTire(sd)}, pen:false, closer:false, bat:0,
     tell:{pull:0,bip:0,pit:0,pa:0,k:0,wh:0,n:0}});
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{}, asked:{}, queue:[], ask:null, ot:0, done:false, playoff:!!playoff, S:{home:side0("home"),away:side0("away")}};
@@ -2956,8 +3012,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(R.setup&&(X.setupClose||(inn()>=8&&relOuts(fs,R.setup.n)<3)))return (X.rel=R.setup.n,R.setup);
     if(R.long&&relOuts(fs,R.long.n)<6&&(X.rel===R.long.n||(!X.rel&&inn()<=6)))return (X.rel=R.long.n,R.long);
     X.rel="bullpen"; return {n:"bullpen",q:0} };
-  const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return bsPen()+(bsV6()?relief(fs).q:0);
-    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired() };
+  let pNow=null;   // engine 10: who is pitching this plate appearance (set by pitEdge)
+  const pitEdge=fs=>{ const X=st.S[fs]; pNow=null; if(X.closer)return BS.closer; if(X.pen){ const R=bsV6()?relief(fs):null; if(R&&R.n!=="bullpen")pNow=R.n; return bsPen()+(R?R.q:0) }
+    pNow=X.sp.n;
+    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired()*(P.tm||1) };
   // the plan's effect on their bats: right read, wrong read
   const readEdge=(bat,fs)=>{ const A=st.S[bat].app, X=st.S[fs]; if(!X.ans)return 0; return ANSWERS[X.ans].beats===A?BS.read.right:(APPROACH[A].counter===X.ans?0:BS.read.wrong) };
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };
@@ -2967,7 +3025,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 5: the hitter's own edge (hx) shows most in his power and his eye, least in his singles (a star's .385 was all singles)
-    if(hx){ p.hr*=Math.exp(hx*BS5_HX.hr); p.bb*=Math.exp(hx*BS5_HX.bb); p.s2*=Math.exp(hx*BS5_HX.s2); p.s1*=Math.exp(hx*BS5_HX.s1); p.k*=Math.exp(-hx*BS5_HX.k) }
+    if(hx&&typeof hx==="object"){ const H5=BS5_HX, h=BS5.hit, q=BS10.s2pow;   // engine 10: by attribute, each term recentred for its spread
+      p.hr*=Math.exp(hx.pow*H5.hr-bsHalfVar(H5.hr*h)); p.s2*=Math.exp((q*hx.pow+(1-q)*hx.con)*H5.s2-bsHalfVar(H5.s2*h)*(q*q+(1-q)*(1-q)));
+      p.s1*=Math.exp(hx.con*H5.s1-bsHalfVar(H5.s1*h)); p.bb*=Math.exp(hx.eye*H5.bb-bsHalfVar(H5.bb*h)); p.k*=Math.exp(-(hx.con+hx.eye)*0.5*H5.k-bsHalfVar(H5.k*h)*0.5) }
+    else if(hx){ p.hr*=Math.exp(hx*BS5_HX.hr); p.bb*=Math.exp(hx*BS5_HX.bb); p.s2*=Math.exp(hx*BS5_HX.s2); p.s1*=Math.exp(hx*BS5_HX.s1); p.k*=Math.exp(-hx*BS5_HX.k) }
+    if(AT){ const a=atOf(fs,pNow), r=rOf(fs,pNow);   // the pitcher's shape: against his own rating
+      if(a&&r!=null&&a.stf!=null){ const sx=(a.stf-r)*BS10.stf, cx=(a.ctl-r)*BS10.ctl, vs=bsHalfVar(BS10.stf), vc=bsHalfVar(BS10.ctl);
+        p.k*=Math.exp(sx-vs); p.s1*=Math.exp(-0.5*sx-0.25*vs); p.s2*=Math.exp(-0.6*sx-0.36*vs); p.bb*=Math.exp(-cx-vc); p.hr*=Math.exp(-0.6*sx-0.3*cx-0.36*vs-0.09*vc) }
+      p.s1*=Math.exp(-BS10.fld*(fldDev[fs]||0)) }
     let u=rng.r(), o="out"; for(const k of ["k","bb","hbp","s1","s2","s3","hr"]){ if(u<p[k]){ o=k; break } u-=p[k] }
     // the evidence their approach leaves (for your read): pitches seen, pulled balls in play, strikeouts
     const T=st.S[bat].tell, tl=BS_TELL[st.S[bat].app]; T.pa++; T.pit+=Math.max(1,Math.round(rng.gauss(tl[1],BS_TELL_SD.pit)));
@@ -3011,7 +3076,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const catcherOf=side=>bsV5()&&ctx&&ctx.catcher&&ctx.catcher[side]?ctx.catcher[side]:who(side,0);   // (engine 5: the order isn't by position)
   // engine 5: each hitter against his lineup's average (the day's nine), by rating
   const luMean={}; ["home","away"].forEach(sd=>{ const R=LU(sd).map(n=>rateOf(sd,n)).filter(x=>x!=null); luMean[sd]=R.length?R.reduce((a,b)=>a+b,0)/R.length:null });
-  const hitEdge=(bat,nm)=>{ const r=rateOf(bat,nm), m=luMean[bat]; return r==null||m==null?0:(r-m)*BS5.hit };
+  const hitEdge=(bat,nm)=>{ const r=rateOf(bat,nm), m=luMean[bat]; if(r==null||m==null)return 0;
+    const a=atOf(bat,nm); if(a&&a.pow!=null)return {pow:(a.pow-m)*BS5.hit, con:(a.con-m)*BS5.hit, eye:(a.eye-m)*BS5.hit};   // engine 10
+    return (r-m)*BS5.hit };
+  // engine 10: the nine's fielding, each man's against his own rating (the DH fields nothing)
+  const fldDev={}; ["home","away"].forEach(sd=>{ const L=LU(sd).map(n=>{ const a=atOf(sd,n), r=rateOf(sd,n); return a&&a.fld!=null&&r!=null?a.fld-r:null }).filter(x=>x!=null);
+    fldDev[sd]=L.length?L.reduce((x,y)=>x+y,0)/L.length:0 });
   // the pinch hitter is worth it: he's the better hitter, and you're not ahead (the computer's rule, and your assistant's)
   // round 79 (engine 7): a man who has pinch-hit is in the game, so he can't pinch-hit again (Ian: asked twice in a game,
   // the same man both times)
@@ -3051,7 +3121,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0));
     if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
-  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
+  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side)),atOf(side,onFirst[side]),atOf(other(side),catcherOf(other(side)))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
     bsCountSteal(st,side,ok,onFirst[side]); if(!ok){ const Xf=st.S[other(side)]; bsCountOuts(st,other(side),Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n,1) } };
   st.log=[];
   const apply=(side,dp,v)=>{
@@ -3084,7 +3154,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
       if(H.b[0]&&!H.b[1]&&H.outs<2&&lead(bat)===0&&inn()>=8&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
-        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        dp.p=bsStealP(rn,cn,atOf(bat,rn),atOf(other(bat),cn)); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn,atOf(bat,rn))[0]; dp.arm=bsArm(cn,atOf(other(bat),cn))[0]; dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true } }
     // one decision guaranteed in a one-run game from the 8th (round 59, Ian: "in a one-run game the player should never
     // be a spectator for three innings", Muse). If nothing worth asking has come by then, the first pinch-hit or steal
@@ -3095,7 +3165,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         if(queueCall(bat,dp))return true }
       if(H.b[0]&&!H.b[1]&&H.outs<2&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
-        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        dp.p=bsStealP(rn,cn,atOf(bat,rn),atOf(other(bat),cn)); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn,atOf(bat,rn))[0]; dp.arm=bsArm(cn,atOf(other(bat),cn))[0]; dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true } }
     return false;
   }
@@ -3108,7 +3178,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     cpuCloser(fs);
     // the computer's steal: a chance like any other, taken only when the runner should make it (round 58)
     // (yours too, wherever you weren't asked: your assistant plays the computer's rule)
-    if((!humans[bat]||!st.asked["steal"+inn()+bat])&&H.b[0]&&!H.b[1]&&H.outs<2&&(bsV6()?rng.r()<bsTryRate(onFirst[bat])&&bsStealP(onFirst[bat],catcherOf(fs))>=BS6.send:rng.r()<BS.stealTry&&bsStealP(onFirst[bat],catcherOf(fs))>=BS_SEND))steal(bat);
+    if((!humans[bat]||!st.asked["steal"+inn()+bat])&&H.b[0]&&!H.b[1]&&H.outs<2&&(bsV6()?rng.r()<bsTryRate(onFirst[bat],atOf(bat,onFirst[bat]))&&bsStealP(onFirst[bat],catcherOf(fs),atOf(bat,onFirst[bat]),atOf(fs,catcherOf(fs)))>=BS6.send:rng.r()<BS.stealTry&&bsStealP(onFirst[bat],catcherOf(fs))>=BS_SEND))steal(bat);
     // and its pinch hitter, in the spots you're asked about (round 58: it never pinch-hit, while your assistant did)
     if(inn()>=7&&Math.abs(lead(bat))<=2&&(H.b[1]||H.b[2])&&(st.S[bat].bat%9)>=6&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
       if(pinchWorth(bat,st.S[bat].bat%9))st.late[bat+"pinch"]=true }
@@ -3163,9 +3233,15 @@ function spCtx(t,step){
     const k=(step+strHash(t))%5, idx=k<3?BS_SP[k]:BK(BS_SP[k-3]), p=R[idx]; if(!p)return null;
     const mean=(R[BS_SP[0]].r+R[BS_SP[1]].r+R[BS_SP[2]].r+(R[BK(BS_SP[0])]||R[BS_SP[0]]).r+(R[BK(BS_SP[1])]||R[BS_SP[1]]).r)/5;
     return {n:p.n, q:(p.r-mean)*(bsV5()?BS5.q:0.012)} }catch(e){ return null } }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
-  lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
-  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
+  lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
+  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h,step,LH,BH),away:bsAttrs(a,step,LA,BA)}:undefined} }
+/* engine 10: the attributes of the men the engine reads today (the nine, the bench bat, the day's starter, the long man
+   and the set-up man), by name, as [group, values in the group's order]: kept with each computer game for its replay
+   (round 81), so short */
+function bsAttrs(t,step,lu,bench){ try{ const R=SEA.roster[t]||[], want=new Set((lu||[]).concat([bench])); const sp=spCtx(t,step), pc=penCtx(t);
+    if(sp)want.add(sp.n); if(pc){ if(pc.long)want.add(pc.long.n); if(pc.setup)want.add(pc.setup.n) }
+    const o={}; R.forEach(p=>{ if(!p||!p.n||!want.has(p.n)||o[p.n])return; const A=typeof attrOf==="function"?attrOf(p):null; if(!A)return; const g=attrGrp(p); o[p.n]=[g].concat(attrKeys(g).map(k=>A[k])) }); return o }catch(e){ return {} } }
 /* engine 6: the named relievers: the long man (the third starter's backup) and the set-up man (the closer's), healthy,
    each with his edge by rating against the rotation's top three, as a starter's is */
 function penCtx(t){ try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t], H=hurtSet(t), cl=POS.findIndex(P=>P.p==="CL");
@@ -3191,11 +3267,11 @@ function benchBat(t){ try{ const R=SEA.roster[t], H=hurtSet(t); let b=null; BS_H
    for (or hurts, if he isn't). The computer, your assistant and the evidence you see all use the same numbers. */
 const BS_SPEED=[["fast",0.08],["fast",0.08],["fast",0.08],["average",0],["average",0],["average",0],["average",0],["average",0],["slow",-0.12],["slow",-0.12]];
 const BS_ARM=[["a strong arm",-0.08],["a strong arm",-0.08],["a strong arm",-0.08],["an average arm",0],["an average arm",0],["an average arm",0],["an average arm",0],["an average arm",0],["a weak arm",0.06],["a weak arm",0.06]];
-function bsSpeed(nm){ return bsV6()?BS_SPEED6[strHash("spd|"+(nm||""))%20]:BS_SPEED[strHash("spd|"+(nm||""))%10] }
+function bsSpeed(nm,a){ if(a&&a.spd!=null)return bsSpeedAt(a.spd); return bsV6()?BS_SPEED6[strHash("spd|"+(nm||""))%20]:BS_SPEED[strHash("spd|"+(nm||""))%10] }
 /* engine 6: how often the computer sends him, a chance (runner on first, second open, under two out) */
-function bsTryRate(nm){ const k=bsSpeed(nm)[2]; return k==="burn"?BS6.burn:k==="fast"?BS6.fast:k==="avg"?BS6.avg:0 }
-function bsArm(nm){ return BS_ARM[strHash("arm|"+(nm||""))%10] }
-function bsStealP(runner,catcher){ return BS.steal+bsSpeed(runner)[1]+bsArm(catcher)[1] }
+function bsTryRate(nm,a){ const k=bsSpeed(nm,a)[2]; return k==="burn"?BS6.burn:k==="fast"?BS6.fast:k==="avg"?BS6.avg:0 }
+function bsArm(nm,a){ if(a&&a.arm!=null)return bsArmAt(a.arm); return BS_ARM[strHash("arm|"+(nm||""))%10] }
+function bsStealP(runner,catcher,ar,ac){ return BS.steal+bsSpeed(runner,ar)[1]+bsArm(catcher,ac)[1] }
 const BS_SEND=0.80;   // the computer (and your assistant) send a runner only this likely to make it
 function bsPlayer(t,nm){ try{ return (SEA.roster[t]||[]).find(p=>p&&p.n===nm)||null }catch(e){ return null } }
 function bsPinchEdge(batR,benchR){ if(batR==null||benchR==null)return BS.pinch; return Math.max(-0.12,Math.min(0.15,(benchR-batR)*0.012)) }
@@ -4987,7 +5063,7 @@ function dnRowHTML(p,t,label,canPick){
   const x=dnRead(p.pid,t), wk=S.off.picks.workouts||[];
   return `<div class="drow dnrow">
     <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${label||""}${x.wk?` <span class="dthere">worked out</span>`:x.unsure?` <span class="dmaybe">scouts unsure</span>`:""}</div>
-      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`} &middot; ${dnFit(p,t)}</div></div>
+      <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; ${x.wk?(o=>`after the workout ~${x.sr}, ceiling ~${x.spot} (your scouts had ~${o.sr}, ~${o.spot})`)(scoutRead(U,t,nflDraftClass(U,t).list[p.pid],false)):`scouts say ~${x.sr}, ceiling ~${x.spot}`}${typeof attrRoleRead==="function"&&attrRoleRead(p,x,t)?` &middot; ${esc(attrLooks(attrRoleRead(p,x,t)))}`:""} &middot; ${dnFit(p,t)}</div></div>
     ${!x.wk&&wk.length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
     ${canPick?`<button class="skip small dnpick" data-dnpick="${p.pid}" data-dnname="${esc(p.n||"")}">Draft</button>`:""}</div>`;
 }
@@ -5170,6 +5246,128 @@ function rbBannerHTML(B){
   const got=B.filter(x=>x.got), lost=B.filter(x=>!x.got);
   return `<div class="bnews small"><b>Your board:</b> ${got.length?"signed "+got.map(x=>`${esc(x.n)} (${esc(x.p)}, ${x.stars}\u2605)`).join(", "):"nobody signed"}${lost.length?`; lost ${lost.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to||"another program")}`).join(", ")}`:""}.</div>`;
 }
+/* round 87 (Ian, the player attributes design): a player is a shape, not one number. Each sport names 8-10
+   attributes (ATTRS, in its 10_players.js); each player carries the ones of his group (ATTRS.group: a stable group
+   from his position, so a job change mid-season never changes which he has or how they weigh). They are kept on the
+   rating's own scale and his rating is their weighted sum (ATTRS.w[group]), rounded, exactly: a 65 is a 65 however
+   his attributes lean. On screen they read 1-20, against his league (ATTR_SCALE: the starters' mean and spread, so
+   the soccer pyramid's tiers read as tiers, as in Football Manager).
+
+   Nothing here draws the season's dice:
+   - a shape (how a player leans) is drawn once, from his name, group and the career's seed (attrRng), around his
+     rating that day, and kept on him (p.at, with p.ar the rating it sums to). The same player drawn twice comes out
+     the same (draft night shows the shape that later arrives on the roster).
+   - each summer the league's own development sets his rating exactly as it always has; attrSync then spreads the
+     change across his attributes by age (physical early, technical in his prime, mental late) and, for your team,
+     your training focus. No draw: ratings, and so every result that reads them, are what they were.
+   Where an engine reads attributes (baseball, engine 10), it gets them through the game's own context (gameCtx), as
+   it gets ratings: never from a roster mid-game. */
+const ATTR_SCALE={cfb:{m:61.2,s:10.8}, nfl:{m:66.6,s:5.8}, ncaab:{m:61.9,s:10.9}, nba:{m:59.2,s:5.6}, nhl:{m:59.7,s:6.0},
+  epl:{m:49.2,s:13.0}, mlb:{m:59.0,s:5.8}};
+const ATTR_SPREAD=0.8;   // a shape's spread, in the league's starter standard deviations
+function attrScale(){ return ATTR_SCALE[LEAGUE.id]||{m:60,s:6} }
+function attrOn(){ return typeof ATTRS!=="undefined" }
+function attrGrp(p){ return p&&p.p?ATTRS.group(String(p.p)):null }
+function attrKeys(g){ const W=ATTRS.w[g]; return W?Object.keys(W):[] }
+// a player's own numbers: name, group, the career's seed (u.seed), never the season's
+function attrRng(u,p,g){ return new RNG((strHash("attr|"+((u&&u.seed)||0)+"|"+p.n+"|"+g)>>>0)||1) }
+// the weighted sum, exact: nudge the heaviest attribute until the rounded sum is the rating
+function attrFix(v,W,K,r){
+  const sum=()=>K.reduce((s,k,j)=>s+W[k]*v[j],0);
+  const order=K.map((k,j)=>j).sort((a,b)=>W[K[b]]-W[K[a]]||a-b);
+  let guard=0; while(Math.round(sum())!==r&&guard++<400){ const up=r>sum();
+    const j=up?order[0]:order.find(i=>v[i]>1); if(j===undefined)break; v[j]+=up?1:-1 }
+  return v }
+function attrGen(u,p){
+  const g=attrGrp(p), K=attrKeys(g); if(!K.length)return null;
+  const W=ATTRS.w[g], M=(ATTRS.lean&&ATTRS.lean[g])||{}, sd=attrScale().s*ATTR_SPREAD, R=attrRng(u,p,g);
+  let d=K.map(k=>R.gauss(M[k]||0,sd)); const mean=K.reduce((s,k,j)=>s+W[k]*d[j],0);
+  d=d.map(x=>x-mean);                            // a shape leans; it doesn't add to the rating
+  return attrFix(K.map((k,j)=>Math.max(1,Math.round(p.r+d[j]))),W,K,p.r) }
+/* how a summer's change lands, by age: share of a gain, share of a loss */
+const ATTR_AGE={ p:{up:a=>a<=24?1.4:a<=27?1.0:a<=30?0.5:0.25, dn:a=>a>=30?1.7:1.1},
+                 t:{up:a=>a<=30?1.0:0.8, dn:a=>0.9},
+                 m:{up:a=>a<=24?0.6:a<=28?1.0:1.4, dn:a=>a>=30?0.45:0.7} };
+const ATTR_FOCUS=1.5;   // training focus: the attribute you pick takes this much more of a summer's growth
+function attrAge(p){ return p.age!=null?p.age:p.c!=null&&p.c<=6?17+p.c:p.c!=null?p.c:24 }
+function attrDevelop(p,focus){
+  const g=attrGrp(p), K=attrKeys(g), W=ATTRS.w[g], delta=p.r-p.ar, a=attrAge(p);
+  if(!delta||!K.length)return; const up=delta>0;
+  const s=K.map(k=>{ const B=ATTR_AGE[ATTRS.band[k]||"t"]; let x=up?B.up(a):B.dn(a); if(focus===k)x*=up?ATTR_FOCUS:1/ATTR_FOCUS; return x });
+  const den=K.reduce((t,k,j)=>t+W[k]*s[j],0)||1;
+  const v=p.at.map((x,j)=>Math.max(1,Math.round(x+delta*s[j]/den)));
+  p.ap=p.at; p.at=attrFix(v,W,K,p.r); p.ar=p.r }   // ap: last summer's, for the page's arrows
+/* every rostered player has his attributes, and they sum to his rating: run where a season's universe is fixed (a
+   new career, a new season) and on a reload (a career from before round 87 gets them then, from its players as they
+   are). focus: {team: {group: attribute}} (training focus; yours only). */
+function attrSync(u,focus,summer){
+  if(!attrOn()||!u||!u.roster)return;
+  Object.keys(u.roster).forEach(t=>{ const R=u.roster[t]; if(!Array.isArray(R))return; const F=(focus&&focus[t])||{};
+    R.forEach(p=>{ if(!p||p.r==null)return; const g=attrGrp(p), K=attrKeys(g); if(!K.length)return;
+      if(!Array.isArray(p.at)||p.at.length!==K.length){ p.at=attrGen(u,p); p.ar=p.r; return }
+      if(p.ar!==p.r)attrDevelop(p,F[g]); else if(summer)p.ap=p.at.slice() }) }) }   // a summer with no change: no arrows
+/* a player's attributes as {key: value on the rating scale}: his own, or (a prospect, a free agent not yet
+   synced) the shape he will arrive with */
+function attrOf(p){ if(!attrOn()||!p)return null; const g=attrGrp(p), K=attrKeys(g); if(!K.length)return null;
+  const v=Array.isArray(p.at)&&p.at.length===K.length&&p.ar===p.r?p.at:attrGen(typeof U!=="undefined"?U:null,p); if(!v)return null;
+  const o={}; K.forEach((k,j)=>o[k]=v[j]); return o }
+function attrShow(v){ const S=attrScale(); return Math.max(1,Math.min(20,Math.round(11+(v-S.m)/S.s*3))) }
+/* the role: the attribute he leans on most against his own rating (a label of his shape, not a mechanic) */
+function attrRole(p){ return attrRoleOf(p,attrOf(p)) }
+function attrRoleOf(p,A){ if(!A)return ""; const g=attrGrp(p), K=attrKeys(g);
+  let best=null, bd=-1e9; K.forEach(k=>{ const d=A[k]-p.r-((ATTRS.lean&&ATTRS.lean[g]&&ATTRS.lean[g][k])||0); if(d>bd){ bd=d; best=k } });
+  if(bd<attrScale().s*0.35)return ATTRS.allRound&&ATTRS.allRound[g]||"All-rounder";
+  const O=ATTRS.roleBy&&ATTRS.roleBy[g]; return (O&&O[best])||ATTRS.role[best]||"" }
+/* a prospect, as your scouts see him (round 87: fog where the rating is already fogged, the draft): each attribute read
+   with an error of its own, wider when the scouts are unsure, narrow after a workout; the same read every time */
+function attrLooks(r){ return r?`looks like ${/^[aeiou]/i.test(r)?"an":"a"} ${r.toLowerCase()}`:"" }   // the role, read: a speedster, an all-rounder
+function attrRoleRead(p,x,team){ const A=attrOf(p); if(!A)return ""; x=x||{};
+  const sd=attrScale().s*ATTR_SPREAD*(x.wk?0.3:x.unsure?1.0:0.55), R={};
+  Object.keys(A).forEach(k=>{ const r=new RNG((strHash("aread|"+((typeof U!=="undefined"&&U&&U.seed)||0)+"|"+(team||"")+"|"+(p.pid!=null?p.pid:p.n)+"|"+k)>>>0)||1); R[k]=A[k]+r.gauss(0,sd) });
+  return attrRoleOf(p,R) }
+/* the player's page: his attributes in three bands, 1-20, last summer's change beside each, what each one does */
+const ATTR_BANDS=[["t","Technical"],["m","Mental"],["p","Physical"]];
+function attrColor(v){ return v>=16?"var(--turf)":v>=12?"var(--bone)":v>=8?"var(--muted)":"var(--flag)" }
+function attrPlays(){ return typeof ATTRS!=="undefined"&&typeof ATTRS.plays==="function"&&ATTRS.plays() }
+function attrGridHTML(p){
+  const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g), was=Array.isArray(p.ap)&&p.ap.length===K.length?p.ap:null;
+  const cell=(k,j)=>{ const v=attrShow(A[k]), d=was?v-attrShow(was[j]):0;
+    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)" title="${esc(ATTRS.desc[k]||"")}">
+      <span>${esc(ATTRS.name[k])}<span style="color:var(--muted);font-size:11px"> &middot; ${esc(ATTRS.desc[k]||"")}</span></span>
+      <span style="font-family:var(--mono);white-space:nowrap">${d>0?`<span style="color:var(--turf);font-size:11px">&#9650;${d} </span>`:d<0?`<span style="color:var(--flag);font-size:11px">&#9660;${-d} </span>`:""}<b style="color:${attrColor(v)}">${v}</b></span></div>` };
+  const cols=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b); if(!ks.length)return "";
+    return `<div style="flex:1 1 180px;min-width:0"><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:4px 0">${l}</div>${ks.map(([k,j])=>cell(k,j)).join("")}</div>` }).join("");
+  const role=attrRole(p);
+  return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
+    <div class="attrgrid" style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px">${cols}</div>
+    <div class="fnote" style="margin:4px 0 10px">1-20 against the league. Together they make up his rating (${p.r}); ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
+/* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
+   division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
+function attrTeamShape(t){
+  if(!attrOn()||!SEA||!SEA.roster)return null;
+  const teams=LEAGUE.groupFilter&&typeof CONF!=="undefined"?NAMES.filter(x=>CONF[x]===CONF[t]):NAMES;
+  const val=x=>{ const R=SEA.roster[x]||[], s={}, n={}; for(let i=0;i<POS.length;i++){ const p=R[i], A=p&&attrOf(p); if(!A)continue; Object.keys(A).forEach(k=>{ s[k]=(s[k]||0)+A[k]; n[k]=(n[k]||0)+1 }) }
+    const o={}; Object.keys(s).forEach(k=>o[k]=s[k]/n[k]); return o };
+  const V={}; teams.forEach(x=>V[x]=val(x)); const mine=V[t]||{};
+  const rk=Object.keys(mine).map(k=>({k:k,r:1+teams.filter(x=>V[x][k]!=null&&V[x][k]>mine[k]).length}));
+  if(!rk.length)return null; rk.sort((a,b)=>a.r-b.r||(a.k<b.k?-1:1));
+  return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }
+function attrShapeHTML(t){ const S0=attrTeamShape(t); if(!S0)return "";
+  const nm=x=>`${esc(ATTRS.name[x.k])} ${ordinal(x.r)}`;
+  return `<div class="note"><b>Your shape:</b> ${S0.best.map(nm).join(", ")} of ${S0.n}${S0.worst&&S0.best.indexOf(S0.worst)<0?`; ${nm(S0.worst)}`:""}. ${attrPlays()?"Each plays in the game as its name says.":"For now they show who your players are and how they'll grow; this game's engine doesn't read them yet."}</div>` }
+/* training focus (the summer's development, your team only): one attribute for each training group, or balanced. The
+   chosen one takes ATTR_FOCUS times its share of a gain (the rest a little less), so the rating moves as it would
+   have: nothing is free, only where it lands. Offered where attributes play (ATTRS.plays). */
+function attrTrainOn(){ return attrOn()&&typeof ATTRS.plays==="function"&&!!ATTRS.train }
+function attrTrainHTML(){
+  if(!attrTrainOn()||!S||!S.off)return ""; const T=S.train||{};
+  const row=(gname,G)=>{ const cur=T[G.groups[0]]||"";
+    return `<div style="margin:6px 0"><div class="fnote" style="margin-bottom:4px">${esc(gname)}</div><div class="subtabs" style="flex-wrap:wrap">${[["","Balanced"]].concat(G.keys.map(k=>[k,ATTRS.name[k]])).map(([k,l])=>
+      `<button class="subtab" data-train="${esc(gname)}|${k}" aria-pressed="${cur===k}">${esc(l)}</button>`).join("")}</div></div>` };
+  return `<div class="card" style="padding:8px 12px;margin:8px 0"><div class="grouphead" style="margin-top:0">Training focus</div>
+    <div class="fnote">Where this ${OFFW()}'s development lands on your players. The focus takes half again its usual share of a gain and the rest a little less, so a player's rating moves as it would have: you choose what kind of player he grows into.</div>
+    ${Object.keys(ATTRS.train).map(g=>row(g,ATTRS.train[g])).join("")}</div>` }
+function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.train=Object.assign({},S.train||{}); G.groups.forEach(g=>{ if(k)S.train[g]=k; else delete S.train[g] }) }
 /* ============ players you care about ============ */
 /* Your best players as people: how they're playing lately (form), where their
    careers are heading (the next milestone), whether this is their last year
@@ -5308,6 +5506,7 @@ function playerView(){
   const line=(lab,st,you)=>({you:you,c:[lab,String(st.g||0)].concat(cols.map(c=>esc(c[1](st))))});
   let h=back+`<div class="dateline"><h2>${no!=null?"#"+no+" ":""}${esc(p.n)}</h2><span>${esc(F.team)}</span></div>
     <div class="fnote" style="margin-bottom:10px">${esc(pos)}${p.c!=null&&typeof classTag==="function"&&classTag(p.c)?" &middot; "+esc(classTag(p.c)):""} &middot; rating ${p.r}${p.pot>p.r?", ceiling "+p.pot:""}${p.k&&p.k.yrs?` &middot; ${p.k.yrs} year${p.k.yrs===1?"":"s"} left${p.k.sal?" at $"+(Math.round(p.k.sal*10)/10)+"M":""}`:""}${F.i>=POS.length?" &middot; backup":""}</div>`;
+  if(typeof attrGridHTML==="function")h+=attrGridHTML(p);   // round 87: his attributes
   // this season, and per game where a sport counts that way
   const st=p.st2||blankStats(pos);
   h+=`<div class="grouphead">${SEA.year}</div>`+(st.g?`<div class="fnote" style="margin:2px 0 4px">${esc(statLine(pos,st))}</div>`:`<div class="fnote">No games yet this season.</div>`);
@@ -7457,7 +7656,7 @@ function nflBoardHTML(P){
   const row=(p,i,on)=>`<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span> ${avail(p)}</div>
-        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${dnRead(p.pid).sr}, ceiling ~${dnRead(p.pid).spot}${dnRead(p.pid).wk?" &middot; worked out":dnRead(p.pid).unsure?" &middot; scouts unsure":""}</div></div>
+        <div class="fnote">${esc(p.from)} &middot; age ${p.age} &middot; scouts say ~${dnRead(p.pid).sr}, ceiling ~${dnRead(p.pid).spot}${typeof attrRoleRead==="function"&&attrRoleRead(p,dnRead(p.pid),dnTeam())?` &middot; ${esc(attrLooks(attrRoleRead(p,dnRead(p.pid),dnTeam())))}`:""}${dnRead(p.pid).wk?" &middot; worked out":dnRead(p.pid).unsure?" &middot; scouts unsure":""}</div></div>
       ${dnOn()&&!dnRead(p.pid).wk&&(S.off.picks.workouts||[]).length<dnWorkouts()?`<button class="skip small" data-dnwork="${p.pid}">Work out</button>`:""}
       <button class="skip small" ${on?`data-bdrm="${p.pid}"`:`data-bdadd="${p.pid}"`}>${on?"Remove":"Add"}</button></div>`;
   let h=lotteryHTML(dnTeam());
@@ -8082,7 +8281,7 @@ function lateFloorDue(L,any){
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer"];   // round 41: the season story
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer","train"];   // round 87: training focus   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -8529,6 +8728,7 @@ function rebuild(){
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
+  attrSync(U);   // round 87: a career from before attributes gets them now, from its players as they are (no draws)
   NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
   if(S.schedLock&&S.schedLock.year===U.year)U.schedLock=S.schedLock;
@@ -8569,6 +8769,9 @@ function rebuild(){
 // the season's trades into next season's rosters, once, as soon as the season is over (round 85: before, at the summer's
 // commit only, so the offseason's screens showed the man you'd traded away on your re-sign list, and a re-sign choice
 // kept by slot fell on the man who'd taken his place)
+// round 87: training focus, by coach: {team: {group: attribute}} (yours, and every coach's in a shared seat)
+function trainFocus(){ const o={}; if(isHotSeat())(S.coaches||[]).forEach((c,i)=>{ const T=i===(S.turn||0)?S.train:c.train; if(T)o[i===(S.turn||0)?S.myTeam:c.myTeam]=T });
+  else if(S.train)o[S.myTeam]=S.train; return o }
 function carryTrades(){ if(SEA&&SEA.phase==="done"&&typeof tdCarry==="function")tdCarry(U) }
 /* Opening the offseason runs the league's coaching carousel, and it changes the league itself:
    head coaches hired and fired, coordinators hired away, every coach's record. A reload rebuilt
@@ -8837,6 +9040,7 @@ function newDynasty(team,seed,coachName,roster){
   distinctLeague(u);
   u.schedV=4;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads; 4: round 79, no back-to-back sets (baseball)
   u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
+  attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -9241,6 +9445,7 @@ function endSeason(rng,choices,act,seasonTeam){
   U.schedV=4;                                            // (schedOrder; 3: round 71; 4: round 79)
   U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time
+  attrSync(U,trainFocus(),true);                              // round 87: the summer's change, spread across each player's attributes
   // a promotion or a firing belongs to its season: kept by step, last season's were replayed into this one on every
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null; S.promos={}; S.fires={}; S.choiceYear=U.year;
@@ -9881,10 +10086,11 @@ function rosterView(){
   if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
   if(typeof staffRolesHTML==="function")h+=staffRolesHTML();   // baseball: the rotation and the bullpen's roles (round 82)
   h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
+  if(typeof attrShapeHTML==="function")h+=attrShapeHTML(my);   // round 87: the team's shape
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    const tag=p=>`${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    const tag=p=>`${typeof attrRole==="function"&&attrRole(p)?`<span class="roletag" style="color:var(--vote)">${esc(attrRole(p))}</span> &middot; `:""}${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
     return `<div class="depth ${inj?'out':''}">
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
@@ -11537,7 +11743,7 @@ function render0(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+LEAGUE.ui.offseasonScreen():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
       (playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
@@ -11668,6 +11874,7 @@ function render0(){
     if(ROLE_SEL===null){ ROLE_SEL=i; render() } else if(ROLE_SEL===i){ ROLE_SEL=null; render() } else { const a=ROLE_SEL; ROLE_SEL=null; swapRoles(a,i) } });
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
+  document.querySelectorAll("[data-train]").forEach(b=>b.onclick=()=>{ const [g,k]=b.dataset.train.split("|"); attrTrainSet(g,k); save(); render() });   // round 87: training focus
   document.querySelectorAll("[data-facheap]").forEach(b=>b.onclick=()=>{ S.faCheap=!S.faCheap; save(); render() });   // hockey's market, cheapest first (round 48)
   document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.feat;
