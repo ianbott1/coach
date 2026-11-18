@@ -12,9 +12,12 @@ function featureEdge(sea,team,idx){
    (its index in POS), then the position's stat keys in order (a list per game took 16 MB over a baseball season) */
 let GL_STRIDE=0;
 function glStride(){ if(!GL_STRIDE)GL_STRIDE=6+Math.max(...Object.keys(STAT_KEYS).map(k=>STAT_KEYS[k].length)); return GL_STRIDE }
+/* the ground is 1 at home, and 2 is added for a cup game (round 89: a cup week can hold a league game and a cup tie with
+   the same club at the same ground and the same score, and their lines were one game's: 2 of 7,760 soccer team-games) */
+let LOG_CUP=false;
 function logGame(pl,pos,line,step,tm,a,b,pa,pb){
   const keys=STAT_KEYS[pos]||[], home=tm===a, gl=pl.gl||(pl.gl=[]), w=glStride();
-  gl.push(step,NAMES.indexOf(home?b:a),home?1:0,home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
+  gl.push(step,NAMES.indexOf(home?b:a),(home?1:0)|(LOG_CUP?2:0),home?pa:pb,home?pb:pa,POS.findIndex(P=>P.p===pos));
   for(let i=0;i<w-6;i++)gl.push(i<keys.length?(line[keys[i]]||0):0) }
 /* round 74: the old way, a line per player drawn from his rating and the score (a sport's fallback) */
 function statLinesOld(rng,c){ return c.act.map(x=>({pl:x.pl,pos:x.P,line:gameStats(rng,x.pl,x.i,c.pf,c.pa,c.pf>c.pa)})) }
@@ -127,7 +130,7 @@ class Season{
   _resolve(a,b,neutral,extra){
     let sd=1, edge=0;
     // a cup tie: a knockout, and nothing to do with anyone's league record
-    const cup=!!(extra&&extra.cup);
+    const cup=!!(extra&&extra.cup); LOG_CUP=cup;
     if(this.userTeam===a||this.userTeam===b)this._userDrives=null;   // this game's drives only (see below)
     if(this.userTeam===a||this.userTeam===b){
       const P=PLANS[this.plan]||PLANS.balanced;

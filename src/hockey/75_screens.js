@@ -25,9 +25,10 @@ function hkSkater(team,u){
    rewatch names the same men after a trade. */
 const HK_GW={C:0.10,LW:0.10,RW:0.10,D:0.045,D2:0.035}, HK_AW={C:0.12,LW:0.11,RW:0.11,D:0.075,D2:0.06}, HK_SW={C:0.10,LW:0.10,RW:0.10,D:0.09,D2:0.07};
 const HK_DEPTHW=0.9, HK_PSTAR=0.55;
-/* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.4x a spread, as basketball's box) */
+/* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
+   basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
-  return Math.exp(0.35*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)) }
+  return Math.max(0.6,Math.min(1.6,Math.exp(0.22*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)))) }
 function hkDressed(tm,W,lk){
   const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
   const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];

@@ -49,7 +49,7 @@ for(const [f,team] of CASES.filter(c=>!only||c[0].startsWith(only))){
         // the game, not the club he's with now: a man traded in the season (round 85: the computer's clubs trade on deadline
         // day) logged his earlier games for his old club; the opponent, the ground and the score name the side
         const opp=A.NAMES[G[1]], W=(A.SEA.weeks[G[0]]||{games:[]}).games, sc=g=>[g.hp!==undefined?g.hp:g.h,g.ap!==undefined?g.ap:g.a];
-        const cand=W.filter(g=>{ const [h,a]=sc(g); return G[2]?(g.away===opp&&h===G[3]&&a===G[4]):(g.home===opp&&a===G[3]&&h===G[4]) }).map(g=>G[2]?g.home:g.away);   // a cup week: two clubs can meet one side on a step
+        const cand=W.filter(g=>{ const [h,a]=sc(g); return !!g.cup===!!(G[2]&2)&&((G[2]&1)?(g.away===opp&&h===G[3]&&a===G[4]):(g.home===opp&&a===G[3]&&h===G[4])) }).map(g=>(G[2]&1)?g.home:g.away);   // a cup week: two clubs can meet one side on a step
         const club=cand.length===1?cand[0]:cand.indexOf(tm)>=0?tm:(cand[0]||tm);
         const key=[yr,club,G[0],G[1],G[2],G[3],G[4]].join('|'), g=games[key]=games[key]||{pf:G[3],pa:G[4],rows:[]};
         const o={pos:P.p,n:pl.n,r:pl.r}; (A.STAT_KEYS[P.p]||[]).forEach((k,i)=>o[k]=G[6+i]); g.rows.push(o) } }));

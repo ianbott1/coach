@@ -62,7 +62,7 @@ function boxLines(g,step,all){
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
         // (round 82: and the score: a cup week can hold a league game and a cup tie with the same club at the same ground,
         // and the box score showed the other game's lines)
-        if(p.gl[j]===step&&p.gl[j+1]===oi&&p.gl[j+2]===hf&&(p.gl[j+3]===undefined||p.gl[j+3]===(sd==="home"?g.hp:g.ap))&&(p.gl[j+4]===undefined||p.gl[j+4]===(sd==="home"?g.ap:g.hp))){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
+        if(p.gl[j]===step&&p.gl[j+1]===oi&&(p.gl[j+2]&1)===hf&&((p.gl[j+2]&2)>0)===!!g.cup&&(p.gl[j+3]===undefined||p.gl[j+3]===(sd==="home"?g.hp:g.ap))&&(p.gl[j+4]===undefined||p.gl[j+4]===(sd==="home"?g.ap:g.hp))){ const P=POS[p.gl[j+5]]; if(!P)break; const o={}; (STAT_KEYS[P.p]||[]).forEach((k,q)=>o[k]=p.gl[j+6+q]);
           out[sd].push({n:p.n,i:i,pos:P.p,s:o}); break } } }) });
   return out.home.length||out.away.length?out:null;
 }
