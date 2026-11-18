@@ -55,7 +55,8 @@ for(const [f,team,sport] of [['hockey-coach-pro.html','Boston','hk'],['soccer-co
     const Rb=leanOn(R0,A.BK(5),'rfx',D,false), T0=shape(R0), Tb=shape(Rb), Th=shape(Rb,new Set([5]));
     ok(Math.abs(Tb.g[0].rfx-T0.g[0].rfx)<1e-9&&Tb.g[1].rfx>T0.g[1].rfx+0.01&&Th.g[0].rfx>T0.g[0].rfx+0.01,`${f}: the backup goalie's Reflexes count when he's in net (${T0.g[1].rfx.toFixed(3)} to ${Tb.g[1].rfx.toFixed(3)}) and when the starter is hurt (starts: ${Th.g[0].rfx.toFixed(3)}), not otherwise`);
   } else { const fi=play(big('fin'),0,N), pa=play(big('pas'),0,N), st=play(big('sta'),0,N);
-    ok(fi.L.g>base.L.g*1.04&&Math.abs(fi.L.s/base.L.s-1)<0.02,`${f}: a finishing team scores more (${(base.L.g/N).toFixed(2)} to ${(fi.L.g/N).toFixed(2)} a game) from the same shots on target (${(base.L.s/N).toFixed(2)} to ${(fi.L.s/N).toFixed(2)})`);
+    // a goal is a shot on target too, so the ones that didn't go in are the same chances
+    ok(fi.L.g>base.L.g*1.04&&Math.abs((fi.L.s-fi.L.g)/(base.L.s-base.L.g)-1)<0.03,`${f}: a finishing team scores more (${(base.L.g/N).toFixed(2)} to ${(fi.L.g/N).toFixed(2)} a game, ${(100*base.L.g/base.L.s).toFixed(0)}% to ${(100*fi.L.g/fi.L.s).toFixed(0)}% of its shots on target) from the same chances (saved: ${((base.L.s-base.L.g)/N).toFixed(2)} to ${((fi.L.s-fi.L.g)/N).toFixed(2)})`);
     ok(pa.L.s>base.L.s*1.04,`${f}: a passing team makes more shots on target: ${(base.L.s/N).toFixed(2)} to ${(pa.L.s/N).toFixed(2)} a game`);
     ok(st.L.late/st.L.g>base.L.late/base.L.g+0.005,`${f}: a team with Stamina scores more of its goals in the last half hour: ${(100*base.L.late/base.L.g).toFixed(1)}% to ${(100*st.L.late/st.L.g).toFixed(1)}%`);
     const Rb=leanOn(R0,A.BK(5),'fin',D,false), Ts=shape(R0,new Set([5])), Tb=shape(Rb,new Set([5]));
