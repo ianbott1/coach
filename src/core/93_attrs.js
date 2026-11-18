@@ -120,3 +120,23 @@ function attrTrainHTML(){
     <div class="fnote">Where this ${OFFW()}'s development lands on your players. The focus takes half again its usual share of a gain and the rest a little less, so a player's rating moves as it would have: you choose what kind of player he grows into.</div>
     ${Object.keys(ATTRS.train).map(g=>row(g,ATTRS.train[g])).join("")}</div>` }
 function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.train=Object.assign({},S.train||{}); G.groups.forEach(g=>{ if(k)S.train[g]=k; else delete S.train[g] }) }
+
+/* round 89 (engine 12): a computer club plays the plan its roster suits (Ian: computer clubs choose a plan for their
+   shape). Only when the fit is worth it (PLAN_PICK_MIN Elo over balanced, as the plan rows' line), and only when the
+   plan's own shape at this gap doesn't take it back: more events favour the better side, fewer the weaker (sportPlanShift,
+   measured per sport: the Elo on the balanced curve that a plan is worth at a gap, with no lean). gap: this side's edge.
+   human: the fit on a person's path (the plan also picks a person's system), for your assistant's pick. */
+const PLAN_PICK_MIN=12;
+function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
+  let best="balanced", bv=0;
+  ["safe","aggressive"].forEach(pl=>{ const f=human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl); if(!(f>=PLAN_PICK_MIN))return;
+    const v=f+(typeof sportPlanShift==="function"?sportPlanShift(pl,gap||0):0); if(v>bv){ bv=v; best=pl } });
+  return best }
+/* a table by gap [-300..300, step 75], read between its points */
+function planShiftAt(T,gap){ if(!T)return 0; const G=[-300,-225,-150,-75,0,75,150,225,300], g=Math.max(-300,Math.min(300,gap)), j=Math.min(7,Math.floor((g+300)/75)), t=(g-G[j])/75; return T[j]+(T[j+1]-T[j])*t }
+/* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
+   worth PLAN_PICK_MIN Elo. lean: what each plan's roster leans to */
+function planFitWords(t,pl,lean){ if(typeof PLANS==="undefined"||typeof sportPlanFit!=="function")return "";
+  const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}, best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
+  if(best!==pl&&v[best]-v[pl]>=PLAN_PICK_MIN)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean[best]}: <b>${esc(PLANS[best].l)}</b> suits it.`;
+  return best===pl&&pl!=="balanced"&&v[pl]>=PLAN_PICK_MIN?`This plan suits your ${lean[pl]}.`:"" }

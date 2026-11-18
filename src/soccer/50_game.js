@@ -43,6 +43,42 @@ const SC_BASE = {
   prepped:{own:1.05, opp:0.95}   // ...and for the right thing: drilled all week, sharper than a change made mid-game
 };
 const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.sc)||{}, (typeof SC_TRY!=="undefined"?SC_TRY:{}));
+/* ============ engine 12 (round 89): the attributes play ============
+   The team's shape on the pitch (scShapeOf, through gameCtx sh): each man's lean (an attribute against his own rating)
+   weighed by his position's weight for it and his minutes (a position's share; the man behind him the rest). A man's
+   leans weigh to nothing and each term is worth the same per point (SC12.c, measured: scratch r89), so a lean changes
+   how a team plays, not what it is worth. Passing and Pace: chances made. Tackling and Positioning: chances allowed.
+   Heading: half at each end (set pieces). Finishing: goals from the chances made (not more shots); Handling, the
+   keeper's: goals from the chances allowed. Stamina: how fast the legs go. Plans realise some more than others
+   (SC12.pw): taking the game to them is a passing game, sitting deep a game of pace on the break and of shape. */
+const SC12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
+const SC12=Object.assign({a:+(SC12_ENV("SC12_A")||2.5),
+  c:Object.assign({fin:0.05,pas:0.05,pac:0.05,tck:0.0494,pos:0.0494,hedO:0.025,hedD:0.025,han:0.05,sta:0.331},   // measured: a point of any is worth SC12.a rating points of goal margin (0.0603 a rating point; r89 marg-sc.js, 150,000 games: 0.99-1.01)
+    SC12_ENV("SC12_C")?JSON.parse(SC12_ENV("SC12_C")):{}),
+  pw:Object.assign({safe:{pas:1.4,pac:0.7,tck:1.15}, aggressive:{pac:1.6,pas:0.7,pos:1.3}},
+    SC12_ENV("SC12_PW")?JSON.parse(SC12_ENV("SC12_PW")):{})});
+const SC_SHK=["fin","pas","pac","tck","hed","sta","pos","han"];
+function scV12(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=12 }
+function scShapeOf(R,H){ const T={}; SC_SHK.forEach(k=>T[k]=0); if(!R||typeof attrOf!=="function")return T;
+  const add=(p,m)=>{ if(!p||!(m>0))return; const A=attrOf(p); if(!A)return; const W=ATTRS.w[attrGrp(p)]||{}; SC_SHK.forEach(k=>{ if(A[k]!=null&&W[k])T[k]+=m*W[k]*(A[k]-p.r) }) };
+  POS.forEach((P,i)=>{ const hs=H&&H.has(i), hb=H&&H.has(BK(i));
+    if(hs)add(hb?null:R[BK(i)],P.w); else { add(R[i],P.w*(1-P.bench)); if(!hb)add(R[BK(i)],P.w*P.bench) } });
+  SC_SHK.forEach(k=>T[k]=Math.round(T[k]*1000)/1000); return T }
+function scShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return scShapeOf(SEA.roster[t],H) }catch(e){ return scShapeOf(null) } }
+/* the plan's fit (round 89): taking the game to them is a passing game, sitting deep a game of pace on the break and of
+   shape (SC12.pw). Measured (scratch r89 fit-sc.js, 150,000 games a cell): per point of lean, in rating points per
+   point of SC12.a, on top of balanced; SC12_FIT on a person's path (the plan also picks a person's approach), SC12_FITC
+   on the computer's */
+const SC12_FIT={safe:{}, aggressive:{}};
+const SC12_FITC={safe:{}, aggressive:{}};
+/* a plan's own worth at a gap, no lean, in league points: Elo on the balanced curve, by gap -300..300 step 75 (pv.js) */
+const SC12_SHIFT={safe:[0,0,0,0,0,0,0,0,0], aggressive:[0,0,0,0,0,0,0,0,0]};
+function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T[k]); return R_SLOPE*SC12.a*v }
+function sportPlanFit(t,pl){ return scV12()?scFitOf(SC12_FIT[pl],scShapeT(t)):0 }
+function sportPlanFitC(t,pl){ return scV12()?scFitOf(SC12_FITC[pl],scShapeT(t)):0 }
+function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
+function sportShape(t){ return scV12()?scShapeT(t):null }
+function sportPlanFitLine(t,pl){ return scV12()?planFitWords(t,pl,{safe:"passers",aggressive:"pace and shape"}):"" }
 
 /* gameplans and in-game modes: how many chances a side creates, and allows */
 const LATE_SEG=(typeof process!=="undefined"&&process.env&&+process.env.SC_LSEG)||13;   // the late call at 65' (round 33: 8.7 points a call, 4% close either way; at 70' 5.9, 29%; at 60' 7.2, but it halved the reading edge over Pearl, 1.2 -> 0.5)
@@ -198,6 +234,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   st.gap=gap;
   const other=s=>s==="home"?"away":"home";
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
+  // engine 12 (round 89): the shapes. Chances made and allowed; goals from them; legs
+  const SH=scV12()&&ctx.sh&&ctx.sh.home&&ctx.sh.away?ctx.sh:null;
+  const pwOf=(md,k)=>(SC12.pw[md]&&SC12.pw[md][k])||1;
+  const makeF=(sd,mX,mY)=>{ if(!SH)return 1; const X=SH[sd], Y=SH[other(sd)], c=SC12.c;
+    return Math.max(0.3,1+SC12.a*(c.pas*pwOf(mX,"pas")*X.pas+c.pac*pwOf(mX,"pac")*X.pac+c.hedO*X.hed-c.tck*pwOf(mY,"tck")*Y.tck-c.pos*pwOf(mY,"pos")*Y.pos-c.hedD*Y.hed)) };
+  const finF=(sd)=>{ if(!SH)return 1; const X=SH[sd], Y=SH[other(sd)], c=SC12.c; return Math.max(0.3,1+SC12.a*(c.fin*X.fin-c.han*Y.han)) };
+  const legsF=(sd)=>SH?Math.max(0.3,1-SC12.a*SC12.c.sta*SH[sd].sta):1;
   /* each side's approach: the computer's from its edge (the better side
      presses or attacks the flanks, the weaker sits deep or goes direct), a
      person's from the gameplan they picked */
@@ -242,10 +285,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       const myLegs=(X.E[2]*0.6+X.E[1]*0.4), theirLegs=(O.E[0]*0.6+O.E[1]*0.4);
       own*=(1-SC.tiredOwn*(1-myLegs))*(1+SC.tiredOpp*(1-theirLegs));
       if(X.red)own*=SC.red.own; if(O.red)own*=SC.red.opp;
-      return own;
+      return own*makeF(side,m[side],m[other(side)]);
     };
-    let lamH=SC.goals/SEGS*Math.exp(e/2)*rateOf("home");
-    let lamA=SC.goals/SEGS*Math.exp(-e/2)*rateOf("away");
+    const fH=finF("home"), fA=finF("away");
+    let lamH=SC.goals/SEGS*Math.exp(e/2)*rateOf("home")*fH;
+    let lamA=SC.goals/SEGS*Math.exp(-e/2)*rateOf("away")*fA;
     if(s>=12&&st.h!==st.a){ if(st.h<st.a){lamH*=1+SC.chase;lamA*=1+SC.exposed} else {lamA*=1+SC.chase;lamH*=1+SC.exposed} }
     const gH=poisson(rng,lamH), gA=poisson(rng,lamA);
     const t0=s*5;
@@ -254,7 +298,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     for(let i=0;i<gA;i++)ev.push({m:minute(),side:"away",k:"goal",u:rng.int(100)});
     st.h+=gH; st.a+=gA;
     // shots, big chances that didn't go in
-    [["home",lamH,gH],["away",lamA,gA]].forEach(([sd,lam,g])=>{
+    [["home",lamH/fH,gH],["away",lamA/fA,gA]].forEach(([sd,lam,g])=>{   // the chances: Finishing turns more into goals, not more into shots
       const X=st.S[sd]; let shots=g+poisson(rng,lam*3.4), sot=g+Math.min(shots-g,poisson(rng,lam*1.1));
       // a chance the commentary calls (a save, a miss) is a shot in the numbers too:
       // a match once showed 0 shots and two great saves (same draws, same order)
@@ -285,7 +329,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     // legs
     ["home","away"].forEach(sd=>{ const X=st.S[sd], ap=APPROACH[X.app], md=m[sd];
       const hard=(md==="push"||md==="win")?1.25:(md==="sit"||md==="point")?0.9:md==="safe"?1.12:1;
-      [0,1,2].forEach(u=>{ X.E[u]=Math.max(0,X.E[u]-SC.drain*ap.legs[u]*X.F[u]*hard*(0.85+rng.r()*0.3)) }) });
+      const lf=legsF(sd); [0,1,2].forEach(u=>{ X.E[u]=Math.max(0,X.E[u]-SC.drain*ap.legs[u]*X.F[u]*hard*lf*(0.85+rng.r()*0.3)) }) });
     // bookings: a press and a chase make more; a booked centre-back can see red
     ["home","away"].forEach(sd=>{ const X=st.S[sd], md=m[sd];
       const p=SC.yellow*(X.app==="press"?1.35:1)*(md==="push"?1.3:1)*(lead(sd)<0?1.1:1);
@@ -307,7 +351,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   };
   const extraTime=()=>{
     const e=gap*SC.edge; st.ot=1;
-    const gH=poisson(rng,SC.goals*SC.etGoals*Math.exp(e/2)), gA=poisson(rng,SC.goals*SC.etGoals*Math.exp(-e/2));
+    const gH=poisson(rng,SC.goals*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,SC.goals*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
     st.h+=gH; st.a+=gA;
     const ev=[]; for(let i=0;i<gH;i++)ev.push({m:91+rng.int(30),side:"home",k:"goal",u:rng.int(100)});
     for(let i=0;i<gA;i++)ev.push({m:91+rng.int(30),side:"away",k:"goal",u:rng.int(100)});
@@ -385,7 +429,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
 }
 /* each club's usual approach this season, and the seed for its scouting report */
 function clubStyle(t,year){ return APPROACH_KEYS[strHash(t+"|"+year)%APPROACH_KEYS.length] }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:scV12()?{home:scShapeT(h),away:scShapeT(a)}:undefined} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

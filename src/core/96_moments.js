@@ -95,7 +95,7 @@ function replayGame(g,step){
   try{ if(!SEA||!SEA._rp||g.drives)return g.drives?g:null;
     const k=[step,g.home,g.away,g.cup?1:0].join("|"), E=SEA._rp.get(k); if(!E)return null;
     const r=new RNG(0); r.a=E.ra; r.sp=E.rs;
-    const gs=playGame(r,E.eh,E.ea,"balanced","balanced",E.go?JSON.parse(E.go):null);
+    const gs=playGame(r,E.eh,E.ea,E.ph||"balanced",E.pa||"balanced",E.go?JSON.parse(E.go):null);
     const h=gs.h, a=gs.a, hp=g.hp!==undefined?g.hp:g.h, ap=g.ap!==undefined?g.ap:g.a;
     if(h!==hp||a!==ap)return null;
     if(E.st){ const st=JSON.parse(E.st); (gs.drives||[]).forEach((d,i)=>{ const x=st[i]; if(!x)return; if(x[0])d.by=x[0]; (d.ev||[]).forEach((e,j)=>{ const y=x[1]&&x[1][j]; if(!y)return; if(y[0])e.nm=y[0]; if(y[1])e.an=y[1]; if(y[2])e.dp=y[2]; if(y[3])e.un=y[3] }) }) }

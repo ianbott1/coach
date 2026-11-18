@@ -55,6 +55,51 @@ const HK_BASE = {
   prepped:{own:1.05, opp:0.95}   // ...for the right one: drilled, sharper than a change made mid-game
 };
 const HK = Object.assign({}, HK_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.hk)||{}, (typeof HK_TRY!=="undefined"?HK_TRY:{}));
+/* ============ engine 12 (round 89): the attributes play ============
+   The team's shape on the ice (hkShapeOf, through gameCtx sh): each skater's lean (an attribute against his own rating)
+   weighed by his group's weight for it and his ice time (a position's share; the man behind him takes the depth's share,
+   the user's lines and pairings deciding it); the goalie in net on his own. A man's leans weigh to nothing, and each
+   term below is worth the same per point (HK12.c, measured: scratch r89), so a lean changes how a team plays, not what
+   it is worth. Shooting: a shot's chance of going in. Passing: shots made. Skating: half shots made, half shots kept
+   from your end. Checking: shots allowed. Defence: the chance of the shots allowed. The goalie in net: Reflexes at even
+   strength, Positioning more on the penalty kill. Plans realise some more than others (HK12.pw): skating with them
+   is a skating game, clogging it up a checking one. */
+const HK12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
+const HK12=Object.assign({a:+(HK12_ENV("HK12_A")||2.5),
+  c:Object.assign({sht:0.0443,pas:0.0576,sktO:0.0286,sktD:0.0286,chk:0.0574,def:0.0439,rfx:0.0530,gpo:0.0402,gpoPP:1.6,rfxPP:0.5},   // measured: a point of any is worth HK12.a rating points of goal margin (0.1098 a rating point; r89 marg-hk.js, 150,000 games: 0.99-1.02)
+    HK12_ENV("HK12_C")?JSON.parse(HK12_ENV("HK12_C")):{}),
+  pw:Object.assign({safe:{skt:1.5,pas:1.25,chk:0.7,def:0.75}, aggressive:{chk:1.5,def:1.4,skt:0.6,pas:0.8}},
+    HK12_ENV("HK12_PW")?JSON.parse(HK12_ENV("HK12_PW")):{})});
+const HK_SHK=["sht","pas","skt","chk","def"], HK_GK=["rfx","gpo"];
+function hkV12(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=12 }
+/* R a roster, H the set of hurt slots, dep the user's ice time ({f,d,g}: ride/bal/roll) or null */
+function hkShapeOf(R,H,dep){ const T={}; HK_SHK.forEach(k=>T[k]=0); const G=[{rfx:0,gpo:0},{rfx:0,gpo:0}];
+  if(!R||typeof attrOf!=="function")return {sk:T,g:G};
+  const add=(p,m)=>{ if(!p||!(m>0))return; const A=attrOf(p); if(!A)return; const W=ATTRS.w[attrGrp(p)]||{}; HK_SHK.forEach(k=>{ if(A[k]!=null&&W[k])T[k]+=m*W[k]*(A[k]-p.r) }) };
+  const share=i=>{ const g=Object.keys(DEPLOY).find(x=>DEPLOY[x].idx.indexOf(i)>=0), k=dep&&dep[g]; return k&&k!=="bal"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench };
+  for(let i=0;i<5;i++){ const P=POS[i], b=share(i), hs=H&&H.has(i), hb=H&&H.has(BK(i));
+    if(hs)add(hb?null:R[BK(i)],P.w); else { add(R[i],P.w*(1-b)); if(!hb)add(R[BK(i)],P.w*b) } }
+  // the goalies: [the one who starts, the one behind him]; a hurt starter's backup starts and a walk-on (no lean) backs him up
+  const gk=p=>{ const o={rfx:0,gpo:0}; const A=p&&attrOf(p); if(!A)return o; const W=ATTRS.w[attrGrp(p)]||{}; HK_GK.forEach(k=>{ if(A[k]!=null&&W[k])o[k]=POS[5].w*W[k]*(A[k]-p.r) }); return o };
+  const s0=H&&H.has(5), b0=H&&H.has(BK(5)), g0=s0?(b0?null:R[BK(5)]):R[5], g1=s0||b0?null:R[BK(5)];
+  G[0]=gk(g0); G[1]=gk(g1);
+  const r3=v=>Math.round(v*1000)/1000; HK_SHK.forEach(k=>T[k]=r3(T[k])); G.forEach(o=>HK_GK.forEach(k=>o[k]=r3(o[k])));
+  return {sk:T,g:G} }
+function hkShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return hkShapeOf(SEA.roster[t],H,typeof deployOf==="function"?deployOf(SEA,t):null) }catch(e){ return hkShapeOf(null) } }
+/* the plan's fit (round 89): skating with them is a skating game, clogging it up a checking one (HK12.pw). Measured
+   (scratch r89 fit-hk.js, 150,000 games a cell): per point of lean, in rating points per point of HK12.a, on top of
+   balanced; HK12_FIT on a person's path (the plan also picks a person's system), HK12_FITC on the computer's */
+const HK12_FIT={safe:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}, aggressive:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}};
+const HK12_FITC={safe:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}, aggressive:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}};
+/* a plan's own worth at a gap, no lean (more events favour the better side): Elo on the balanced curve, by gap
+   -300..300 step 75 (scratch r89 pv.js) */
+const HK12_SHIFT={safe:[0,0,0,0,0,0,0,0,0], aggressive:[0,0,0,0,0,0,0,0,0]};
+function hkFitOf(F,T){ if(!F)return 0; let v=0; HK_SHK.forEach(k=>v+=(F[k]||0)*T.sk[k]); HK_GK.forEach(k=>v+=(F[k]||0)*T.g[0][k]); return R_SLOPE*HK12.a*v }
+function sportPlanFit(t,pl){ return hkV12()?hkFitOf(HK12_FIT[pl],hkShapeT(t)):0 }
+function sportPlanFitC(t,pl){ return hkV12()?hkFitOf(HK12_FITC[pl],hkShapeT(t)):0 }
+function sportPlanShift(pl,gap){ return planShiftAt(HK12_SHIFT[pl],gap) }
+function sportShape(t){ if(!hkV12())return null; const T=hkShapeT(t); return Object.assign({},T.sk,T.g[0]) }
+function sportPlanFitLine(t,pl){ return hkV12()?planFitWords(t,pl,{safe:"skaters",aggressive:"checking and defence"}):"" }
 /* gameplans and in-game modes: how many events a side creates, and allows */
 const AGGR = {
   safe:      {own:1.12, opp:1.10},   // skate with them: more hockey, both ways
@@ -182,6 +227,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const startGoalie=(sd,who)=>{ const X=st.S[sd]; if(who==="starter")X.form+=HK.tired; else { X.backupIn=true; X.startedBk=true; X.form+=bkCost(sd) } };
   if(HK_GSTART)["home","away"].forEach(sd=>{ if(GK[sd]&&GK[sd].b2b&&!humans[sd])startGoalie(sd,"backup") });
   const other=s=>s==="home"?"away":"home";
+  // engine 12: the teams' shapes (round 89). Factors on a side's shots and on its shots' chance; the goalie in net's own
+  const SH=hkV12()&&ctx.sh&&ctx.sh.home&&ctx.sh.away?ctx.sh:null;
+  const pwOf=(m,k)=>(HK12.pw[m]&&HK12.pw[m][k])||1;
+  const shotF=(sd,mX,mY)=>{ if(!SH)return 1; const X=SH[sd].sk, Y=SH[other(sd)].sk, c=HK12.c;
+    return Math.max(0.3,1+HK12.a*(c.pas*pwOf(mX,"pas")*X.pas+c.sktO*pwOf(mX,"skt")*X.skt-c.chk*pwOf(mY,"chk")*Y.chk-c.sktD*pwOf(mY,"skt")*Y.skt)) };
+  // the shooters' part (what the shots were worth: the goalie read's expected goals follow it) and the goalie's
+  const finSk=(sd,mX,mY)=>{ if(!SH)return 1; const X=SH[sd].sk, Y=SH[other(sd)].sk, c=HK12.c;
+    return Math.max(0.3,1+HK12.a*(c.sht*pwOf(mX,"sht")*X.sht-c.def*pwOf(mY,"def")*Y.def)) };
+  const finG=(sd,pp)=>{ if(!SH)return 0; const G=SH[other(sd)].g[st.S[other(sd)].backupIn?1:0], c=HK12.c;
+    return -HK12.a*(c.rfx*(pp?c.rfxPP:1)*G.rfx+c.gpo*(pp?c.gpoPP:1)*G.gpo) };
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's system: the better side forechecks, the weaker traps
   const pickSys=(side)=>{
@@ -214,15 +269,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(X.prepd)f*=ANSWERS[X.ans].beats===O.sys?HK.prepped.own:HK.misprep.own;
       if(O.prepd)f*=ANSWERS[O.ans].beats===X.sys?HK.prepped.opp:HK.misprep.opp;
       return f };
-    let lamH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home");
-    let lamA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away");
+    let lamH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home")*shotF("home",mH,mA);
+    let lamA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away")*shotF("away",mA,mH);
     if(s>=8&&st.h!==st.a){ if(st.h<st.a){lamH*=1+HK.scoreFx;lamA*=1-HK.scoreFx*0.6} else {lamA*=1+HK.scoreFx;lamH*=1-HK.scoreFx*0.6} }
     // a shot's chance: the shooter's edge, and the goalie it's against
-    const pH=HK.sh*(1+e*HK.finishEdge)+st.S.away.form, pA=HK.sh*(1-e*HK.finishEdge)+st.S.home.form;
+    const kH=finSk("home",mH,mA), kA=finSk("away",mA,mH);
+    const pH=HK.sh*(1+e*HK.finishEdge)*(kH+finG("home"))+st.S.away.form, pA=HK.sh*(1-e*HK.finishEdge)*(kA+finG("away"))+st.S.home.form;
     const t0=s*5, minute=()=>t0+rng.r()*5;
     const sv=[];   // round 70: every shot stopped, for the highlights (Ian: "more saves"); placed by count, no draws
-    const shoot=(side,n,p,pp)=>{ const G=st.S[other(side)]; let g=0;
-      for(let i=0;i<n;i++){ G.sa++; G.xga+=pp?HK.ppSh:HK.sh;
+    const shoot=(side,n,p,pp,xk)=>{ const G=st.S[other(side)]; let g=0;
+      for(let i=0;i<n;i++){ G.sa++; G.xga+=(pp?HK.ppSh:HK.sh)*(xk||1);
         if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:t0+5*(i+0.5)/n,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
         { g++; G.ga++;
           // was it soft? A goalie on a bad night lets in more that he should stop
@@ -231,13 +287,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
           ev.push({m:minute(),side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)}) } }
       return g };
     const sH=shotsIn(rng,lamH), sA=shotsIn(rng,lamA);
-    let gH=shoot("home",sH,pH), gA=shoot("away",sA,pA);
+    let gH=shoot("home",sH,pH,false,kH), gA=shoot("away",sA,pA,false,kA);
     const Lh=st.lines.h, La=st.lines.a; let ppH=0,ppA=0;
     const penAt=(sd,m)=>{ (st.penAt=st.penAt||{})[sd]=m; return m };
     if(rng.r()<HK.pens/SEGS){ ppH=shotsIn(rng,HK.ppShots); ev.push({m:penAt("away",minute()),side:"away",k:"pen",u:rng.int(100)});
-      const g=shoot("home",ppH,HK.ppSh*(1+e*HK.finishEdge)+st.S.away.form,true); gH+=g; Lh.ppg+=g; Lh.pp++; La.pim+=2 }
+      const g=shoot("home",ppH,HK.ppSh*(1+e*HK.finishEdge)*(kH+finG("home",true))+st.S.away.form,true,kH); gH+=g; Lh.ppg+=g; Lh.pp++; La.pim+=2 }
     if(rng.r()<HK.pens/SEGS){ ppA=shotsIn(rng,HK.ppShots); ev.push({m:penAt("home",minute()),side:"home",k:"pen",u:rng.int(100)});
-      const g=shoot("away",ppA,HK.ppSh*(1-e*HK.finishEdge)+st.S.home.form,true); gA+=g; La.ppg+=g; La.pp++; Lh.pim+=2 }
+      const g=shoot("away",ppA,HK.ppSh*(1-e*HK.finishEdge)*(kA+finG("away",true))+st.S.home.form,true,kA); gA+=g; La.ppg+=g; La.pp++; Lh.pim+=2 }
     Lh.sog+=sH+ppH; La.sog+=sA+ppA;
     st.h+=gH; st.a+=gA;
     // big saves, now and then
@@ -282,8 +338,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const e=gap, pH=0.5+e*HK.finishEdge*2.2, ev=[];
     if(st.playoff){                                          // sudden death: 20-minute periods until a goal
       let k=0; while(k++<8){ st.ot=k;
-        const lamH=HK.shots/3*(1+e*HK.shotEdge), lamA=HK.shots/3*(1-e*HK.shotEdge);
-        const gH=goalsFrom(rng,shotsIn(rng,lamH),HK.sh*(1+e*HK.finishEdge)+st.S.away.form), gA=goalsFrom(rng,shotsIn(rng,lamA),HK.sh*(1-e*HK.finishEdge)+st.S.home.form);
+        const lamH=HK.shots/3*(1+e*HK.shotEdge)*shotF("home","balanced","balanced"), lamA=HK.shots/3*(1-e*HK.shotEdge)*shotF("away","balanced","balanced");
+        const gH=goalsFrom(rng,shotsIn(rng,lamH),HK.sh*(1+e*HK.finishEdge)*(finSk("home","balanced","balanced")+finG("home"))+st.S.away.form), gA=goalsFrom(rng,shotsIn(rng,lamA),HK.sh*(1-e*HK.finishEdge)*(finSk("away","balanced","balanced")+finG("away"))+st.S.home.form);
         if(gH||gA){ const w=(gH&&(!gA||rng.r()<gH/(gH+gA)))?"home":"away"; if(w==="home")st.h++; else st.a++;
           ev.push({m:60+(k-1)*20+rng.int(20),side:w,k:"goal",u:rng.int(100)}); break } }
       if(st.h===st.a){ const w=rng.r()<pH?"home":"away"; if(w==="home")st.h++; else st.a++; ev.push({m:60+st.ot*20,side:w,k:"goal",u:rng.int(100)}) }
@@ -388,7 +444,8 @@ function gkCtx(t,step){
     const b2b=step>0&&SEA.sched.some(g=>g.week===step-1&&(g.home===t||g.away===t)), R=SEA.roster[t], st=R[5], bk=R[BK(5)];
     if(!st||!bk)return {b2b:b2b};
     return {b2b:b2b, gap:st.r-bk.r, s:{n:st.n,r:st.r}, b:{n:bk.n,r:bk.r}} }catch(e){ return null } }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, gk:HK_GSTART?{home:gkCtx(h,step),away:gkCtx(a,step)}:undefined, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, gk:HK_GSTART?{home:gkCtx(h,step),away:gkCtx(a,step)}:undefined, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:hkV12()?{home:hkShapeT(h),away:hkShapeT(a)}:undefined} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};
