@@ -1,6 +1,6 @@
 /* ============ sport: basketball ============ */
 const SPORT={
-  lateFloor:{late:(D,d)=>D.length>=SEGS-1, close:6},   // round 71: the last segment, within two scores
+  lateFloor:{late:(D,d)=>D.length>=SEGS-1, close:6, skip:12},   // round 88: Skip stops within 12 as the last stretch starts: one in fifteen close finishes came back from 7-12 inside it, where Skip can't stop   // round 71: the last segment, within two scores
   margins:{close:3,rout:20,crush:25,blow:32},   // round 60: close, a rout, never in doubt, the week's blowout (core MG)
   scoreWord:"RUN",                 // the flash when you score
   id:"basketball",

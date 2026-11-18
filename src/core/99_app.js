@@ -19,7 +19,7 @@ const LATE_FLOOR_ON=true;
 function ffLateStop(L){
   try{ if(!L||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
-    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=F.close }catch(e){ return false } }
+    const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; return Math.abs((h||0)-(a||0))<=(F.skip||F.close) }catch(e){ return false } }   // round 88: Skip's own margin where a finish turns within one stretch (basketball)
 function lateFloorDue(L,any){
   try{ if(!LATE_FLOOR_ON||!L||L.h2h||L.lateShown||typeof SPORT==="undefined"||!SPORT.lateFloor)return false;
     const F=SPORT.lateFloor, D=L.drives||[], d=D[D.length-1]; if(!d||!F.late(D,d))return false;
