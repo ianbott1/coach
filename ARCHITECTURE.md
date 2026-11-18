@@ -358,6 +358,43 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 87: player attributes (FM-style; design agreed in the doc "Player attributes: design"), and baseball's engine 10.
+- Core 93_attrs.js; each sport's ATTRS in its 10_players.js (names, bands physical / technical / mental, weights per
+  position group, leans, roles). Every player keeps p.at (his group's attributes, on the rating scale) and p.ar (the
+  rating they sum to). The rounded weighted sum is his rating, exactly (attrFix nudges the heaviest attribute). Shapes
+  are drawn once from a hash of name, group and u.seed (attrRng): no season dice. Shown 1-20 per league (ATTR_SCALE:
+  the starters' mean and spread; 11 + 3 a standard deviation). Your own players exact; draft prospects through the
+  scouts' fog (attrRoleRead: a read of the role, foggier when unsure, sharper after a workout).
+- Development: each league's own loop sets the rating exactly as before; attrSync then spreads the change across the
+  attributes by age (the young gain physical, the old mental) and training focus, with no draws. Synced at a new
+  career (before S.uStart), each new season and every rebuild. So in six games results are identical to round 86:
+  their goldens match with at/ar/ap stripped (an engine-9 control build of this round, every field but screens).
+- Baseball, engine 10 (ENGINE_NOW 10; older seasons replay on their own engine: engine-replay passes 3 to 9). The
+  attributes reach the engine through the game's context (ctx.at, compact arrays, only the men read that day: 7.4 MB a
+  season of replay context, 5.1 before; 12.1 MB before trimming). The hitter's edge splits by attribute: Power drives
+  home runs and a fifth of doubles; Contact singles, most doubles and half the strikeouts; Eye walks and the other half.
+  A pitcher's shape is read against his own rating: Stuff (strikeouts up, hits down), Control (walks and home runs
+  down), Stamina (how fast he tires; first tried as a longer leash, which raised the innings leader to 240 and the wins
+  leader to 23). The nine's Fielding shades singles; Speed and Arm feed the steal (replacing the name hash). Every term
+  is recentred for the league's spread (bsHalfVar), so a lineup with no lean bats as on engine 9.
+- Weights by measured run value (a +/-3 bump of each attribute, common dice): C con .27 pow .40 eye .24 spd .01 fld .04
+  arm .04; IF and OF con .277 pow .416 eye .252 spd .01 fld .045; DH con .29 pow .44 eye .27; P stf .47 ctl .42 sta .11.
+  BS10: stf .016, ctl .0229, fld .05, sta .03, s2pow .2 (the pitcher terms a fifth under first measure: starters had
+  taken 64.8% of wins). Two players of one rating are worth the same within 3% however they lean (test/attrs-bs.js).
+- Measured after (bs-players, regular seasons): starters 63.7% of wins (round 86 62.3%), HR leader 43.0 on average
+  (42.4 on engine 9: the open "power a touch low" item moves a little), 4.4 runs a side; all in range.
+- On screen: the player page's attribute grid (three bands, arrows from last summer); the roster's "Your shape" line
+  and role tags; a role read on draft-night rows; baseball's offseason Training focus (Hitters / Pitchers). Not built
+  yet: per-attribute ceilings, attribute breakouts, training focus outside baseball, the other engines' hooks (round 88:
+  basketball).
+- Tests: attrs.js (all seven, four seasons: sums exact, shape kept corr > 0.85, no drift in the heaviest attribute,
+  development by age, drawn twice the same, pages draw: 166,149 checks), attrs-bs.js. migrate.js normalises the
+  roster's shape line and role tags. trades.js now clears its two hand-made injuries before a game is played with them:
+  they weren't in the save, so a reload's season was another (engine 10's deadline deals moved with it). Lesson: a test
+  that edits state the save doesn't hold must undo it before anything is simulated.
+- Goldens: six games screens and universe (the attribute keys and engine stamp) only; baseball re-recorded (engine 10);
+  hot seat: baseball only.
+
 Round 86: first-round picks in deals (football, basketball, hockey, baseball; soccer has no draft).
 - A pick goes with a man: their pick with their man (tdShopPick), or yours with yours (tdAskPick); tdDeal(...,pk) with
   pk 'mine' or 'theirs'. Valued by each club's own lights as the prospect the pick should bring (the class drawn on a

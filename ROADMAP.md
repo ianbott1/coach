@@ -105,13 +105,23 @@ on numbers they can't trust and a sport they read rather than watch.
 - Open dials: all-in trading strength (TD_MAX, TD_PROP); picks only as a sweetener (no pick-for-pick or pick-alone deals,
   no later rounds, no computer-to-computer pick deals: those would be engine code).
 
+## Round 87 (done)
+- FM-style attributes in all seven games (1-20, 8-10 a sport, three bands), from the agreed design doc. They sum
+  exactly to the rating and develop by age and training focus, with no new dice. The player page has the grid, the
+  roster has roles and "Your shape", draft night reads a prospect's role through the scouts' fog.
+- Baseball engine 10: the attributes play (Power/Contact/Eye split the hitter's line; Stuff/Control/Stamina; Fielding;
+  Speed and Arm in the steal). Weights come from measured run value, so a rating means the same however a player
+  leans (within 3%). Training focus is in baseball's offseason. The other six games play exactly as in round 86.
+- Next: round 88, basketball's engine hooks; then hockey, soccer, football; per-attribute ceilings and breakouts;
+  training focus everywhere; club styles from rosters (its own round).
+
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
   college football's field to the pro standard; clock, down and distance, count and outs on the surface.
 - Football: kick returns, blocks shown.
 
 ## Later: depth
-- Player attributes by category (as Football Manager) that drive performance and develop over time.
+- Player attributes: the other engines' hooks (round 88 basketball), ceilings and breakouts per attribute.
 - Baseball staff, further: a middle reliever and a sixth starter would need roster slots (the 8 pitcher slots are
   four jobs and their backups today); fatigue and pitch counts carried between days.
 - Awards: coach of the month, other sports' monthly awards; a top-five goals reel.
