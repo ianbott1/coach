@@ -132,8 +132,8 @@ function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||
   ["safe","aggressive"].forEach(pl=>{ const f=human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl); if(!(f>=PLAN_PICK_MIN))return;
     const v=f+(typeof sportPlanShift==="function"?sportPlanShift(pl,gap||0):0); if(v>bv){ bv=v; best=pl } });
   return best }
-/* a table by gap [-300..300, step 75], read between its points */
-function planShiftAt(T,gap){ if(!T)return 0; const G=[-300,-225,-150,-75,0,75,150,225,300], g=Math.max(-300,Math.min(300,gap)), j=Math.min(7,Math.floor((g+300)/75)), t=(g-G[j])/75; return T[j]+(T[j+1]-T[j])*t }
+/* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
+function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||0)):0 }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
    worth PLAN_PICK_MIN Elo. lean: what each plan's roster leans to */
 function planFitWords(t,pl,lean){ if(typeof PLANS==="undefined"||typeof sportPlanFit!=="function")return "";

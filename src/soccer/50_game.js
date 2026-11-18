@@ -49,11 +49,11 @@ const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tunin
    leans weigh to nothing and each term is worth the same per point (SC12.c, measured: scratch r89), so a lean changes
    how a team plays, not what it is worth. Passing and Pace: chances made. Tackling and Positioning: chances allowed.
    Heading: half at each end (set pieces). Finishing: goals from the chances made (not more shots); Handling, the
-   keeper's: goals from the chances allowed. Stamina: how fast the legs go. Plans realise some more than others
+   keeper's: goals from the chances allowed. Stamina: how fast the legs go, and the last half hour's chances. Plans realise some more than others
    (SC12.pw): taking the game to them is a passing game, sitting deep a game of pace on the break and of shape. */
 const SC12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
 const SC12=Object.assign({a:+(SC12_ENV("SC12_A")||2.5),
-  c:Object.assign({fin:0.0476,pas:0.0478,pac:0.0478,tck:0.0513,pos:0.0513,hedO:0.0249,hedD:0.0249,han:0.0512,sta:0.5172},   // measured: a point of any is worth SC12.a rating points of result (league points; equal goal margin first, r89 marg-sc.js, then by value, fitv.js, 100,000 games)
+  c:Object.assign({fin:0.0476,pas:0.0478,pac:0.0478,tck:0.0513,pos:0.0513,hedO:0.0249,hedD:0.0249,han:0.0512,sta:0.12,staL:0.05},   // measured: a point of any is worth SC12.a rating points of result (league points; equal goal margin first, r89 marg-sc.js, then by value, fitv.js, 100,000 games)
     SC12_ENV("SC12_C")?JSON.parse(SC12_ENV("SC12_C")):{}),
   pw:Object.assign({safe:{pas:1.4,pac:0.7,tck:1.15}, aggressive:{pac:2.0,pas:0.7,pos:1.75}},
     SC12_ENV("SC12_PW")?JSON.parse(SC12_ENV("SC12_PW")):{})});
@@ -69,10 +69,11 @@ function scShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x
    shape (SC12.pw). Measured (scratch r89 fit-sc.js, 150,000 games a cell): per point of lean, in rating points per
    point of SC12.a, on top of balanced; SC12_FIT on a person's path (the plan also picks a person's approach), SC12_FITC
    on the computer's */
-const SC12_FIT={safe:{}, aggressive:{}};
-const SC12_FITC={safe:{}, aggressive:{}};
-/* a plan's own worth at a gap, no lean, in league points: Elo on the balanced curve, by gap -300..300 step 75 (pv.js) */
-const SC12_SHIFT={safe:[0,0,0,0,0,0,0,0,0], aggressive:[0,0,0,0,0,0,0,0,0]};
+const SC12_FIT={safe:{fin:0.046,pas:0.306,pac:-0.154,tck:0.170,hed:0.048,sta:0,pos:0.061,han:0.063}, aggressive:{fin:-0.217,pas:-0.336,pac:0.183,tck:-0.274,hed:-0.236,sta:0,pos:0.047,han:-0.277}};
+const SC12_FITC={safe:{fin:0.025,pas:0.286,pac:-0.169,tck:0.134,hed:0.031,sta:0,pos:0.034,han:0.030}, aggressive:{fin:-0.156,pas:-0.278,pac:0.274,tck:-0.169,hed:-0.162,sta:0,pos:0.170,han:-0.171}};
+/* a plan's own worth at a gap, no lean, in league points: Elo on the balanced curve [at even, per Elo of gap] (pv.js,
+   60,000 games a point). Sitting deep costs about 25 at even (draws: a point, not three) and pays only an underdog */
+const SC12_SHIFT={safe:[7.3,0.026], aggressive:[-25.1,-0.163]};
 function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T[k]); return R_SLOPE*SC12.a*v }
 function sportPlanFit(t,pl){ return scV12()?scFitOf(SC12_FIT[pl],scShapeT(t)):0 }
 function sportPlanFitC(t,pl){ return scV12()?scFitOf(SC12_FITC[pl],scShapeT(t)):0 }
@@ -240,7 +241,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const makeF=(sd,mX,mY)=>{ if(!SH)return 1; const X=SH[sd], Y=SH[other(sd)], c=SC12.c;
     return Math.max(0.3,1+SC12.a*(c.pas*pwOf(mX,"pas")*X.pas+c.pac*pwOf(mX,"pac")*X.pac+c.hedO*X.hed-c.tck*pwOf(mY,"tck")*Y.tck-c.pos*pwOf(mY,"pos")*Y.pos-c.hedD*Y.hed)) };
   const finF=(sd)=>{ if(!SH)return 1; const X=SH[sd], Y=SH[other(sd)], c=SC12.c; return Math.max(0.3,1+SC12.a*(c.fin*X.fin-c.han*Y.han)) };
-  const legsF=(sd)=>SH?Math.max(0.3,1-SC12.a*SC12.c.sta*SH[sd].sta):1;
+  // Stamina: the legs go slower, and the last half hour's chances are a fitter side's (a drain alone saturated: no legs to lose)
+  const legsF=(sd)=>SH?Math.max(0.5,1-SC12.a*SC12.c.sta*SH[sd].sta):1;
+  const lateF=(sd,s)=>SH&&s>=12?Math.max(0.5,1+SC12.a*SC12.c.staL*(SH[sd].sta-SH[other(sd)].sta)):1;
   /* each side's approach: the computer's from its edge (the better side
      presses or attacks the flanks, the weaker sits deep or goes direct), a
      person's from the gameplan they picked */
@@ -285,7 +288,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       const myLegs=(X.E[2]*0.6+X.E[1]*0.4), theirLegs=(O.E[0]*0.6+O.E[1]*0.4);
       own*=(1-SC.tiredOwn*(1-myLegs))*(1+SC.tiredOpp*(1-theirLegs));
       if(X.red)own*=SC.red.own; if(O.red)own*=SC.red.opp;
-      return own*makeF(side,m[side],m[other(side)]);
+      return own*makeF(side,m[side],m[other(side)])*lateF(side,s);
     };
     const fH=finF("home"), fA=finF("away");
     let lamH=SC.goals/SEGS*Math.exp(e/2)*rateOf("home")*fH;

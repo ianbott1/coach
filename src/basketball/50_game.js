@@ -473,6 +473,10 @@ const BB11_FIT={safe:{sht:-0.37,fin:0.24}, aggressive:{sht:0.65,fin:-0.30}};
 function sportPlanFit(t,pl){ if(!bbV11()||!BB11_FIT[pl])return 0; const T=bbShapeT(t), F=BB11_FIT[pl];
   return R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin) }
 function sportShape(t){ return bbV11()?bbShapeT(t):null }
+/* round 89 (engine 12, the computer's plan): a plan's own worth at a gap, no lean, in wins: Elo on the balanced curve
+   [at even, per Elo of gap] (scratch r89 pv.js, 40,000 games a point) */
+const BB12_SHIFT={nba:{safe:[1,0.033],aggressive:[-1.9,-0.037]}, ncaab:{safe:[-4.7,0.038],aggressive:[4,-0.037]}};
+function sportPlanShift(pl,gap){ const T=typeof LEAGUE!=="undefined"&&BB12_SHIFT[LEAGUE.id]; return planShiftAt(T&&T[pl],gap) }
 /* in words, on the plan rows: which plan your shape suits, once the difference is worth about a point and a half of
    win chance (a lean of half a league spread) */
 function sportPlanFitLine(t,pl){ if(!bbV11()||typeof PLANS==="undefined")return "";

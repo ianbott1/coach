@@ -89,11 +89,11 @@ function hkShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x
 /* the plan's fit (round 89): skating with them is a skating game, clogging it up a checking one (HK12.pw). Measured
    (scratch r89 fit-hk.js, 150,000 games a cell): per point of lean, in rating points per point of HK12.a, on top of
    balanced; HK12_FIT on a person's path (the plan also picks a person's system), HK12_FITC on the computer's */
-const HK12_FIT={safe:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}, aggressive:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}};
-const HK12_FITC={safe:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}, aggressive:{sht:0,pas:0,skt:0,chk:0,def:0,rfx:0,gpo:0}};
-/* a plan's own worth at a gap, no lean (more events favour the better side): Elo on the balanced curve, by gap
-   -300..300 step 75 (scratch r89 pv.js) */
-const HK12_SHIFT={safe:[0,0,0,0,0,0,0,0,0], aggressive:[0,0,0,0,0,0,0,0,0]};
+const HK12_FIT={safe:{sht:0.059,pas:0.288,skt:0.514,chk:-0.184,def:-0.164,rfx:0.074,gpo:0.035}, aggressive:{sht:-0.103,pas:-0.304,skt:-0.431,chk:0.189,def:0.229,rfx:-0.088,gpo:-0.044}};
+const HK12_FITC={safe:{sht:0.044,pas:0.250,skt:0.457,chk:-0.213,def:-0.198,rfx:0.034,gpo:0.012}, aggressive:{sht:-0.051,pas:-0.225,skt:-0.362,chk:0.290,def:0.258,rfx:-0.065,gpo:-0.031}};
+/* a plan's own worth at a gap, no lean, in standings points: Elo on the balanced curve [at even, per Elo of gap]
+   (scratch r89 pv.js, 60,000 games a point). Clogging it up is worth about 15 at even: more overtime, more loser points */
+const HK12_SHIFT={safe:[-2.4,0.0305], aggressive:[17,-0.033]};
 function hkFitOf(F,T){ if(!F)return 0; let v=0; HK_SHK.forEach(k=>v+=(F[k]||0)*T.sk[k]); HK_GK.forEach(k=>v+=(F[k]||0)*T.g[0][k]); return R_SLOPE*HK12.a*v }
 function sportPlanFit(t,pl){ return hkV12()?hkFitOf(HK12_FIT[pl],hkShapeT(t)):0 }
 function sportPlanFitC(t,pl){ return hkV12()?hkFitOf(HK12_FITC[pl],hkShapeT(t)):0 }
