@@ -2064,8 +2064,10 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
-  const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits
-  if(rf)return `<div class="pland planfit">${rf}</div>`;
+  const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
+  if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
+  return planFitOld(wp,kept) }
+function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
   return "";

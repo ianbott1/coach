@@ -478,7 +478,7 @@ function sportShape(t){ return bbV11()?bbShapeT(t):null }
 function sportPlanFitLine(t,pl){ if(!bbV11()||typeof PLANS==="undefined")return "";
   const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}, best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
   const lean=x=>x==="aggressive"?"shooters":"finishers";
-  if(best!==pl&&v[best]-v[pl]>=12)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean(best)}: <b>${esc(PLANS[best].l)}</b> suits it.`;
+  if(best!==pl&&v[best]-v[pl]>=12)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean(best)}: <b>${esc(PLANS[best].l)}</b>${best==="aggressive"?", with its threes,":""} suits it.`;
   return best===pl&&pl!=="balanced"&&v[pl]>=12?`This plan suits your ${lean(pl)}.`:"" }
 function bbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return bbShapeOf(SEA.roster[t],H) }catch(e){ return bbShapeOf(null) } }
 function playGame(rng, eloH, eloA, planH, planA, opts){
