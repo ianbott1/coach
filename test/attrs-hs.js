@@ -3,8 +3,9 @@
    - The roster's path (a man's leans weighed by position and minutes -> hkShapeOf / scShapeOf): a man leaning two spreads
      to any attribute, the rest down so his rating holds, moves the team's terms by amounts that sum to nothing (each
      weighted by its worth, which is the same for every term), against a plain gain for the same lean with nothing down.
-   - The engine: each term is worth the same goal margin per point, within 8% of HK12.a / SC12.a rating points (these two
-     engines draw a varying number of dice, so no common-dice pairing: large samples instead).
+   - The engine: each term is worth the same result per point (standings points in hockey, league points in soccer),
+     within 8% of HK12.a / SC12.a rating points (these two engines draw a varying number of dice, so no common-dice
+     pairing: large samples instead).
    - Shapes show: hockey's shooters score more of their shots, checkers allow fewer shots, a goalie leaning to
      Positioning kills more penalties; soccer's finishers score more of the same shots, passers make more shots, legs
      last longer with Stamina. A hurt starter's backup carries the lean; hockey's backup goalie counts once he's in net.
@@ -34,13 +35,13 @@ for(const [f,team,sport] of [['hockey-coach-pro.html','Boston','hk'],['soccer-co
   const Z=()=>{ if(HK)return {sk:{sht:0,pas:0,skt:0,chk:0,def:0},g:[{rfx:0,gpo:0},{rfx:0,gpo:0}]}; const o={}; ['fin','pas','pac','tck','hed','sta','pos','han'].forEach(k=>o[k]=0); return o };
   const set=(T,k,v)=>{ if(HK){ if(k in T.sk)T.sk[k]=v; else T.g[0][k]=v } else T[k]=v; return T };
   const play=(T,elo,n,opp)=>{ let m=0, L={g:0,s:0,sa:0,ppa:0,ppga:0,late:0}; for(let i=0;i<n;i++){ const r=A.playGame(new A.RNG(i*7919+17),1500+(elo||0),1500,'balanced','balanced',{ctx:{sh:{home:T,away:opp||Z()},seed:i}});
-      m+=r.h-r.a; const lh=r.lines&&r.lines.h, la=r.lines&&r.lines.a; L.g+=r.h; if(lh){ L.s+=lh.sog||0; L.ppa+=la.pp||0; L.ppga+=la.ppg||0 } if(la)L.sa+=la.sog||0;
+      m+=HK?(r.h>r.a?2:(r.ot||r.so)?1:0):(r.h>r.a?3:r.h===r.a?1:0); const lh=r.lines&&r.lines.h, la=r.lines&&r.lines.a; L.g+=r.h; if(lh){ L.s+=lh.sog||0; L.ppa+=la.pp||0; L.ppga+=la.ppg||0 } if(la)L.sa+=la.sog||0;
       if(!HK&&r.drives)r.drives.forEach(d=>{ if(d.seg>=12&&d.seg<18)L.late+=d.h||0 }) } return {m:m/n,L,n} };
-  const rp=(play(Z(),A.R_SLOPE*4,N).m-play(Z(),-A.R_SLOPE*4,N).m)/8;
+  const rp=(play(Z(),A.R_SLOPE*4,2*N).m-play(Z(),-A.R_SLOPE*4,2*N).m)/8;   // result value (standings or league points) per rating point
   const K=HK?['sht','pas','skt','chk','def','rfx','gpo']:['fin','pas','pac','tck','hed','sta','pos','han'];
   const ratios=K.map(k=>{ const v=(play(set(Z(),k,2),0,N).m-play(set(Z(),k,-2),0,N).m)/4; return [k,v/rp/P.a] });
   const off=ratios.filter(([k,r])=>Math.abs(r-1)>0.08);
-  ok(!off.length,`${f}: each term's worth per point, in rating points per point of a (want 1): ${ratios.map(([k,r])=>k+' '+r.toFixed(2)).join(', ')} (a rating point: ${rp.toFixed(4)} goals)`);
+  ok(!off.length,`${f}: each term's worth per point, in rating points per point of a (want 1): ${ratios.map(([k,r])=>k+' '+r.toFixed(2)).join(', ')} (a rating point: ${rp.toFixed(4)} ${HK?'standings':'league'} points a game)`);
   // 3. shapes show
   const big=k=>set(Z(),k,3), base=play(Z(),0,N);
   if(HK){ const s=play(big('sht'),0,N), c=play(big('chk'),0,N);

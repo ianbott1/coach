@@ -66,7 +66,7 @@ const HK = Object.assign({}, HK_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tunin
    is a skating game, clogging it up a checking one. */
 const HK12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
 const HK12=Object.assign({a:+(HK12_ENV("HK12_A")||2.5),
-  c:Object.assign({sht:0.0443,pas:0.0576,sktO:0.0286,sktD:0.0286,chk:0.0574,def:0.0439,rfx:0.0530,gpo:0.0402,gpoPP:1.6,rfxPP:0.5},   // measured: a point of any is worth HK12.a rating points of goal margin (0.1098 a rating point; r89 marg-hk.js, 150,000 games: 0.99-1.02)
+  c:Object.assign({sht:0.0478,pas:0.0635,sktO:0.031,sktD:0.031,chk:0.06,def:0.0449,rfx:0.0528,gpo:0.04,gpoPP:1.6,rfxPP:0.5},   // measured: a point of any is worth HK12.a rating points of result (standings points; equal goal margin first, r89 marg-hk.js, then by value, fitv.js, 100,000 games)
     HK12_ENV("HK12_C")?JSON.parse(HK12_ENV("HK12_C")):{}),
   pw:Object.assign({safe:{skt:1.5,pas:1.25,chk:0.7,def:0.75}, aggressive:{chk:1.5,def:1.4,skt:0.6,pas:0.8}},
     HK12_ENV("HK12_PW")?JSON.parse(HK12_ENV("HK12_PW")):{})});

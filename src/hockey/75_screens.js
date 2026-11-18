@@ -25,14 +25,17 @@ function hkSkater(team,u){
    rewatch names the same men after a trade. */
 const HK_GW={C:0.10,LW:0.10,RW:0.10,D:0.045,D2:0.035}, HK_AW={C:0.12,LW:0.11,RW:0.11,D:0.075,D2:0.06}, HK_SW={C:0.10,LW:0.10,RW:0.10,D:0.09,D2:0.07};
 const HK_DEPTHW=0.9, HK_PSTAR=0.55;
-function hkDressed(tm,W){
+/* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.4x a spread, as basketball's box) */
+function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
+  return Math.exp(0.35*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)) }
+function hkDressed(tm,W,lk){
   const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
   const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
   const star=p=>Math.max(0.3,1+(p.r-60)/20*HK_PSTAR);
   ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
     const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*HK_DEPTHW*b/0.3;
-    if(st&&bk){ out.push({n:st.n,w:top*star(st),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk),p:bk,i:BK(i)}) }
-    else if(st||bk){ const p=st||bk; out.push({n:p.n,w:(top+dp)*star(p),p:p,i:st?i:BK(i)}) } });
+    if(st&&bk){ out.push({n:st.n,w:top*star(st)*hkLean(st,lk),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk)*hkLean(bk,lk),p:bk,i:BK(i)}) }
+    else if(st||bk){ const p=st||bk; out.push({n:p.n,w:(top+dp)*star(p)*hkLean(p,lk),p:p,i:st?i:BK(i)}) } });
   return out;
 }
 function hkWPick(L,x,not){ const T=L.reduce((t,o)=>t+(o.n===not?0:o.w),0); if(!(T>0))return null; let v=x*T;
@@ -42,10 +45,10 @@ const HK_UNNAMED=0.17, HK_DEPTH_WHO=["The fourth line","The third line","A depth
 function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
   if(typeof ENGINE_V!=="undefined"&&ENGINE_V<4){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);   // a season begun before round 74 names as it did
     return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
-  const u=e.u||0, D=hkDressed(tm,HK_GW), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
+  const u=e.u||0, D=hkDressed(tm,HK_GW,"sht"), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
   let n, depth=false;
   if(x>=1-HK_UNNAMED||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-HK_UNNAMED))||"a forward";
-  const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW),(((u*7+3)%100)+0.5)/100,n);
+  const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW,"pas"),(((u*7+3)%100)+0.5)/100,n);
   return {n:n, a:a||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
 function hkLogCredit(tm,side,drives){

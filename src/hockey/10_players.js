@@ -57,7 +57,7 @@ function injuryCost(roster,idx){
    Everyone dressed gets a line, the depth men too. */
 function teamLines(rng,c){
   const o=c.side==="home"?"away":"home", tm=c.tm, at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
-  const dressed=hkDressed(tm,HK_SW); if(!dressed.length)return statLinesOld(rng,c);
+  const dressed=hkDressed(tm,HK_SW,"sht"); if(!dressed.length)return statLinesOld(rng,c);
   const L={}; dressed.forEach(d=>L[d.n]={goals:0,ast:0,pts:0,sog:0});
   const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
   let mine=0;
@@ -131,8 +131,8 @@ const LEADERS=[
   {l:"Goals against average",pos:["G"],v:s=>s.g?s.ga/s.g:0,f:v=>v.toFixed(2),low:true,min:(s,G)=>s.g>=Math.max(1,G/3)},{l:"Shutouts",pos:["G"],v:s=>s.so||0}];
 function STAT_EXTRA(pos){ return pos==="G"?[["SV%",s=>(s.sv+s.ga)?(s.sv/(s.sv+s.ga)).toFixed(3).replace(/^0/,""):"-"]]:[] }
 
-/* round 87: attributes (core 93_attrs): forwards, defencemen, goalies. Not yet in the game engine: they make up the
-   rating and grow with age (round 89 plays them). */
+/* round 87: attributes (core 93_attrs): forwards, defencemen, goalies. They make up the
+   rating and grow with age; round 89 (engine 12) plays them: 50_game HK12. */
 const ATTRS={
   name:{sht:"Shooting",pas:"Passing",skt:"Skating",chk:"Checking",def:"Defence",rfx:"Reflexes",gpo:"Positioning"},
   desc:{sht:"scoring",pas:"setting up goals",skt:"speed and edges",chk:"winning the boards",def:"reading the play in his own end",
@@ -142,5 +142,7 @@ const ATTRS={
   w:{F:{sht:.3,pas:.25,skt:.25,chk:.1,def:.1}, D:{def:.32,chk:.2,skt:.2,pas:.18,sht:.1}, G:{rfx:.55,gpo:.45}},
   lean:{},
   role:{sht:"Sniper",pas:"Playmaker",skt:"Speedster",chk:"Power forward",def:"Two-way forward",rfx:"Athletic goalie",gpo:"Positional goalie"},
-  roleBy:{D:{sht:"Offensive defenceman",pas:"Puck mover",chk:"Shutdown defenceman",def:"Shutdown defenceman",skt:"Puck mover"}}
+  roleBy:{D:{sht:"Offensive defenceman",pas:"Puck mover",chk:"Shutdown defenceman",def:"Shutdown defenceman",skt:"Puck mover"}},
+  plays:()=>ENGINE_V>=12,   // round 89: the attributes play (engine 12)
+  train:{Forwards:{groups:["F"],keys:["sht","pas","skt","chk","def"]}, Defence:{groups:["D"],keys:["def","chk","skt","pas","sht"]}, Goalies:{groups:["G"],keys:["rfx","gpo"]}}
 };

@@ -80,7 +80,7 @@ function teamLines(rng,c){
   const L=new Map(); on.forEach(x=>L.set(x.p.n,{goals:0,ast:0,shots:0}));
   const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
   ev.filter(e=>e.side===c.side).forEach(e=>{ const S=scGoalBy(tm,e), l=L.get(S.n); e.nm=S.n; e.un=S.unit; if(!l)return; l.goals++;
-    if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)), k=splitDraw(rng,1,w).indexOf(1); if(k>=0)L.get(on[k].p.n).ast++ } });
+    if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)*scLean(x.p,"pas")), k=splitDraw(rng,1,w).indexOf(1); if(k>=0)L.get(on[k].p.n).ast++ } });
   const sts=c.drives.filter(d=>d.st), st=sts.length?sts[sts.length-1].st:null;
   const shots=st?st[c.side][0]:0, given=on.reduce((t,x)=>t+L.get(x.p.n).goals,0);
   const n=splitDraw(rng,Math.max(0,shots-given),on.map(x=>ROLE[x.P].shots*x.m*star(x.p)));
@@ -107,8 +107,8 @@ const STAT_ABBR={goals:"Goals",ast:"Assists",shots:"Shots",cs:"Clean sheets",sv:
 const LEADERS=[{l:"Goals",v:s=>s.goals||0},{l:"Assists",v:s=>s.ast||0},{l:"Goals and assists",v:s=>(s.goals||0)+(s.ast||0)},
   {l:"Clean sheets",pos:["GK"],v:s=>s.cs||0},{l:"Saves",pos:["GK"],v:s=>s.sv||0}];
 
-/* round 87: attributes (core 93_attrs), by role: keepers, centre backs, full backs, midfielders, wingers, strikers. Not
-   yet in the match engine: they make up the rating and grow with age (round 89 plays them). */
+/* round 87: attributes (core 93_attrs), by role: keepers, centre backs, full backs, midfielders, wingers, strikers. They
+   make up the rating and grow with age; round 89 (engine 12) plays them: 50_game SC12. */
 const ATTRS={
   name:{fin:"Finishing",pas:"Passing",pac:"Pace",tck:"Tackling",hed:"Heading",sta:"Stamina",pos:"Positioning",han:"Handling"},
   desc:{fin:"turning chances into goals",pas:"creating chances",pac:"getting in behind",tck:"winning the ball",hed:"in the air, both boxes",
@@ -120,5 +120,7 @@ const ATTRS={
      ST:{fin:.34,hed:.18,pac:.2,pos:.16,pas:.08,sta:.04}},
   lean:{},
   role:{fin:"Finisher",pas:"Playmaker",pac:"Speedster",tck:"Ball winner",hed:"Aerial threat",sta:"Engine",pos:"Reader of the game",han:"Safe hands"},
-  roleBy:{ST:{fin:"Poacher",hed:"Target man",pac:"Runner in behind"}, CB:{hed:"Stopper",pas:"Ball-playing defender"}, GK:{pos:"Sweeper keeper",pas:"Sweeper keeper"}}
+  roleBy:{ST:{fin:"Poacher",hed:"Target man",pac:"Runner in behind"}, CB:{hed:"Stopper",pas:"Ball-playing defender"}, GK:{pos:"Sweeper keeper",pas:"Sweeper keeper"}},
+  plays:()=>ENGINE_V>=12,   // round 89: the attributes play (engine 12)
+  train:{Defenders:{groups:["CB","FB"],keys:["tck","pos","hed","pac","pas","sta"]}, Midfield:{groups:["CM","W"],keys:["pas","pac","sta","fin","tck","pos"]}, Attack:{groups:["ST"],keys:["fin","hed","pac","pos","pas"]}, Keepers:{groups:["GK"],keys:["han","pos","pas","sta"]}}
 };

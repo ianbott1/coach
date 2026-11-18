@@ -53,9 +53,9 @@ const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tunin
    (SC12.pw): taking the game to them is a passing game, sitting deep a game of pace on the break and of shape. */
 const SC12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
 const SC12=Object.assign({a:+(SC12_ENV("SC12_A")||2.5),
-  c:Object.assign({fin:0.05,pas:0.05,pac:0.05,tck:0.0494,pos:0.0494,hedO:0.025,hedD:0.025,han:0.05,sta:0.331},   // measured: a point of any is worth SC12.a rating points of goal margin (0.0603 a rating point; r89 marg-sc.js, 150,000 games: 0.99-1.01)
+  c:Object.assign({fin:0.0476,pas:0.0478,pac:0.0478,tck:0.0513,pos:0.0513,hedO:0.0249,hedD:0.0249,han:0.0512,sta:0.5172},   // measured: a point of any is worth SC12.a rating points of result (league points; equal goal margin first, r89 marg-sc.js, then by value, fitv.js, 100,000 games)
     SC12_ENV("SC12_C")?JSON.parse(SC12_ENV("SC12_C")):{}),
-  pw:Object.assign({safe:{pas:1.4,pac:0.7,tck:1.15}, aggressive:{pac:1.6,pas:0.7,pos:1.3}},
+  pw:Object.assign({safe:{pas:1.4,pac:0.7,tck:1.15}, aggressive:{pac:2.0,pas:0.7,pos:1.75}},
     SC12_ENV("SC12_PW")?JSON.parse(SC12_ENV("SC12_PW")):{})});
 const SC_SHK=["fin","pas","pac","tck","hed","sta","pos","han"];
 function scV12(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=12 }
