@@ -115,13 +115,24 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 88, basketball's engine hooks; then hockey, soccer, football; per-attribute ceilings and breakouts;
   training focus everywhere; club styles from rosters (its own round).
 
+## Round 88 (done)
+- Basketball engine 11 (college and pro): the attributes play. A team's shape on the floor (each man's leans, weighed by
+  position and minutes) moves threes, twos, turnovers, boards, the other side's shooting, and the closing minutes,
+  each worth the same per point, so a rating means the same however a player leans (within 0.3 points of margin).
+  Shapes show: a shooting team takes and makes more threes. Box-score shares lean with the matching attribute.
+- The plan fits the roster: the threes plan is worth more to shooters, Work it inside to finishers (about 2 points of
+  win chance a spread). The pre-game chance includes it, and the plan rows say which plan the roster suits (Ian's
+  call; case 78 kept everywhere else). Training focus in both basketball games. Skip's own late margin in basketball.
+- Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
+  for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
+
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
   college football's field to the pro standard; clock, down and distance, count and outs on the surface.
 - Football: kick returns, blocks shown.
 
 ## Later: depth
-- Player attributes: the other engines' hooks (round 88 basketball), ceilings and breakouts per attribute.
+- Player attributes: the other engines' hooks (round 89 hockey and soccer, then football), ceilings and breakouts per attribute.
 - Baseball staff, further: a middle reliever and a sixth starter would need roster slots (the 8 pitcher slots are
   four jobs and their backups today); fatigue and pitch counts carried between days.
 - Awards: coach of the month, other sports' monthly awards; a top-five goals reel.

@@ -358,6 +358,59 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 88: basketball's attributes play (engine 11, college and pro); the plan's fit in the chance; Skip's own margin.
+- The team's shape on the floor (50_game bbShapeOf, through gameCtx sh): each man's lean (an attribute against his own
+  rating) weighed by his group's weight for it (a guard's shooting counts more than a big's) and by his minutes (a
+  position's share; starters 80%, the bench 20%; a hurt starter's minutes to his backup, a hurt backup's to a walk-on
+  with no lean). A man's leans weigh to nothing, so with each attribute worth the same per point in the engine, a lean
+  changes how a team plays, not what it's worth. Sizes (one league spread of a team term): pro 0.20-0.29 rating points,
+  college 0.36-0.49; the league's means drift by up to 0.17 by season 5 (development by age), which moves style, not
+  strength (a team's terms sum to nothing).
+- What each moves, per possession (BB11; a = 2.5, c per league so a point of any attribute is worth a rating points of
+  margin, measured on common dice, scratch r88/marg.js: every term 2.45-2.54): Shooting the three-point make rate and
+  share (the extra the two earn together taken back); Finishing the two-point rate; Playmaking turnovers; Rebounding the
+  offensive rebound rate, both sides; Perimeter D their three-point rate; Interior D their two-point rate; Athleticism
+  half on easy twos, half on forcing turnovers; Stamina the closing two stretches' make rates (who still has legs).
+- Stamina as built: the closing minutes, not the bench's minutes (Ian's design said minutes before the bench comes in).
+  The worth of more starter minutes depends on the gap between a team's starters and its bench, so a point of Stamina
+  would be worth more to a thin team than a deep one and a rating would stop meaning one thing.
+- Signatures (three starters leaning two spreads to Shooting): pro threes 40.6% to 45.3% of shots, made 36.8% to 41.0%;
+  college 42.6% to 51.5%, 40.1% to 44.6%. Two bigs to Rebounding: offensive boards 11.4 to 13.1 a game (pro), 7.1 to
+  8.7 (college). Two guards to Playmaking: turnovers 14.3 to 11.7, 12.4 to 9.5. Box scores: each man's share of the
+  team's threes, buckets, boards, assists, steals and blocks leans with the matching attribute (bbLean, 1.4x a spread;
+  the team's totals are the engine's, own dice).
+- Equal rating (test/attrs-bb.js, through the real roster-to-shape path, both leagues): any one man leaning two spreads
+  to any attribute, the rest down, moves the margin under 0.3 points (about 1% of win chance) against 0.3-1.8 for the
+  same gain with nothing down. The worst is a point guard leaning to Shooting (+0.15 pro, +0.25 college), partly a
+  convexity left over from share and make rate together.
+- The plan's fit (Ian chose it: "words, number moves"). Shooting is realised on threes and Finishing on twos, so a plan
+  that shoots more threes is worth more to a shooting side. Measured per point of lean, in rating points per point of a,
+  on top of balanced (40,000 games a cell, both leagues alike): Work it inside: Shooting -0.37, Finishing +0.24; Let it
+  fly / Shorten the game: Shooting +0.65, Finishing -0.30 (Rebounding and Stamina under 0.1). A team one spread toward
+  Shooting gains about 2 points of win chance on the threes plan (pro 1.5). The chance before a game is now the
+  balanced curve plus your plan's fit (core gameEdge + sportPlanFit, planPicked: the plan you've picked under any
+  withPlan); the plan rows say which plan your roster suits once the gap is worth about 12 Elo, beside the old
+  favourite/underdog line.
+- "Your shape" ranks what the engine reads (sportShape: the lean, not the starters' raw averages: a strong team ranked
+  first in Shooting with a negative shooting lean). Training focus in both basketball games (Guards, Wings, Bigs).
+- Skip: in basketball a close finish came back from 7-12 inside the last stretch about one time in fifteen (engine 10
+  too: skipfinish at 40 games failed there), and Skip, which stops only between stretches, jumped it. lateFloor.skip
+  (12) is Skip's own margin; the late-call floor keeps 6, so calls don't move.
+- Calibration: college (bb-calibrate, 160 seasons) 71.7 points a team, margin 13.4, home 61.1% (engine 10 the same to
+  the decimal), first round in range (5 v 12 66.9%, 6 v 11 69.7%, the old high pairing); NBA history MATCH (194
+  seasons: wins spread 11.5, first three seasons 12.4, best 65 median and 73 top, margin 12.9, 1 seeds 57%).
+- Control: an engine-10 build of this round matches round 87's goldens in every field in all seven games, apart from
+  basketball's screens (the training card). engine-replay now replays engine 10 (round 87).
+- Case 78 (Ian's rule: the chance before a game doesn't move with the plan, and no line tells you which plan to pick)
+  gives way in engine-11 basketball only, by Ian's call ("words, number moves"; then "do the recommended one"): the
+  edge moves by exactly the plan's measured fit and nothing else, and a line names a plan only past 12 Elo, as a fact
+  about the roster, never "try X" (regressions 78: six rosters, three moved, 41/41/42 to 60/58/54). Engine 10 and the
+  other games keep the old rule, checked on the control.
+- Watch: the live chance in college reads a little low in its 30-50 band on engine 11 (1,200 games: shown 40 won 33,
+  engine 10 39; worst band 6.3 against 4.3, the limit 10); 400 games read 12 once. March: 1 seeds are 49% of Final
+  Fours on both engines over 500 tournaments (real ~40, the check's limit 49): an old miss, not this round's.
+- Not built: per-attribute ceilings and attribute breakouts; computer clubs choosing a plan for their shape (round 91).
+
 Round 87: player attributes (FM-style; design agreed in the doc "Player attributes: design"), and baseball's engine 10.
 - Core 93_attrs.js; each sport's ATTRS in its 10_players.js (names, bands physical / technical / mental, weights per
   position group, leans, roles). Every player keeps p.at (his group's attributes, on the rating scale) and p.ar (the
