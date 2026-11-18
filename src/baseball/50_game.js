@@ -44,6 +44,29 @@ const BS6={stamCut:+((typeof process!=="undefined"&&process.env&&process.env.BS6
 const BS_SPEED6=[["a burner",0.14,"burn"],["fast",0.08,"fast"],["fast",0.08,"fast"],["fast",0.08,"fast"],["fast",0.08,"fast"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],
   ["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["slow",-0.12,"slow"],["slow",-0.12,"slow"],["slow",-0.12,"slow"],["slow",-0.12,"slow"]];
 function bsV6(){ return ENGINE_V>=6 }
+/* round 87 (engine 10): the players' attributes (core 93_attrs) play. Each comes in through the game's context
+   (gameCtx: ctx.at, by name, as ctx.rate does), never from a roster mid-game.
+   - A hitter's edge over his lineup splits by attribute where engine 5 split it by rating: Power his home runs and a
+     fifth of his doubles, Contact his singles, most of his doubles and half his strikeouts, Eye his walks and the other
+     half. A hitter whose attributes all equal his rating bats exactly as on engine 9.
+   - A pitcher's shape (against his own rating, so it adds nothing to how good he is): Stuff strikeouts and fewer hits,
+     Control fewer walks and fewer home runs; Stamina how fast he tires past his eighteenth batter (letting a
+     tiring starter face more batters was measured to cost runs: by then the bullpen is better).
+   - The nine's Fielding (each man's against his rating) shades the singles they allow; Speed and a catcher's Arm set
+     the steal, where a hash of the name did.
+   Each term is recentred for its spread (exp is convex: a spread with no mean would add runs). Sizes by run value:
+   two players of one rating are worth about the same however they lean (test/attrs-bs.js). */
+const BS10={stf:+((typeof process!=="undefined"&&process.env&&process.env.BS10_S)||0.016), ctl:+((typeof process!=="undefined"&&process.env&&process.env.BS10_C)||0.0229),
+  fld:+((typeof process!=="undefined"&&process.env&&process.env.BS10_F)||0.05), sta:+((typeof process!=="undefined"&&process.env&&process.env.BS10_T)||0.03),
+  s2pow:0.2};
+function bsV10(){ return ENGINE_V>=10 }
+function bsSig(){ return (typeof attrScale==="function"?attrScale().s:5.8)*(typeof ATTR_SPREAD!=="undefined"?ATTR_SPREAD:0.8) }
+const bsHalfVar=m=>0.5*m*m*bsSig()*bsSig();
+// speed and arm from the attributes: about as many burners, fast, average and slow runners (and strong, average and
+// weak arms) as the name hash gave, by where his attribute stands in the league
+function bsZ(v){ const S=typeof attrScale==="function"?attrScale():{m:59,s:5.8}; return (v-S.m)/Math.sqrt(S.s*S.s+bsSig()*bsSig()) }
+function bsSpeedAt(v){ const z=bsZ(v); return z>1.645?BS_SPEED6[0]:z>0.674?BS_SPEED6[1]:z<-0.842?BS_SPEED6[19]:BS_SPEED6[10] }
+function bsArmAt(v){ const z=bsZ(v); return z>0.524?BS_ARM[0]:z<-0.842?BS_ARM[9]:BS_ARM[5] }
 const BS6_RP=+((typeof process!=="undefined"&&process.env&&process.env.BS6_RP)||50);
 function bsTired(){ return ENGINE_V>=3?BS_TIRED3:BS.tired }
 function bsPen(){ return bsV5()?BS5.pen:ENGINE_V>=3?BS_PEN3:BS.pen }
@@ -120,12 +143,16 @@ function ordw(n){ return ["","1st","2nd","3rd","4th","5th","6th","7th","8th","9t
 
 function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   ctx=ctx||{}; const fav=ctx.fav||{};
+  // engine 10: a player's attributes from the game's context (by side and name), and his rating
+  const AT=bsV10()&&ctx.at?ctx.at:null, atOf=(side,nm)=>AT&&AT[side]&&nm?AT[side][nm]||null:null;
+  const rOf=(side,nm)=>ctx.rate&&ctx.rate[side]&&nm?ctx.rate[side][nm]:null;
+  const spTire=sd=>{ const n=ctx.sp&&ctx.sp[sd]&&ctx.sp[sd].n, a=atOf(sd,n), r=rOf(sd,n); return a&&a.sta!=null&&r!=null?Math.exp(-BS10.sta*(a.sta-r)-bsHalfVar(BS10.sta)):1 };   // engine 10: how fast he tires
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
   const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1);
   const other=s=>s==="home"?"away":"home";
   const SPc=(ctx.sp)||{};
   const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,BS.form), bf:0, ra:0,
-      stam:BS.stamina[0]+rng.int(BS.stamina[1]-BS.stamina[0]+1)-(bsV6()?BS6.stamCut:0)}, pen:false, closer:false, bat:0,
+      stam:BS.stamina[0]+rng.int(BS.stamina[1]-BS.stamina[0]+1)-(bsV6()?BS6.stamCut:0), tm:spTire(sd)}, pen:false, closer:false, bat:0,
     tell:{pull:0,bip:0,pit:0,pa:0,k:0,wh:0,n:0}});
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{}, asked:{}, queue:[], ask:null, ot:0, done:false, playoff:!!playoff, S:{home:side0("home"),away:side0("away")}};
@@ -143,8 +170,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(R.setup&&(X.setupClose||(inn()>=8&&relOuts(fs,R.setup.n)<3)))return (X.rel=R.setup.n,R.setup);
     if(R.long&&relOuts(fs,R.long.n)<6&&(X.rel===R.long.n||(!X.rel&&inn()<=6)))return (X.rel=R.long.n,R.long);
     X.rel="bullpen"; return {n:"bullpen",q:0} };
-  const pitEdge=fs=>{ const X=st.S[fs]; if(X.closer)return BS.closer; if(X.pen)return bsPen()+(bsV6()?relief(fs).q:0);
-    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired() };
+  let pNow=null;   // engine 10: who is pitching this plate appearance (set by pitEdge)
+  const pitEdge=fs=>{ const X=st.S[fs]; pNow=null; if(X.closer)return BS.closer; if(X.pen){ const R=bsV6()?relief(fs):null; if(R&&R.n!=="bullpen")pNow=R.n; return bsPen()+(R?R.q:0) }
+    pNow=X.sp.n;
+    const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired()*(P.tm||1) };
   // the plan's effect on their bats: right read, wrong read
   const readEdge=(bat,fs)=>{ const A=st.S[bat].app, X=st.S[fs]; if(!X.ans)return 0; return ANSWERS[X.ans].beats===A?BS.read.right:(APPROACH[A].counter===X.ans?0:BS.read.wrong) };
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };
@@ -154,7 +183,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 5: the hitter's own edge (hx) shows most in his power and his eye, least in his singles (a star's .385 was all singles)
-    if(hx){ p.hr*=Math.exp(hx*BS5_HX.hr); p.bb*=Math.exp(hx*BS5_HX.bb); p.s2*=Math.exp(hx*BS5_HX.s2); p.s1*=Math.exp(hx*BS5_HX.s1); p.k*=Math.exp(-hx*BS5_HX.k) }
+    if(hx&&typeof hx==="object"){ const H5=BS5_HX, h=BS5.hit, q=BS10.s2pow;   // engine 10: by attribute, each term recentred for its spread
+      p.hr*=Math.exp(hx.pow*H5.hr-bsHalfVar(H5.hr*h)); p.s2*=Math.exp((q*hx.pow+(1-q)*hx.con)*H5.s2-bsHalfVar(H5.s2*h)*(q*q+(1-q)*(1-q)));
+      p.s1*=Math.exp(hx.con*H5.s1-bsHalfVar(H5.s1*h)); p.bb*=Math.exp(hx.eye*H5.bb-bsHalfVar(H5.bb*h)); p.k*=Math.exp(-(hx.con+hx.eye)*0.5*H5.k-bsHalfVar(H5.k*h)*0.5) }
+    else if(hx){ p.hr*=Math.exp(hx*BS5_HX.hr); p.bb*=Math.exp(hx*BS5_HX.bb); p.s2*=Math.exp(hx*BS5_HX.s2); p.s1*=Math.exp(hx*BS5_HX.s1); p.k*=Math.exp(-hx*BS5_HX.k) }
+    if(AT){ const a=atOf(fs,pNow), r=rOf(fs,pNow);   // the pitcher's shape: against his own rating
+      if(a&&r!=null&&a.stf!=null){ const sx=(a.stf-r)*BS10.stf, cx=(a.ctl-r)*BS10.ctl, vs=bsHalfVar(BS10.stf), vc=bsHalfVar(BS10.ctl);
+        p.k*=Math.exp(sx-vs); p.s1*=Math.exp(-0.5*sx-0.25*vs); p.s2*=Math.exp(-0.6*sx-0.36*vs); p.bb*=Math.exp(-cx-vc); p.hr*=Math.exp(-0.6*sx-0.3*cx-0.36*vs-0.09*vc) }
+      p.s1*=Math.exp(-BS10.fld*(fldDev[fs]||0)) }
     let u=rng.r(), o="out"; for(const k of ["k","bb","hbp","s1","s2","s3","hr"]){ if(u<p[k]){ o=k; break } u-=p[k] }
     // the evidence their approach leaves (for your read): pitches seen, pulled balls in play, strikeouts
     const T=st.S[bat].tell, tl=BS_TELL[st.S[bat].app]; T.pa++; T.pit+=Math.max(1,Math.round(rng.gauss(tl[1],BS_TELL_SD.pit)));
@@ -198,7 +234,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const catcherOf=side=>bsV5()&&ctx&&ctx.catcher&&ctx.catcher[side]?ctx.catcher[side]:who(side,0);   // (engine 5: the order isn't by position)
   // engine 5: each hitter against his lineup's average (the day's nine), by rating
   const luMean={}; ["home","away"].forEach(sd=>{ const R=LU(sd).map(n=>rateOf(sd,n)).filter(x=>x!=null); luMean[sd]=R.length?R.reduce((a,b)=>a+b,0)/R.length:null });
-  const hitEdge=(bat,nm)=>{ const r=rateOf(bat,nm), m=luMean[bat]; return r==null||m==null?0:(r-m)*BS5.hit };
+  const hitEdge=(bat,nm)=>{ const r=rateOf(bat,nm), m=luMean[bat]; if(r==null||m==null)return 0;
+    const a=atOf(bat,nm); if(a&&a.pow!=null)return {pow:(a.pow-m)*BS5.hit, con:(a.con-m)*BS5.hit, eye:(a.eye-m)*BS5.hit};   // engine 10
+    return (r-m)*BS5.hit };
+  // engine 10: the nine's fielding, each man's against his own rating (the DH fields nothing)
+  const fldDev={}; ["home","away"].forEach(sd=>{ const L=LU(sd).map(n=>{ const a=atOf(sd,n), r=rateOf(sd,n); return a&&a.fld!=null&&r!=null?a.fld-r:null }).filter(x=>x!=null);
+    fldDev[sd]=L.length?L.reduce((x,y)=>x+y,0)/L.length:0 });
   // the pinch hitter is worth it: he's the better hitter, and you're not ahead (the computer's rule, and your assistant's)
   // round 79 (engine 7): a man who has pinch-hit is in the game, so he can't pinch-hit again (Ian: asked twice in a game,
   // the same man both times)
@@ -238,7 +279,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0));
     if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
-  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
+  const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side)),atOf(side,onFirst[side]),atOf(other(side),catcherOf(other(side)))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
     bsCountSteal(st,side,ok,onFirst[side]); if(!ok){ const Xf=st.S[other(side)]; bsCountOuts(st,other(side),Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n,1) } };
   st.log=[];
   const apply=(side,dp,v)=>{
@@ -271,7 +312,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
       if(H.b[0]&&!H.b[1]&&H.outs<2&&lead(bat)===0&&inn()>=8&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
-        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        dp.p=bsStealP(rn,cn,atOf(bat,rn),atOf(other(bat),cn)); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn,atOf(bat,rn))[0]; dp.arm=bsArm(cn,atOf(other(bat),cn))[0]; dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true } }
     // one decision guaranteed in a one-run game from the 8th (round 59, Ian: "in a one-run game the player should never
     // be a spectator for three innings", Muse). If nothing worth asking has come by then, the first pinch-hit or steal
@@ -282,7 +323,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         if(queueCall(bat,dp))return true }
       if(H.b[0]&&!H.b[1]&&H.outs<2&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
-        dp.p=bsStealP(rn,cn); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn)[0]; dp.arm=bsArm(cn)[0]; dp.team=ctx.team&&ctx.team[bat];
+        dp.p=bsStealP(rn,cn,atOf(bat,rn),atOf(other(bat),cn)); dp.runner=rn; dp.catcher=cn; dp.speed=bsSpeed(rn,atOf(bat,rn))[0]; dp.arm=bsArm(cn,atOf(other(bat),cn))[0]; dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true } }
     return false;
   }
@@ -295,7 +336,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     cpuCloser(fs);
     // the computer's steal: a chance like any other, taken only when the runner should make it (round 58)
     // (yours too, wherever you weren't asked: your assistant plays the computer's rule)
-    if((!humans[bat]||!st.asked["steal"+inn()+bat])&&H.b[0]&&!H.b[1]&&H.outs<2&&(bsV6()?rng.r()<bsTryRate(onFirst[bat])&&bsStealP(onFirst[bat],catcherOf(fs))>=BS6.send:rng.r()<BS.stealTry&&bsStealP(onFirst[bat],catcherOf(fs))>=BS_SEND))steal(bat);
+    if((!humans[bat]||!st.asked["steal"+inn()+bat])&&H.b[0]&&!H.b[1]&&H.outs<2&&(bsV6()?rng.r()<bsTryRate(onFirst[bat],atOf(bat,onFirst[bat]))&&bsStealP(onFirst[bat],catcherOf(fs),atOf(bat,onFirst[bat]),atOf(fs,catcherOf(fs)))>=BS6.send:rng.r()<BS.stealTry&&bsStealP(onFirst[bat],catcherOf(fs))>=BS_SEND))steal(bat);
     // and its pinch hitter, in the spots you're asked about (round 58: it never pinch-hit, while your assistant did)
     if(inn()>=7&&Math.abs(lead(bat))<=2&&(H.b[1]||H.b[2])&&(st.S[bat].bat%9)>=6&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
       if(pinchWorth(bat,st.S[bat].bat%9))st.late[bat+"pinch"]=true }
@@ -352,7 +393,9 @@ function spCtx(t,step){
     return {n:p.n, q:(p.r-mean)*(bsV5()?BS5.q:0.012)} }catch(e){ return null } }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
   lineup:{home:lineupOf(h),away:lineupOf(a)}, bench:{home:benchBat(h),away:benchBat(a)}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
-  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h),away:bsAttrs(a)}:undefined} }
+/* engine 10: every man's attributes by name, as the engine reads them (rounded: the rating scale's own integers) */
+function bsAttrs(t){ try{ const o={}; (SEA.roster[t]||[]).forEach(p=>{ if(!p||!p.n)return; const A=typeof attrOf==="function"?attrOf(p):null; if(A)o[p.n]=A }); return o }catch(e){ return {} } }
 /* engine 6: the named relievers: the long man (the third starter's backup) and the set-up man (the closer's), healthy,
    each with his edge by rating against the rotation's top three, as a starter's is */
 function penCtx(t){ try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t], H=hurtSet(t), cl=POS.findIndex(P=>P.p==="CL");
@@ -378,11 +421,11 @@ function benchBat(t){ try{ const R=SEA.roster[t], H=hurtSet(t); let b=null; BS_H
    for (or hurts, if he isn't). The computer, your assistant and the evidence you see all use the same numbers. */
 const BS_SPEED=[["fast",0.08],["fast",0.08],["fast",0.08],["average",0],["average",0],["average",0],["average",0],["average",0],["slow",-0.12],["slow",-0.12]];
 const BS_ARM=[["a strong arm",-0.08],["a strong arm",-0.08],["a strong arm",-0.08],["an average arm",0],["an average arm",0],["an average arm",0],["an average arm",0],["an average arm",0],["a weak arm",0.06],["a weak arm",0.06]];
-function bsSpeed(nm){ return bsV6()?BS_SPEED6[strHash("spd|"+(nm||""))%20]:BS_SPEED[strHash("spd|"+(nm||""))%10] }
+function bsSpeed(nm,a){ if(a&&a.spd!=null)return bsSpeedAt(a.spd); return bsV6()?BS_SPEED6[strHash("spd|"+(nm||""))%20]:BS_SPEED[strHash("spd|"+(nm||""))%10] }
 /* engine 6: how often the computer sends him, a chance (runner on first, second open, under two out) */
-function bsTryRate(nm){ const k=bsSpeed(nm)[2]; return k==="burn"?BS6.burn:k==="fast"?BS6.fast:k==="avg"?BS6.avg:0 }
-function bsArm(nm){ return BS_ARM[strHash("arm|"+(nm||""))%10] }
-function bsStealP(runner,catcher){ return BS.steal+bsSpeed(runner)[1]+bsArm(catcher)[1] }
+function bsTryRate(nm,a){ const k=bsSpeed(nm,a)[2]; return k==="burn"?BS6.burn:k==="fast"?BS6.fast:k==="avg"?BS6.avg:0 }
+function bsArm(nm,a){ if(a&&a.arm!=null)return bsArmAt(a.arm); return BS_ARM[strHash("arm|"+(nm||""))%10] }
+function bsStealP(runner,catcher,ar,ac){ return BS.steal+bsSpeed(runner,ar)[1]+bsArm(catcher,ac)[1] }
 const BS_SEND=0.80;   // the computer (and your assistant) send a runner only this likely to make it
 function bsPlayer(t,nm){ try{ return (SEA.roster[t]||[]).find(p=>p&&p.n===nm)||null }catch(e){ return null } }
 function bsPinchEdge(batR,benchR){ if(batR==null||benchR==null)return BS.pinch; return Math.max(-0.12,Math.min(0.15,(benchR-batR)*0.012)) }

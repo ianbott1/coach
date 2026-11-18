@@ -140,14 +140,22 @@ function STAT_EXTRA(pos){ return isPitcher(pos)?[["ERA",s=>s.ip?(s.er*27/s.ip).t
 const ATTRS={
   name:{con:"Contact",pow:"Power",eye:"Eye",spd:"Speed",fld:"Fielding",arm:"Arm",stf:"Stuff",ctl:"Control",sta:"Stamina"},
   desc:{con:"singles, and fewer strikeouts",pow:"home runs and doubles",eye:"walks, and fewer strikeouts",spd:"steals and taking the extra base",
-    fld:"outs on balls in play",arm:"throwing out base stealers (catchers)",stf:"strikeouts",ctl:"fewer walks",sta:"batters faced before he tires"},
+    fld:"outs on balls in play",arm:"throwing out base stealers",stf:"strikeouts",ctl:"fewer walks",sta:"batters faced before he tires"},
   band:{con:"t",pow:"t",eye:"m",spd:"p",fld:"t",arm:"p",stf:"p",ctl:"m",sta:"p"},
   group:p=>/^(SP|CL)/.test(p)?"P":p==="C"?"C":p==="DH"?"DH":/^(LF|CF|RF)$/.test(p)?"OF":"IF",
-  w:{C:{con:.25,pow:.2,eye:.15,spd:.05,fld:.15,arm:.2}, IF:{con:.28,pow:.22,eye:.17,spd:.1,fld:.15,arm:.08},
-     OF:{con:.28,pow:.24,eye:.17,spd:.13,fld:.1,arm:.08}, DH:{con:.38,pow:.36,eye:.26}, P:{stf:.45,ctl:.35,sta:.2}},
-  lean:{C:{spd:-6,arm:3}, IF:{}, OF:{spd:2}, DH:{spd:0}, P:{}},
+  /* weights by run value (round 87), measured on the engine's own dice (one attribute up three points, nothing taken
+     away, nine hitters or one starter, 10,000 games: scratch marg.js): a point of Power is worth 0.42 of a hitter's
+     edge, Contact 0.28, Eye 0.25, Fielding 0.045, Speed next to nothing (a steal is a step: few points cross one); a
+     point of Stuff 0.47 of a pitcher's, Control 0.42, Stamina 0.11 (the average of a point up and a point down:
+     a walk too many costs more than one saved gains). So the rating, which the trade screens, free agency
+     and the chance to win all read, is worth the same however a player leans (test/attrs-bs.js). A catcher's Arm, like
+     Speed, is a step in the steal: priced as little. */
+  w:{C:{con:.27,pow:.40,eye:.24,spd:.01,fld:.04,arm:.04}, IF:{con:.277,pow:.416,eye:.252,spd:.01,fld:.045},
+     OF:{con:.277,pow:.416,eye:.252,spd:.01,fld:.045}, DH:{con:.29,pow:.44,eye:.27}, P:{stf:.47,ctl:.42,sta:.11}},
+  lean:{C:{spd:-6}, IF:{}, OF:{spd:3}, DH:{}, P:{}},
   role:{con:"Contact hitter",pow:"Power bat",eye:"Patient hitter",spd:"Speedster",fld:"Glove first",arm:"Cannon arm",
     stf:"Power arm",ctl:"Control artist",sta:"Workhorse"},
   roleBy:{C:{fld:"Defensive catcher",arm:"Defensive catcher"}},
-  allRound:{P:"Steady arm"}
+  allRound:{P:"Steady arm"},
+  plays:()=>ENGINE_V>=10
 };
