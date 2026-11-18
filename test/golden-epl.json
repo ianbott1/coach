@@ -1,5 +1,5 @@
 {
- "fp": "52281f9ac8fb7ffb",
+ "fp": "6f4a786b785df863",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -475,6 +475,11 @@
    "fp": "52281f9ac8fb7ffb",
    "from": "90b4c0b45f6969f7",
    "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
+  },
+  {
+   "fp": "6f4a786b785df863",
+   "from": "52281f9ac8fb7ffb",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
@@ -488,7 +493,7 @@
     "poll": "9098d255c69f2b4a",
     "heis": "6c4fdf4a019d15b8",
     "history": "555984f42054e524",
-    "universe": "046835b542b9fe3b",
+    "universe": "c275e3b380e01de3",
     "screens": "92891ec79767ee40"
    },
    {
@@ -500,7 +505,7 @@
     "poll": "696370ceffdbf148",
     "heis": "f90d4c0e0d25007a",
     "history": "a311b35e44a71ca3",
-    "universe": "372a3eefcb16f416",
+    "universe": "0af634fd90c6bf70",
     "screens": "fcafd0577d0b69bd"
    }
   ],
@@ -514,7 +519,7 @@
     "poll": "3bfd1e96b74bf407",
     "heis": "040d157c1c226a3d",
     "history": "c46c11b4649431ff",
-    "universe": "bab2651013221c4c",
+    "universe": "38468c6460bcff48",
     "screens": "4b5d94b49e5aebca"
    },
    {
@@ -526,7 +531,7 @@
     "poll": "2e253495874512f7",
     "heis": "6c50ba67d013b1cf",
     "history": "4a0cf2fbfffe1ec0",
-    "universe": "94a5a90a936ec43c",
+    "universe": "4a39541ea19364d8",
     "screens": "0b32fe582bc09bcc"
    }
   ],

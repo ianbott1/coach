@@ -1,5 +1,5 @@
 {
- "fp": "04c985990846f727",
+ "fp": "9407599c6d6ecc69",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -20,21 +20,26 @@
    "fp": "04c985990846f727",
    "from": "9987cf9d4197e807",
    "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
+  },
+  {
+   "fp": "9407599c6d6ecc69",
+   "from": "04c985990846f727",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "037161ab93334b1c",
-    "post": "a12f838c0f89ebb1",
-    "champion": "Kentucky",
-    "rec": "332ccd0992fac95d",
-    "poll": "5e83e3ec28f66ef4",
-    "heis": "2cf4aebe2d39055b",
-    "history": "259c3e0fa871b237",
-    "universe": "cd26357939d50f82",
-    "screens": "97cdf24b98571c93"
+    "games": "ff5603f1e548f06a",
+    "post": "9dd5c0f86835cc6e",
+    "champion": "North Carolina",
+    "rec": "d6f49300151e1184",
+    "poll": "ec99b49169d682aa",
+    "heis": "4303249140683cfa",
+    "history": "085d6f01244a4da5",
+    "universe": "5484ebcb96666e1a",
+    "screens": "2f6484801e22f962"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "7a84e728e2a43484",
+ "fp": "5ddeaeae5fcc5119",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -25,21 +25,26 @@
    "fp": "7a84e728e2a43484",
    "from": "b1b354352f3c6999",
    "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
+  },
+  {
+   "fp": "5ddeaeae5fcc5119",
+   "from": "7a84e728e2a43484",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "2a5f58ba58d191ec",
-    "post": "025fc57f91bd26f3",
-    "champion": "Detroit",
-    "rec": "1d501d4a38ca1d37",
-    "poll": "35bb34ecb75f8e39",
-    "heis": "e40f57ce863b1ebd",
-    "history": "8aafa685f87e75a0",
-    "universe": "79c30215f4dfd085",
-    "screens": "724a5cd822313965"
+    "games": "8d9a53871cd22c13",
+    "post": "2003626ee857918a",
+    "champion": "Denver",
+    "rec": "cb02928a087d64ab",
+    "poll": "2e0e8f760751d4cf",
+    "heis": "0643d72c55748eb7",
+    "history": "3d4e437906b19cf6",
+    "universe": "0d53e47ea1d3d179",
+    "screens": "f32389822a7bc8f1"
    }
   ]
  }

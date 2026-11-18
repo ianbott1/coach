@@ -1,5 +1,5 @@
 {
- "fp": "d71cff3c664ac519",
+ "fp": "f2bb4c09193e3ee0",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -555,6 +555,11 @@
    "fp": "d71cff3c664ac519",
    "from": "9b47495c8969e340",
    "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
+  },
+  {
+   "fp": "f2bb4c09193e3ee0",
+   "from": "d71cff3c664ac519",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
@@ -568,7 +573,7 @@
     "poll": "afe47965d5288bb6",
     "heis": "6f51d62e0cdc6d73",
     "history": "b530b5523cc94ea4",
-    "universe": "1f7d4df6bafa2600",
+    "universe": "cef00a63a515f9ed",
     "screens": "61e4b14f16bb7d74"
    },
    {
@@ -580,7 +585,7 @@
     "poll": "7eb7e82c8d1e2281",
     "heis": "40b5f390f8e9caf3",
     "history": "b19c72389a24f0f2",
-    "universe": "5c1026ae8e0c8780",
+    "universe": "a7093cea64ce9217",
     "screens": "ec1b982c21d9e275"
    },
    {
@@ -592,7 +597,7 @@
     "poll": "1432afb3dd84118b",
     "heis": "2e055e62dd099f26",
     "history": "f48c62a414002924",
-    "universe": "796076c039b6c8a5",
+    "universe": "311681e5881d0caf",
     "screens": "799aa5adc46b45a5"
    },
    {
@@ -604,7 +609,7 @@
     "poll": "dffa99688feb9e01",
     "heis": "bd96c2684a9e3f6f",
     "history": "eebab6f64667fef0",
-    "universe": "12f45510818c787f",
+    "universe": "17c6776fb80c9a75",
     "screens": "d9c902d529b6a54c"
    }
   ],
@@ -618,7 +623,7 @@
     "poll": "054ee814abde2bca",
     "heis": "a0c7b8b35289cf74",
     "history": "e466dc8c989c8a56",
-    "universe": "3102c1ac9b39435f",
+    "universe": "975c0785fe051e21",
     "screens": "26fedcfb47b9f732"
    },
    {
@@ -630,7 +635,7 @@
     "poll": "8c695555dc7725dd",
     "heis": "da058a777571a4b6",
     "history": "ae8623a6cf63a28a",
-    "universe": "0b27883dbf8959f6",
+    "universe": "f30d14b9519ee156",
     "screens": "e5d55cdefc4327dc"
    },
    {
@@ -642,7 +647,7 @@
     "poll": "1778dfae612de05c",
     "heis": "260c7c7c0e81f6b5",
     "history": "59b3923c88401491",
-    "universe": "41926f1c0be5d048",
+    "universe": "f30aa5d3e01504cd",
     "screens": "282b1b490ce29e45"
    },
    {
@@ -654,7 +659,7 @@
     "poll": "b21b03832626e02c",
     "heis": "5817e3a2e813fb34",
     "history": "fd43af40687b09c5",
-    "universe": "ab2542fadec634fc",
+    "universe": "dca509eaa22ac288",
     "screens": "751c143b75c9eaba"
    }
   ],
@@ -668,7 +673,7 @@
     "poll": "fbc6863ae5160958",
     "heis": "9b39b63665b7d281",
     "history": "36a454b993ff7a9e",
-    "universe": "bb155aeab6cb2225",
+    "universe": "b29aec2d76e8b931",
     "screens": "054d071a318d5e1b"
    },
    {
@@ -680,7 +685,7 @@
     "poll": "59de984e48133c2a",
     "heis": "5c889e1341623ad4",
     "history": "d3e772f56956258c",
-    "universe": "423cb200f3fe7580",
+    "universe": "e828c7f620d5a68f",
     "screens": "f762c57ce546ad79"
    },
    {
@@ -692,7 +697,7 @@
     "poll": "2ea98825aae46523",
     "heis": "fe1cda17fce66261",
     "history": "4aaa70155f042578",
-    "universe": "1f0d4f57c658beef",
+    "universe": "e462eb38482eaaac",
     "screens": "8857a1e117dc7fca"
    }
   ],
@@ -706,7 +711,7 @@
     "poll": "5b826eddf0db0c4a",
     "heis": "4fc045803b982099",
     "history": "7ed43f7c42ecf112",
-    "universe": "d428efa0280df856",
+    "universe": "4f86f463ea5c3899",
     "screens": "2de40304e662e175"
    },
    {
@@ -718,7 +723,7 @@
     "poll": "26632128e66c7f87",
     "heis": "ec1fdc4a291f271b",
     "history": "612c15259b38984e",
-    "universe": "acdaf0c6127c7d6e",
+    "universe": "e6f07460d33d6042",
     "screens": "4f002a5e14c997ea"
    },
    {
@@ -730,7 +735,7 @@
     "poll": "6a0704304ae53d5f",
     "heis": "bf4ca1f4e064c033",
     "history": "11d70c0de7a54383",
-    "universe": "e1f5e36e981b2c5a",
+    "universe": "482807cead73caae",
     "screens": "7e9a30eafe86baf5"
    }
   ],

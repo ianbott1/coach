@@ -1,5 +1,5 @@
 {
- "fp": "808b6ae4ff5f8177",
+ "fp": "374d518103df5cc3",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -145,6 +145,11 @@
    "fp": "808b6ae4ff5f8177",
    "from": "f40363369147cb98",
    "note": "Round 87: engine 10, baseball's attributes play (Power/Contact/Eye, Stuff/Control/Stamina, Fielding, Speed/Arm). An engine-9 build of round 87 matches round 86 field by field apart from screens"
+  },
+  {
+   "fp": "374d518103df5cc3",
+   "from": "808b6ae4ff5f8177",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
@@ -158,7 +163,7 @@
     "poll": "ef882af51f3262c7",
     "heis": "66f26d873ae5048f",
     "history": "083412b3ebbf4097",
-    "universe": "5926b5d17078a855",
+    "universe": "c3a47c9165cd98d9",
     "screens": "ff60399c044a24a9"
    },
    {
@@ -170,7 +175,7 @@
     "poll": "a4610ed83d0f311f",
     "heis": "61420132dca2d9a9",
     "history": "b091eb46cbc25620",
-    "universe": "31c3036e8c1e4742",
+    "universe": "3b9ad40d5aaa71c0",
     "screens": "b92bebacda7e7600"
    }
   ],
@@ -184,7 +189,7 @@
     "poll": "3d241b5e0176fd0b",
     "heis": "682449cbdaf8fbe5",
     "history": "7b15639434cdb66b",
-    "universe": "e021e26bb7894e40",
+    "universe": "52fc89ef2d5d5418",
     "screens": "81bd449b08cdda84"
    },
    {
@@ -196,7 +201,7 @@
     "poll": "a133bdd8d193d51b",
     "heis": "69ef1f816846ca83",
     "history": "a76408fcd690bb26",
-    "universe": "7bc1a677fd7b52a5",
+    "universe": "561ac7e5528ecf48",
     "screens": "d9bc15be0ab945e1"
    }
   ],

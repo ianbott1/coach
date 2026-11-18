@@ -1,5 +1,5 @@
 {
- "fp": "c2ed36f6a0c00483",
+ "fp": "d326e8e2a8e4f04f",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -505,85 +505,90 @@
    "fp": "c2ed36f6a0c00483",
    "from": "edced14d722d516c",
    "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
+  },
+  {
+   "fp": "d326e8e2a8e4f04f",
+   "from": "c2ed36f6a0c00483",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "037161ab93334b1c",
-    "post": "a12f838c0f89ebb1",
-    "champion": "Kentucky",
-    "rec": "332ccd0992fac95d",
-    "poll": "5e83e3ec28f66ef4",
-    "heis": "2cf4aebe2d39055b",
-    "history": "259c3e0fa871b237",
-    "universe": "cd26357939d50f82",
-    "screens": "97cdf24b98571c93"
+    "games": "ff5603f1e548f06a",
+    "post": "9dd5c0f86835cc6e",
+    "champion": "North Carolina",
+    "rec": "d6f49300151e1184",
+    "poll": "ec99b49169d682aa",
+    "heis": "4303249140683cfa",
+    "history": "085d6f01244a4da5",
+    "universe": "5484ebcb96666e1a",
+    "screens": "2f6484801e22f962"
    },
    {
     "year": 2027,
-    "games": "db855388a318e5c2",
-    "post": "df97edfb77537cb1",
-    "champion": "Iowa State",
-    "rec": "42c0e68ab69e7838",
-    "poll": "f465e142cb52b139",
-    "heis": "c8f41de2dcb0a4f7",
-    "history": "33abdbbb920cb934",
-    "universe": "a5135d85d26fff35",
-    "screens": "0bd6c146b107b0b5"
+    "games": "c934953742d71157",
+    "post": "8ab7860243548424",
+    "champion": "USC",
+    "rec": "d6a83e39b5131bef",
+    "poll": "9f0584bf21d0f9a7",
+    "heis": "1b0b67c493e19806",
+    "history": "c56ff4283e35be1f",
+    "universe": "c73a2496642773ea",
+    "screens": "c9c08460f45b5c3d"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "93a3d712b5c374fe",
-    "post": "991ce956a2ab5add",
-    "champion": "Michigan",
-    "rec": "19aa66d55e46ce79",
-    "poll": "535bf9b537c8c7a6",
-    "heis": "e21cc39fcc2f01f4",
-    "history": "4a2a918f2781b39e",
-    "universe": "c80dfdaad468106d",
-    "screens": "2ba3e310c9e8b3c2"
+    "games": "945b302e41d2c638",
+    "post": "d65f5a2162370d56",
+    "champion": "Michigan State",
+    "rec": "028532c65ffe1624",
+    "poll": "f06c07fd92476fd5",
+    "heis": "e09c4f6e1ff18501",
+    "history": "84106132194cf930",
+    "universe": "653209cd474711ee",
+    "screens": "a2d35ff2c78c4b97"
    },
    {
     "year": 2027,
-    "games": "972926dca2fd7ce4",
-    "post": "7ba932cbd7b5ea52",
-    "champion": "Houston",
-    "rec": "59a5ecb3faf0a66e",
-    "poll": "6ac009bf5476fcf9",
-    "heis": "2118334fedce7383",
-    "history": "1f96c5d61306b950",
-    "universe": "f554448dcc4e3125",
-    "screens": "ee190dcd7e8e1748"
+    "games": "1e10e28562faba9a",
+    "post": "d6641499894d76be",
+    "champion": "Kansas",
+    "rec": "da405d79678563a1",
+    "poll": "395f98e1f067c618",
+    "heis": "511fe5b1c62d99be",
+    "history": "a3c9965446024e65",
+    "universe": "51d56102662a3e2b",
+    "screens": "83049f43159b118e"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "8a2bd318205c72aa",
-    "post": "2e29721c7dcaa0c1",
-    "champion": "Kansas",
-    "rec": "de74b8e90b05f70d",
-    "poll": "36c47d6e24ac2fca",
-    "heis": "7f76a7dc93990fa1",
-    "history": "1cbe9e195694e5f6",
-    "universe": "41f60b9aa462e27c",
-    "screens": "761c9b97d28ac29a"
+    "games": "60cc924e2f782adb",
+    "post": "ecc77c1522acee33",
+    "champion": "Kentucky",
+    "rec": "d0fb1445b71247f9",
+    "poll": "2856cd076d6407fd",
+    "heis": "f1dbd043c56c9e9c",
+    "history": "fd6ee5bda505741d",
+    "universe": "76a95a66ab0db32c",
+    "screens": "39197bb16955b02a"
    },
    {
     "year": 2027,
-    "games": "a3d971e9e1feeef0",
-    "post": "34cd3d82a0a433fa",
+    "games": "168c6c049d11a180",
+    "post": "d389aebc67b95577",
     "champion": "North Carolina",
-    "rec": "7280f5a6c448c60a",
-    "poll": "d0d46c3c2c34a4fe",
-    "heis": "a79563ff5420807b",
-    "history": "70cf924bb5cf00c3",
-    "universe": "b191d17f58f4a842",
-    "screens": "9172cc716c6a1fef"
+    "rec": "b252c79fd488f8b6",
+    "poll": "aaf3a550a0e1dd6b",
+    "heis": "d13f0394c960a699",
+    "history": "f4682842b9d82a04",
+    "universe": "7ceca70d777e40bc",
+    "screens": "3c5915b4876d92b7"
    }
   ],
   "schedules#60": [

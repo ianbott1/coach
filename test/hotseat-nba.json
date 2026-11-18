@@ -1,5 +1,5 @@
 {
- "fp": "b73c70bb96a80875",
+ "fp": "d5aebb31af70dac1",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -290,6 +290,11 @@
    "fp": "b73c70bb96a80875",
    "from": "d166e7a0a29da288",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
+  },
+  {
+   "fp": "d5aebb31af70dac1",
+   "from": "b73c70bb96a80875",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "out": [
@@ -299,20 +304,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "48-34",
+      "rec": "47-35",
       "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "fd26a67c653b6dce"
+     "book": "e5ffd6ff7435fad6"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "45-37",
+      "rec": "41-41",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "2ef53da3c914f5bc"
+     "book": "63f8bd4720aaf878"
     }
    ]
   },
@@ -322,20 +327,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "21-61",
+      "rec": "28-54",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "6919d103a1a1d917"
+     "book": "94b53dcc6c5ba4cf"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "37-45",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "44-38",
+      "result": "Lost in the conference finals",
+      "grade": "B+"
      },
-     "book": "3c7ed518d453f19d"
+     "book": "2098cb9d95aeee3a"
     }
    ]
   },
@@ -345,20 +350,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "23-59",
+      "rec": "29-53",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "f253dbc040238d88"
+     "book": "0d330a9c3b3a6f44"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "36-46",
+      "rec": "42-40",
       "result": "Lost in the play-in",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "d96d57ed6d598fc3"
+     "book": "026665996f097b64"
     }
    ]
   }

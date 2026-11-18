@@ -1,5 +1,5 @@
 {
- "fp": "8606564884786f79",
+ "fp": "920833d516b1e398",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -480,59 +480,64 @@
    "fp": "8606564884786f79",
    "from": "4ae49135cc8073f7",
    "note": "Round 87: player attributes in every game (display and development only here). An engine-9 build of round 87 matches round 86 field by field apart from screens (the draft-night role read); the universe adds at/ar/ap and engine 10's stamp"
+  },
+  {
+   "fp": "920833d516b1e398",
+   "from": "8606564884786f79",
+   "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "2a5f58ba58d191ec",
-    "post": "025fc57f91bd26f3",
-    "champion": "Detroit",
-    "rec": "1d501d4a38ca1d37",
-    "poll": "35bb34ecb75f8e39",
-    "heis": "e40f57ce863b1ebd",
-    "history": "8aafa685f87e75a0",
-    "universe": "79c30215f4dfd085",
-    "screens": "724a5cd822313965"
+    "games": "8d9a53871cd22c13",
+    "post": "2003626ee857918a",
+    "champion": "Denver",
+    "rec": "cb02928a087d64ab",
+    "poll": "2e0e8f760751d4cf",
+    "heis": "0643d72c55748eb7",
+    "history": "3d4e437906b19cf6",
+    "universe": "0d53e47ea1d3d179",
+    "screens": "f32389822a7bc8f1"
    },
    {
     "year": 2027,
-    "games": "59182b33980670b6",
-    "post": "b326ced05ec79ab0",
-    "champion": "Denver",
-    "rec": "57bf46ccdb6b1640",
-    "poll": "51a9028c2b197639",
-    "heis": "4a14fd9b0773921d",
-    "history": "7a5082dc8fb7ffcb",
-    "universe": "f52e77ef5e773498",
-    "screens": "7cb180112cc56b9d"
+    "games": "cf33dcd6813ea12d",
+    "post": "378cf62ee5497901",
+    "champion": "LA Clippers",
+    "rec": "829f4089ec7c0e18",
+    "poll": "d34ae29a605e3da1",
+    "heis": "7e52b80e4f6621f9",
+    "history": "eb372fcf5fd5b2af",
+    "universe": "e15b57fbd145f174",
+    "screens": "c83f93e2495f1ae2"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "002a4260a6f9d02f",
-    "post": "ac01c1c76a1c4ba0",
-    "champion": "Golden State",
-    "rec": "eb9cc6f5c27b9052",
-    "poll": "4b87166e47b9b805",
-    "heis": "851a737ba7e446f7",
-    "history": "082ebedbebddba66",
-    "universe": "58f6af68f685bd2d",
-    "screens": "a5e1bd953acb53b3"
+    "games": "4e9c080a48a77929",
+    "post": "33160de04da0ccad",
+    "champion": "Philadelphia",
+    "rec": "007d512af201ce0a",
+    "poll": "f65f02dd51e40b3d",
+    "heis": "caf1da156e1f15e5",
+    "history": "902773de6b5d5d3e",
+    "universe": "94518478550b4c5f",
+    "screens": "01b1046f6c70b99e"
    },
    {
     "year": 2027,
-    "games": "101be5a31ded9745",
-    "post": "73c4adb2ccec5c17",
-    "champion": "Milwaukee",
-    "rec": "926c5cf0df723d6d",
-    "poll": "53d64ea50ee1ad2c",
-    "heis": "6eb245c65bb96a4c",
-    "history": "9e1dc26fc914acad",
-    "universe": "79734866d8505383",
-    "screens": "fe6c7ebd4a9842f7"
+    "games": "a344dc14e9cf82b5",
+    "post": "20d9895dd9f478c8",
+    "champion": "Oklahoma City",
+    "rec": "c8ddf161dd38b60a",
+    "poll": "3c26f42c9b7c61a0",
+    "heis": "b0d9387bea42f2fe",
+    "history": "7c1987c7d2213500",
+    "universe": "c62281d7353abb43",
+    "screens": "6ead23fdc5dff96a"
    }
   ],
   "schedules#60": [
