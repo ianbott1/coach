@@ -58,7 +58,10 @@ const inj=await p.evaluate(()=>{ const my=S.myTeam, R=SEA.roster[my]; let res=nu
       const d=tdDeal(t,k,b); if(!d||!d.yes){ SEA.talent.inj[my].pop(); SEA.talent.inj[t].pop(); return }
       const hm=R[s].n, ht=T[other].n; tdDo(d);
       const where=(tm,nm)=>{ const e=SEA.talent.active(tm).find(e=>e.who===nm); return e?SEA.roster[tm][e.idx]&&SEA.roster[tm][e.idx].n:null };
-      res={mine:where(my,hm)===hm, theirs:where(t,ht)===ht, starts:SEA.roster[my][s].n===q.n, t:t} }) }) }
+      res={mine:where(my,hm)===hm, theirs:where(t,ht)===ht, starts:SEA.roster[my][s].n===q.n, t:t};
+      // round 87: the two injuries were put in by hand and aren't saved, so a reload's season would be another (on engine
+      // 10 the deadline deals of the computer's clubs moved with it): out again before a game is played with them
+      [my,t].forEach(tm=>{ const L=SEA.talent.inj[tm]; const j=L.findIndex(e=>e.m===-1&&e.w===9); if(j>=0)L.splice(j,1) }) }) }) }
   return res });
 if(inj){ ok(inj.mine&&inj.theirs,`after a trade reorders a pair, each injury is still on the injured man (yours ${inj.mine}, ${inj.t}'s ${inj.theirs})`); ok(inj.starts,'the better man starts') }
 else console.log('   (no deal found for the injury case this time)');

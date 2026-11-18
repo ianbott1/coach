@@ -141,6 +141,6 @@ const ATTRS={
   group:p=>p==="G"?"G":/^D/.test(p)?"D":"F",
   w:{F:{sht:.3,pas:.25,skt:.25,chk:.1,def:.1}, D:{def:.32,chk:.2,skt:.2,pas:.18,sht:.1}, G:{rfx:.55,gpo:.45}},
   lean:{},
-  role:{sht:"Sniper",pas:"Playmaker",skt:"Speedster",chk:"Power forward",def:"Two-way",rfx:"Athletic goalie",gpo:"Positional goalie"},
+  role:{sht:"Sniper",pas:"Playmaker",skt:"Speedster",chk:"Power forward",def:"Two-way forward",rfx:"Athletic goalie",gpo:"Positional goalie"},
   roleBy:{D:{sht:"Offensive defenceman",pas:"Puck mover",chk:"Shutdown defenceman",def:"Shutdown defenceman",skt:"Puck mover"}}
 };

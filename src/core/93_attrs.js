@@ -72,6 +72,7 @@ function attrRoleOf(p,A){ if(!A)return ""; const g=attrGrp(p), K=attrKeys(g);
   const O=ATTRS.roleBy&&ATTRS.roleBy[g]; return (O&&O[best])||ATTRS.role[best]||"" }
 /* a prospect, as your scouts see him (round 87: fog where the rating is already fogged, the draft): each attribute read
    with an error of its own, wider when the scouts are unsure, narrow after a workout; the same read every time */
+function attrLooks(r){ return r?`looks like ${/^[aeiou]/i.test(r)?"an":"a"} ${r.toLowerCase()}`:"" }   // the role, read: a speedster, an all-rounder
 function attrRoleRead(p,x,team){ const A=attrOf(p); if(!A)return ""; x=x||{};
   const sd=attrScale().s*ATTR_SPREAD*(x.wk?0.3:x.unsure?1.0:0.55), R={};
   Object.keys(A).forEach(k=>{ const r=new RNG((strHash("aread|"+((typeof U!=="undefined"&&U&&U.seed)||0)+"|"+(team||"")+"|"+(p.pid!=null?p.pid:p.n)+"|"+k)>>>0)||1); R[k]=A[k]+r.gauss(0,sd) });
