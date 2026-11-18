@@ -133,3 +133,21 @@ const LEADERS=[
   {l:"Wins",pos:STARTERS,v:s=>s.w||0},{l:"Strikeouts",pos:STARTERS.concat(["CL"]),v:s=>s.k||0},{l:"Saves",pos:["CL"],v:s=>s.sv||0}];
 const STAT_FMT={ip:ipStr};
 function STAT_EXTRA(pos){ return isPitcher(pos)?[["ERA",s=>s.ip?(s.er*27/s.ip).toFixed(2):"-"]]:[["AVG",s=>s.ab?(s.h/s.ab).toFixed(3).replace(/^0/,""):"-"]] }
+
+/* round 87: attributes (core 93_attrs). Hitters and pitchers have their own; every pitcher weighs alike, so a job
+   traded on the staff (swapRoles) changes nothing about him. Engine 10 plays them (50_game: the hitter's line, the
+   pitcher's strikeouts and walks, his stamina, the steal). */
+const ATTRS={
+  name:{con:"Contact",pow:"Power",eye:"Eye",spd:"Speed",fld:"Fielding",arm:"Arm",stf:"Stuff",ctl:"Control",sta:"Stamina"},
+  desc:{con:"singles, and fewer strikeouts",pow:"home runs and doubles",eye:"walks, and fewer strikeouts",spd:"steals and taking the extra base",
+    fld:"outs on balls in play",arm:"throwing out base stealers (catchers)",stf:"strikeouts",ctl:"fewer walks",sta:"batters faced before he tires"},
+  band:{con:"t",pow:"t",eye:"m",spd:"p",fld:"t",arm:"p",stf:"p",ctl:"m",sta:"p"},
+  group:p=>/^(SP|CL)/.test(p)?"P":p==="C"?"C":p==="DH"?"DH":/^(LF|CF|RF)$/.test(p)?"OF":"IF",
+  w:{C:{con:.25,pow:.2,eye:.15,spd:.05,fld:.15,arm:.2}, IF:{con:.28,pow:.22,eye:.17,spd:.1,fld:.15,arm:.08},
+     OF:{con:.28,pow:.24,eye:.17,spd:.13,fld:.1,arm:.08}, DH:{con:.38,pow:.36,eye:.26}, P:{stf:.45,ctl:.35,sta:.2}},
+  lean:{C:{spd:-6,arm:3}, IF:{}, OF:{spd:2}, DH:{spd:0}, P:{}},
+  role:{con:"Contact hitter",pow:"Power bat",eye:"Patient hitter",spd:"Speedster",fld:"Glove first",arm:"Cannon arm",
+    stf:"Power arm",ctl:"Control artist",sta:"Workhorse"},
+  roleBy:{C:{fld:"Defensive catcher",arm:"Defensive catcher"}},
+  allRound:{P:"Steady arm"}
+};

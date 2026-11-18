@@ -209,3 +209,20 @@ const LEADERS=[
   {l:"Receiving yards",pos:["WR","WR2"],v:s=>s.cyd||0},{l:"Receptions",pos:["WR","WR2"],v:s=>s.rec||0},{l:"Receiving touchdowns",pos:["WR","WR2"],v:s=>s.ctd||0},
   {l:"Sacks",pos:["EDGE","DT","LB"],v:s=>s.sck||0,f:v=>v.toFixed(1).replace(/\.0$/,"")},{l:"Tackles",pos:["EDGE","DT","LB","CB","S"],v:s=>s.tkl||0},
   {l:"Interceptions",pos:["CB","S"],v:s=>s.ints||0}];
+
+/* round 87: attributes (core 93_attrs), by position group. Not yet in the drive engine: they make up the rating and
+   grow with age (round 90 plays them). */
+const ATTRS={
+  name:{arm:"Arm",acc:"Accuracy",spd:"Speed",hnd:"Hands",blk:"Blocking",str:"Strength",rsh:"Pass rush",cov:"Coverage",tkl:"Tackling",vis:"Vision"},
+  desc:{arm:"the deep ball",acc:"completions, fewer picks",spd:"breakaways",hnd:"catches in traffic",blk:"protection and run lanes",str:"winning at the line",
+    rsh:"sacks and pressure",cov:"blanketing receivers",tkl:"bringing them down",vis:"reading the field"},
+  band:{arm:"p",acc:"t",spd:"p",hnd:"t",blk:"t",str:"p",rsh:"t",cov:"m",tkl:"t",vis:"m"},
+  group:p=>p==="QB"?"QB":p==="RB"?"RB":/^WR/.test(p)?"WR":p==="OT"?"OL":/^(EDGE|DT)$/.test(p)?"DL":p==="LB"?"LB":"DB",
+  w:{QB:{arm:.3,acc:.4,vis:.2,spd:.1}, RB:{spd:.4,vis:.25,hnd:.15,blk:.1,str:.1}, WR:{spd:.4,hnd:.45,vis:.15},
+     OL:{blk:.55,str:.35,vis:.1}, DL:{rsh:.5,str:.3,tkl:.15,spd:.05}, LB:{tkl:.4,cov:.2,vis:.2,rsh:.1,spd:.1}, DB:{cov:.5,spd:.3,tkl:.1,vis:.1}},
+  lean:{},
+  role:{arm:"Gunslinger",acc:"Field general",spd:"Burner",hnd:"Possession receiver",blk:"Road grader",str:"Mauler",rsh:"Pass rusher",cov:"Cover man",tkl:"Thumper",vis:"Instinctive"},
+  roleBy:{QB:{spd:"Dual threat",vis:"Field general"}, RB:{spd:"Home-run hitter",vis:"Patient runner",str:"Power back",hnd:"Third-down back",blk:"Third-down back"},
+    WR:{spd:"Deep threat",hnd:"Possession receiver",vis:"Route runner"}, OL:{blk:"Pass protector",str:"Mauler",vis:"Technician"},
+    DL:{rsh:"Pass rusher",str:"Run stuffer",tkl:"Run stuffer"}, LB:{cov:"Coverage backer",rsh:"Blitzer",tkl:"Thumper"}, DB:{cov:"Lockdown corner",spd:"Ball hawk",tkl:"Enforcer"}}
+};

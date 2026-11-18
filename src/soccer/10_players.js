@@ -106,3 +106,19 @@ function statProd(pos,s){
 const STAT_ABBR={goals:"Goals",ast:"Assists",shots:"Shots",cs:"Clean sheets",sv:"Saves",ga:"Conceded"};
 const LEADERS=[{l:"Goals",v:s=>s.goals||0},{l:"Assists",v:s=>s.ast||0},{l:"Goals and assists",v:s=>(s.goals||0)+(s.ast||0)},
   {l:"Clean sheets",pos:["GK"],v:s=>s.cs||0},{l:"Saves",pos:["GK"],v:s=>s.sv||0}];
+
+/* round 87: attributes (core 93_attrs), by role: keepers, centre backs, full backs, midfielders, wingers, strikers. Not
+   yet in the match engine: they make up the rating and grow with age (round 89 plays them). */
+const ATTRS={
+  name:{fin:"Finishing",pas:"Passing",pac:"Pace",tck:"Tackling",hed:"Heading",sta:"Stamina",pos:"Positioning",han:"Handling"},
+  desc:{fin:"turning chances into goals",pas:"creating chances",pac:"getting in behind",tck:"winning the ball",hed:"in the air, both boxes",
+    sta:"running for ninety minutes",pos:"being in the right place",han:"catching, not parrying (keepers)"},
+  band:{fin:"t",pas:"t",pac:"p",tck:"t",hed:"t",sta:"p",pos:"m",han:"t"},
+  group:p=>p,
+  w:{GK:{han:.45,pos:.35,pas:.1,sta:.1}, CB:{tck:.3,hed:.22,pos:.22,pac:.1,pas:.08,sta:.08}, FB:{pac:.2,tck:.24,sta:.16,pas:.16,pos:.16,hed:.08},
+     CM:{pas:.3,sta:.16,pos:.14,tck:.12,fin:.12,pac:.16}, W:{pac:.26,fin:.18,pas:.2,sta:.14,pos:.1,tck:.06,hed:.06},
+     ST:{fin:.34,hed:.18,pac:.2,pos:.16,pas:.08,sta:.04}},
+  lean:{},
+  role:{fin:"Finisher",pas:"Playmaker",pac:"Speedster",tck:"Ball winner",hed:"Aerial threat",sta:"Engine",pos:"Reader of the game",han:"Safe hands"},
+  roleBy:{ST:{fin:"Poacher",hed:"Target man",pac:"Runner in behind"}, CB:{hed:"Stopper",pas:"Ball-playing defender"}, GK:{pos:"Sweeper keeper",pas:"Sweeper keeper"}}
+};

@@ -29,7 +29,7 @@ function lateFloorDue(L,any){
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer"];   // round 41: the season story
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer","train"];   // round 87: training focus   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -476,6 +476,7 @@ function rebuild(){
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
   U=snap(S.uStart);
   syncConf(U);
+  attrSync(U);   // round 87: a career from before attributes gets them now, from its players as they are (no draws)
   NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
   U.userTeam=S.myTeam;
   if(S.schedLock&&S.schedLock.year===U.year)U.schedLock=S.schedLock;
@@ -516,6 +517,9 @@ function rebuild(){
 // the season's trades into next season's rosters, once, as soon as the season is over (round 85: before, at the summer's
 // commit only, so the offseason's screens showed the man you'd traded away on your re-sign list, and a re-sign choice
 // kept by slot fell on the man who'd taken his place)
+// round 87: training focus, by coach: {team: {group: attribute}} (yours, and every coach's in a shared seat)
+function trainFocus(){ const o={}; if(isHotSeat())(S.coaches||[]).forEach((c,i)=>{ const T=i===(S.turn||0)?S.train:c.train; if(T)o[i===(S.turn||0)?S.myTeam:c.myTeam]=T });
+  else if(S.train)o[S.myTeam]=S.train; return o }
 function carryTrades(){ if(SEA&&SEA.phase==="done"&&typeof tdCarry==="function")tdCarry(U) }
 /* Opening the offseason runs the league's coaching carousel, and it changes the league itself:
    head coaches hired and fired, coordinators hired away, every coach's record. A reload rebuilt
@@ -784,6 +788,7 @@ function newDynasty(team,seed,coachName,roster){
   distinctLeague(u);
   u.schedV=4;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads; 4: round 79, no back-to-back sets (baseball)
   u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
+  attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
   rebuild(); S.expNow=expectations(); save(); view="team"; render();
@@ -1188,6 +1193,7 @@ function endSeason(rng,choices,act,seasonTeam){
   U.schedV=4;                                            // (schedOrder; 3: round 71; 4: round 79)
   U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time
+  attrSync(U,trainFocus(),true);                              // round 87: the summer's change, spread across each player's attributes
   // a promotion or a firing belongs to its season: kept by step, last season's were replayed into this one on every
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null; S.promos={}; S.fires={}; S.choiceYear=U.year;

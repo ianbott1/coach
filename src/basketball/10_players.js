@@ -126,3 +126,18 @@ const STAT_ABBR={pts:"Pts",reb:"Reb",ast:"Ast",stl:"Stl",blk:"Blk",tpm:"3PM"};
 const PERG=k=>({v:s=>s.g?(s[k]||0)/s.g:0,f:v=>v.toFixed(1),min:(s,G)=>s.g>=Math.max(1,G/3)});
 const LEADERS=[Object.assign({l:"Points per game"},PERG("pts")),Object.assign({l:"Rebounds per game"},PERG("reb")),Object.assign({l:"Assists per game"},PERG("ast")),
   Object.assign({l:"Steals per game"},PERG("stl")),Object.assign({l:"Blocks per game"},PERG("blk")),{l:"Three-pointers made",v:s=>s.tpm||0}];
+
+/* round 87: attributes (core 93_attrs): guards, wings and bigs weigh them differently. Not yet in the game engine:
+   they make up the rating and grow with age (round 88 plays them). */
+const ATTRS={
+  name:{sht:"Shooting",fin:"Finishing",ply:"Playmaking",reb:"Rebounding",pd:"Perimeter D",id:"Interior D",ath:"Athleticism",sta:"Stamina"},
+  desc:{sht:"threes and mid-range",fin:"at the rim",ply:"assists, fewer turnovers",reb:"both glasses",pd:"guarding the ball",id:"protecting the rim",
+    ath:"speed and lift",sta:"minutes before he tires"},
+  band:{sht:"t",fin:"t",ply:"m",reb:"t",pd:"m",id:"m",ath:"p",sta:"p"},
+  group:p=>/^(PG|SG)$/.test(p)?"G":p==="SF"?"W":"B",
+  w:{G:{sht:.22,fin:.12,ply:.22,reb:.04,pd:.16,id:.02,ath:.14,sta:.08}, W:{sht:.18,fin:.15,ply:.12,reb:.1,pd:.14,id:.07,ath:.16,sta:.08},
+     B:{sht:.08,fin:.2,ply:.06,reb:.22,pd:.05,id:.2,ath:.13,sta:.06}},
+  lean:{},
+  role:{sht:"Shooter",fin:"Slasher",ply:"Playmaker",reb:"Glass cleaner",pd:"Perimeter stopper",id:"Rim protector",ath:"Athlete",sta:"Motor"},
+  roleBy:{B:{sht:"Stretch big",ply:"Playmaking big"}, G:{ply:"Floor general"}}
+};

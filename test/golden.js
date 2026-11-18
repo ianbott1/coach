@@ -94,7 +94,8 @@ function career(file, team, seed, seasons) {
     api.commitOffseason();
     if (process.env.HISTORY_OUT) require('fs').appendFileSync(process.env.HISTORY_OUT, JSON.stringify(S.history[S.history.length-1])+'\n');
     season.history = h(S.history[S.history.length-1]);
-    season.universe = h(api.S.uStart);
+    // STRIP=at,ar hashes the universe without those keys (to show a change that only adds fields moved nothing else)
+    season.universe = h(process.env.STRIP ? JSON.parse(JSON.stringify(api.S.uStart, (k,v) => process.env.STRIP.split(',').includes(k) ? undefined : v)) : api.S.uStart);
     grab();
     // SCREENS=dir writes each season's screen text, so a screens-only change can be read, not just hashed
     if (process.env.SCREENS) require('fs').writeFileSync(require('path').join(process.env.SCREENS, `${team}#${seed}-${SEA.year}.txt`),
