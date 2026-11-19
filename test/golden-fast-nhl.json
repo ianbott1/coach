@@ -1,5 +1,5 @@
 {
- "fp": "e7a0ce1e0279985c",
+ "fp": "49e5a3b15a6bd094",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -40,6 +40,11 @@
    "fp": "e7a0ce1e0279985c",
    "from": "9d2fb84c28fdc555",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "49e5a3b15a6bd094",
+   "from": "e7a0ce1e0279985c",
+   "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
   }
  ],
  "result": {
@@ -51,10 +56,10 @@
     "champion": "NY Islanders",
     "rec": "235dd03943e2517b",
     "poll": "e4752cadc3527a03",
-    "heis": "132df369550d1787",
-    "history": "e0d09ac0d0f18ff3",
-    "universe": "77a2003d24c4755e",
-    "screens": "a5a0dc5993c4fd90"
+    "heis": "189cb60089db4620",
+    "history": "89ae462b230a19eb",
+    "universe": "0079ff8664d1e16e",
+    "screens": "61bb939c2961c9f4"
    }
   ]
  }

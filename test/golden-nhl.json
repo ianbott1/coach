@@ -1,5 +1,5 @@
 {
- "fp": "e1793ee41de6aa37",
+ "fp": "1f261b10899effd4",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -505,6 +505,11 @@
    "fp": "e1793ee41de6aa37",
    "from": "51e2920b7068a84e",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "1f261b10899effd4",
+   "from": "e1793ee41de6aa37",
+   "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
   }
  ],
  "result": {
@@ -516,10 +521,10 @@
     "champion": "NY Islanders",
     "rec": "235dd03943e2517b",
     "poll": "e4752cadc3527a03",
-    "heis": "132df369550d1787",
-    "history": "e0d09ac0d0f18ff3",
-    "universe": "77a2003d24c4755e",
-    "screens": "a5a0dc5993c4fd90"
+    "heis": "189cb60089db4620",
+    "history": "89ae462b230a19eb",
+    "universe": "0079ff8664d1e16e",
+    "screens": "61bb939c2961c9f4"
    },
    {
     "year": 2027,
@@ -528,10 +533,10 @@
     "champion": "Toronto",
     "rec": "2a3cc77842a85a23",
     "poll": "eed8fe9a08a13fb3",
-    "heis": "c7c7914b0b4788b7",
-    "history": "1aae2769f6699d63",
-    "universe": "19c54d6983906c9b",
-    "screens": "87145f8240611cda"
+    "heis": "fa00db527dc3c012",
+    "history": "3f19cd14eac97a47",
+    "universe": "c9c886f09c806b6d",
+    "screens": "f202167dcc1b1be7"
    }
   ],
   "Edmonton#777": [
@@ -542,10 +547,10 @@
     "champion": "Vegas",
     "rec": "c32690326e0d32c7",
     "poll": "b21858b3c14f6421",
-    "heis": "f525071044630aee",
-    "history": "4393a8c2a09fab77",
-    "universe": "18187754fe99ca3c",
-    "screens": "4daace9b3d2c9a50"
+    "heis": "943a3346813af753",
+    "history": "6959d6343dc99001",
+    "universe": "60db27bb36ee13f6",
+    "screens": "6e286a59d16685fe"
    },
    {
     "year": 2027,
@@ -554,10 +559,10 @@
     "champion": "Montreal",
     "rec": "47a1aad682ae292e",
     "poll": "24a224451ca80823",
-    "heis": "629fe7c087dc0873",
-    "history": "f565b687409fb888",
-    "universe": "de8eb7d046625907",
-    "screens": "6dc8f9f9d70fc4c7"
+    "heis": "4a630f0355a03fa1",
+    "history": "eeecfbb688dc490b",
+    "universe": "07dd7d0410826600",
+    "screens": "972e8ea5a1bb01b1"
    }
   ],
   "schedules#60": [

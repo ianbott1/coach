@@ -1,5 +1,5 @@
 {
- "fp": "012eccf914622661",
+ "fp": "9f68ec38af997628",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -155,6 +155,11 @@
    "fp": "012eccf914622661",
    "from": "374d518103df5cc3",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "9f68ec38af997628",
+   "from": "012eccf914622661",
+   "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
   }
  ],
  "result": {
@@ -168,7 +173,7 @@
     "poll": "ef882af51f3262c7",
     "heis": "66f26d873ae5048f",
     "history": "083412b3ebbf4097",
-    "universe": "6535889dc9136c72",
+    "universe": "a13d8c86d000d2bf",
     "screens": "ff60399c044a24a9"
    },
    {
@@ -180,7 +185,7 @@
     "poll": "a4610ed83d0f311f",
     "heis": "61420132dca2d9a9",
     "history": "b091eb46cbc25620",
-    "universe": "0da8ed293db1552f",
+    "universe": "53ce85cb93073ae8",
     "screens": "b92bebacda7e7600"
    }
   ],
@@ -194,7 +199,7 @@
     "poll": "3d241b5e0176fd0b",
     "heis": "682449cbdaf8fbe5",
     "history": "7b15639434cdb66b",
-    "universe": "24e49114bd23a171",
+    "universe": "640ef4ae8acc4511",
     "screens": "81bd449b08cdda84"
    },
    {
@@ -206,7 +211,7 @@
     "poll": "a133bdd8d193d51b",
     "heis": "69ef1f816846ca83",
     "history": "a76408fcd690bb26",
-    "universe": "60f5329d57adb9ed",
+    "universe": "addeb01474dd062d",
     "screens": "d9bc15be0ab945e1"
    }
   ],

@@ -1,5 +1,5 @@
 {
- "fp": "3ca5c62d05917868",
+ "fp": "2138fe59caf20c09",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -315,6 +315,11 @@
    "fp": "3ca5c62d05917868",
    "from": "7243e0fe966039a0",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "2138fe59caf20c09",
+   "from": "3ca5c62d05917868",
+   "note": "round 90, engine 13: hockey's credit moves the lines (records and results as round 89)"
   }
  ],
  "out": [
@@ -328,7 +333,7 @@
       "result": "Missed the playoffs",
       "grade": "C+"
      },
-     "book": "b8d32611bb954c46"
+     "book": "d682f41d02af7f4c"
     },
     {
      "team": "Montreal",
@@ -337,7 +342,7 @@
       "result": "Lost in the Stanley Cup Final",
       "grade": "A+"
      },
-     "book": "3370096bc1deb498"
+     "book": "d0b3c9a846926ff9"
     }
    ]
   },
@@ -351,7 +356,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "79acb370f7926353"
+     "book": "82320b95b5d18742"
     },
     {
      "team": "Montreal",
@@ -360,7 +365,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "3f9a47f9631a234e"
+     "book": "1f1092b0cf405401"
     }
    ]
   },
@@ -374,7 +379,7 @@
       "result": "Missed the playoffs",
       "grade": "C-"
      },
-     "book": "cdf4cc30cd8230f5"
+     "book": "fdda03fc0815fd21"
     },
     {
      "team": "Montreal",
@@ -383,7 +388,7 @@
       "result": "Lost in the first round",
       "grade": "A-"
      },
-     "book": "55e382c5154deffe"
+     "book": "00b4a240b1bdee63"
     }
    ]
   }

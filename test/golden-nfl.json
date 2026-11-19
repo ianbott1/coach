@@ -1,5 +1,5 @@
 {
- "fp": "97b4c0ff37486c84",
+ "fp": "335ee4c2117cc2b5",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -565,6 +565,11 @@
    "fp": "97b4c0ff37486c84",
    "from": "f2bb4c09193e3ee0",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "335ee4c2117cc2b5",
+   "from": "97b4c0ff37486c84",
+   "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
   }
  ],
  "result": {
@@ -578,7 +583,7 @@
     "poll": "afe47965d5288bb6",
     "heis": "6f51d62e0cdc6d73",
     "history": "b530b5523cc94ea4",
-    "universe": "182f95f001403d75",
+    "universe": "fe5e5256e5dfd0df",
     "screens": "61e4b14f16bb7d74"
    },
    {
@@ -590,7 +595,7 @@
     "poll": "7eb7e82c8d1e2281",
     "heis": "40b5f390f8e9caf3",
     "history": "b19c72389a24f0f2",
-    "universe": "5c59bcad65659e03",
+    "universe": "00d4681b282d9f72",
     "screens": "ec1b982c21d9e275"
    },
    {
@@ -602,7 +607,7 @@
     "poll": "1432afb3dd84118b",
     "heis": "2e055e62dd099f26",
     "history": "f48c62a414002924",
-    "universe": "ee56321de4394cdf",
+    "universe": "b88fc581a729f882",
     "screens": "799aa5adc46b45a5"
    },
    {
@@ -614,7 +619,7 @@
     "poll": "dffa99688feb9e01",
     "heis": "bd96c2684a9e3f6f",
     "history": "eebab6f64667fef0",
-    "universe": "1755a00adc3d45bd",
+    "universe": "5d43c7c3f28a467d",
     "screens": "d9c902d529b6a54c"
    }
   ],
@@ -628,7 +633,7 @@
     "poll": "054ee814abde2bca",
     "heis": "a0c7b8b35289cf74",
     "history": "e466dc8c989c8a56",
-    "universe": "4c79d446c9f4d77b",
+    "universe": "a9c3f76eddfae85d",
     "screens": "26fedcfb47b9f732"
    },
    {
@@ -640,7 +645,7 @@
     "poll": "8c695555dc7725dd",
     "heis": "da058a777571a4b6",
     "history": "ae8623a6cf63a28a",
-    "universe": "4d24f9dcf7d1e2d1",
+    "universe": "dbfc9d6ad3c84c0d",
     "screens": "e5d55cdefc4327dc"
    },
    {
@@ -652,7 +657,7 @@
     "poll": "1778dfae612de05c",
     "heis": "260c7c7c0e81f6b5",
     "history": "59b3923c88401491",
-    "universe": "1f3204c113414e06",
+    "universe": "0f9e9f09404c9421",
     "screens": "282b1b490ce29e45"
    },
    {
@@ -664,7 +669,7 @@
     "poll": "b21b03832626e02c",
     "heis": "5817e3a2e813fb34",
     "history": "fd43af40687b09c5",
-    "universe": "72ae641c4c6fc6d8",
+    "universe": "b6ea40818822e987",
     "screens": "751c143b75c9eaba"
    }
   ],
@@ -678,7 +683,7 @@
     "poll": "fbc6863ae5160958",
     "heis": "9b39b63665b7d281",
     "history": "36a454b993ff7a9e",
-    "universe": "72f1beda5a96bc29",
+    "universe": "4f6df4812b35ac3e",
     "screens": "054d071a318d5e1b"
    },
    {
@@ -690,7 +695,7 @@
     "poll": "59de984e48133c2a",
     "heis": "5c889e1341623ad4",
     "history": "d3e772f56956258c",
-    "universe": "a77f97a3a06f5f3d",
+    "universe": "34ba3b4b02a65a19",
     "screens": "f762c57ce546ad79"
    },
    {
@@ -702,7 +707,7 @@
     "poll": "2ea98825aae46523",
     "heis": "fe1cda17fce66261",
     "history": "4aaa70155f042578",
-    "universe": "e342eb4fdbc315dc",
+    "universe": "a048d03078d0c1b5",
     "screens": "8857a1e117dc7fca"
    }
   ],
@@ -716,7 +721,7 @@
     "poll": "5b826eddf0db0c4a",
     "heis": "4fc045803b982099",
     "history": "7ed43f7c42ecf112",
-    "universe": "c95a9aec9071002e",
+    "universe": "33874cfa1edeaf60",
     "screens": "2de40304e662e175"
    },
    {
@@ -728,7 +733,7 @@
     "poll": "26632128e66c7f87",
     "heis": "ec1fdc4a291f271b",
     "history": "612c15259b38984e",
-    "universe": "68122845058676d4",
+    "universe": "82cb07ae468f2482",
     "screens": "4f002a5e14c997ea"
    },
    {
@@ -740,7 +745,7 @@
     "poll": "6a0704304ae53d5f",
     "heis": "bf4ca1f4e064c033",
     "history": "11d70c0de7a54383",
-    "universe": "b6e47d14665db915",
+    "universe": "7e32730f241de1d4",
     "screens": "7e9a30eafe86baf5"
    }
   ],

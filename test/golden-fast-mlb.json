@@ -1,5 +1,5 @@
 {
- "fp": "5f860616ccf596e6",
+ "fp": "33f9979432a873f8",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -35,6 +35,11 @@
    "fp": "5f860616ccf596e6",
    "from": "4a53ab86cd7a3e47",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "33f9979432a873f8",
+   "from": "5f860616ccf596e6",
+   "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
   }
  ],
  "result": {
@@ -48,7 +53,7 @@
     "poll": "ef882af51f3262c7",
     "heis": "66f26d873ae5048f",
     "history": "083412b3ebbf4097",
-    "universe": "6535889dc9136c72",
+    "universe": "a13d8c86d000d2bf",
     "screens": "ff60399c044a24a9"
    }
   ]
