@@ -97,7 +97,7 @@ function liveScoreboard(){
 /* ---- the evidence ---- */
 function evidenceHTML(g,my,d,dp){
   if(dp.k==="prep"){ const opp=g.home===my?"away":"home", R=dp.report, n=dp.n||6;
-    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
+    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>${styleRosterLine(g[opp])}
       ${STYLE_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(STYLE[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most teams have a way they like to score, but not every night. Get it right and the work you did in practice shows; get it wrong and you're out of position until you change it.</div>${splitNote(R)}</div>`; }
   // crunch time: their close finishes beside what they've run tonight

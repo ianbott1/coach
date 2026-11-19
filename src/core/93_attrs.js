@@ -147,3 +147,30 @@ function planFitWords(t,pl,lean){ if(typeof PLANS==="undefined"||typeof sportPla
   if(best!=="balanced"&&planEdge(t,best,planGapNow(t))<=0)best="balanced";
   if(best!==pl&&v[best]-v[pl]>=PLAN_PICK_MIN)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean[best]}: <b>${esc(PLANS[best].l)}</b> suits it.`;
   return best===pl&&pl!=="balanced"&&v[pl]>=PLAN_PICK_MIN?`This plan suits your ${lean[pl]}.`:"" }
+
+/* ============ round 92 (engine 15): each club's usual style comes from its roster ============
+   (Ian: the roster's lean, near-ties kept on the hash; set once as the season opens, so a trade doesn't change it and a
+   reload plays the same.) Each sport scores its styles from the opening roster's shape (sportStyleScores); each score
+   is taken against the league (z: the league's mean and spread that season), and a club plays the style it leans to
+   most. Where its top two are within STYLE_TIE of a spread, the old hash picks between those two, so a flat roster stays
+   hard to read. A league whose scores are all level (no attributes) keeps the hash outright. */
+const STYLE_TIE=0.25;
+function styleTable(sea){ if(typeof ENGINE_V==="undefined"||ENGINE_V<15||typeof sportStyleScores!=="function"||!sea||!sea.roster)return null;
+  const T=Object.keys(sea.roster).filter(t=>Array.isArray(sea.roster[t])), S={}; if(!T.length)return null;
+  T.forEach(t=>{ try{ S[t]=sportStyleScores(sea.roster[t])||null }catch(e){ S[t]=null } });
+  const K=Object.keys(S[T.find(t=>S[t])]||{}); if(!K.length)return null;
+  const mu={}, sd={}; K.forEach(k=>{ const v=T.map(t=>S[t]?S[t][k]:0); mu[k]=v.reduce((a,b)=>a+b,0)/v.length; sd[k]=Math.sqrt(v.reduce((a,b)=>a+(b-mu[k])**2,0)/v.length) });
+  if(K.every(k=>!(sd[k]>1e-9)))return null;
+  const out={style:{},rank:{},n:T.length};
+  T.forEach(t=>{ if(!S[t])return; const z=K.map(k=>[k,sd[k]>1e-9?(S[t][k]-mu[k])/sd[k]:0]).sort((a,b)=>b[1]-a[1]||(a[0]<b[0]?-1:1));
+    out.style[t]=z[0][1]-z[1][1]<STYLE_TIE?[z[0][0],z[1][0]].sort()[strHash(t+"|"+sea.year)%2]:z[0][0] });
+  K.forEach(k=>{ T.filter(t=>S[t]).sort((a,b)=>S[b][k]-S[a][k]||(a<b?-1:1)).forEach((t,i)=>{ (out.rank[t]=out.rank[t]||{})[k]=i+1 }) });
+  if(typeof sportSeasonNorms==="function")try{ out.norm=sportSeasonNorms(sea) }catch(e){}   // football: the league's offense, for reads tied to the roster
+  return out }
+/* the season's style for a club, when it comes from the roster (else null: the caller keeps its hash) */
+function rosterStyle(t,year){ try{ return typeof SEA!=="undefined"&&SEA&&SEA.year===year&&SEA._styles&&SEA._styles.style[t]||null }catch(e){ return null } }
+/* the scouting report's line on their roster (Ian: one line): where it ranks in the league for each style's attributes,
+   as the season opened (what the style was read from) */
+function styleRosterLine(t){ try{ const X=typeof SEA!=="undefined"&&SEA&&SEA._styles, R=X&&X.rank[t]; if(!R||typeof sportStyleAttrs==="undefined")return "";
+  const K=Object.keys(sportStyleAttrs).filter(k=>R[k]).sort((a,b)=>R[a]-R[b]);
+  return `<div class="evn"><b>Their roster</b>, as the season opened: ${K.map(k=>`${esc(sportStyleAttrs[k])} ${ordinal(R[k])}`).join(", ")} of ${X.n}. Clubs play to their rosters.</div>` }catch(e){ return "" } }

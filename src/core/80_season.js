@@ -41,6 +41,7 @@ class Season{
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
     SCHED_V=u.schedV||1;                    // see schedOrder
     ENGINE_V=u.engV||1;                     // round 71 (core 20_engine)
+    Object.defineProperty(this,"_styles",{value:typeof styleTable==="function"?styleTable(this):null,writable:true,enumerable:false});   // round 92: club styles from the opening rosters
     this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
     // a season begun before the deterministic draw (schedV 1) can come out differently on each load:
     // the first load on this build keeps its schedule and the dice after it (rebuild saves the lock),

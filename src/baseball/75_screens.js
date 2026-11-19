@@ -104,7 +104,7 @@ function firstReadTip(){ return "" }
 function evidenceHTML(g,my,d,dp){
   const opp=g.home===my?"away":"home";
   if(dp.k==="prep"){ const R=dp.report, n=6;
-    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games at the plate</div>
+    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games at the plate</div>${styleRosterLine(g[opp])}
       ${APPROACH_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(APPROACH[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most lineups have a usual approach, but not every day. Get the plan right and your pitchers take something off their bats; get it wrong and they're a step ahead until you change it.</div></div>`; }
   if(dp.k==="read"&&dp.tell){ const T=dp.tell, A=BS_TELL_AVG;

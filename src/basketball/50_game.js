@@ -450,7 +450,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
 /* A whole game at once (every game but the ones you watch): the same game,
    with the computer's calls, or opts.decide for a person who isn't watching. */
 /* each team's usual offense this season, and the seed for its scouting report */
-function clubStyle(t,year){ return STYLE_KEYS[strHash(t+"|"+year)%STYLE_KEYS.length] }
+function clubStyle(t,year){ return rosterStyle(t,year)||STYLE_KEYS[strHash(t+"|"+year)%STYLE_KEYS.length] }
+/* round 92: threes from Shooting, the paint from Finishing and Rebounding, pick-and-roll from Playmaking */
+const sportStyleAttrs={threes:"Shooting",paint:"Finishing and Rebounding",pnr:"Playmaking"};
+function sportStyleScores(R){ const T=bbShapeOf(R,null); return {threes:T.sht, paint:T.fin+T.reb, pnr:T.ply} }
 function clubClose(t,year){ return STYLE_KEYS[strHash(t+"|close|"+year)%STYLE_KEYS.length] }   // what they go to in a close finish
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
   sh:bbV11()?{home:bbShapeT(h),away:bbShapeT(a)}:undefined} }

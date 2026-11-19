@@ -180,7 +180,7 @@ function reportHTML(dp,g,my){
   const tilt=e>60?`${esc(oppName)} are the stronger side today: sides like that press or go wide more often than usual.`
     :e<-60?`${esc(oppName)} are the weaker side today: sides like that sit deeper or go direct more often than usual.`
     :`An even game on paper: they're likeliest to play their usual way.`;
-  return `<div class="evid"><div class="evh">${esc(oppName)}: their last ${n} games</div>
+  return `<div class="evid"><div class="evh">${esc(oppName)}: their last ${n} games</div>${styleRosterLine(oppName)}
     ${APPROACH_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(APPROACH[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
     <div class="evn">Most clubs have a usual way of playing, but not every week. ${tilt} Get it right and the work you did all week shows; get it wrong and you're out of shape until you change it.</div>${splitNote(R)}</div>`;
 }

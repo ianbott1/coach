@@ -209,7 +209,7 @@ function evidenceHTML(g,my,d,dp){
     const tilt=e>60?`${esc(g[opp])} are the stronger side tonight: sides like that forecheck more often than usual.`
       :e<-60?`${esc(g[opp])} are the weaker side tonight: sides like that trap more often than usual.`
       :`An even game on paper: they're likeliest to play their usual way.`;
-    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>
+    return `<div class="evid"><div class="evh">${esc(g[opp])}: their last ${n} games</div>${styleRosterLine(g[opp])}
       ${SYSTEM_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(SYSTEM[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most teams have a usual system, but not every night. ${tilt} Get it right and the work you did in practice shows; get it wrong and you're a step behind until you change it.</div>${splitNote(R)}</div>`; }
   if(dp.k==="read"&&d&&d.T){ const T=d.T[opp], n=Math.max(1,T.n), per=x=>(x/n*4).toFixed(1);

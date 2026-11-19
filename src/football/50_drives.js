@@ -357,9 +357,23 @@ function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SC
    coin flip, or say it's a guess". At 5 the report followed is right about 69% (computed; measured below in ARCHITECTURE) */
 const FB_FAVW3=5;
 function fbFavW(){ return ENGINE_V>=3?FB_FAVW3:FB_READ.favW }
-function clubScheme(t,year){ return SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
+function clubScheme(t,year){ return rosterStyle(t,year)||SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
+/* round 92: their defense: the blitz from Pass rush, the two-deep shell from Coverage, the loaded box from Strength and Tackling */
+/* round 92 (engine 15, Ian: football's reads tied to the roster): the right answer is worth more when your offense suits
+   it: quick passes with Accuracy, the run with Blocking and Strength, shots downfield with Arm and Speed. Each answer's
+   term is taken against the league as the season opened (its mean and spread, gameCtx fbn), so across the league a right
+   read is worth what it was; FBR.k a spread, held to FBR.lo..FBR.hi. */
+const FBR={k:+(FB14_ENV("FBR_K")||0.3), lo:0.5, hi:1.5};
+const FB_ANS_TERM={quick:O=>O.acc, run:O=>O.blk+O.str, deep:O=>O.arm+O.spd};
+function fbReadFit(a,ctx,sd){ const N=ctx&&ctx.fbn, X=ctx&&ctx.sh&&ctx.sh[sd]; if(!N||!X||!N[a]||!(N[a].s>1e-9)||!FB_ANS_TERM[a])return 1;
+  return Math.max(FBR.lo,Math.min(FBR.hi,1+FBR.k*(FB_ANS_TERM[a](X.o)-N[a].m)/N[a].s)) }
+/* the league's offense terms for the answers, as the season opened (styleTable keeps them) */
+function sportSeasonNorms(sea){ const o={}; Object.keys(FB_ANS_TERM).forEach(a=>{ const v=Object.keys(sea.roster).filter(t=>Array.isArray(sea.roster[t])).map(t=>FB_ANS_TERM[a](fbShapeOf(sea.roster[t],null).o));
+  const m=v.reduce((x,y)=>x+y,0)/v.length; o[a]={m:m, s:Math.sqrt(v.reduce((x,y)=>x+(y-m)**2,0)/v.length)} }); return o }
+const sportStyleAttrs={blitz:"Pass rush",shell:"Coverage",box:"Strength and Tackling"};
+function sportStyleScores(R){ const T=fbShapeOf(R,null).d; return {blitz:T.rsh, shell:T.cov, box:T.str+T.tkl} }
 function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
-  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined} }
+  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined, fbn:ENGINE_V>=15&&typeof SEA!=="undefined"&&SEA&&SEA._styles?SEA._styles.norm:undefined} }
 function fbReport(fav,seed){
   const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b), n={};
   SCHEME_KEYS.forEach(k=>n[k]=0);
@@ -451,7 +465,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
   const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA); return home?M.home:M.away };   // engine 14 (the plan as it stands)
-  const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; return FB_ANSWERS[a].beats===D.sch?FB_READ.right:FB_READ.wrong };
+  const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; if(FB_ANSWERS[a].beats!==D.sch)return FB_READ.wrong;
+    const f=fbReadFit(a,ctx,sd); return f===1?FB_READ.right:{td:FB_READ.right.td*f, fg:FB_READ.right.fg*f, to:FB_READ.right.to*f} };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
     const x={bl:pz(t[0]),sh:pz(t[1]),bx:pz(t[2]),n:1}; ["bl","sh","bx","n"].forEach(k=>{ D.T[k]+=x[k]; if(D.half)D.T2[k]+=x[k] }); D.last=x };
 

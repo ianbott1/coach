@@ -197,7 +197,7 @@ function driveWord(d){
 function fbEvidenceHTML(g,my,dp){
   const opp=g.home===my?g.away:g.home;
   if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
-    return `<div class="evid"><div class="evh">${esc(opp)}: their last ${n} games on defense</div>
+    return `<div class="evid"><div class="evh">${esc(opp)}: their last ${n} games on defense</div>${styleRosterLine(opp)}
       ${SCHEME_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(SCHEMES[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most defenses have a way they like to play, but not every week. Get it right and the week's work shows; get it wrong and your offense plays into their hands until you change it.</div>${splitNote(R)}</div>` }
   if(dp.k!=="read"||!dp.tell)return "";

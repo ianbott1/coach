@@ -437,7 +437,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   return st;
 }
 /* each club's usual approach this season, and the seed for its scouting report */
-function clubStyle(t,year){ return APPROACH_KEYS[strHash(t+"|"+year)%APPROACH_KEYS.length] }
+function clubStyle(t,year){ return rosterStyle(t,year)||APPROACH_KEYS[strHash(t+"|"+year)%APPROACH_KEYS.length] }
+/* round 92: the press from Stamina and Tackling, the low block from Positioning, the flanks from Pace, going direct from Heading */
+const sportStyleAttrs={press:"Stamina and Tackling",block:"Positioning",wing:"Pace",direct:"Heading"};
+function sportStyleScores(R){ const T=scShapeOf(R,null); return {press:T.sta+T.tck, block:T.pos, wing:T.pac, direct:T.hed} }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
   sh:scV12()?{home:scShapeT(h),away:scShapeT(a)}:undefined} }
 function playGame(rng, eloH, eloA, planH, planA, opts){

@@ -441,7 +441,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
 /* A whole game at once: the same game, with the computer's calls, or
    opts.decide for a person who isn't watching. */
 /* each club's usual system this season, and the seed for its scouting report */
-function clubStyle(t,year){ return SYSTEM_KEYS[strHash(t+"|"+year)%SYSTEM_KEYS.length] }
+function clubStyle(t,year){ return rosterStyle(t,year)||SYSTEM_KEYS[strHash(t+"|"+year)%SYSTEM_KEYS.length] }
+/* round 92: the forecheck from Skating and Checking, the trap from Defence, the cycle from Passing */
+const sportStyleAttrs={forecheck:"Skating and Checking",trap:"Defence",cycle:"Passing"};
+function sportStyleScores(R){ const T=hkShapeOf(R,null,null).sk; return {forecheck:T.skt+T.chk, trap:T.def, cycle:T.pas} }
 /* the goalie picture for a game (round 44): the second night of a back-to-back, and the gap between the goalies */
 function gkCtx(t,step){
   try{ if(typeof SEA==="undefined"||!SEA||!SEA.sched||!SEA.roster||!SEA.roster[t])return null;

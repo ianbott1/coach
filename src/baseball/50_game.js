@@ -386,7 +386,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   return st;
 }
 /* each club's usual approach at the plate this season, and the seed for its scouting report */
-function clubStyle(t,year){ return APPROACH_KEYS[strHash(t+"|"+year)%APPROACH_KEYS.length] }
+function clubStyle(t,year){ return rosterStyle(t,year)||APPROACH_KEYS[strHash(t+"|"+year)%APPROACH_KEYS.length] }
+/* round 92: the lineup's lean (the nine regulars, by position weight): pull hitters from Power, patient from Eye, contact from Contact */
+const sportStyleAttrs={pull:"Power",patient:"Eye",contact:"Contact"};
+function sportStyleScores(R){ const o={pull:0,patient:0,contact:0}; if(!R||typeof attrOf!=="function")return o;
+  BS_HIT.forEach(i=>{ const p=R[i], A=p&&attrOf(p); if(!A)return; const w=POS[i].w; o.pull+=w*((A.pow||p.r)-p.r); o.patient+=w*((A.eye||p.r)-p.r); o.contact+=w*((A.con||p.r)-p.r) }); return o }
 /* the day's starters: the rotation turns one a game (the fourth and fifth men are the starters' backups) */
 function spCtx(t,step){
   try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t];
