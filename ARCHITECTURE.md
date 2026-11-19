@@ -358,6 +358,60 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 91: football's attributes play (engine 14, college and pro). Design addition agreed in "Player attributes: design".
+- The drive engine plays a drive as one roll (touchdown, field goal, turnover, stall) with the spot a stalled drive dies;
+  there are no plays, so no separate pass and run. A team's shape (50_drives fbShapeOf, through gameCtx sh): each
+  starter's lean weighed by his group's weight and his position's share (POS w); a hurt starter's backup in his place
+  (football's backups play only then). Offense and defense apart; Vision counts with each group's main term (QB
+  Accuracy, RB Speed, WR Hands, OL Blocking, LB and S Coverage). Your drives: Arm touchdowns; Accuracy 30% fewer picks,
+  70% drives that keep going; Speed breakaways (touchdowns, more from a long field); Hands fewer fumbles and drops and
+  drives that keep going, as Accuracy; Blocking where a stalled drive dies (yards: more field goals, fewer punts);
+  Strength drives that keep going (touchdowns and field goals as a share). Their defense: Coverage 75% touchdowns
+  taken away, 25% picks; Tackling 75% breakaways stopped, 25% forced fumbles; Pass rush the stall spot back; Strength
+  short yardage; Speed breakaways (fbDriveMod).
+- Each term worth FB14.a (2.5) rating points of wins a point (FB14_C0 per league, measured on common dice: scratch r91
+  marg.js, marg2.js, 400,000 games a term). A pick or fumble mostly takes a punt's place, so turnovers alone were worth
+  about a sixth of a touchdown term a drive: hence the splits. On a person's path (a live game, calls to the assistant:
+  marg3.js) Blocking, Pass rush and the turnover terms are worth up to 16% more than on the computer's (the end game
+  and the fourth-down choice read the stall spot); those are set midway. test/attrs-fb.js (suite, 300,000 games a
+  term: 60,000 read within about 5%, football's varying dice pair little): pro 0.98-1.04, college 0.96-1.04 (want 1);
+  a starter leaning two spreads with the rest down moves the team's terms by 0.001-0.002 in all against 0.04-0.07.
+- Signatures (half a point of a term: about two spreads of a pro team): an Arm team scores touchdowns on 26.5% of
+  drives (24.0%); Accuracy picks 4.9% (7.6%), Hands fumbles 4.0% (6.2%); Blocking field goals 20.9% (16.9%) and punts
+  28.6% (33.6%); a Coverage defense allows touchdowns on 22.6% (24.4%) and picks 10.5% (7.8%); a pass rush holds
+  their kicks to 17.2% of drives (19.6%). League spreads of a term (one standard deviation, season 1): pro 0.12-0.26,
+  college 0.21-0.65.
+- Plans (FB14.pw): Take risks realises Arm and Speed 1.5x and Accuracy, Hands, Blocking 0.6x; Play it safe the
+  reverse. Fit measured on both paths (FB14_FIT person, FB14_FITC computer: the defense moves under 3%, left at 0),
+  the plan's own worth at a gap too (FB14_SHIFT, FB14_SHIFTH; pv.js): safe lets talent count (pro: -7.6 Elo at even,
+  +0.23 an Elo of gap on a person's path), risks the reverse (+12, -0.35). As in the other sports (Ian): the chance
+  before a game counts your fit and the plan's worth at tonight's gap, computer clubs pick a plan for their roster
+  (about half their team-games), the plan line names a plan past 12 Elo and never a net loss.
+- Calibration (scratch r91 fblevel.js, eight seeds x five computer-only seasons, against an engine-13 control): the
+  shapes alone moved nothing (pro 45.9 points, college 54.1 with no plan picks); computer underdogs now take risks, so
+  scoring rose (pro 47.5, college 57.2) and college favourites fell (69.0% to 66.5%). Recentred on engine 14 only:
+  touchdowns and field goals x FB14.g (pro 0.962, college 0.94), college's gap counts 1.12x (fb14gap); the shown
+  chance's curve refit for engine 14 (wpK14: pro 309, college 411 balanced, the plans in proportion; fitk.js). After:
+  pro 45.8 points (engine 13 45.9), margin 11.7 (11.7), home 52.6% (53.8), favourites by the public ratings 58.5%
+  (59.3), wins sd 2.75 (2.78), best record 14.3 (13.8); college 54.3 (53.8), margin 15.7 (15.8), favourites 68.2%
+  (69.0), home 55.8% (56.3; the target 57-59% was already under), wins sd 2.90 (2.94). Home wins read about a point low
+  in both (2.5 standard errors in pro): underdogs' plans take a little of home field's worth. Watch.
+- Box scores (credit, own dice; gated, as old seasons replay their lines): who scores a touchdown leans with Arm against
+  the back's Speed and Strength, the receiver with Hands and Speed (a first receiver two spreads up in both: 40% of the
+  touchdown passes to 51%); picks with Coverage (by the drive's number, no draw); sacks with Pass rush, tackles with
+  Tackling, passes defended with Coverage, rushing yards with Speed and Strength (fbLean: exp 0.22 a spread, 0.6-1.6).
+- Training focus in both games (Passing game, Run game, Front seven, Secondary); attribute descriptions say what each
+  does in the engine. Kicking: not built (no kicker on the roster; Ian: a kicker slot in a later round of its own).
+- Control: an engine-13 build of this round matches round 90's goldens in every field in all seven games apart from
+  football's screens (the Training focus card, shown in an engine-13 season's offseason because the summer it shapes
+  leads into an engine-14 season). At 14 the other five games equal that control with the engine stamp stripped.
+  engine-replay now replays engine 13 (round 90, 98999e1).
+- Tests changed, each measured: regressions 37 plays the computer opponent on the plan its roster suits, with both
+  shapes, where the sport's shapes play (the chance counts both; baseball's context is its lineups, left out); case 78
+  takes football on 14; sim parity reports football's shaped case; fb-clips skips a punt or pick followed by overtime
+  (overtime starts at the 25: a punt as regulation ran out read 1 of 38 wrong).
+- Not built: reads tied to the roster (Ian: with round 92's club styles, so read calibration moves once); a kicker.
+
 Round 90: two fixes (engine 13 for hockey's credit).
 - Transfers (leagues/epl/27_transfers tWindow): a newcomer pushes his position's backup out whatever his rating, so two
   bids at one position that both went through cut the first signing the same summer (Brentford seed 3: Ratliff bought

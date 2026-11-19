@@ -1,5 +1,5 @@
 {
- "fp": "3d3127fea1f45419",
+ "fp": "b823c19d9fa12ec2",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -325,6 +325,11 @@
    "fp": "3d3127fea1f45419",
    "from": "3d3127fea1f45419",
    "note": "round 85: engine 9 (the computer's clubs trade on deadline day, both coaches' clubs left alone); an engine-8 build matches round 84"
+  },
+  {
+   "fp": "b823c19d9fa12ec2",
+   "from": "3d3127fea1f45419",
+   "note": "Round 91 (engine 14): football's attributes play"
   }
  ],
  "out": [
@@ -334,20 +339,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Eliminated in the first round",
-      "grade": "C+"
+      "rec": "8-5",
+      "result": "Lost the Alamo Bowl",
+      "grade": "C-"
      },
-     "book": "c224da6bea9d1219"
+     "book": "bff0389d1cb06ffb"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Frisco Bowl",
-      "grade": "A-"
+      "rec": "1-11",
+      "result": "No bowl game",
+      "grade": "C-"
      },
-     "book": "15670d3eddb13b10"
+     "book": "fa116514834e4ae7"
     }
    ]
   },
@@ -357,20 +362,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "14-2",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "8-5",
+      "result": "Won the Las Vegas Bowl",
+      "grade": "C"
      },
-     "book": "5154ab3684b100bb"
+     "book": "f8d634cc13319e16"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Hawaii Bowl",
-      "grade": "A"
+      "rec": "2-10",
+      "result": "No bowl game",
+      "grade": "C"
      },
-     "book": "0bc143b2d3a1598d"
+     "book": "725d15068ea4c5d0"
     }
    ]
   },
@@ -380,20 +385,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "14-2",
-      "result": "Eliminated in the national title game",
-      "grade": "A+"
+      "rec": "9-4",
+      "result": "Won the Duke's Mayo Bowl",
+      "grade": "B"
      },
-     "book": "85590481ca396f99"
+     "book": "be86d4379a020609"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Boca Raton Bowl",
-      "grade": "A+"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "7e3c1805caddacbe"
+     "book": "682120e2f86739dd"
     }
    ]
   }

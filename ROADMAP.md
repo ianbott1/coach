@@ -126,6 +126,19 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 91 (done)
+- Football engine 14 (college and pro): the attributes play. A team's shape moves its drives: Arm and Speed score
+  touchdowns, Accuracy and Hands keep the ball and the drive going, Blocking gets stalled drives into field-goal range,
+  Strength wins short yardage; Coverage, Tackling, Pass rush, Strength and Speed answer them. Each worth the same per
+  point in wins (within 4%), so a rating means one thing. Box scores lean with the attributes; training focus in both.
+- Plans fit the roster as in the other sports: Take risks suits arm and speed, Play it safe accuracy, hands and blocking;
+  the chance counts the fit and the plan's worth at tonight's gap; computer clubs pick plans. Scoring, college's
+  favourites and the shown chance's curve re-held on engine 14 (computer underdogs now take risks).
+- Not built: Kicking (Ian: a kicker slot, its own round later); reads tied to the roster (round 92).
+- Next: round 92, club styles from rosters (each club's scheme or system from its players, the reads with it); then
+  per-attribute ceilings and breakouts; a kicker slot. Watch: home wins about a point low in football on engine 14;
+  soccer draws a point high; a window's quoted fee against the commit's.
+
 ## Round 90 (done)
 - Transfers: a bid that would cut a player you bought earlier that window no longer goes through (no fee paid); the bids
   screen says so before the window, or that it depends on the first signing starting after the summer.

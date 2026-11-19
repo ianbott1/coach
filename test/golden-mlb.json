@@ -1,5 +1,5 @@
 {
- "fp": "9f68ec38af997628",
+ "fp": "137085ed34932d1d",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -160,6 +160,11 @@
    "fp": "9f68ec38af997628",
    "from": "012eccf914622661",
    "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
+  },
+  {
+   "fp": "137085ed34932d1d",
+   "from": "9f68ec38af997628",
+   "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
   }
  ],
  "result": {
@@ -173,7 +178,7 @@
     "poll": "ef882af51f3262c7",
     "heis": "66f26d873ae5048f",
     "history": "083412b3ebbf4097",
-    "universe": "a13d8c86d000d2bf",
+    "universe": "48c39f44038da07e",
     "screens": "ff60399c044a24a9"
    },
    {
@@ -185,7 +190,7 @@
     "poll": "a4610ed83d0f311f",
     "heis": "61420132dca2d9a9",
     "history": "b091eb46cbc25620",
-    "universe": "53ce85cb93073ae8",
+    "universe": "658f50bdf02bedcb",
     "screens": "b92bebacda7e7600"
    }
   ],
@@ -199,7 +204,7 @@
     "poll": "3d241b5e0176fd0b",
     "heis": "682449cbdaf8fbe5",
     "history": "7b15639434cdb66b",
-    "universe": "640ef4ae8acc4511",
+    "universe": "6d4801d37c953f84",
     "screens": "81bd449b08cdda84"
    },
    {
@@ -211,7 +216,7 @@
     "poll": "a133bdd8d193d51b",
     "heis": "69ef1f816846ca83",
     "history": "a76408fcd690bb26",
-    "universe": "addeb01474dd062d",
+    "universe": "469a6a6eda6dae47",
     "screens": "d9bc15be0ab945e1"
    }
   ],

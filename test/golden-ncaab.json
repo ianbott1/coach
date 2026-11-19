@@ -1,5 +1,5 @@
 {
- "fp": "9115a6b048264aa3",
+ "fp": "6e937316ef1c3c37",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -520,6 +520,11 @@
    "fp": "9115a6b048264aa3",
    "from": "ecf05cbe793f67ce",
    "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
+  },
+  {
+   "fp": "6e937316ef1c3c37",
+   "from": "9115a6b048264aa3",
+   "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
   }
  ],
  "result": {
@@ -533,7 +538,7 @@
     "poll": "ba45948789d433d0",
     "heis": "9095bc65653d64bc",
     "history": "5feb9c1e14f3173e",
-    "universe": "40dc4246a2e69c33",
+    "universe": "9561cdad145bfb4b",
     "screens": "57cc5ca5a101178a"
    },
    {
@@ -545,7 +550,7 @@
     "poll": "5e9e389c43aed26e",
     "heis": "ee3161b300280b32",
     "history": "595a18170a8fe32f",
-    "universe": "44ca1d5f33f62a6e",
+    "universe": "2197c89458fa3ec5",
     "screens": "4eb234a2335eb329"
    }
   ],
@@ -559,7 +564,7 @@
     "poll": "4f45069a4b81c763",
     "heis": "460a116261cc0292",
     "history": "7b0c690f1e8811be",
-    "universe": "54e2829b13e77568",
+    "universe": "f89843f296cf8a55",
     "screens": "f385c301a424f034"
    },
    {
@@ -571,7 +576,7 @@
     "poll": "027fb6f5347bbc50",
     "heis": "e9c9cb50e82e267b",
     "history": "fe1aff753da2b0ba",
-    "universe": "8bf7f983f0278ba5",
+    "universe": "25a1231a90e45ff7",
     "screens": "33e1377c7ad098d4"
    }
   ],
@@ -585,7 +590,7 @@
     "poll": "750a915749cf5bbd",
     "heis": "39c6959a83237b8d",
     "history": "64e4f2db84968a1c",
-    "universe": "3e80404ae59314bf",
+    "universe": "aab03b0bf4996343",
     "screens": "b28169fc0d2fcade"
    },
    {
@@ -597,7 +602,7 @@
     "poll": "f6f4d474b6501bdd",
     "heis": "64c63d2086e548a0",
     "history": "237c724898b56be2",
-    "universe": "8809b9a917b0ef70",
+    "universe": "798fa8449b97c8cb",
     "screens": "1fb2abb403510a5f"
    }
   ],

@@ -1,5 +1,5 @@
 {
- "fp": "aa33e0415044cdc2",
+ "fp": "df8d8dac091b3561",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -40,21 +40,26 @@
    "fp": "aa33e0415044cdc2",
    "from": "d362d878d008ac51",
    "note": "round 90, engine 13: hockey's credit (less lean, a quarter of goals to the depth); the other games differ by the engine stamp alone (stripped, equal to round 89; an engine-12 control build matches round 89 in all seven)"
+  },
+  {
+   "fp": "df8d8dac091b3561",
+   "from": "aa33e0415044cdc2",
+   "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "a6b82e6e0d6c5280",
-    "post": "c5eaab8dab942b6f",
-    "champion": "Philadelphia",
-    "rec": "f1c7678087d81bd6",
-    "poll": "afe47965d5288bb6",
-    "heis": "6f51d62e0cdc6d73",
-    "history": "b530b5523cc94ea4",
-    "universe": "fe5e5256e5dfd0df",
-    "screens": "61e4b14f16bb7d74"
+    "games": "68bfd2a9c3fcf5eb",
+    "post": "3f324aa723decefe",
+    "champion": "LA Rams",
+    "rec": "d47dcef8ffb14748",
+    "poll": "8ec1f59720a74c16",
+    "heis": "4be5c65f9dd7b59e",
+    "history": "1d05fe63e728b720",
+    "universe": "4aca29c52dea663d",
+    "screens": "f0f297a55c5ef1da"
    }
   ]
  }

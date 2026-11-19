@@ -15,10 +15,11 @@ const DIR=process.env.DIST||path.join(__dirname,'..','dist'); let bad=0; const o
       const real=hlDot; let dots=[]; window.hlDot=function(x,px,py,r,fill){ dots.push([px,py,fill]); return real.apply(this,arguments) };
       const cv=document.createElement('canvas'); cv.width=1000; cv.height=460; const x=cv.getContext('2d');
       SEA.weeks.forEach(W=>W.games.forEach(g=>{ if(!g.drives)return; g.drives.forEach((d,i)=>{ const cs=HL_SPORT.clips({g,drives:g.drives},d,'key'), ca=HL_SPORT.clips({g,drives:g.drives},d,'all');
-        if(d.kind==='PUNT'&&g.drives[i+1]){ o.punts++; const pc=ca.find(c=>c.kind==='punt'); if(pc){ o.puntClips++; if(pc.end===100-g.drives[i+1].start)o.puntsOk++ } }
+        const nx=g.drives[i+1]&&!g.drives[i+1].ot?g.drives[i+1]:null;   // overtime starts at the 25 whatever came before (a punt as regulation ran out)
+        if(d.kind==='PUNT'&&nx){ o.punts++; const pc=ca.find(c=>c.kind==='punt'); if(pc){ o.puntClips++; if(pc.end===100-g.drives[i+1].start)o.puntsOk++ } }
         if(d.converted===true&&/converted on fourth and/.test(d.note||"")){ o.conv++; if(cs.some(c=>c.kind==='conv'))o.convClip++ }
         cs.forEach(c=>{
-          if(c.kind==='int'&&c.ret!=null&&g.drives[i+1]){ o.picks++; if(c.catchY-c.ret===100-g.drives[i+1].start)o.picksOk++ }
+          if(c.kind==='int'&&c.ret!=null&&nx){ o.picks++; if(c.catchY-c.ret===100-g.drives[i+1].start)o.picksOk++ }
           if(c.kind==='td'&&c.len>=20){ o.td++; dots=[]; HL_SPORT.frame(x,1000,460,c,0.86);
             const def=dots.slice(0,11), sc=dots[11+(c.pass?c.rcv:(c.qbRun?0:1))], yd=1000*0.8/120;   // a yard in pixels, about
             if(sc&&def.filter(q=>Math.hypot(q[0]-sc[0],q[1]-sc[1])<8*yd).length>=3)o.tdChased++ } }) }) }));
