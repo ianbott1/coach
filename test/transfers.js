@@ -29,7 +29,10 @@ for(const [team,seed] of [['Brentford',3],['Coventry City',4],['Bradford City',5
   can.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out);
     ok(r&&(r.done||/retired/.test(r.why)),`${my}: an affordable bid for ${x.n} (${x.fee}M of ${kitty.toFixed(1)}M) didn't go through${r?": "+r.why:""}`);
     if(r&&r.done){ ok(onRoster(A,my,x.n),`${my}: ${x.n} bought but not in the squad`); ok(!onRoster(A,x.team,x.n),`${my}: ${x.n} still at ${x.team}`) } });
-  cant.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out); ok(r&&!r.done&&/more than you had/.test(r.why),`${my}: a bid beyond the kitty for ${x.n} went through or gave no reason`) });
+  // the fee is set when the bid goes in, at the summer's commit, and can differ from the window's opening quote (a
+  // contract year gone, a summer's development: round 89, Diabate quoted 50.3M, 20.6M at the commit with a sale of 17.5M
+  // in hand): the rule is that a bid goes through only if its fee fits what you had then
+  cant.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out); ok(r&&(r.done?r.fee<=kitty+(sell?sell.fee:0)+0.05:/more than you had/.test(r.why)),`${my}: a bid beyond the kitty for ${x.n} went through or gave no reason${r?" ("+(r.done?"bought for "+r.fee+"M":r.why)+")":""}`) });
   if(sell){ const r=L.find(e=>e.out&&e.n===sell.n), gone=r&&!r.done&&/retired/.test(r.why);   // a man who retires first can't be sold (as for a bid)
     ok(r&&(r.done||gone),`${my}: the sale of ${sell.n} didn't go through${r?": "+r.why:""}`);
     if(!gone)ok(!onRoster(A,my,sell.n)&&onRoster(A,sell.team,sell.n),`${my}: ${sell.n} wasn't sold to ${sell.team}`) }

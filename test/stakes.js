@@ -5,11 +5,11 @@
    - soccer: a title clinched before the last day is caught on the week it happened (the points can't be caught).
      node test/stakes.js     last line: MATCH or MISMATCH */
 const {load}=require('./harness.js'), path=require('path');
-const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketball-coach.html',5],['basketball-coach-pro.html',3],['hockey-coach-pro.html',5],['soccer-coach.html','Manchester City'],['baseball-coach-pro.html',5]];
+const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketball-coach.html',5],['basketball-coach-pro.html',3],['hockey-coach-pro.html',5],['soccer-coach.html','Manchester City',12],['baseball-coach-pro.html',5]];
 let bad=0; const ok=(c,m)=>{ if(!c){ bad++; console.log('  FAIL '+m) } };
-for(const [f,team] of GAMES){
+for(const [f,team,seed] of GAMES){
   const A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','NAMES','newDynasty','simRun','digestBlock','stakesFor','objectivesHTML','objectivesMet','objectivesAll','seasonObjectives','objStatus','LEAGUE']});
-  const T=typeof team==='string'?team:A.NAMES[team]; A.newDynasty(T,11,'T'); const SEA=A.SEA, S=A.S, my=S.myTeam;
+  const T=typeof team==='string'?team:A.NAMES[team]; A.newDynasty(T,seed||11,'T');   // round 89: engine 12's seasons; Manchester City take the title with games to spare on seed 12 (seed 11: 21-6, no title) const SEA=A.SEA, S=A.S, my=S.myTeam;
   const W=SEA.sched.reduce((m,g)=>Math.max(m,g.week+1),0); let k=0, stakes=0, means=0, digests=0, inc=0;
   while(SEA.phase==='week'&&k++<20){
     A.simRun(Math.min(W,SEA.step+Math.ceil(W/10)));
@@ -23,7 +23,7 @@ for(const [f,team] of GAMES){
   ex.forEach(o=>{ const all=SEA.sched.filter(g=>!g.cup&&(g.home===my||g.away===my)), left=all.filter(g=>g.week>=o.re0).length;
     ok(left>=Math.max(3,Math.ceil(all.length/3)),`${f} re-aimed with ${left} of ${all.length} to play`) });
   let cl='';
-  if(A.LEAGUE.draws){ const C=S.clinch&&S.clinch.k&&S.clinch.k.title; ok(!!C,'soccer: '+T+' clinched no title (seed 11 wins it)');
+  if(A.LEAGUE.draws){ const C=S.clinch&&S.clinch.k&&S.clinch.k.title; ok(!!C,'soccer: '+T+' clinched no title (seed 12 wins it)');
     if(C){ ok(C.left>0,'soccer: the title caught only on the last day'); cl=` | title clinched at step ${C.step}, ${C.left} to spare` } }
   console.log(`${f.padEnd(26)} ${digests} digests (${inc} with incidents), ${stakes} next games (${means} with what the game means), ${ex.length} re-aimed${cl}`);
 }
