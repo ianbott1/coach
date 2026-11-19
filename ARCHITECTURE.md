@@ -358,6 +358,72 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 89: hockey's and soccer's attributes play (engine 12); computer clubs pick the plan their roster suits; the plan's
+own worth in the chance.
+- Hockey (50_game HK12, hkShapeOf through gameCtx sh): each skater's lean weighed by his group's weight and his ice time
+  (a position's share, the man behind him the depth's share; the user's lines and pairings set it), the goalie in net on
+  his own (the starter, or the backup once he's in or when he started; a hurt starter's backup starts, a walk-on with no
+  lean behind him). Shooting: a shot's chance of going in. Passing: shots made. Skating: half shots made, half kept from
+  your end. Checking: shots allowed. Defence: the chance of the shots allowed. Reflexes at even strength, Positioning
+  more on the penalty kill. The goalie read's expected goals follow the shooters' terms (not the goalie's), so a sniper
+  doesn't make your goalie look like he's having a bad night.
+- Soccer (SC12, scShapeOf): Passing and Pace make chances; Tackling and Positioning stop them; Heading half at each end;
+  Finishing turns more of the same chances into goals (not more shots); the keeper's Handling, fewer of the chances
+  allowed; Stamina: the legs go slower and the last half hour's chances are a fitter side's (a drain alone saturated).
+- Each term worth the same per point in results (standings points, league points), measured: equal goal margin first
+  (marg-hk.js, marg-sc.js), then by result value (fitv.js, 100,000 games); test/attrs-hs.js: hockey 1.00-1.02, soccer
+  0.99-1.02 (want 1). A man leaning two spreads with the rest down moves the team's terms by 0.001-0.003 in all against
+  0.09-0.10 for the same lean with nothing down. Sizes (one league spread of a team term, season 1): hockey skaters
+  0.16-0.29, goalies 0.42; soccer 0.38-0.62 (164 clubs across six tiers).
+- Signatures (attrs-hs, three points of a term): a shooting team scores on 13.5% of its shots (10.3%); a checking team
+  allows 19.1 shots (29.3); against a goalie leaning to Positioning the power play scores 12.2% (22.4%; Reflexes 18.4%);
+  a finishing team 1.35 to 1.79 goals a game from the same saved shots; a passing team 2.32 to 3.17 shots on target;
+  Stamina 38.2% to 44.1% of goals in the last half hour. Box scores: hockey's goals lean with Shooting, assists with
+  Passing (1.25x a spread, held to 0.6-1.6: at basketball's 1.4x uncapped a depth winger leaning hard to Shooting scored
+  103); soccer's scorers by Finishing, assists by Passing. Training focus in both (hockey Forwards, Defence, Goalies;
+  soccer Defenders, Midfield, Attack, Keepers).
+- Plans realise terms (HK12.pw, SC12.pw): skating with them a skating and passing game, clogging it up a checking and
+  defending one; taking the game to them a passing game, sitting deep pace on the break and shape. Fit measured in
+  result value on both paths (a person's plan also sets his system or approach): hockey safe skt +0.51 pas +0.29 chk
+  -0.18, aggressive chk +0.19 def +0.23 skt -0.43 (a person's; the computer's skt +0.46 / chk +0.29); soccer safe pas
+  +0.31 tck +0.17 pac -0.15, aggressive pac +0.18 (computer +0.27) pos +0.05 (+0.17), finishing and keeping lose when
+  there are fewer chances. Margin was the wrong unit: in a low-scoring plan each goal is worth more.
+- Basketball's fit measured again in wins on each path: a person's is about half again the computer's (safe sht -0.71 fin
+  +0.52, aggressive sht +0.78 fin -0.56 against the computer's -0.39/+0.29, +0.51/-0.35). Round 88's table was the
+  computer's and understated what a person's plan was worth to a shaped roster: corrected (screens only on engine 11).
+- Computer clubs pick a plan (core 93_attrs cpuPlanOf; Season._resolve, the replay record _rp, startLive, gameEdge;
+  never a person's club in a shared seat): the plan their roster suits on the computer's path, when the fit is worth 12
+  Elo and the plan's own worth at that gap doesn't take it back (sportPlanShift, measured: hockey clogging it up is worth
+  about 15 Elo of standings points at even, more overtime; soccer sitting deep costs about 25 at even, draws). Sim ahead
+  leaves your plan to your assistant ("auto"): a simmed game is played as the computer plays it, so he picks by the
+  computer's measure and simming is the computer coaching your club. Single games keep your plan.
+- The plan's own worth in the chance (Ian: "include it"): measured on a person's path at even strength several plans
+  cost points (college basketball's Work it inside about 21 Elo, hockey's Skate with them 21, soccer's Take the game to
+  them 12 and Sit deep 20), more or less with the gap (pvh.js, a line fitted per plan). The chance before a game is now
+  your edge plus your plan's fit plus its own worth at tonight's gap (planEdge), less the computer opponent's fit for
+  the plan it picks. Engine 11 seasons and the other three games keep the old rule. The plan line never recommends a
+  plan that is a net loss tonight. Case 78 checks the edge moves by exactly that; case 79 includes the opponent's fit.
+- Calibration (seasons 1-6, computer-only, level.js): hockey 6.09 goals a game (engine 11 6.14), overtime 24.6%
+  (23.6%: more clubs clogging it up), points 94.4 sd 13.4 (94.0, 14.8). Soccer: sitting deep cost 2.5% of the league's
+  goals (2.66 against 2.73); recentred (SC12.g 1.025): 2.70 over two seeds, draws 28.3% (27.0%), home wins 43%.
+  Hockey's top scorer averages 69 goals over four seeds (65 on round 88; the target 45-57 was already passed). NHL and
+  NBA history, March, the live chance, reads: all pass.
+- Fixed on the way: a cup week's league game and cup tie with one club, at one ground, with one score were logged as one
+  game (2 of 7,760 soccer team-games): the log's ground field adds 2 for a cup game (readers take &1). A shootout's
+  header read "END OF 3RD" while its clip played (the tail's first clip set the held clock after the page was drawn).
+- Tests changed after they failed, each measured: stakes (Manchester City seed 11 went 21-6 without the title; seed 12
+  clinches with 5 to spare), transfers (a bid's fee is set at the commit and can differ from the window's quote: Diabate
+  50.3M quoted, 20.6M at the commit with a 17.5M sale in hand; the check is now the rule itself), reported cases 56
+  (Brighton: engine 12's Arsenal won wide; over six seeds engine 12 asks 21 late calls, engine 11 14), 63 and 69 look
+  for a seed where the case arises; sim parity's shaped arm is a report (a person's plan sets his system, so a live game
+  left to the assistant on the recommended plan differs from the computer by more than the calls: college basketball
+  +5.9, hockey -2.8).
+- Control: an engine-11 build of this round matches round 88's goldens in every field apart from hockey's and soccer's
+  screens (the training card). engine-replay now replays engine 11 (round 88).
+- Not built: club styles from rosters (the computer's system or approach chosen for its shape: the roadmap's own round);
+  per-attribute ceilings and breakouts; football's hooks.
+- Watch: a window's quoted fee and the commit's can differ a lot (pre-existing); soccer draws a point high.
+
 Round 88: basketball's attributes play (engine 11, college and pro); the plan's fit in the chance; Skip's own margin.
 - The team's shape on the floor (50_game bbShapeOf, through gameCtx sh): each man's lean (an attribute against his own
   rating) weighed by his group's weight for it (a guard's shooting counts more than a big's) and by his minutes (a

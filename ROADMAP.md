@@ -126,13 +126,26 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 89 (done)
+- Hockey and soccer engine 12: the attributes play, each worth the same per point in results (within 2%). Shapes show:
+  shooters score more of their shots, checkers allow fewer, a positional goalie kills penalties, finishers convert more
+  of the same chances, fitter sides score late. Box scores lean with the attributes; training focus in both.
+- Computer clubs (basketball, hockey, soccer) pick the plan their roster suits when it's worth it at that gap; Sim ahead
+  leaves your plan to your assistant. The chance before a game now includes your plan's own measured worth at tonight's
+  gap as well as your roster's fit (Ian); the plan line never recommends a net loss. Basketball's fit was understated
+  for a person in round 88: corrected.
+- Fixed: a soccer cup tie and league game merged in the logs; a shootout's header.
+- Next: round 90, football's hooks; then per-attribute ceilings and breakouts; club styles from rosters (the computer's
+  system or approach for its shape). Watch: soccer draws a point high; hockey's top scorers high (already so); a
+  window's quoted fee against the commit's.
+
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
   college football's field to the pro standard; clock, down and distance, count and outs on the surface.
 - Football: kick returns, blocks shown.
 
 ## Later: depth
-- Player attributes: the other engines' hooks (round 89 hockey and soccer, then football), ceilings and breakouts per attribute.
+- Player attributes: football's hooks (round 90), ceilings and breakouts per attribute.
 - Baseball staff, further: a middle reliever and a sixth starter would need roster slots (the 8 pitcher slots are
   four jobs and their backups today); fatigue and pitch counts carried between days.
 - Awards: coach of the month, other sports' monthly awards; a top-five goals reel.
