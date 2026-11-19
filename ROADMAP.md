@@ -126,6 +126,15 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 90 (done)
+- Transfers: a bid that would cut a player you bought earlier that window no longer goes through (no fee paid); the bids
+  screen says so before the window, or that it depends on the first signing starting after the summer.
+- Hockey's scoring leaders back in range (engine 13, credit only): about 55 goals and 109 points, and a depth man leads
+  only when he's had a starter's minutes all season.
+- Next: round 91, football's attribute hooks (a short design addition first: the drive engine has no individual plays);
+  then per-attribute ceilings and breakouts; club styles from rosters. Watch: soccer draws a point high; a window's
+  quoted fee against the commit's.
+
 ## Round 89 (done)
 - Hockey and soccer engine 12: the attributes play, each worth the same per point in results (within 2%). Shapes show:
   shooters score more of their shots, checkers allow fewer, a positional goalie kills penalties, finishers convert more
@@ -137,8 +146,7 @@ on numbers they can't trust and a sport they read rather than watch.
 - Fixed: a soccer cup tie and league game merged in the logs; a shootout's header.
 - Next: round 90, football's hooks; then per-attribute ceilings and breakouts; club styles from rosters (the computer's
   system or approach for its shape). Watch: soccer draws a point high; hockey's top scorers high (already so); a
-  window's quoted fee against the commit's. To fix: two signings at one position bump the first (a fee paid for a player
-  released the same summer); warn on the bids screen or keep the signing over the old backup.
+  window's quoted fee against the commit's. (Two signings at one position: fixed in round 90.)
 
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);

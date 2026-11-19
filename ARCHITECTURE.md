@@ -358,6 +358,26 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 90: two fixes (engine 13 for hockey's credit).
+- Transfers (leagues/epl/27_transfers tWindow): a newcomer pushes his position's backup out whatever his rating, so two
+  bids at one position that both went through cut the first signing the same summer (Brentford seed 3: Ratliff bought
+  for 1.9M, released when Hammond came, signed by Everton for nothing). Now a bid that would cut a man bought earlier in
+  the window doesn't go through and costs nothing ("no room at ST: it would cut X, whom you just bought"), the rule
+  free-agent targets already had. The bids screen says so ("no room ... bought above"), or, when the first signing
+  would start only on today's ratings, that it depends on him starting after the summer's development (ratings move
+  between the screen and the window: Ratliff 64 on the screen, 59 at the window, behind Brentford's 63). TW_ROOM=0 is
+  the control: test/transfers.js fails there and passes here. Only your bids: no league result moves.
+- Hockey's scorers (75_screens HK13, engine 13; ENGINE_NOW 13): round 89's lean (exp 0.22 a spread, 0.6-1.6) had depth
+  men leaning to Shooting lead the league (regular seasons, four seeds x two: leaders 55-75, mean 62; a 57-rated backup
+  with 75; round 88 48-64, mean 56). Swept (scratch r90/reg.js, the game logs' regular season; the old checks counted
+  the playoffs too): lean 0.12 held to 0.75-1.35, the depth man 0.7 of his weight (0.9), the men the roster doesn't
+  carry a quarter of the goals (0.17; the NHL's bottom six and third pair score about that). Leaders 55.2 goals and
+  108.9 points (targets 45-57, 95-112), mostly rated 63+; a backup leads only when his starter missed the season (6-7
+  games). More rating weight (0.8) only concentrated goals in the stars (64.6). Credit only: no result moves.
+- Control: this build at ENGINE_NOW=12 matches round 89's goldens in all seven, every field. At 13 the six other games
+  differ by the engine stamp alone (stripped, equal); hockey's games, records and champions are unchanged, its lines,
+  MVP race, history and screens move. engine-replay replays engine 12 (round 89, 30013f3): all seven match.
+
 Round 89: hockey's and soccer's attributes play (engine 12); computer clubs pick the plan their roster suits; the plan's
 own worth in the chance.
 - Hockey (50_game HK12, hkShapeOf through gameCtx sh): each skater's lean weighed by his group's weight and his ice time
@@ -423,9 +443,7 @@ own worth in the chance.
 - Not built: club styles from rosters (the computer's system or approach chosen for its shape: the roadmap's own round);
   per-attribute ceilings and breakouts; football's hooks.
 - Watch: a window's quoted fee and the commit's can differ a lot (pre-existing); soccer draws a point high; two bids at
-  one position that both go through bump the first signing out of the pair of slots (27_transfers tWindow places each
-  with nflPlace; Brentford seed 3: Ratliff bought for 1.9M, released the same summer when Hammond came; pre-existing,
-  no warning on the bids screen; test/transfers notes it).
+  one position that both went through bumped the first signing (fixed in round 90).
 
 Round 88: basketball's attributes play (engine 11, college and pro); the plan's fit in the chance; Skip's own margin.
 - The team's shape on the floor (50_game bbShapeOf, through gameCtx sh): each man's lean (an attribute against his own
@@ -2633,7 +2651,7 @@ dynasty's first season (generated players have no earlier history).
                       Poisson at that mean (12+ goals ~2%). Your games by plan
                       (Nov 2026): skate with them 6.7, balanced 6.2, clog it
                       up 5.2. Skater points: first-line C ~65 at a 60 rating,
-                      ~75 at 63-69; league best 95-112, top goal scorers
+                      ~75 at 63-69; league best 95-112 (regular season), top goal scorers
                       45-57 and rated 63+ (round 21: goals x0.78, forwards'
                       assists x1.12, rating slope 0.45 -> 0.7; a 62 winger
                       led with 60 goals before), first-pair D ~35-45.
