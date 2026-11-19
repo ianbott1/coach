@@ -469,9 +469,16 @@ function bbShapeOf(R,H){ const T={}; BB_SHK.forEach(k=>T[k]=0); if(!R||typeof at
 /* the plan's fit (Ian, round 88: the chance moves with it, the plan rows say it): Shooting is realised on threes and
    Finishing on twos, so a plan that shoots more threes is worth more to a shooting side. Measured (scratch r88/fit2.js,
    40,000 games a cell, both leagues alike): per point of lean, in rating points per point of BB11.a, on top of balanced */
-const BB11_FIT={safe:{sht:-0.37,fin:0.24}, aggressive:{sht:0.65,fin:-0.30}};
-function sportPlanFit(t,pl){ if(!bbV11()||!BB11_FIT[pl])return 0; const T=bbShapeT(t), F=BB11_FIT[pl];
-  return R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin) }
+/* round 89: measured again in wins on each path (scratch r89 fitv-bb.js, 60,000 games a cell, the two leagues averaged):
+   a person's plan also sets his offence (threes, the paint), so the fit on his path is about half again the computer's.
+   Round 88's table (safe sht -0.37 fin +0.24, aggressive sht +0.65 fin -0.30) was the computer's path and understated
+   what a person's plan was worth to a shaped roster. BB11_FIT: a person's (the plan rows, the shown chance);
+   BB11_FITC: the computer's (its own plan, engine 12) */
+const BB11_FIT={safe:{sht:-0.71,fin:0.52}, aggressive:{sht:0.78,fin:-0.56}};
+const BB11_FITC={safe:{sht:-0.39,fin:0.29}, aggressive:{sht:0.51,fin:-0.35}};
+function bbFitOf(F,t){ if(!bbV11()||!F)return 0; const T=bbShapeT(t); return R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin) }
+function sportPlanFit(t,pl){ return bbFitOf(BB11_FIT[pl],t) }
+function sportPlanFitC(t,pl){ return bbFitOf(BB11_FITC[pl],t) }
 function sportShape(t){ return bbV11()?bbShapeT(t):null }
 /* round 89 (engine 12, the computer's plan): a plan's own worth at a gap, no lean, in wins: Elo on the balanced curve
    [at even, per Elo of gap] (scratch r89 pv.js, 40,000 games a point) */
