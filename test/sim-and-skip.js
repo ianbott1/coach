@@ -18,7 +18,8 @@ for(const [file,team] of [['football-coach.html','Alabama'],['football-coach-pro
     const api=mk()(D(file)); global.window.scrollTo=()=>{}; global.window.innerWidth=w; api.newDynasty(team,6,'T');
     const h=api.view('team'); ok(new RegExp('id="'+id+'">Sim game<').test(h), `${name}: no Sim game button at ${w}px`);
     const b=global.__nodes[id], rec0=api.SEA.rec[team].join('-'); if(b&&b.onclick)b.onclick();
-    ok(api.SEA.step===1&&!api.live&&api.SEA.rec[team].join('-')!==rec0, `${name} at ${w}px: Sim game didn't resolve the game without opening it`);
+    const pl=(api.SEA.weeks[0]||{games:[]}).games.some(x=>x.home===team||x.away===team);   /* round 89: a drawn game leaves the win-loss record alone (soccer, seed 6: Wrexham 2-2), so check the game was played */
+    ok(api.SEA.step===1&&!api.live&&(api.SEA.rec[team].join('-')!==rec0||pl), `${name} at ${w}px: Sim game didn't resolve the game without opening it`);
   }
   // skip continues from the current score
   { const api=mk()(D(file)); global.window.scrollTo=()=>{}; global.window.innerWidth=390; api.newDynasty(team,9,'T');

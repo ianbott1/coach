@@ -9,7 +9,7 @@ const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketbal
 let bad=0; const ok=(c,m)=>{ if(!c){ bad++; console.log('  FAIL '+m) } };
 for(const [f,team,seed] of GAMES){
   const A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','NAMES','newDynasty','simRun','digestBlock','stakesFor','objectivesHTML','objectivesMet','objectivesAll','seasonObjectives','objStatus','LEAGUE']});
-  const T=typeof team==='string'?team:A.NAMES[team]; A.newDynasty(T,seed||11,'T');   // round 89: engine 12's seasons; Manchester City take the title with games to spare on seed 12 (seed 11: 21-6, no title) const SEA=A.SEA, S=A.S, my=S.myTeam;
+  const T=typeof team==='string'?team:A.NAMES[team]; A.newDynasty(T,seed||11,'T'); const SEA=A.SEA, S=A.S, my=S.myTeam;   /* round 89: engine 12's seasons; Manchester City take the title with games to spare on seed 12 (seed 11: 21-6, no title) */
   const W=SEA.sched.reduce((m,g)=>Math.max(m,g.week+1),0); let k=0, stakes=0, means=0, digests=0, inc=0;
   while(SEA.phase==='week'&&k++<20){
     A.simRun(Math.min(W,SEA.step+Math.ceil(W/10)));
