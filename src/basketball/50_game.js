@@ -484,10 +484,15 @@ function sportShape(t){ return bbV11()?bbShapeT(t):null }
    [at even, per Elo of gap] (scratch r89 pv.js, 40,000 games a point) */
 const BB12_SHIFT={nba:{safe:[1,0.033],aggressive:[-1.9,-0.037]}, ncaab:{safe:[-4.7,0.038],aggressive:[4,-0.037]}};
 function sportPlanShift(pl,gap){ const T=typeof LEAGUE!=="undefined"&&BB12_SHIFT[LEAGUE.id]; return planShiftAt(T&&T[pl],gap) }
+/* the same on a person's path (the plan also sets your offence: the paint, threes), measured (r89 pvh.js, 40,000 games
+   a point): Ian (round 89) chose to put it in the chance before a game */
+const BB12_SHIFTH={nba:{safe:[1.6,0.0733],aggressive:[-11.1,-0.0267]}, ncaab:{safe:[-21.1,0.0719],aggressive:[-3.4,-0.0376]}};
+function sportPlanShiftH(pl,gap){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12)return 0; const T=typeof LEAGUE!=="undefined"&&BB12_SHIFTH[LEAGUE.id]; return planShiftAt(T&&T[pl],gap) }
 /* in words, on the plan rows: which plan your shape suits, once the difference is worth about a point and a half of
    win chance (a lean of half a league spread) */
 function sportPlanFitLine(t,pl){ if(!bbV11()||typeof PLANS==="undefined")return "";
-  const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}, best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
+  const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}; let best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
+  if(best!=="balanced"&&typeof planEdge==="function"&&planEdge(t,best,planGapNow(t))<=0)best="balanced";   // round 89: never a net loss tonight
   const lean=x=>x==="aggressive"?"shooters":"finishers";
   if(best!==pl&&v[best]-v[pl]>=12)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean(best)}: <b>${esc(PLANS[best].l)}</b>${best==="aggressive"?", with its threes,":""} suits it.`;
   return best===pl&&pl!=="balanced"&&v[pl]>=12?`This plan suits your ${lean(pl)}.`:"" }

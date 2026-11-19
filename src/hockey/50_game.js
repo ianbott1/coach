@@ -98,6 +98,10 @@ function hkFitOf(F,T){ if(!F)return 0; let v=0; HK_SHK.forEach(k=>v+=(F[k]||0)*T
 function sportPlanFit(t,pl){ return hkV12()?hkFitOf(HK12_FIT[pl],hkShapeT(t)):0 }
 function sportPlanFitC(t,pl){ return hkV12()?hkFitOf(HK12_FITC[pl],hkShapeT(t)):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(HK12_SHIFT[pl],gap) }
+/* the same on a person's path (the plan also sets your system: skating with them is a forecheck, clogging it up a trap),
+   measured (r89 pvh.js, 60,000 games a point): Ian (round 89) chose to put it in the chance before a game */
+const HK12_SHIFTH={safe:[-21.4,0.0519], aggressive:[12,-0.0929]};
+function sportPlanShiftH(pl,gap){ return hkV12()?planShiftAt(HK12_SHIFTH[pl],gap):0 }
 function sportShape(t){ if(!hkV12())return null; const T=hkShapeT(t); return Object.assign({},T.sk,T.g[0]) }
 function sportPlanFitLine(t,pl){ return hkV12()?planFitWords(t,pl,{safe:"skaters",aggressive:"checking and defence"}):"" }
 /* gameplans and in-game modes: how many events a side creates, and allows */

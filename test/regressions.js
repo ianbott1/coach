@@ -537,7 +537,7 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
    measured: scratch r88 fit.js), so there the chance moves by exactly that fit and nothing else, and a line names the
    plan the roster suits only once the gap is worth 12 Elo, as a fact about the roster, never "try X"; everywhere else the
    old rule holds */
-{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8').replace('liveTick, answerLive,','liveTick, answerLive, setPlan(p){plan=p}, fitOf(p){return typeof sportPlanFit==="function"?sportPlanFit(S.myTeam,p):0}, edgeAt(p){const g=SEA.nextGame(S.myTeam); if(!g)return null; return withPlan(p,()=>gameEdge(S.myTeam,g.home===S.myTeam?g.away:g.home,g.home===S.myTeam,!!g.neutral))}, ENGV(){return ENGINE_V},'); const m={exports:{}};
+{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8').replace('liveTick, answerLive,','liveTick, answerLive, setPlan(p){plan=p}, fitOf(p){return typeof sportPlanFit==="function"?sportPlanFit(S.myTeam,p):0}, edgeAt(p){const g=SEA.nextGame(S.myTeam); if(!g)return null; return withPlan(p,()=>gameEdge(S.myTeam,g.home===S.myTeam?g.away:g.home,g.home===S.myTeam,!!g.neutral))}, ENGV(){return ENGINE_V}, pEdge(p){return typeof planEdge==="function"?planEdge(S.myTeam,p,planGapNow(S.myTeam)):0},'); const m={exports:{}};
   new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
   const PL=['safe','balanced','aggressive'], FITLINE=/Your roster leans to|Your roster doesn't suit|This plan suits your/;
   let lined=0, moved=0;
@@ -549,13 +549,17 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     if(!fits){ ok(new Set(Object.values(shown)).size===1&&shown.balanced,`${f}: the chance before the game moves with the plan (${PL.map(p=>shown[p]).join(' / ')})`);
       ok(!PL.some(p=>lines[p]),`${f}: a plan line where no plan fits`); continue }
     // engine 11 basketball: the edge moves by the fit and nothing else, and the fit is the measured one for the roster's shape
-    ok(fit.balanced===0&&PL.every(p=>edge[p]!==null&&Math.abs(edge[p]-edge.balanced-fit[p])<1e-9),`${f} ${tm}: the chance's edge moves by other than the plan's fit (${PL.map(p=>(edge[p]-edge.balanced).toFixed(2)+' vs '+fit[p].toFixed(2)).join(', ')})`);
+    // round 89 (Ian): and on engine 12 by the plan's own measured worth at tonight's gap on your path (pEdge = fit + that)
+    const pe={}; PL.forEach(p=>pe[p]=api.pEdge(p));
+    ok(fit.balanced===0&&PL.every(p=>edge[p]!==null&&Math.abs(edge[p]-edge.balanced-pe[p])<1e-9)&&(api.ENGV()>=12||PL.every(p=>Math.abs(pe[p]-fit[p])<1e-9)),`${f} ${tm}: the chance's edge moves by other than the plan's worth (${PL.map(p=>(edge[p]-edge.balanced).toFixed(2)+' vs '+pe[p].toFixed(2)).join(', ')})`);
     if(new Set(Object.values(shown)).size>1)moved++;
     // a line exactly when another plan is 12 Elo better, or this one is the best by 12
-    PL.forEach(p=>{ const best=Math.max(...PL.map(q=>fit[q])), want=best-fit[p]>=12||(p!=='balanced'&&fit[p]===best&&fit[p]>=12);
+    // the best by fit, unless it is a net loss tonight (round 89)
+    let bk=PL.reduce((a,q)=>fit[q]>fit[a]?q:a,'balanced'); if(bk!=='balanced'&&pe[bk]<=0)bk='balanced';
+    PL.forEach(p=>{ const best=fit[bk], want=(bk!==p&&best-fit[p]>=12)||(p!=='balanced'&&p===bk&&fit[p]>=12);
       if(lines[p])lined++;
       ok(lines[p]===want,`${f} ${tm}: under ${p} a plan line ${lines[p]?'shows':'is missing'} (fits ${PL.map(q=>q+' '+fit[q].toFixed(1)).join(', ')})`) });
-    console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo`) }
+    console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo; with the plan's own worth ${PL.map(q=>pe[q].toFixed(1)).join(' / ')}`) }
   console.log(`  plan fit: the chance moved for ${moved} rosters, a plan line showed ${lined} times`) }
 /* 79. the chance before a game is the engine's, from the lineup you picked: a backup started moves it as much as it
    moves the game (Muse: 12% -> 12% with a point guard 26 worse; the game charged it in full), on every screen */

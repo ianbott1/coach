@@ -78,6 +78,10 @@ function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T
 function sportPlanFit(t,pl){ return scV12()?scFitOf(SC12_FIT[pl],scShapeT(t)):0 }
 function sportPlanFitC(t,pl){ return scV12()?scFitOf(SC12_FITC[pl],scShapeT(t)):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
+/* the same on a person's path (the plan also sets your approach: a press, a low block), measured (r89 pvh.js, 60,000
+   games a point): Ian (round 89) chose to put it in the chance before a game */
+const SC12_SHIFTH={safe:[-11.7,0.0614], aggressive:[-19.9,-0.241]};
+function sportPlanShiftH(pl,gap){ return scV12()?planShiftAt(SC12_SHIFTH[pl],gap):0 }
 function sportShape(t){ return scV12()?scShapeT(t):null }
 function sportPlanFitLine(t,pl){ return scV12()?planFitWords(t,pl,{safe:"passers",aggressive:"pace and shape"}):"" }
 
