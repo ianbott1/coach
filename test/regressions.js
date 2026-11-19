@@ -391,7 +391,7 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   if(cm.length)ok(A.S.off.act.staffOpen[cm[0].side]&&A.S.off.staff[cm[0].side]&&A.S.off.staff[cm[0].side].length>0,`pro football: ${cm[0].name} left and no hire was offered`) }
 /* 56. the soccer late call comes within a goal only (two up or down, it moved nothing: test/call-weight.js) */
 { const A=load({settable:SET,file:D('soccer-coach.html'),expose:EXP}); A.newDynasty('Arsenal',4,'T'); let wide=0,asked=0;
-  for(let k=0;k<30&&A.SEA.phase==='week'&&asked<3;k++){   // round 89: engine 12's results asked none in the first 12 steps A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='late'){ asked++; if(!/^(Level|Up 1|Down 1),/.test(q.dp.h))wide++ } A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } }
+  for(let k=0;k<30&&A.SEA.phase==='week'&&asked<3;k++){ /* round 89: engine 12's results asked none in the first 12 steps */ A.doAdvance(); let m=0; while(A.live&&!A.live.done&&m++<3000){ const q=A.live.ask; if(q){ if(q.dp.k==='late'){ asked++; if(!/^(Level|Up 1|Down 1),/.test(q.dp.h))wide++ } A.answerLive(q.dp.opts[0][0]) } else A.liveTick() } }
   ok(asked>0&&!wide,`soccer: late call asked ${asked} times, ${wide} of them two or more goals apart`) }
 
 /* 57. two down early in hockey: the read comes now, as a timeout (Instinct: 0-3 and nothing to decide) */

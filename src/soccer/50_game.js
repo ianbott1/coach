@@ -52,7 +52,8 @@ const SC = Object.assign({}, SC_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tunin
    keeper's: goals from the chances allowed. Stamina: how fast the legs go, and the last half hour's chances. Plans realise some more than others
    (SC12.pw): taking the game to them is a passing game, sitting deep a game of pace on the break and of shape. */
 const SC12_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
-const SC12=Object.assign({a:+(SC12_ENV("SC12_A")||2.5),
+const SC12=Object.assign({a:+(SC12_ENV("SC12_A")||2.5), g:+(SC12_ENV("SC12_G")||1.025),   // g: the league's goals, recentred (the computer's clubs sitting deep cost 2.5%: 2.66 a game against 2.73 on engine 11, r89 level.js)
+
   c:Object.assign({fin:0.0476,pas:0.0478,pac:0.0478,tck:0.0513,pos:0.0513,hedO:0.0249,hedD:0.0249,han:0.0512,sta:0.0972,staL:0.0405},   // measured: a point of any is worth SC12.a rating points of result (league points; equal goal margin first, r89 marg-sc.js, then by value, fitv.js, 100,000 games)
     SC12_ENV("SC12_C")?JSON.parse(SC12_ENV("SC12_C")):{}),
   pw:Object.assign({safe:{pas:1.4,pac:0.7,tck:1.15}, aggressive:{pac:2.0,pas:0.7,pos:1.75}},
@@ -295,8 +296,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       return own*makeF(side,m[side],m[other(side)])*lateF(side,s);
     };
     const fH=finF("home"), fA=finF("away");
-    let lamH=SC.goals/SEGS*Math.exp(e/2)*rateOf("home")*fH;
-    let lamA=SC.goals/SEGS*Math.exp(-e/2)*rateOf("away")*fA;
+    const G0=scV12()?SC.goals*SC12.g:SC.goals;
+    let lamH=G0/SEGS*Math.exp(e/2)*rateOf("home")*fH;
+    let lamA=G0/SEGS*Math.exp(-e/2)*rateOf("away")*fA;
     if(s>=12&&st.h!==st.a){ if(st.h<st.a){lamH*=1+SC.chase;lamA*=1+SC.exposed} else {lamA*=1+SC.chase;lamH*=1+SC.exposed} }
     const gH=poisson(rng,lamH), gA=poisson(rng,lamA);
     const t0=s*5;
@@ -358,7 +360,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   };
   const extraTime=()=>{
     const e=gap*SC.edge; st.ot=1;
-    const gH=poisson(rng,SC.goals*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,SC.goals*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
+    const G0=scV12()?SC.goals*SC12.g:SC.goals; const gH=poisson(rng,G0*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,G0*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
     st.h+=gH; st.a+=gA;
     const ev=[]; for(let i=0;i<gH;i++)ev.push({m:91+rng.int(30),side:"home",k:"goal",u:rng.int(100)});
     for(let i=0;i<gA;i++)ev.push({m:91+rng.int(30),side:"away",k:"goal",u:rng.int(100)});
