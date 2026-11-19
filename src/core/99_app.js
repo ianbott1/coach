@@ -163,7 +163,7 @@ function liveTick(){
       const tail=live.drives.slice(k0); let hm=0;
       if(live.ff&&!live.ffLate&&tail.length){ live.ff=false; live.ffLate=true }   // round 79: an overtime is a close finish: Skip stops for it
       if(!live.ff&&tail.length&&typeof hlPlayTail==="function"&&typeof hlCan==="function"&&hlCan()){
-        live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null }
+        live.hold={n:k0,h:live.lastH||0,a:live.lastA||0}; live.ask=null; render(); hm=hlPlayTail(live,tail); if(!hm)live.hold=null; else if(live.hold&&live.hold.clock)render() }   // round 89: the tail's first clip set the held clock after the page was drawn (a shootout read "END OF 3RD")
       if(hm){ live.finishing=true; live.timer=setTimeout(()=>{ live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive() },hm); return }
       // no highlights to play it (college basketball's court, Very Fast): the tail plays as stretches (round 78)
       if(!live.ff&&tail.length){ live.drives.length=k0; live.tailQ=tail.slice(); live.tailShow={h:live.lastH||0,a:live.lastA||0}; render();
