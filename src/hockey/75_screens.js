@@ -25,16 +25,25 @@ function hkSkater(team,u){
    rewatch names the same men after a trade. */
 const HK_GW={C:0.10,LW:0.10,RW:0.10,D:0.045,D2:0.035}, HK_AW={C:0.12,LW:0.11,RW:0.11,D:0.075,D2:0.06}, HK_SW={C:0.10,LW:0.10,RW:0.10,D:0.09,D2:0.07};
 const HK_DEPTHW=0.9, HK_PSTAR=0.55;
+/* round 90 (engine 13): round 89's lean had depth men leaning to Shooting lead the league (a 57-rated backup with 75
+   regular-season goals; leaders 55-75 against round 88's 48-64): less lean, more rating. Credit only: no result moves */
+const HK13_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k])||null;
+/* measured (scratch r90/reg.js, regular seasons, four seeds x two): leaders 55.2 goals and 108.9 points (targets 45-57,
+   95-112); a backup leads only when his starter missed the season (6-7 games). Lean 0.12 a spread held to 0.75-1.35,
+   the depth man 0.7 of his weight (0.9), the men the roster doesn't carry a quarter of the goals (0.17) */
+const HK13={lk:+(HK13_ENV("HK13_LK")||0.12), lmin:+(HK13_ENV("HK13_LMIN")||0.75), lmax:+(HK13_ENV("HK13_LMAX")||1.35), pstar:+(HK13_ENV("HK13_PSTAR")||0.55), depthw:+(HK13_ENV("HK13_DW")||0.7), un:+(HK13_ENV("HK13_UN")||0.25)};
+const hkV13=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=13;
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
-  return Math.max(0.6,Math.min(1.6,Math.exp(0.22*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)))) }
+  const v=hkV13()?HK13:{lk:0.22,lmin:0.6,lmax:1.6};
+  return Math.max(v.lmin,Math.min(v.lmax,Math.exp(v.lk*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)))) }
 function hkDressed(tm,W,lk){
   const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
   const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
-  const star=p=>Math.max(0.3,1+(p.r-60)/20*HK_PSTAR);
+  const PS=hkV13()?HK13.pstar:HK_PSTAR, DW=hkV13()?HK13.depthw:HK_DEPTHW, star=p=>Math.max(0.3,1+(p.r-60)/20*PS);
   ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
-    const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*HK_DEPTHW*b/0.3;
+    const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*DW*b/0.3;
     if(st&&bk){ out.push({n:st.n,w:top*star(st)*hkLean(st,lk),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk)*hkLean(bk,lk),p:bk,i:BK(i)}) }
     else if(st||bk){ const p=st||bk; out.push({n:p.n,w:(top+dp)*star(p)*hkLean(p,lk),p:p,i:st?i:BK(i)}) } });
   return out;
@@ -48,7 +57,8 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
     return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
   const u=e.u||0, D=hkDressed(tm,HK_GW,"sht"), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
   let n, depth=false;
-  if(x>=1-HK_UNNAMED||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-HK_UNNAMED))||"a forward";
+  const UN=hkV13()?HK13.un:HK_UNNAMED;
+  if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
   const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW,"pas"),(((u*7+3)%100)+0.5)/100,n);
   return {n:n, a:a||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
