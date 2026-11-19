@@ -60,27 +60,94 @@ const DEF_MODE = {
   pressure:{td:+0.035, fg:-0.070, to:+0.075}
 };
 /* Chance of each outcome on one drive, given the gap between the two teams. */
-function driveOdds(offElo, defElo, startYd, aggr, dmode){
+/* ============ engine 14 (round 91): the attributes play ============
+   A team's shape (fbShapeOf, through gameCtx sh): each starter's lean (an attribute against his own rating) weighed by
+   his group's weight for it and his position's share of the team (a hurt starter's backup in his place: football's
+   backups play only then). Offense and defense apart. A man's leans weigh to nothing, and each term below is worth the
+   same per point in wins (FB14.c, measured), so a lean changes how a team plays, not what it's worth. Your drives:
+   Arm touchdowns (the deep ball); Accuracy fewer picks; Speed breakaways (touchdowns, more from a long field); Hands
+   fewer fumbles and drops; Blocking where a stalled drive dies; Strength drives that keep going (short yardage).
+   Their defense: Coverage takes touchdowns away and picks passes; Tackling stops breakaways and forces fumbles; Pass
+   rush sacks (a stalled drive dies sooner); Strength stops short yardage; Speed runs down breakaways. Vision counts
+   with each group's main term (a quarterback's with Accuracy, a back's with Speed, a receiver's with Hands, a lineman's
+   with Blocking, a linebacker's and a safety's with Coverage). */
+/* measured (scratch r91 marg.js, 400,000 games a term, common dice): each attribute worth FB14.a rating points of win
+   value per point. A pick or a fumble mostly takes the place of a punt, so turnovers alone are worth little a drive:
+   Accuracy and Hands are 30% fewer turnovers and 70% drives that keep going; Coverage and Tackling 75% touchdowns and
+   breakaways, 25% turnovers. College's gaps are worth less a point (its win curve is flatter), so its terms are smaller.
+   On a person's path (a live game, calls to the assistant: marg3.js) Blocking, Pass rush and the turnover terms are worth
+   up to 16% more than on the computer's; those are set midway, so both paths are within about 7%. */
+const FB14_C0={nfl:{arm:0.05344,acc:0.09618,accS:0.1212,spd:0.05574,hnd:0.09618,hndS:0.1212,blk:31.58,str:0.1779,covT:0.03803,covI:0.09751,tklB:0.03961,tklF:0.09681,rsh:34.21,strD:0.1721,spdD:0.05438},
+               cfb:{arm:0.03667,acc:0.06155,accS:0.08418,spd:0.03811,hnd:0.06155,hndS:0.08418,blk:18.77,str:0.1258,covT:0.02667,covI:0.06124,tklB:0.02791,tklF:0.06058,rsh:19.26,strD:0.1248,spdD:0.03914}};
+const FB14_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
+const FB14=Object.assign({a:+(FB14_ENV("FB14_A")||2.5),
+  c:Object.assign({arm:0,acc:0,accS:0,spd:0,hnd:0,hndS:0,blk:0,str:0,covT:0,covI:0,tklB:0,tklF:0,rsh:0,strD:0,spdD:0},
+    (FB14_C0[LEAGUE.id]||FB14_C0.cfb), FB14_ENV("FB14_C")?JSON.parse(FB14_ENV("FB14_C")):{}),
+  g:+(FB14_ENV("FB14_G")||((LEAGUE.tuning&&LEAGUE.tuning.fb14g)||1)),
+  gap:+(FB14_ENV("FB14_GAP")||((LEAGUE.tuning&&LEAGUE.tuning.fb14gap)||1)),
+  pw:Object.assign({safe:{acc:1.5,hnd:1.5,blk:1.5,arm:0.6,spd:0.6}, aggressive:{arm:1.5,spd:1.5,acc:0.6,hnd:0.6,blk:0.6}}, FB14_ENV("FB14_PW")?JSON.parse(FB14_ENV("FB14_PW")):{})});
+const FB_OK=["arm","acc","spd","hnd","blk","str"], FB_DK=["cov","tkl","rsh","str","spd"];
+const FB_VIS={QB:"acc",RB:"spd",WR:"hnd",OL:"blk",LB:"cov",DB:"cov"};
+function fbV14(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=14 }
+function fbShapeOf(R,H){ const O={}, D={}; FB_OK.forEach(k=>O[k]=0); FB_DK.forEach(k=>D[k]=0);
+  if(!R||typeof attrOf!=="function")return {o:O,d:D};
+  POS.forEach((P,i)=>{ const p=H&&H.has(i)?(H.has(BK(i))?null:R[BK(i)]):R[i]; if(!p)return; const A=attrOf(p); if(!A)return;
+    const g=attrGrp(p), W=ATTRS.w[g]||{}, T=/^(DL|LB|DB)$/.test(g)?D:O;
+    Object.keys(W).forEach(k=>{ if(A[k]==null)return; const kk=k==="vis"?FB_VIS[g]:k; if(kk&&kk in T)T[kk]+=P.w*W[k]*(A[k]-p.r) }) });
+  const r3=v=>Math.round(v*1000)/1000; FB_OK.forEach(k=>O[k]=r3(O[k])); FB_DK.forEach(k=>D[k]=r3(D[k]));
+  return {o:O,d:D} }
+function fbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return fbShapeOf(SEA.roster[t],H) }catch(e){ return fbShapeOf(null) } }
+/* one side's drives against the other's defense: changes to the drive's rates (td, to: chance a drive; brk: touchdown
+   chance at a 73-yard field, scaled by the field's length; sus: touchdowns and field goals both, as a share; gain: yards
+   on a stalled drive). The plan realises some terms more than others (FB14.pw). */
+function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=FB14.c, w=FB14.pw[plan]||{}, m=k=>w[k]!=null?w[k]:1;
+  return {td:c.arm*m("arm")*O.arm-c.covT*D.cov, to:-c.acc*m("acc")*O.acc-c.hnd*m("hnd")*O.hnd+c.covI*D.cov+c.tklF*D.tkl,
+    brk:c.spd*m("spd")*O.spd-c.tklB*D.tkl-c.spdD*D.spd, gain:c.blk*m("blk")*O.blk-c.rsh*D.rsh,
+    sus:c.str*m("str")*O.str+c.accS*m("acc")*O.acc+c.hndS*m("hnd")*O.hnd-c.strD*D.str} }
+function fbSideMods(ctx,planH,planA){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.home||!S.away)return {home:null,away:null};
+  return {home:fbDriveMod(S.home.o,S.away.d,planH), away:fbDriveMod(S.away.o,S.home.d,planA)} }
+/* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
+   path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */
+const FB14_FIT={nfl:{safe:{"o.arm":-0.371,"o.acc":0.495,"o.spd":-0.367,"o.hnd":0.495,"o.blk":0.515}, aggressive:{"o.arm":0.483,"o.acc":-0.422,"o.spd":0.492,"o.hnd":-0.422,"o.blk":-0.479}},
+                 cfb:{safe:{"o.arm":-0.433,"o.acc":0.43,"o.spd":-0.413,"o.hnd":0.43,"o.blk":0.51}, aggressive:{"o.arm":0.415,"o.acc":-0.414,"o.spd":0.427,"o.hnd":-0.414,"o.blk":-0.44}}};   // 200,000 games a cell
+const FB14_FITC={nfl:{safe:{"o.arm":-0.394,"o.acc":0.486,"o.spd":-0.393,"o.hnd":0.486,"o.blk":0.47}, aggressive:{"o.arm":0.51,"o.acc":-0.363,"o.spd":0.51,"o.hnd":-0.363,"o.blk":-0.366,"o.str":0.037}},
+                  cfb:{safe:{"o.arm":-0.397,"o.acc":0.482,"o.spd":-0.395,"o.hnd":0.482,"o.blk":0.46}, aggressive:{"o.arm":0.502,"o.acc":-0.365,"o.spd":0.482,"o.hnd":-0.365,"o.blk":-0.397,"o.str":0.02}}};   // the defense's terms move under 3% with the plan (noise): left at 0
+/* a plan's own worth at a gap, no lean: Elo on the balanced curve [at even, per Elo of gap] (scratch r91 pv.js): safe lets
+   talent count (gap 1.3x), so it pays a favourite and costs an underdog; taking risks the reverse */
+const FB14_SHIFT={nfl:{safe:[-4.8,0.2331],aggressive:[8,-0.3613]}, cfb:{safe:[-5.8,0.1607],aggressive:[9.3,-0.2503]}};   // 200,000 games a point, gaps -225..225
+const FB14_SHIFTH={nfl:{safe:[-8.5,0.2263],aggressive:[10.7,-0.3524]}, cfb:{safe:[-8.7,0.1539],aggressive:[12.3,-0.2425]}};   // 100,000 games a point
+const fbLg=T=>T[LEAGUE.id]||T.cfb;
+function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
+function sportPlanFit(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)):0 }
+function sportPlanFitC(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)):0 }
+function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
+function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
+/* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */
+function sportShape(t){ if(!fbV14())return null; const T=fbShapeT(t); return {arm:T.o.arm,acc:T.o.acc,hnd:T.o.hnd,blk:T.o.blk,spd:T.o.spd+T.d.spd,str:T.o.str+T.d.str,cov:T.d.cov,tkl:T.d.tkl,rsh:T.d.rsh} }
+function sportPlanFitLine(t,pl){ return fbV14()?planFitWords(t,pl,{safe:"accuracy, hands and blocking",aggressive:"arm and speed"}):"" }
+function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
   const A = D ? {td:A0.td+D.td, fg:A0.fg+D.fg, to:A0.to+D.to, gap:A0.gap} : A0;
   // risk makes a drive less about who is better; safe makes it more so
   // pro football softens a big mismatch (past 100 a gap counts half): a stacked roster went 17-0, 98%+ was shown in
   // 1.7% of games (Ian, round 39: "you never see 99% in pro football"); college, with its real mismatches, doesn't
   const SD=LEAGUE.tuning.softDrive, gq=offElo-defElo, ga=Math.abs(gq), gs=!SD||ga<=SD[0]?gq:Math.sign(gq)*(SD[0]+(ga-SD[0])*SD[1]);
-  const x = gs * GAP_SCALE / 470 * (A.gap || 1);
+  const x = gs * GAP_SCALE / 470 * (A.gap || 1) * (sm||fbV14()?FB14.gap:1);   // engine 14: college's gap counts a little more (computer underdogs now take risks)
   const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
   if(ENGINE_V>=2)fg*=(KICK2[LEAGUE.id]||KICK2.cfb).fg;   // round 71: kicks now miss at their odds; held to the same points
   let to = 0.135 - x * 0.0339 + A.to;
+  if(sm){ td+=sm.td+sm.brk*(100-startYd)/73; to+=sm.to; td*=1+sm.sus; fg*=1+sm.sus }
+  if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g }   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
   to = Math.max(0.03, Math.min(0.30, to));
   return {td:td, fg:fg, to:to};
 }
 
-function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
-  const o = driveOdds(offElo, defElo, startYd, aggr, dmode);
+function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
+  const o = driveOdds(offElo, defElo, startYd, aggr, dmode, sm);
   const r = rng.r();
   if (r < o.td) return {pts:7, kind:"TD", stall:100};
   if (r < o.td + o.fg){
@@ -93,7 +160,7 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
             stall:Math.min(96,startYd+Math.round(rng.range(0,42)))};
   }
   // the drive stalled: where it died, and how far short, decide the options
-  const gain = Math.round(rng.gauss(22,17));
+  const gain = Math.round(rng.gauss(22,17)+(sm?sm.gain:0));
   const stall = Math.max(startYd-6, Math.min(96, startYd+gain));
   const u = rng.r();
   const togo = u<0.24?1 : u<0.42?2 : u<0.56?3 : u<0.68?4 : u<0.78?5 :
@@ -139,12 +206,12 @@ function goOdds(togo, offElo, defElo){
    of the time and punted more often still, and nobody went for two (Ian, round 39: 0 of ~220,000 touchdowns).
    d: the offense's margin before the drive; left: possessions to go, this one included (1: the last). */
 const FB_END=true;
-function endgameDrive(rng,res,d,left,offE,defE){
+function endgameDrive(rng,res,d,left,offE,defE,sm){
   if(!FB_END||left>2||d>=0)return res;
   const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
     if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
       note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
-    const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent");
+    const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent",null,sm);
     if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
       :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
     if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
@@ -198,6 +265,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     baseH:planH||"balanced", baseA:planA||"balanced",
     used:{}, rng:rng
   };
+  const M=fbSideMods(opts.ctx,planH||"balanced",planA||"balanced");   // engine 14: each side's shape against the other's
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
@@ -235,11 +303,11 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
       res = {pts:0,kind:"PUNT"};
     }else if(forced==="go"){
       const conv = rng.r() < 0.52;
-      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "urgent")
+      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "urgent", null, home?M.home:M.away)
                  : {pts:0,kind:"DOWNS"};
       if(conv&&res.pts===0)res={pts:0,kind:res.kind};
     }else{
-      res = rollDrive(rng, home?eloH:eloA, home?eloA:eloH, start, aggr);
+      res = rollDrive(rng, home?eloH:eloA, home?eloA:eloH, start, aggr, null, home?M.home:M.away);
     }
     if(home)st.h+=res.pts; else st.a+=res.pts;
     st.drives.push({home:home,q:q,start:start,pts:res.pts,kind:res.kind,
@@ -251,7 +319,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   while(st.h===st.a&&ot<24){
     ot++;
     const home=(ot%2===1);
-    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
+    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,home?M.home:M.away);
     if(home)st.h+=r.pts; else st.a+=r.pts;
     st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                     h:st.h,a:st.a,n:st.total+ot,aggr:"aggressive",note:"overtime",ot:true});
@@ -290,7 +358,8 @@ function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SC
 const FB_FAVW3=5;
 function fbFavW(){ return ENGINE_V>=3?FB_FAVW3:FB_READ.favW }
 function clubScheme(t,year){ return SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
-function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined} }
 function fbReport(fav,seed){
   const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b), n={};
   SCHEME_KEYS.forEach(k=>n[k]=0);
@@ -381,6 +450,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
+  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA); return home?M.home:M.away };   // engine 14 (the plan as it stands)
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; return FB_ANSWERS[a].beats===D.sch?FB_READ.right:FB_READ.wrong };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
     const x={bl:pz(t[0]),sh:pz(t[1]),bx:pz(t[2]),n:1}; ["bl","sh","bx","n"].forEach(k=>{ D.T[k]+=x[k]; if(D.half)D.T2[k]+=x[k] }); D.last=x };
@@ -410,7 +480,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
       const home=(st.otGuard%2===1);
-      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
+      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,smOf(home));
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                       h:st.h,a:st.a,n:st.total+st.otGuard,aggr:"aggressive",
@@ -454,7 +524,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
           const tg=P.res.togo||3;
           if(rng.r()<goOdds(tg,offE,defE)){
             // converted: the drive carries on from there
-            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent");
+            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent",null,smOf(home));
             res=r2;
             res.converted=true;
             res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
@@ -574,7 +644,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     // their drive against your rested starters: the backups give up more (the price of resting them)
     if(!isUser&&st.rest&&st.rest[home?"away":"home"]){ const D0=typeof dm==="string"?DEF_MODE[dm]:dm, R0=FB_REST_DEF;
       dm={td:(D0?D0.td:0)+R0.td, fg:(D0?D0.fg:0)+R0.fg, to:(D0?D0.to:0)+R0.to} }   // your defense, this drive only; your offense's answer, until you change it
-    const res=rollDrive(rng,offE,defE,start,aggr,dm);
+    const res=rollDrive(rng,offE,defE,start,aggr,dm,smOf(home));
     if(isUser)tellDrive(side);
     if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");
     if(st.onsideMiss){ st.onsideMiss=false; res.note=(res.note?res.note+"; ":"")+"after recovering the onside kick" }
@@ -603,7 +673,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       }
     }
     { const effT=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
-      const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE);
+      const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE,smOf(home));
       if(r2.kind==="TD"&&r2.pts===7&&twoChart(mine+6-theirs,q>=4||effT-i<=8)){
         const ok=rng.r()<0.47; r2.pts=ok?8:6; r2.note=(r2.note?r2.note+"; ":"")+(ok?"went for two and got it":"went for two and was stopped") }
       return {drive:push(home,q,start,r2,aggr),h:st.h,a:st.a}; }

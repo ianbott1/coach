@@ -545,12 +545,12 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
   new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
   const PL=['safe','balanced','aggressive'], FITLINE=/Your roster leans to|Your roster doesn't suit|This plan suits your/;
   let lined=0, moved=0;
-  for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['soccer-coach.html','Arsenal'],['soccer-coach.html','Wrexham'],['soccer-coach.html','Liverpool'],['hockey-coach-pro.html','Boston'],['hockey-coach-pro.html','Edmonton'],['hockey-coach-pro.html','Toronto'],['football-coach.html','Alabama']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
+  for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['soccer-coach.html','Arsenal'],['soccer-coach.html','Wrexham'],['soccer-coach.html','Liverpool'],['hockey-coach-pro.html','Boston'],['hockey-coach-pro.html','Edmonton'],['hockey-coach-pro.html','Toronto'],['football-coach.html','Alabama'],['football-coach.html','Rice'],['football-coach-pro.html','Kansas City'],['football-coach-pro.html','Detroit']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
     const shown={}, lines={}, edge={}, fit={}; let h='';
     PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
     ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you to try a plan`);
     if(!shown.balanced&&!shown.safe){ console.log(`  ${f} ${tm}: no game on the card yet (skipped)`); continue }   // round 89: the Premier League starts a week later
-    const fits=(/basketball/.test(f)&&api.ENGV()>=11)||(/hockey|soccer/.test(f)&&api.ENGV()>=12);   // round 89: hockey and soccer on engine 12
+    const fits=(/basketball/.test(f)&&api.ENGV()>=11)||(/hockey|soccer/.test(f)&&api.ENGV()>=12)||(/football/.test(f)&&api.ENGV()>=14);   // round 89: hockey and soccer on engine 12; round 91: football on 14
     if(!fits){ ok(new Set(Object.values(shown)).size===1&&shown.balanced,`${f}: the chance before the game moves with the plan (${PL.map(p=>shown[p]).join(' / ')})`);
       ok(!PL.some(p=>lines[p]),`${f}: a plan line where no plan fits`); continue }
     // engine 11 basketball: the edge moves by the fit and nothing else, and the fit is the measured one for the roster's shape

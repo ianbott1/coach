@@ -16,7 +16,7 @@ for(const f of ['football-coach.html','football-coach-pro.html','basketball-coac
    computer coaching your club by construction. Reported, not asserted: a live game left to your assistant on the plan
    the plan rows recommend, against the computer on its own pick, for the most shaped club in a new league: a person's
    plan also sets his system or offence, so the two paths differ by more than the calls */
-for(const f of ['basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html']){
+for(const f of ['basketball-coach.html','basketball-coach-pro.html','hockey-coach-pro.html','soccer-coach.html','football-coach.html','football-coach-pro.html']){
   const G=load({file:path.join(__dirname,'..','dist',f),expose:['makeLiveGame','RNG','newDynasty','NAMES','SEA','ENGINE_V','cpuPlanOf','sportPlanFit','sportPlanFitC','gameCtx']});
   G.newDynasty(G.NAMES[0],3,'T'); if(G.ENGINE_V<12)continue;
   const fitOf=t=>Math.max(...['safe','aggressive'].map(p=>G.sportPlanFit(t,p)));

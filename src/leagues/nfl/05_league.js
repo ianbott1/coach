@@ -62,7 +62,7 @@ const LEAGUE={
     premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6}},
 
   tuning:{wpK:{safe:257,balanced:300,aggressive:393}, softDrive:[100,0.5], softWp:[100,0.5],   /* round 39: gapScale 2.2 -> 1.6 and a big mismatch softened past 100: favourites 73.5% -> 66% (NFL ~66%), margin 14.0 -> 11.9, best records 13-16 over 16 seasons (17-0 before), top chance shown ~94%; refit 210 -> 300, the plans in proportion */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
-    hfa:20, drives:10, gapScale:1.6, gameState:true},                  // less home field than on campus; fewer, longer drives
+    hfa:20, drives:10, gapScale:1.6, gameState:true, fb14g:0.962},   // round 91 (engine 14): scoring held where it was once computer clubs pick plans                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
     "New Orleans":7,"Baltimore":6,"Pittsburgh":6,"Minnesota":5,"LA Chargers":-6,"LA Rams":-4,
     "Las Vegas":-3,"Jacksonville":-2,"Tampa Bay":-2,"Arizona":-2},

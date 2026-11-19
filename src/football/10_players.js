@@ -85,12 +85,19 @@ function blankStats(pos){
   return o;
 }
 
+/* round 91 (engine 14): a man's line leans with his attributes, as basketball's and hockey's do: a share times
+   exp(FB_LK x his lean in spreads), held to FB_LMIN..FB_LMAX. Credit only (its own dice), so no result moves; gated,
+   because an older season replays its lines. k: one attribute or several (their leans averaged). */
+const FB_LK=0.22, FB_LMIN=0.6, FB_LMAX=1.6;
+function fbLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<14||!p||typeof attrOf!=="function")return 1; const A=attrOf(p); if(!A)return 1;
+  const K=[].concat(k).filter(x=>A[x]!=null); if(!K.length)return 1; const l=K.reduce((t,x)=>t+(A[x]-p.r),0)/K.length;
+  return Math.max(FB_LMIN,Math.min(FB_LMAX,Math.exp(FB_LK*l/(attrScale().s*ATTR_SPREAD)))) }
 /* One game's production for one starter. */
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const pos=POS[posIdx].p;
   const q=(pl.r-58)/22;                 // roughly -1.3 (poor) .. +1.8 (elite)
   const s={};
-  const R=(a,b)=>a+rng.r()*(b-a);
+  const R=(a,b)=>a+rng.r()*(b-a), Lr=k=>fbLean(pl,k);
   const pass=forPts*0.60, run=forPts*0.40;
 
   if(pos==="QB"){
@@ -102,7 +109,7 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
     s.int=Math.max(0,Math.round(R(0,1.9)-q*0.55+(won?-0.2:0.35)));
   } else if(pos==="RB"){
     s.car=Math.max(4,Math.round(R(13,23)+(won?4:-3)));
-    s.ryd=Math.max(-5,Math.round(s.car*(3.9+q*0.85+rng.gauss(0,0.9))));
+    s.ryd=Math.max(-5,Math.round(s.car*(3.9+q*0.85+rng.gauss(0,0.9))*Lr(["spd","str"])));
     s.rtd=Math.max(0,Math.round(run/7*R(0.45,0.95)));
   } else if(pos==="WR"||pos==="WR2"){
     const share=pos==="WR"?R(0.26,0.38):R(0.15,0.24);
@@ -113,20 +120,20 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
     s.pan=Math.max(0,Math.round(R(2,7)+q*2));
     s.ska=Math.max(0,Math.round(R(0,2.2)-q*0.6));
   } else if(pos==="EDGE"){
-    s.tkl=Math.max(0,Math.round(R(2,5.5)+q*0.7));
-    s.sck=(rng.r()<0.34+q*0.15?1:0)+(rng.r()<0.09+q*0.06?1:0);
+    s.tkl=Math.max(0,Math.round((R(2,5.5)+q*0.7)*Lr("tkl")));
+    s.sck=(rng.r()<(0.34+q*0.15)*Lr("rsh")?1:0)+(rng.r()<(0.09+q*0.06)*Lr("rsh")?1:0);
     s.tfl=s.sck+(rng.r()<0.30+q*0.12?1:0);
   } else if(pos==="DT"){
-    s.tkl=Math.max(0,Math.round(R(2,5)+q*0.6));
-    s.sck=(rng.r()<0.20+q*0.09?1:0);
+    s.tkl=Math.max(0,Math.round((R(2,5)+q*0.6)*Lr("tkl")));
+    s.sck=(rng.r()<(0.20+q*0.09)*Lr("rsh")?1:0);
     s.tfl=s.sck+(rng.r()<0.24+q*0.10?1:0);
   } else if(pos==="LB"){
-    s.tkl=Math.max(1,Math.round(R(5,11)+q*1.3));
+    s.tkl=Math.max(1,Math.round((R(5,11)+q*1.3)*Lr("tkl")));
     s.tfl=(rng.r()<0.42+q*0.15?1:0)+(rng.r()<0.10+q*0.05?1:0);
-    s.pd=(rng.r()<0.28+q*0.09?1:0);
+    s.pd=(rng.r()<(0.28+q*0.09)*Lr("cov")?1:0);
   } else {                                   // CB, S
-    s.tkl=Math.max(0,Math.round(R(2,6)+q*0.6));
-    s.pd=(rng.r()<0.42+q*0.14?1:0)+(rng.r()<0.14+q*0.07?1:0);
+    s.tkl=Math.max(0,Math.round((R(2,6)+q*0.6)*Lr("tkl")));
+    s.pd=(rng.r()<(0.42+q*0.14)*Lr("cov")?1:0)+(rng.r()<(0.14+q*0.07)*Lr("cov")?1:0);
     s.ints=(rng.r()<0.155+q*0.055?1:0);
   }
   return s;
@@ -157,12 +164,12 @@ function teamLines(rng,c){
   // the catches and yards: a split of the passer's
   const bkRec=Object.values(X).reduce((t,e)=>t+(e.line.rec||0),0), bkYd=Object.values(X).reduce((t,e)=>t+(e.line.cyd||0),0);
   if(has(0)){ const Q=L[0]; Q.cmp=Math.max(Q.cmp,Q.ptd); Q.att=Math.max(Q.att,Q.cmp); Q.pyd=Math.max(Q.pyd,bkYd);
-    const rc=[2,3].filter(has), q=i=>(slot[i].pl.r-58)/22, star=i=>Math.max(0.5,1+q(i)*0.25);
+    const rc=[2,3].filter(has), q=i=>(slot[i].pl.r-58)/22, star=i=>Math.max(0.5,1+q(i)*0.25)*fbLean(slot[i].pl,"hnd");
     const w=rc.map(i=>(i===2?0.30:0.20)*star(i)).concat([1-rc.reduce((t,i)=>t+(i===2?0.30:0.20),0)]);
     const n=splitDraw(rng,Math.max(0,Q.cmp-bkRec),w);
     rc.forEach((i,j)=>{ L[i].rec=Math.max(n[j],L[i].ctd) });
     let over=rc.reduce((t,i)=>t+L[i].rec,0)+bkRec-Q.cmp; if(over>0)Q.cmp+=over, Q.att=Math.max(Q.att,Q.cmp);
-    const ypc=rc.map(i=>(i===2?12.8:11.6)+q(i)*2.2+rng.gauss(0,1.5)), rest=Q.cmp-bkRec-rc.reduce((t,i)=>t+L[i].rec,0);
+    const ypc=rc.map(i=>((i===2?12.8:11.6)+q(i)*2.2+rng.gauss(0,1.5))*fbLean(slot[i].pl,"spd")), rest=Q.cmp-bkRec-rc.reduce((t,i)=>t+L[i].rec,0);
     const wy=rc.map((i,j)=>L[i].rec*Math.max(6,ypc[j])), T=wy.reduce((t,x)=>t+x,0)+rest*9.5;
     rc.forEach((i,j)=>{ L[i].cyd=T>0?Math.floor((Q.pyd-bkYd)*wy[j]/T):0 }) }
   else [2,3].forEach(i=>{ if(has(i)){ L[i].rec=L[i].ctd; L[i].cyd=0 } });
@@ -210,12 +217,12 @@ const LEADERS=[
   {l:"Sacks",pos:["EDGE","DT","LB"],v:s=>s.sck||0,f:v=>v.toFixed(1).replace(/\.0$/,"")},{l:"Tackles",pos:["EDGE","DT","LB","CB","S"],v:s=>s.tkl||0},
   {l:"Interceptions",pos:["CB","S"],v:s=>s.ints||0}];
 
-/* round 87: attributes (core 93_attrs), by position group. Not yet in the drive engine: they make up the rating and
-   grow with age (round 90 plays them). */
+/* round 87: attributes (core 93_attrs), by position group: they make up the rating and grow with age. Round 91
+   (engine 14): they play in the drive engine (50_drives fbShapeOf, FB14), and training focus comes to football. */
 const ATTRS={
   name:{arm:"Arm",acc:"Accuracy",spd:"Speed",hnd:"Hands",blk:"Blocking",str:"Strength",rsh:"Pass rush",cov:"Coverage",tkl:"Tackling",vis:"Vision"},
-  desc:{arm:"the deep ball",acc:"completions, fewer picks",spd:"breakaways",hnd:"catches in traffic",blk:"protection and run lanes",str:"winning at the line",
-    rsh:"sacks and pressure",cov:"blanketing receivers",tkl:"bringing them down",vis:"reading the field"},
+  desc:{arm:"the deep ball: touchdowns",acc:"fewer picks, drives that keep going",spd:"breakaways",hnd:"fewer drops and fumbles, drives that keep going",blk:"protection: drives that stall get further",str:"short yardage: drives that keep going",
+    rsh:"sacks: their drives stall sooner",cov:"fewer touchdowns allowed, more picks",tkl:"stops breakaways, forces fumbles",vis:"reading the field (with each position's main job)"},
   band:{arm:"p",acc:"t",spd:"p",hnd:"t",blk:"t",str:"p",rsh:"t",cov:"m",tkl:"t",vis:"m"},
   group:p=>p==="QB"?"QB":p==="RB"?"RB":/^WR/.test(p)?"WR":p==="OT"?"OL":/^(EDGE|DT)$/.test(p)?"DL":p==="LB"?"LB":"DB",
   w:{QB:{arm:.3,acc:.4,vis:.2,spd:.1}, RB:{spd:.4,vis:.25,hnd:.15,blk:.1,str:.1}, WR:{spd:.4,hnd:.45,vis:.15},
@@ -224,5 +231,8 @@ const ATTRS={
   role:{arm:"Gunslinger",acc:"Field general",spd:"Burner",hnd:"Possession receiver",blk:"Road grader",str:"Mauler",rsh:"Pass rusher",cov:"Cover man",tkl:"Thumper",vis:"Instinctive"},
   roleBy:{QB:{spd:"Dual threat",vis:"Field general"}, RB:{spd:"Home-run hitter",vis:"Patient runner",str:"Power back",hnd:"Third-down back",blk:"Third-down back"},
     WR:{spd:"Deep threat",hnd:"Possession receiver",vis:"Route runner"}, OL:{blk:"Pass protector",str:"Mauler",vis:"Technician"},
-    DL:{rsh:"Pass rusher",str:"Run stuffer",tkl:"Run stuffer"}, LB:{cov:"Coverage backer",rsh:"Blitzer",tkl:"Thumper"}, DB:{cov:"Lockdown corner",spd:"Ball hawk",tkl:"Enforcer"}}
+    DL:{rsh:"Pass rusher",str:"Run stuffer",tkl:"Run stuffer"}, LB:{cov:"Coverage backer",rsh:"Blitzer",tkl:"Thumper"}, DB:{cov:"Lockdown corner",spd:"Ball hawk",tkl:"Enforcer"}},
+  plays:()=>ENGINE_V>=14,   // round 91: the attributes play (engine 14)
+  train:{"Passing game":{groups:["QB","WR"],keys:["arm","acc","hnd","spd","vis"]}, "Run game":{groups:["RB","OL"],keys:["blk","str","spd","vis","hnd"]},
+         "Front seven":{groups:["DL","LB"],keys:["rsh","str","tkl","cov","spd"]}, "Secondary":{groups:["DB"],keys:["cov","spd","tkl","vis"]}}
 };
