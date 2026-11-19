@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="236edab";
+<script>const BUILD_ID="a180873";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -1508,7 +1508,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||13);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||14);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -10223,7 +10223,7 @@ function ownMark(me){
    sport: pro football's favourites showed 70% and won 84%, hockey's showed
    70% and won 63%, and the plan buttons never moved the number (Grokbot,
    Instinct). */
-function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }
+function wpScale(pl){ const K=(ENGINE_V>=14&&LEAGUE.tuning.wpK14)||LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }   // round 91: football's engine 14 has its own curve
 /* The chance before a game is the engine's own, from the strengths the game will be played with: your lineup
    (a backup started), injuries, featuring, ice time, staff. It was worked out from the league's running ratings, so
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%

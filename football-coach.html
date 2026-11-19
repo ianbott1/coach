@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="4015f6a";
+<script>const BUILD_ID="85b4c1d";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -1198,7 +1198,7 @@ const LEAGUE={
   awards:{mvp:"Heisman",
     weights:{QB:1.14,RB:1.68,WR:1.68,WR2:0.7,OT:0.47,EDGE:1.02,DT:0.62,LB:0.85,CB:0.78,S:0.5}},
 
-  tuning:{wpK:{safe:380,balanced:440,aggressive:580},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{wpK:{safe:380,balanced:440,aggressive:580}, fb14g:0.94, fb14gap:1.12, wpK14:{safe:355,balanced:411,aggressive:542},   /* engine 14's own curve (scratch r91 fitk.js: 457 -> 427 on the same fit, the plans in proportion) */   /* round 91 (engine 14): scoring, favourites and margin held where they were once computer clubs pick plans (underdogs take risks) */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     
     hfa:62            // baseline home-field edge, Elo
   },
@@ -1424,12 +1424,19 @@ function blankStats(pos){
   return o;
 }
 
+/* round 91 (engine 14): a man's line leans with his attributes, as basketball's and hockey's do: a share times
+   exp(FB_LK x his lean in spreads), held to FB_LMIN..FB_LMAX. Credit only (its own dice), so no result moves; gated,
+   because an older season replays its lines. k: one attribute or several (their leans averaged). */
+const FB_LK=0.22, FB_LMIN=0.6, FB_LMAX=1.6;
+function fbLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<14||!p||typeof attrOf!=="function")return 1; const A=attrOf(p); if(!A)return 1;
+  const K=[].concat(k).filter(x=>A[x]!=null); if(!K.length)return 1; const l=K.reduce((t,x)=>t+(A[x]-p.r),0)/K.length;
+  return Math.max(FB_LMIN,Math.min(FB_LMAX,Math.exp(FB_LK*l/(attrScale().s*ATTR_SPREAD)))) }
 /* One game's production for one starter. */
 function gameStats(rng,pl,posIdx,forPts,oppPts,won){
   const pos=POS[posIdx].p;
   const q=(pl.r-58)/22;                 // roughly -1.3 (poor) .. +1.8 (elite)
   const s={};
-  const R=(a,b)=>a+rng.r()*(b-a);
+  const R=(a,b)=>a+rng.r()*(b-a), Lr=k=>fbLean(pl,k);
   const pass=forPts*0.60, run=forPts*0.40;
 
   if(pos==="QB"){
@@ -1441,7 +1448,7 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
     s.int=Math.max(0,Math.round(R(0,1.9)-q*0.55+(won?-0.2:0.35)));
   } else if(pos==="RB"){
     s.car=Math.max(4,Math.round(R(13,23)+(won?4:-3)));
-    s.ryd=Math.max(-5,Math.round(s.car*(3.9+q*0.85+rng.gauss(0,0.9))));
+    s.ryd=Math.max(-5,Math.round(s.car*(3.9+q*0.85+rng.gauss(0,0.9))*Lr(["spd","str"])));
     s.rtd=Math.max(0,Math.round(run/7*R(0.45,0.95)));
   } else if(pos==="WR"||pos==="WR2"){
     const share=pos==="WR"?R(0.26,0.38):R(0.15,0.24);
@@ -1452,20 +1459,20 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
     s.pan=Math.max(0,Math.round(R(2,7)+q*2));
     s.ska=Math.max(0,Math.round(R(0,2.2)-q*0.6));
   } else if(pos==="EDGE"){
-    s.tkl=Math.max(0,Math.round(R(2,5.5)+q*0.7));
-    s.sck=(rng.r()<0.34+q*0.15?1:0)+(rng.r()<0.09+q*0.06?1:0);
+    s.tkl=Math.max(0,Math.round((R(2,5.5)+q*0.7)*Lr("tkl")));
+    s.sck=(rng.r()<(0.34+q*0.15)*Lr("rsh")?1:0)+(rng.r()<(0.09+q*0.06)*Lr("rsh")?1:0);
     s.tfl=s.sck+(rng.r()<0.30+q*0.12?1:0);
   } else if(pos==="DT"){
-    s.tkl=Math.max(0,Math.round(R(2,5)+q*0.6));
-    s.sck=(rng.r()<0.20+q*0.09?1:0);
+    s.tkl=Math.max(0,Math.round((R(2,5)+q*0.6)*Lr("tkl")));
+    s.sck=(rng.r()<(0.20+q*0.09)*Lr("rsh")?1:0);
     s.tfl=s.sck+(rng.r()<0.24+q*0.10?1:0);
   } else if(pos==="LB"){
-    s.tkl=Math.max(1,Math.round(R(5,11)+q*1.3));
+    s.tkl=Math.max(1,Math.round((R(5,11)+q*1.3)*Lr("tkl")));
     s.tfl=(rng.r()<0.42+q*0.15?1:0)+(rng.r()<0.10+q*0.05?1:0);
-    s.pd=(rng.r()<0.28+q*0.09?1:0);
+    s.pd=(rng.r()<(0.28+q*0.09)*Lr("cov")?1:0);
   } else {                                   // CB, S
-    s.tkl=Math.max(0,Math.round(R(2,6)+q*0.6));
-    s.pd=(rng.r()<0.42+q*0.14?1:0)+(rng.r()<0.14+q*0.07?1:0);
+    s.tkl=Math.max(0,Math.round((R(2,6)+q*0.6)*Lr("tkl")));
+    s.pd=(rng.r()<(0.42+q*0.14)*Lr("cov")?1:0)+(rng.r()<(0.14+q*0.07)*Lr("cov")?1:0);
     s.ints=(rng.r()<0.155+q*0.055?1:0);
   }
   return s;
@@ -1496,12 +1503,12 @@ function teamLines(rng,c){
   // the catches and yards: a split of the passer's
   const bkRec=Object.values(X).reduce((t,e)=>t+(e.line.rec||0),0), bkYd=Object.values(X).reduce((t,e)=>t+(e.line.cyd||0),0);
   if(has(0)){ const Q=L[0]; Q.cmp=Math.max(Q.cmp,Q.ptd); Q.att=Math.max(Q.att,Q.cmp); Q.pyd=Math.max(Q.pyd,bkYd);
-    const rc=[2,3].filter(has), q=i=>(slot[i].pl.r-58)/22, star=i=>Math.max(0.5,1+q(i)*0.25);
+    const rc=[2,3].filter(has), q=i=>(slot[i].pl.r-58)/22, star=i=>Math.max(0.5,1+q(i)*0.25)*fbLean(slot[i].pl,"hnd");
     const w=rc.map(i=>(i===2?0.30:0.20)*star(i)).concat([1-rc.reduce((t,i)=>t+(i===2?0.30:0.20),0)]);
     const n=splitDraw(rng,Math.max(0,Q.cmp-bkRec),w);
     rc.forEach((i,j)=>{ L[i].rec=Math.max(n[j],L[i].ctd) });
     let over=rc.reduce((t,i)=>t+L[i].rec,0)+bkRec-Q.cmp; if(over>0)Q.cmp+=over, Q.att=Math.max(Q.att,Q.cmp);
-    const ypc=rc.map(i=>(i===2?12.8:11.6)+q(i)*2.2+rng.gauss(0,1.5)), rest=Q.cmp-bkRec-rc.reduce((t,i)=>t+L[i].rec,0);
+    const ypc=rc.map(i=>((i===2?12.8:11.6)+q(i)*2.2+rng.gauss(0,1.5))*fbLean(slot[i].pl,"spd")), rest=Q.cmp-bkRec-rc.reduce((t,i)=>t+L[i].rec,0);
     const wy=rc.map((i,j)=>L[i].rec*Math.max(6,ypc[j])), T=wy.reduce((t,x)=>t+x,0)+rest*9.5;
     rc.forEach((i,j)=>{ L[i].cyd=T>0?Math.floor((Q.pyd-bkYd)*wy[j]/T):0 }) }
   else [2,3].forEach(i=>{ if(has(i)){ L[i].rec=L[i].ctd; L[i].cyd=0 } });
@@ -1549,12 +1556,12 @@ const LEADERS=[
   {l:"Sacks",pos:["EDGE","DT","LB"],v:s=>s.sck||0,f:v=>v.toFixed(1).replace(/\.0$/,"")},{l:"Tackles",pos:["EDGE","DT","LB","CB","S"],v:s=>s.tkl||0},
   {l:"Interceptions",pos:["CB","S"],v:s=>s.ints||0}];
 
-/* round 87: attributes (core 93_attrs), by position group. Not yet in the drive engine: they make up the rating and
-   grow with age (round 90 plays them). */
+/* round 87: attributes (core 93_attrs), by position group: they make up the rating and grow with age. Round 91
+   (engine 14): they play in the drive engine (50_drives fbShapeOf, FB14), and training focus comes to football. */
 const ATTRS={
   name:{arm:"Arm",acc:"Accuracy",spd:"Speed",hnd:"Hands",blk:"Blocking",str:"Strength",rsh:"Pass rush",cov:"Coverage",tkl:"Tackling",vis:"Vision"},
-  desc:{arm:"the deep ball",acc:"completions, fewer picks",spd:"breakaways",hnd:"catches in traffic",blk:"protection and run lanes",str:"winning at the line",
-    rsh:"sacks and pressure",cov:"blanketing receivers",tkl:"bringing them down",vis:"reading the field"},
+  desc:{arm:"the deep ball: touchdowns",acc:"fewer picks, drives that keep going",spd:"breakaways",hnd:"fewer drops and fumbles, drives that keep going",blk:"protection: drives that stall get further",str:"short yardage: drives that keep going",
+    rsh:"sacks: their drives stall sooner",cov:"fewer touchdowns allowed, more picks",tkl:"stops breakaways, forces fumbles",vis:"reading the field (with each position's main job)"},
   band:{arm:"p",acc:"t",spd:"p",hnd:"t",blk:"t",str:"p",rsh:"t",cov:"m",tkl:"t",vis:"m"},
   group:p=>p==="QB"?"QB":p==="RB"?"RB":/^WR/.test(p)?"WR":p==="OT"?"OL":/^(EDGE|DT)$/.test(p)?"DL":p==="LB"?"LB":"DB",
   w:{QB:{arm:.3,acc:.4,vis:.2,spd:.1}, RB:{spd:.4,vis:.25,hnd:.15,blk:.1,str:.1}, WR:{spd:.4,hnd:.45,vis:.15},
@@ -1563,7 +1570,10 @@ const ATTRS={
   role:{arm:"Gunslinger",acc:"Field general",spd:"Burner",hnd:"Possession receiver",blk:"Road grader",str:"Mauler",rsh:"Pass rusher",cov:"Cover man",tkl:"Thumper",vis:"Instinctive"},
   roleBy:{QB:{spd:"Dual threat",vis:"Field general"}, RB:{spd:"Home-run hitter",vis:"Patient runner",str:"Power back",hnd:"Third-down back",blk:"Third-down back"},
     WR:{spd:"Deep threat",hnd:"Possession receiver",vis:"Route runner"}, OL:{blk:"Pass protector",str:"Mauler",vis:"Technician"},
-    DL:{rsh:"Pass rusher",str:"Run stuffer",tkl:"Run stuffer"}, LB:{cov:"Coverage backer",rsh:"Blitzer",tkl:"Thumper"}, DB:{cov:"Lockdown corner",spd:"Ball hawk",tkl:"Enforcer"}}
+    DL:{rsh:"Pass rusher",str:"Run stuffer",tkl:"Run stuffer"}, LB:{cov:"Coverage backer",rsh:"Blitzer",tkl:"Thumper"}, DB:{cov:"Lockdown corner",spd:"Ball hawk",tkl:"Enforcer"}},
+  plays:()=>ENGINE_V>=14,   // round 91: the attributes play (engine 14)
+  train:{"Passing game":{groups:["QB","WR"],keys:["arm","acc","hnd","spd","vis"]}, "Run game":{groups:["RB","OL"],keys:["blk","str","spd","vis","hnd"]},
+         "Front seven":{groups:["DL","LB"],keys:["rsh","str","tkl","cov","spd"]}, "Secondary":{groups:["DB"],keys:["cov","spd","tkl","vis"]}}
 };
 /* ============ storage ============ */
 /* Where saves live. Inside Claude's artifact viewer that is window.storage;
@@ -1747,7 +1757,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||13);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||14);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -4331,27 +4341,94 @@ const DEF_MODE = {
   pressure:{td:+0.035, fg:-0.070, to:+0.075}
 };
 /* Chance of each outcome on one drive, given the gap between the two teams. */
-function driveOdds(offElo, defElo, startYd, aggr, dmode){
+/* ============ engine 14 (round 91): the attributes play ============
+   A team's shape (fbShapeOf, through gameCtx sh): each starter's lean (an attribute against his own rating) weighed by
+   his group's weight for it and his position's share of the team (a hurt starter's backup in his place: football's
+   backups play only then). Offense and defense apart. A man's leans weigh to nothing, and each term below is worth the
+   same per point in wins (FB14.c, measured), so a lean changes how a team plays, not what it's worth. Your drives:
+   Arm touchdowns (the deep ball); Accuracy fewer picks; Speed breakaways (touchdowns, more from a long field); Hands
+   fewer fumbles and drops; Blocking where a stalled drive dies; Strength drives that keep going (short yardage).
+   Their defense: Coverage takes touchdowns away and picks passes; Tackling stops breakaways and forces fumbles; Pass
+   rush sacks (a stalled drive dies sooner); Strength stops short yardage; Speed runs down breakaways. Vision counts
+   with each group's main term (a quarterback's with Accuracy, a back's with Speed, a receiver's with Hands, a lineman's
+   with Blocking, a linebacker's and a safety's with Coverage). */
+/* measured (scratch r91 marg.js, 400,000 games a term, common dice): each attribute worth FB14.a rating points of win
+   value per point. A pick or a fumble mostly takes the place of a punt, so turnovers alone are worth little a drive:
+   Accuracy and Hands are 30% fewer turnovers and 70% drives that keep going; Coverage and Tackling 75% touchdowns and
+   breakaways, 25% turnovers. College's gaps are worth less a point (its win curve is flatter), so its terms are smaller.
+   On a person's path (a live game, calls to the assistant: marg3.js) Blocking, Pass rush and the turnover terms are worth
+   up to 16% more than on the computer's; those are set midway, so both paths are within about 7%. */
+const FB14_C0={nfl:{arm:0.05344,acc:0.09618,accS:0.1212,spd:0.05574,hnd:0.09618,hndS:0.1212,blk:31.58,str:0.1779,covT:0.03803,covI:0.09751,tklB:0.03961,tklF:0.09681,rsh:34.21,strD:0.1721,spdD:0.05438},
+               cfb:{arm:0.03667,acc:0.06155,accS:0.08418,spd:0.03811,hnd:0.06155,hndS:0.08418,blk:18.77,str:0.1258,covT:0.02667,covI:0.06124,tklB:0.02791,tklF:0.06058,rsh:19.26,strD:0.1248,spdD:0.03914}};
+const FB14_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k]);
+const FB14=Object.assign({a:+(FB14_ENV("FB14_A")||2.5),
+  c:Object.assign({arm:0,acc:0,accS:0,spd:0,hnd:0,hndS:0,blk:0,str:0,covT:0,covI:0,tklB:0,tklF:0,rsh:0,strD:0,spdD:0},
+    (FB14_C0[LEAGUE.id]||FB14_C0.cfb), FB14_ENV("FB14_C")?JSON.parse(FB14_ENV("FB14_C")):{}),
+  g:+(FB14_ENV("FB14_G")||((LEAGUE.tuning&&LEAGUE.tuning.fb14g)||1)),
+  gap:+(FB14_ENV("FB14_GAP")||((LEAGUE.tuning&&LEAGUE.tuning.fb14gap)||1)),
+  pw:Object.assign({safe:{acc:1.5,hnd:1.5,blk:1.5,arm:0.6,spd:0.6}, aggressive:{arm:1.5,spd:1.5,acc:0.6,hnd:0.6,blk:0.6}}, FB14_ENV("FB14_PW")?JSON.parse(FB14_ENV("FB14_PW")):{})});
+const FB_OK=["arm","acc","spd","hnd","blk","str"], FB_DK=["cov","tkl","rsh","str","spd"];
+const FB_VIS={QB:"acc",RB:"spd",WR:"hnd",OL:"blk",LB:"cov",DB:"cov"};
+function fbV14(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=14 }
+function fbShapeOf(R,H){ const O={}, D={}; FB_OK.forEach(k=>O[k]=0); FB_DK.forEach(k=>D[k]=0);
+  if(!R||typeof attrOf!=="function")return {o:O,d:D};
+  POS.forEach((P,i)=>{ const p=H&&H.has(i)?(H.has(BK(i))?null:R[BK(i)]):R[i]; if(!p)return; const A=attrOf(p); if(!A)return;
+    const g=attrGrp(p), W=ATTRS.w[g]||{}, T=/^(DL|LB|DB)$/.test(g)?D:O;
+    Object.keys(W).forEach(k=>{ if(A[k]==null)return; const kk=k==="vis"?FB_VIS[g]:k; if(kk&&kk in T)T[kk]+=P.w*W[k]*(A[k]-p.r) }) });
+  const r3=v=>Math.round(v*1000)/1000; FB_OK.forEach(k=>O[k]=r3(O[k])); FB_DK.forEach(k=>D[k]=r3(D[k]));
+  return {o:O,d:D} }
+function fbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return fbShapeOf(SEA.roster[t],H) }catch(e){ return fbShapeOf(null) } }
+/* one side's drives against the other's defense: changes to the drive's rates (td, to: chance a drive; brk: touchdown
+   chance at a 73-yard field, scaled by the field's length; sus: touchdowns and field goals both, as a share; gain: yards
+   on a stalled drive). The plan realises some terms more than others (FB14.pw). */
+function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=FB14.c, w=FB14.pw[plan]||{}, m=k=>w[k]!=null?w[k]:1;
+  return {td:c.arm*m("arm")*O.arm-c.covT*D.cov, to:-c.acc*m("acc")*O.acc-c.hnd*m("hnd")*O.hnd+c.covI*D.cov+c.tklF*D.tkl,
+    brk:c.spd*m("spd")*O.spd-c.tklB*D.tkl-c.spdD*D.spd, gain:c.blk*m("blk")*O.blk-c.rsh*D.rsh,
+    sus:c.str*m("str")*O.str+c.accS*m("acc")*O.acc+c.hndS*m("hnd")*O.hnd-c.strD*D.str} }
+function fbSideMods(ctx,planH,planA){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.home||!S.away)return {home:null,away:null};
+  return {home:fbDriveMod(S.home.o,S.away.d,planH), away:fbDriveMod(S.away.o,S.home.d,planA)} }
+/* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
+   path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */
+const FB14_FIT={nfl:{safe:{"o.arm":-0.371,"o.acc":0.495,"o.spd":-0.367,"o.hnd":0.495,"o.blk":0.515}, aggressive:{"o.arm":0.483,"o.acc":-0.422,"o.spd":0.492,"o.hnd":-0.422,"o.blk":-0.479}},
+                 cfb:{safe:{"o.arm":-0.411,"o.acc":0.485,"o.spd":-0.395,"o.hnd":0.485,"o.blk":0.557}, aggressive:{"o.arm":0.456,"o.acc":-0.402,"o.spd":0.461,"o.hnd":-0.402,"o.blk":-0.453}}};   // 200,000 games a cell (college at its engine-14 gap)
+const FB14_FITC={nfl:{safe:{"o.arm":-0.394,"o.acc":0.486,"o.spd":-0.393,"o.hnd":0.486,"o.blk":0.47}, aggressive:{"o.arm":0.51,"o.acc":-0.363,"o.spd":0.51,"o.hnd":-0.363,"o.blk":-0.366,"o.str":0.037}},
+                  cfb:{safe:{"o.arm":-0.417,"o.acc":0.484,"o.spd":-0.404,"o.hnd":0.484,"o.blk":0.496}, aggressive:{"o.arm":0.479,"o.acc":-0.37,"o.spd":0.485,"o.hnd":-0.37,"o.blk":-0.414}}};   // the defense's terms move under 3% with the plan (noise): left at 0
+/* a plan's own worth at a gap, no lean: Elo on the balanced curve [at even, per Elo of gap] (scratch r91 pv.js): safe lets
+   talent count (gap 1.3x), so it pays a favourite and costs an underdog; taking risks the reverse */
+const FB14_SHIFT={nfl:{safe:[-4.5,0.2432],aggressive:[6.7,-0.3604]}, cfb:{safe:[-5,0.1593],aggressive:[8.1,-0.2416]}};   // 200,000 games a point, gaps -225..225
+const FB14_SHIFTH={nfl:{safe:[-7.6,0.2318],aggressive:[12,-0.3529]}, cfb:{safe:[-8,0.1552],aggressive:[10.1,-0.2395]}};   // 100,000 games a point
+const fbLg=T=>T[LEAGUE.id]||T.cfb;
+function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
+function sportPlanFit(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)):0 }
+function sportPlanFitC(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)):0 }
+function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
+function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
+/* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */
+function sportShape(t){ if(!fbV14())return null; const T=fbShapeT(t); return {arm:T.o.arm,acc:T.o.acc,hnd:T.o.hnd,blk:T.o.blk,spd:T.o.spd+T.d.spd,str:T.o.str+T.d.str,cov:T.d.cov,tkl:T.d.tkl,rsh:T.d.rsh} }
+function sportPlanFitLine(t,pl){ return fbV14()?planFitWords(t,pl,{safe:"accuracy, hands and blocking",aggressive:"arm and speed"}):"" }
+function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
   const A = D ? {td:A0.td+D.td, fg:A0.fg+D.fg, to:A0.to+D.to, gap:A0.gap} : A0;
   // risk makes a drive less about who is better; safe makes it more so
   // pro football softens a big mismatch (past 100 a gap counts half): a stacked roster went 17-0, 98%+ was shown in
   // 1.7% of games (Ian, round 39: "you never see 99% in pro football"); college, with its real mismatches, doesn't
   const SD=LEAGUE.tuning.softDrive, gq=offElo-defElo, ga=Math.abs(gq), gs=!SD||ga<=SD[0]?gq:Math.sign(gq)*(SD[0]+(ga-SD[0])*SD[1]);
-  const x = gs * GAP_SCALE / 470 * (A.gap || 1);
+  const x = gs * GAP_SCALE / 470 * (A.gap || 1) * (sm||fbV14()?FB14.gap:1);   // engine 14: college's gap counts a little more (computer underdogs now take risks)
   const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;
   if(ENGINE_V>=2)fg*=(KICK2[LEAGUE.id]||KICK2.cfb).fg;   // round 71: kicks now miss at their odds; held to the same points
   let to = 0.135 - x * 0.0339 + A.to;
+  if(sm){ td+=sm.td+sm.brk*(100-startYd)/73; to+=sm.to; td*=1+sm.sus; fg*=1+sm.sus }
+  if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g }   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
   to = Math.max(0.03, Math.min(0.30, to));
   return {td:td, fg:fg, to:to};
 }
 
-function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
-  const o = driveOdds(offElo, defElo, startYd, aggr, dmode);
+function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
+  const o = driveOdds(offElo, defElo, startYd, aggr, dmode, sm);
   const r = rng.r();
   if (r < o.td) return {pts:7, kind:"TD", stall:100};
   if (r < o.td + o.fg){
@@ -4364,7 +4441,7 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode){
             stall:Math.min(96,startYd+Math.round(rng.range(0,42)))};
   }
   // the drive stalled: where it died, and how far short, decide the options
-  const gain = Math.round(rng.gauss(22,17));
+  const gain = Math.round(rng.gauss(22,17)+(sm?sm.gain:0));
   const stall = Math.max(startYd-6, Math.min(96, startYd+gain));
   const u = rng.r();
   const togo = u<0.24?1 : u<0.42?2 : u<0.56?3 : u<0.68?4 : u<0.78?5 :
@@ -4410,12 +4487,12 @@ function goOdds(togo, offElo, defElo){
    of the time and punted more often still, and nobody went for two (Ian, round 39: 0 of ~220,000 touchdowns).
    d: the offense's margin before the drive; left: possessions to go, this one included (1: the last). */
 const FB_END=true;
-function endgameDrive(rng,res,d,left,offE,defE){
+function endgameDrive(rng,res,d,left,offE,defE,sm){
   if(!FB_END||left>2||d>=0)return res;
   const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
     if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
       note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
-    const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent");
+    const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent",null,sm);
     if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
       :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
     if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
@@ -4469,6 +4546,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     baseH:planH||"balanced", baseA:planA||"balanced",
     used:{}, rng:rng
   };
+  const M=fbSideMods(opts.ctx,planH||"balanced",planA||"balanced");   // engine 14: each side's shape against the other's
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
@@ -4506,11 +4584,11 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
       res = {pts:0,kind:"PUNT"};
     }else if(forced==="go"){
       const conv = rng.r() < 0.52;
-      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "urgent")
+      res = conv ? rollDrive(rng, home?eloH:eloA, home?eloA:eloH, Math.min(88,start+6), "urgent", null, home?M.home:M.away)
                  : {pts:0,kind:"DOWNS"};
       if(conv&&res.pts===0)res={pts:0,kind:res.kind};
     }else{
-      res = rollDrive(rng, home?eloH:eloA, home?eloA:eloH, start, aggr);
+      res = rollDrive(rng, home?eloH:eloA, home?eloA:eloH, start, aggr, null, home?M.home:M.away);
     }
     if(home)st.h+=res.pts; else st.a+=res.pts;
     st.drives.push({home:home,q:q,start:start,pts:res.pts,kind:res.kind,
@@ -4522,7 +4600,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   while(st.h===st.a&&ot<24){
     ot++;
     const home=(ot%2===1);
-    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
+    const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,home?M.home:M.away);
     if(home)st.h+=r.pts; else st.a+=r.pts;
     st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                     h:st.h,a:st.a,n:st.total+ot,aggr:"aggressive",note:"overtime",ot:true});
@@ -4561,7 +4639,8 @@ function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SC
 const FB_FAVW3=5;
 function fbFavW(){ return ENGINE_V>=3?FB_FAVW3:FB_READ.favW }
 function clubScheme(t,year){ return SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
-function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step)} }
+function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined} }
 function fbReport(fav,seed){
   const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b), n={};
   SCHEME_KEYS.forEach(k=>n[k]=0);
@@ -4652,6 +4731,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
+  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA); return home?M.home:M.away };   // engine 14 (the plan as it stands)
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; return FB_ANSWERS[a].beats===D.sch?FB_READ.right:FB_READ.wrong };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
     const x={bl:pz(t[0]),sh:pz(t[1]),bx:pz(t[2]),n:1}; ["bl","sh","bx","n"].forEach(k=>{ D.T[k]+=x[k]; if(D.half)D.T2[k]+=x[k] }); D.last=x };
@@ -4681,7 +4761,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
       const home=(st.otGuard%2===1);
-      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent");
+      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,smOf(home));
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                       h:st.h,a:st.a,n:st.total+st.otGuard,aggr:"aggressive",
@@ -4725,7 +4805,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
           const tg=P.res.togo||3;
           if(rng.r()<goOdds(tg,offE,defE)){
             // converted: the drive carries on from there
-            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent");
+            const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent",null,smOf(home));
             res=r2;
             res.converted=true;
             res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
@@ -4845,7 +4925,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     // their drive against your rested starters: the backups give up more (the price of resting them)
     if(!isUser&&st.rest&&st.rest[home?"away":"home"]){ const D0=typeof dm==="string"?DEF_MODE[dm]:dm, R0=FB_REST_DEF;
       dm={td:(D0?D0.td:0)+R0.td, fg:(D0?D0.fg:0)+R0.fg, to:(D0?D0.to:0)+R0.to} }   // your defense, this drive only; your offense's answer, until you change it
-    const res=rollDrive(rng,offE,defE,start,aggr,dm);
+    const res=rollDrive(rng,offE,defE,start,aggr,dm,smOf(home));
     if(isUser)tellDrive(side);
     if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");
     if(st.onsideMiss){ st.onsideMiss=false; res.note=(res.note?res.note+"; ":"")+"after recovering the onside kick" }
@@ -4874,7 +4954,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       }
     }
     { const effT=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
-      const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE);
+      const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE,smOf(home));
       if(r2.kind==="TD"&&r2.pts===7&&twoChart(mine+6-theirs,q>=4||effT-i<=8)){
         const ok=rng.r()<0.47; r2.pts=ok?8:6; r2.note=(r2.note?r2.note+"; ":"")+(ok?"went for two and got it":"went for two and was stopped") }
       return {drive:push(home,q,start,r2,aggr),h:st.h,a:st.a}; }
@@ -5773,6 +5853,8 @@ function fbClock(q,idx,total){ if(q>=5)return ""; const left=3600*(total-idx)/to
    and another in the box score and the player's line (the testers' TD contradictions). The fixture is its two sides and the
    year: the recorded game keeps no week, and a rematch with the same home side only repeats the words. */
 function fbScriptSeed(g){ return ENGINE_V>=7?strHash([g.home,g.away,(typeof SEA!=="undefined"&&SEA&&SEA.year)||0].join("|")):watchSeed(g) }
+/* the man who played slot i on drive d (d.by names him: an injured starter's backup), for the leans */
+function pOf(R,d,i,def){ if(!R)return null; const n=d.by&&d.by[(def?"d":"")+i]; return n?(R.find(p=>p&&p.n===n)||R[i]):R[i] }
 function driveScript(g,drives,rosters){
   const rng=new RNG(fbScriptSeed(g));
   const RH=rosters?rosters[0]:SEA.roster[g.home], RA=rosters?rosters[1]:SEA.roster[g.away];
@@ -5788,11 +5870,20 @@ function driveScript(g,drives,rosters){
     let text, who=null;
     if(d.kind==="TD"){
       const y=Math.round(rng.range(2,64));
-      if(rng.r()<0.56){ const u=rng.r(), v4=!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4), ri=!v4?(u<0.62?2:3):u<0.42?2:u<0.68?3:u<0.86?BK(2):BK(3); who={k:"pass",i:ri,y:y}; text=`${nm(0)} ${y}-yd TD pass to ${nm(ri)}` }   // round 74: the backups catch some (a tight end, the slot): one receiver caught 30 in a season
+      // round 91 (engine 14): who scores leans with the attributes (Arm against the back's Speed and Strength for pass or
+      // run; a receiver's Hands and Speed for which one), the same draws as before
+      const v14=typeof ENGINE_V!=="undefined"&&ENGINE_V>=14, pl=i=>v14?pOf(off,d,i):null;
+      const lq=v14?fbLean(pl(0),"arm"):1, lr=v14?fbLean(pl(1),["spd","str"]):1, pp=0.56*lq/(0.56*lq+0.44*lr);
+      if(rng.r()<pp){ const u=rng.r(), v4=!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4);
+        let ri; if(!v14)ri=!v4?(u<0.62?2:3):u<0.42?2:u<0.68?3:u<0.86?BK(2):BK(3);
+        else { const I=[2,3,BK(2),BK(3)], W=[0.42,0.26,0.18,0.14].map((w,j)=>w*fbLean(pl(I[j]),["hnd","spd"])), T=W.reduce((a,b)=>a+b,0); let x=u*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } ri=I[j] }
+        who={k:"pass",i:ri,y:y}; text=`${nm(0)} ${y}-yd TD pass to ${nm(ri)}` }   // round 74: the backups catch some (a tight end, the slot): one receiver caught 30 in a season
       else if(rng.r()<0.8){ who={k:"run",i:1}; text=`${nm(1)} ${y}-yd TD run` }
       else { who={k:"run",i:0}; text=`${nm(0)} ${Math.round(rng.range(1,12))}-yd TD run` }
     } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${kickerName(d.home?g.home:g.away)} ${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
-    else if(d.kind==="INT"){ const di=typeof ENGINE_V!=="undefined"&&ENGINE_V<4?8:FB_PICKER[(d.n||0)%FB_PICKER.length]; who={k:"int",i:di}; text=`intercepted by ${dn(di)}`; }   // round 74: a corner or a safety (it was always the corner)
+    else if(d.kind==="INT"){ let di=typeof ENGINE_V!=="undefined"&&ENGINE_V<4?8:FB_PICKER[(d.n||0)%FB_PICKER.length];
+      if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=14){ const I=[8,9,18,19], W=[2,3,2,1].map((w,j)=>w*fbLean(pOf(def,d,I[j],true),"cov")), T=W.reduce((a,b)=>a+b,0); let x=(((d.n||0)*0.6180339887)%1)*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } di=I[j] }   // round 91: Coverage, by the drive's number (no draw)
+      who={k:"int",i:di}; text=`intercepted by ${dn(di)}`; }   // round 74: a corner or a safety (it was always the corner)
     else if(d.kind==="FUM"){ text=`fumble, recovered by ${dn(7)}`; }
     else if(d.kind==="MISS"){ const r=Math.round(rng.range(38,56)); text=`${kickerName(d.home?g.home:g.away)}'s ${d.stall?fgDistance(d.stall):r}-yd attempt is no good`; }
     else { text=rng.pick(OUTTXT[d.kind]||["punt"]); }
@@ -12132,7 +12223,7 @@ function ownMark(me){
    sport: pro football's favourites showed 70% and won 84%, hockey's showed
    70% and won 63%, and the plan buttons never moved the number (Grokbot,
    Instinct). */
-function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }
+function wpScale(pl){ const K=(ENGINE_V>=14&&LEAGUE.tuning.wpK14)||LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }   // round 91: football's engine 14 has its own curve
 /* The chance before a game is the engine's own, from the strengths the game will be played with: your lineup
    (a backup started), injuries, featuring, ice time, staff. It was worked out from the league's running ratings, so
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%
