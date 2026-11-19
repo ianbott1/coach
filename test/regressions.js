@@ -289,10 +289,12 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
 /* 37. the win chance shown is the engine's own: the game played from the same strengths wins as often as it says.
    (It moved with the gameplan until round 33, when Ian ruled the number shouldn't; since round 34 it's worked out from
    the strengths the game is played with, lineup included, not the league's running ratings: test 79.) */
-for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
+for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP.concat(['cpuPlanOf','gameCtx','sportPlanFit'])}); A.newDynasty(team,5,'T');
   const my=A.S.myTeam, opp=A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[b]-A.SEA.elo[my]-150)-Math.abs(A.SEA.elo[a]-A.SEA.elo[my]-150)).pop();
   const shown=A.winProb(my,opp,false,true); A.SEA.userTeam=my; const e=A.SEA.matchupElo({home:my,away:opp,neutral:true},'balanced'), r=new A.RNG(3); let w=0,N=4000;
-  for(let i=0;i<N;i++){ const g=A.playGame(r,e.h,e.a,'balanced','balanced',{neutral:true}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
+  // round 89/91: the computer's club plays the plan its roster suits, and both shapes play (the chance counts both)
+  const op=typeof A.cpuPlanOf==='function'?A.cpuPlanOf(opp,e.a-e.h):'balanced', ctx=typeof A.gameCtx==='function'&&typeof A.sportPlanFit==='function'?A.gameCtx(my,opp,A.SEA.year,5):undefined;   // (baseball's context is its lineups: the test played without it)
+  for(let i=0;i<N;i++){ const g=A.playGame(r,e.h,e.a,'balanced',op,{neutral:true,ctx:ctx}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
   ok(Math.abs(shown-w/N)<0.04,`${f}: shows ${(100*shown).toFixed(0)}% where the engine wins ${(100*w/N).toFixed(0)}% (gap ${Math.round(e.h-e.a)})`) }
 /* 38. the offseason plan card shows your changes */
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Seattle',5,'T'); play(A,999); A.openOffseason();

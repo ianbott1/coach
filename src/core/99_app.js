@@ -1577,7 +1577,7 @@ function ownMark(me){
    sport: pro football's favourites showed 70% and won 84%, hockey's showed
    70% and won 63%, and the plan buttons never moved the number (Grokbot,
    Instinct). */
-function wpScale(pl){ const K=LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }
+function wpScale(pl){ const K=(ENGINE_V>=14&&LEAGUE.tuning.wpK14)||LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }   // round 91: football's engine 14 has its own curve
 /* The chance before a game is the engine's own, from the strengths the game will be played with: your lineup
    (a backup started), injuries, featuring, ice time, staff. It was worked out from the league's running ratings, so
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%

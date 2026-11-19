@@ -109,13 +109,13 @@ function fbSideMods(ctx,planH,planA){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.h
 /* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
    path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */
 const FB14_FIT={nfl:{safe:{"o.arm":-0.371,"o.acc":0.495,"o.spd":-0.367,"o.hnd":0.495,"o.blk":0.515}, aggressive:{"o.arm":0.483,"o.acc":-0.422,"o.spd":0.492,"o.hnd":-0.422,"o.blk":-0.479}},
-                 cfb:{safe:{"o.arm":-0.433,"o.acc":0.43,"o.spd":-0.413,"o.hnd":0.43,"o.blk":0.51}, aggressive:{"o.arm":0.415,"o.acc":-0.414,"o.spd":0.427,"o.hnd":-0.414,"o.blk":-0.44}}};   // 200,000 games a cell
+                 cfb:{safe:{"o.arm":-0.411,"o.acc":0.485,"o.spd":-0.395,"o.hnd":0.485,"o.blk":0.557}, aggressive:{"o.arm":0.456,"o.acc":-0.402,"o.spd":0.461,"o.hnd":-0.402,"o.blk":-0.453}}};   // 200,000 games a cell (college at its engine-14 gap)
 const FB14_FITC={nfl:{safe:{"o.arm":-0.394,"o.acc":0.486,"o.spd":-0.393,"o.hnd":0.486,"o.blk":0.47}, aggressive:{"o.arm":0.51,"o.acc":-0.363,"o.spd":0.51,"o.hnd":-0.363,"o.blk":-0.366,"o.str":0.037}},
-                  cfb:{safe:{"o.arm":-0.397,"o.acc":0.482,"o.spd":-0.395,"o.hnd":0.482,"o.blk":0.46}, aggressive:{"o.arm":0.502,"o.acc":-0.365,"o.spd":0.482,"o.hnd":-0.365,"o.blk":-0.397,"o.str":0.02}}};   // the defense's terms move under 3% with the plan (noise): left at 0
+                  cfb:{safe:{"o.arm":-0.417,"o.acc":0.484,"o.spd":-0.404,"o.hnd":0.484,"o.blk":0.496}, aggressive:{"o.arm":0.479,"o.acc":-0.37,"o.spd":0.485,"o.hnd":-0.37,"o.blk":-0.414}}};   // the defense's terms move under 3% with the plan (noise): left at 0
 /* a plan's own worth at a gap, no lean: Elo on the balanced curve [at even, per Elo of gap] (scratch r91 pv.js): safe lets
    talent count (gap 1.3x), so it pays a favourite and costs an underdog; taking risks the reverse */
-const FB14_SHIFT={nfl:{safe:[-4.8,0.2331],aggressive:[8,-0.3613]}, cfb:{safe:[-5.8,0.1607],aggressive:[9.3,-0.2503]}};   // 200,000 games a point, gaps -225..225
-const FB14_SHIFTH={nfl:{safe:[-8.5,0.2263],aggressive:[10.7,-0.3524]}, cfb:{safe:[-8.7,0.1539],aggressive:[12.3,-0.2425]}};   // 100,000 games a point
+const FB14_SHIFT={nfl:{safe:[-4.5,0.2432],aggressive:[6.7,-0.3604]}, cfb:{safe:[-5,0.1593],aggressive:[8.1,-0.2416]}};   // 200,000 games a point, gaps -225..225
+const FB14_SHIFTH={nfl:{safe:[-7.6,0.2318],aggressive:[12,-0.3529]}, cfb:{safe:[-8,0.1552],aggressive:[10.1,-0.2395]}};   // 100,000 games a point
 const fbLg=T=>T[LEAGUE.id]||T.cfb;
 function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
 function sportPlanFit(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)):0 }
