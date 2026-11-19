@@ -87,6 +87,7 @@ function tOffers(u,my,humans){
 /* carry out the window for one club (called in the offseason run, after
    contracts, ageing, retirements and trades): sales first, then bids, in
    your order, while the money and the wage budget last */
+const TW_ROOM=!(typeof process!=="undefined"&&process.env&&process.env.TW_ROOM==="0");   // round 90; TW_ROOM=0 for the control
 function tWindow(u,t,ch,rep,pool,leave,prog){
   const R=u.roster[t]; let kitty=ch.kitty!=null?ch.kitty:tKitty(u,t,payroll(R));
   const log=rep.transfers[t]=rep.transfers[t]||[];
@@ -106,6 +107,10 @@ function tWindow(u,t,ch,rep,pool,leave,prog){
     if(j<0){log.push({n:n,p:pos,from:st,done:false,why:"retired or moved on before the window"});return}
     const p=S2[j], W=tWilling(u,t,st,prog);
     if(!W.ok){log.push({n:n,p:pos,from:st,done:false,why:W.why});return}
+    // round 90: a newcomer pushes his position's backup out, whatever his rating; if that backup was bought this window,
+    // the bid doesn't go through and costs nothing (two strikers bought, the first released the same summer: Brentford)
+    { const i=POS.findIndex(P=>P.p===p.p), s0=R[i], b0=R[BK(i)];
+      if(TW_ROOM&&s0&&b0&&b0.keep){log.push({n:n,p:pos,from:st,done:false,why:`no room at ${pos}: it would cut ${b0.n}, whom you just bought`});return} }
     const T=(ch.bidTerms||{})[key], fee=T?T.fee:tFee(p,j<POS.length), wage=T?T.wage:nflAsk(p.r,p.p,p.age);
     if(fee>kitty){log.push({n:n,p:pos,from:st,done:false,why:`${money(fee)} was more than you had left (${money(kitty)})`});return}
     if(payroll(R)+wage>budgetOf(u,t)){log.push({n:n,p:pos,from:st,done:false,why:`his ${money(wage)} a year wouldn't fit the wage budget`});return}

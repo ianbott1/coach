@@ -28,14 +28,14 @@ for(const [team,seed] of [['Brentford',3],['Coventry City',4],['Bradford City',5
   const L=A.S.history[A.S.history.length-1].league.transfers||[];
   can.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out);
     ok(r&&(r.done||/retired/.test(r.why)),`${my}: an affordable bid for ${x.n} (${x.fee}M of ${kitty.toFixed(1)}M) didn't go through${r?": "+r.why:""}`);
-    if(r&&r.done){ /* round 89: two bids at one position both going through (Brentford seed 3, engine 12: Ratliff then Hammond, strikers)
-      bump the first signing out of the pair of slots, a known gap reported to Ian; anything else missing is a failure */
-    const bumped=L.some(e=>e.done&&!e.out&&e.p===x.p&&e.n!==x.n&&L.indexOf(e)>L.indexOf(r))&&(A.S.history[A.S.history.length-1].league.released||[]).some(e=>e.n===x.n);
-    ok(onRoster(A,my,x.n)||bumped,`${my}: ${x.n} bought but not in the squad`); if(bumped)console.log(`  note: ${my}'s ${x.n} bought, then bumped by a later signing at ${x.p}`); ok(!onRoster(A,x.team,x.n),`${my}: ${x.n} still at ${x.team}`) } });
+    if(r&&r.done){ ok(onRoster(A,my,x.n),`${my}: ${x.n} bought but not in the squad`); ok(!onRoster(A,x.team,x.n),`${my}: ${x.n} still at ${x.team}`) } });
   // the fee is set when the bid goes in, at the summer's commit, and can differ from the window's opening quote (a
   // contract year gone, a summer's development: round 89, Diabate quoted 50.3M, 20.6M at the commit with a sale of 17.5M
   // in hand): the rule is that a bid goes through only if its fee fits what you had then
-  cant.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out); ok(r&&(r.done?r.fee<=kitty+(sell?sell.fee:0)+0.05:/more than you had/.test(r.why)),`${my}: a bid beyond the kitty for ${x.n} went through or gave no reason${r?" ("+(r.done?"bought for "+r.fee+"M":r.why)+")":""}`) });
+  cant.forEach(x=>{ const r=L.find(e=>e.n===x.n&&!e.out); const room=r&&!r.done&&/^no room at /.test(r.why);   /* round 90: it would cut a man bought above it this window (named, bought, at his position) */
+    if(room){ const m=r.why.match(/cut (.+), whom you just bought/), e=m&&L.find(z=>z.done&&!z.out&&z.n===m[1]);
+      ok(!!e&&e.p===x.p&&L.indexOf(e)<L.indexOf(r)&&onRoster(A,my,m[1]),`${my}: "${r.why}" names nobody bought before it at ${x.p}`); console.log(`  note: ${my}: ${r.why}`) }
+    ok(r&&(room||(r.done?r.fee<=kitty+(sell?sell.fee:0)+0.05:/more than you had/.test(r.why))),`${my}: a bid beyond the kitty for ${x.n} went through or gave no reason${r?" ("+(r.done?"bought for "+r.fee+"M":r.why)+")":""}`) });
   if(sell){ const r=L.find(e=>e.out&&e.n===sell.n), gone=r&&!r.done&&/retired/.test(r.why);   // a man who retires first can't be sold (as for a bid)
     ok(r&&(r.done||gone),`${my}: the sale of ${sell.n} didn't go through${r?": "+r.why:""}`);
     if(!gone)ok(!onRoster(A,my,sell.n)&&onRoster(A,sell.team,sell.n),`${my}: ${sell.n} wasn't sold to ${sell.team}`) }

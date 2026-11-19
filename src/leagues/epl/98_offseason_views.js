@@ -120,8 +120,18 @@ function tWindowHTML(P){
       <span class="cgrade">${on?"sell":"keep him"}</span></div></div>` }).join("")
     :`<div class="note">Nobody bigger is bidding for anyone of yours this summer.</div>`;
   let left=kitty, wl=LEAGUE.budgetOf(U,my)-pay+sales.reduce((a,o)=>{const p=U.roster[my].find(q=>q&&tKey(my,q)===o.key);return a+(p?p.k.sal:0)},0);
+  // each position's pair as the window will see it (sales out, the backup up), to say when a bid would cut one bought above
+  const RM=U.roster[my], soldK=sales.map(o=>o.key), pair={};
+  POS.forEach((P2,i)=>{ let s0=RM[i], b0=RM[BK(i)]; if(s0&&soldK.indexOf(tKey(my,s0))>=0)s0=null; if(b0&&soldK.indexOf(tKey(my,b0))>=0)b0=null;
+    if(!s0&&b0){s0=b0;b0=null} pair[i]={s:s0?{r:s0.r,n:s0.n}:null,b:b0?{r:b0.r,n:b0.n}:null} });
   const brow=(x,on,i)=>{ let fit="";
-    if(on){ if(!x.willing)fit=x.why; else if(x.fee>left)fit="more than the kitty has left"; else if(x.wage>wl)fit="his wages won't fit"; else {fit="fits"; left-=x.fee; wl-=x.wage} }
+    if(on){ const pr=pair[POS.findIndex(P2=>P2.p===x.p)];
+      if(!x.willing)fit=x.why; else if(pr&&pr.s&&pr.b&&pr.b.keep)fit=`no room at ${x.p}: it would cut ${pr.b.n}, bought above`;
+      else if(x.fee>left)fit="more than the kitty has left"; else if(x.wage>wl)fit="his wages won't fit";
+      else { fit=pr&&pr.cond?`fits if ${pr.cond.n} starts ahead of ${pr.cond.over} after the summer's development; if not, it would cut ${pr.cond.n} and won't go through`:"fits";
+        left-=x.fee; wl-=x.wage;
+        if(pr){ const nw={r:x.r,n:x.n,keep:true}; pr.cond=null;
+          if(!pr.s)pr.s=nw; else if(x.r>pr.s.r){ if(!pr.s.keep)pr.cond={n:x.n,over:pr.s.n}; pr.b=pr.s;pr.s=nw } else pr.b=nw } } }
     return `<div class="drow"><span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span> <span class="ptag">${x.starter?"would start":"depth: better than your backup"}</span></div>
       <div class="fnote">${esc(x.team)} (${esc(LEAGUE.groupShort?LEAGUE.groupShort(CONF[x.team]):LEAGUE.conf.names[CONF[x.team]])}) &middot; age ${x.age}${x.age>=33?" (may retire)":""} &middot; rated ${x.r}${x.pot>x.r+2?", ceiling "+x.pot:""} &middot; ${money(x.fee)} + ${money(x.wage)} a year${on?" &middot; <b>"+esc(fit)+"</b>":!x.willing?" &middot; "+esc(x.why):""}</div></div>
