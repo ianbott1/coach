@@ -1,5 +1,5 @@
 {
- "fp": "e144f58ccee15405",
+ "fp": "1a9c23b42b1c6ce5",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -534,6 +534,11 @@
    "fp": "e144f58ccee15405",
    "from": "f46b8ac1a8704b3c",
    "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
+  },
+  {
+   "fp": "1a9c23b42b1c6ce5",
+   "from": "e144f58ccee15405",
+   "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
   }
  ],
  "result": {
@@ -547,7 +552,7 @@
     "poll": "eac26627dd99b438",
     "heis": "fb6327d7e61b1261",
     "history": "1d6ba277acbd15f1",
-    "universe": "710d124ee99286b6",
+    "universe": "7e338e7a034ae4a3",
     "screens": "81f02a307bb3b26b"
    },
    {
@@ -559,7 +564,7 @@
     "poll": "07eddb6654e6d1f0",
     "heis": "3bcd98b514f4ac19",
     "history": "9f205048bc998ba6",
-    "universe": "4a298e3afe0e07d8",
+    "universe": "c04d1cacbd1662e9",
     "screens": "5afa35ddd153e823"
    },
    {
@@ -571,7 +576,7 @@
     "poll": "151a4c049424e90f",
     "heis": "d97c1f876bb0ee53",
     "history": "38b6e9892477c09c",
-    "universe": "27310e3a86f7395f",
+    "universe": "6c66b9f04d067c98",
     "screens": "3d72634280939dee"
    },
    {
@@ -583,7 +588,7 @@
     "poll": "8f434b3082bc1e1d",
     "heis": "00fe65a1b14bf0b0",
     "history": "b0891eac2ebec711",
-    "universe": "b3a21d56d5385c34",
+    "universe": "024e1973c20068e7",
     "screens": "df3be4e80a39e633"
    }
   ],
@@ -597,7 +602,7 @@
     "poll": "10c737db39573824",
     "heis": "b1dcfea1725f9435",
     "history": "2c81c0584f26fca9",
-    "universe": "41d1c27a9d217cb8",
+    "universe": "819c7d92bf79613d",
     "screens": "b2431baa990782c2"
    },
    {
@@ -609,7 +614,7 @@
     "poll": "5a87262e88e003c7",
     "heis": "cc98bc9f446bc2a7",
     "history": "f4f375fe60064fdc",
-    "universe": "7acafe0dd214aef1",
+    "universe": "2c72eca2cf6a237f",
     "screens": "29bfa46a16d34b7d"
    },
    {
@@ -621,7 +626,7 @@
     "poll": "f51ec11b46b66a71",
     "heis": "87b40da714db974e",
     "history": "10867eb5c2925ba2",
-    "universe": "9924fe1e5eb0e9e6",
+    "universe": "9333246a40b3152c",
     "screens": "692ba49c9329020f"
    },
    {
@@ -633,7 +638,7 @@
     "poll": "3327f00a2853102d",
     "heis": "e0b0d2169e29dc95",
     "history": "f0079e8e4030a915",
-    "universe": "1b8ace6c500e9fbe",
+    "universe": "1e1779bb22b0b824",
     "screens": "cc75f2022d0eca24"
    }
   ],
@@ -647,7 +652,7 @@
     "poll": "9966f8db95556fcb",
     "heis": "7ac8698aceb64dd3",
     "history": "be5535d11b2f7c5c",
-    "universe": "e6c36bbac916dc11",
+    "universe": "99bc65d4d239a451",
     "screens": "c5fadffd87413e91"
    },
    {
@@ -659,7 +664,7 @@
     "poll": "4eb15aef17f0ec37",
     "heis": "bf31bc257f665440",
     "history": "ff3621517caa7b22",
-    "universe": "8a8ea957af7311de",
+    "universe": "239baf676714e395",
     "screens": "05683cb17a7d4010"
    },
    {
@@ -671,7 +676,7 @@
     "poll": "d57daab6087c7eea",
     "heis": "e7cffd2fe8a51fe1",
     "history": "ea1e938e0065d52a",
-    "universe": "84a44aec174debce",
+    "universe": "2c3a4d1f98bb2160",
     "screens": "68b72b70c577be56"
    }
   ],
@@ -685,7 +690,7 @@
     "poll": "ae5dc7f06d41099a",
     "heis": "4028327a7c28dd86",
     "history": "8bf044cd846a91c9",
-    "universe": "c228e98f926f5b0a",
+    "universe": "a145853af9c5dc5f",
     "screens": "7ab62a031da41e51"
    },
    {
@@ -697,7 +702,7 @@
     "poll": "d512a7e52981340c",
     "heis": "970902ef12bf93ef",
     "history": "1be2118b0aacca6f",
-    "universe": "d5435a18987b449e",
+    "universe": "86f2c0a6ca045135",
     "screens": "f1666c98983f9dc6"
    },
    {
@@ -709,7 +714,7 @@
     "poll": "41a12b5f1db3b811",
     "heis": "96cf624e9f741c10",
     "history": "183c2d68fdef8251",
-    "universe": "0f981dfeec94ca13",
+    "universe": "cc018e7082647fae",
     "screens": "f693e6d29b871779"
    }
   ],

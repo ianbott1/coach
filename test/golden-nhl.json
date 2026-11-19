@@ -1,5 +1,5 @@
 {
- "fp": "51e2920b7068a84e",
+ "fp": "e1793ee41de6aa37",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -500,59 +500,64 @@
    "fp": "51e2920b7068a84e",
    "from": "9ce6f84b8b90e9b7",
    "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
+  },
+  {
+   "fp": "e1793ee41de6aa37",
+   "from": "51e2920b7068a84e",
+   "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "2447228c2ca38269",
-    "post": "ba79cfb5df3b35a1",
-    "champion": "Vegas",
-    "rec": "852ea3252f2380c6",
-    "poll": "9c900e0c49cec45e",
-    "heis": "c48530eb33a8c90d",
-    "history": "f63d5527dd12ad02",
-    "universe": "d9f8a807667cef2d",
-    "screens": "2970bfe1a03538c6"
+    "games": "c1e703fadbd9dbbd",
+    "post": "8d422e4dcec12f11",
+    "champion": "NY Islanders",
+    "rec": "235dd03943e2517b",
+    "poll": "e4752cadc3527a03",
+    "heis": "132df369550d1787",
+    "history": "e0d09ac0d0f18ff3",
+    "universe": "77a2003d24c4755e",
+    "screens": "a5a0dc5993c4fd90"
    },
    {
     "year": 2027,
-    "games": "b55ccab5cba9b80a",
-    "post": "5f6b7f4e55265e6e",
+    "games": "e5510a6ed437410a",
+    "post": "83040f38121fa941",
     "champion": "Toronto",
-    "rec": "848c9b19752217d6",
-    "poll": "faecdf82a70741b7",
-    "heis": "fc61ba1ef26eaecc",
-    "history": "a8b0669c37569c08",
-    "universe": "c182d5735f9feac6",
-    "screens": "c31c639182f68bfd"
+    "rec": "2a3cc77842a85a23",
+    "poll": "eed8fe9a08a13fb3",
+    "heis": "c7c7914b0b4788b7",
+    "history": "1aae2769f6699d63",
+    "universe": "19c54d6983906c9b",
+    "screens": "87145f8240611cda"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "077d2112e785a930",
-    "post": "fc5571651f238e66",
-    "champion": "Calgary",
-    "rec": "798d7879cd732773",
-    "poll": "5ec6ae6965d82c1c",
-    "heis": "e81b20c0addeab8d",
-    "history": "4232e5c8e35a4ed0",
-    "universe": "58d07b4a48be19a6",
-    "screens": "4fac889221dae3fa"
+    "games": "55dba327f5319591",
+    "post": "b958884b69d477b0",
+    "champion": "Vegas",
+    "rec": "c32690326e0d32c7",
+    "poll": "b21858b3c14f6421",
+    "heis": "f525071044630aee",
+    "history": "4393a8c2a09fab77",
+    "universe": "18187754fe99ca3c",
+    "screens": "4daace9b3d2c9a50"
    },
    {
     "year": 2027,
-    "games": "a5a5331cdd291ff7",
-    "post": "8bb32a760e9a34b8",
-    "champion": "Carolina",
-    "rec": "fb0e1e95a3102edf",
-    "poll": "cf3cbf240344ccc6",
-    "heis": "58c3067d6a9a6dd3",
-    "history": "f61e35a53b2daccf",
-    "universe": "86507411c228192d",
-    "screens": "d53cec5245859d1f"
+    "games": "d61fd62d5fa2d71c",
+    "post": "439104539f587218",
+    "champion": "Montreal",
+    "rec": "47a1aad682ae292e",
+    "poll": "24a224451ca80823",
+    "heis": "629fe7c087dc0873",
+    "history": "f565b687409fb888",
+    "universe": "de8eb7d046625907",
+    "screens": "6dc8f9f9d70fc4c7"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "4a53ab86cd7a3e47",
+ "fp": "5f860616ccf596e6",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -30,6 +30,11 @@
    "fp": "4a53ab86cd7a3e47",
    "from": "6108e6eca507858f",
    "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
+  },
+  {
+   "fp": "5f860616ccf596e6",
+   "from": "4a53ab86cd7a3e47",
+   "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
   }
  ],
  "result": {
@@ -43,7 +48,7 @@
     "poll": "ef882af51f3262c7",
     "heis": "66f26d873ae5048f",
     "history": "083412b3ebbf4097",
-    "universe": "c3a47c9165cd98d9",
+    "universe": "6535889dc9136c72",
     "screens": "ff60399c044a24a9"
    }
   ]

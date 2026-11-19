@@ -1,5 +1,5 @@
 {
- "fp": "5ddeaeae5fcc5119",
+ "fp": "c43d6049e3fa27b1",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -30,21 +30,26 @@
    "fp": "5ddeaeae5fcc5119",
    "from": "7a84e728e2a43484",
    "note": "round 88: engine 11 (basketball attributes play; the engine stamp in every universe)"
+  },
+  {
+   "fp": "c43d6049e3fa27b1",
+   "from": "5ddeaeae5fcc5119",
+   "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "8d9a53871cd22c13",
-    "post": "2003626ee857918a",
-    "champion": "Denver",
-    "rec": "cb02928a087d64ab",
-    "poll": "2e0e8f760751d4cf",
-    "heis": "0643d72c55748eb7",
-    "history": "3d4e437906b19cf6",
-    "universe": "0d53e47ea1d3d179",
-    "screens": "f32389822a7bc8f1"
+    "games": "a45a3730736b4409",
+    "post": "fc8f46ef0e7fd5e4",
+    "champion": "Minnesota",
+    "rec": "349cb5f4dec010da",
+    "poll": "cce4fcc1c41ffa8d",
+    "heis": "0e6ceba0babc8976",
+    "history": "724480b7073c4379",
+    "universe": "bdbf6300a1616bb5",
+    "screens": "c6fabf0b4f3d3676"
    }
   ]
  }
