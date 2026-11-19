@@ -422,7 +422,10 @@ own worth in the chance.
   screens (the training card). engine-replay now replays engine 11 (round 88).
 - Not built: club styles from rosters (the computer's system or approach chosen for its shape: the roadmap's own round);
   per-attribute ceilings and breakouts; football's hooks.
-- Watch: a window's quoted fee and the commit's can differ a lot (pre-existing); soccer draws a point high.
+- Watch: a window's quoted fee and the commit's can differ a lot (pre-existing); soccer draws a point high; two bids at
+  one position that both go through bump the first signing out of the pair of slots (27_transfers tWindow places each
+  with nflPlace; Brentford seed 3: Ratliff bought for 1.9M, released the same summer when Hammond came; pre-existing,
+  no warning on the bids screen; test/transfers notes it).
 
 Round 88: basketball's attributes play (engine 11, college and pro); the plan's fit in the chance; Skip's own margin.
 - The team's shape on the floor (50_game bbShapeOf, through gameCtx sh): each man's lean (an attribute against his own

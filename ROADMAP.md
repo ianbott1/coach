@@ -137,7 +137,8 @@ on numbers they can't trust and a sport they read rather than watch.
 - Fixed: a soccer cup tie and league game merged in the logs; a shootout's header.
 - Next: round 90, football's hooks; then per-attribute ceilings and breakouts; club styles from rosters (the computer's
   system or approach for its shape). Watch: soccer draws a point high; hockey's top scorers high (already so); a
-  window's quoted fee against the commit's.
+  window's quoted fee against the commit's. To fix: two signings at one position bump the first (a fee paid for a player
+  released the same summer); warn on the bids screen or keep the signing over the old backup.
 
 ## Still to come: watching
 - Motion, not stills: the ball in play between moments; a watch rhythm between calls (pro basketball, baseball);
