@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="4a06175";
+<script>const BUILD_ID="bb94cce";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -1613,7 +1613,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||14);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||15);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -3234,9 +3234,23 @@ function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SC
    coin flip, or say it's a guess". At 5 the report followed is right about 69% (computed; measured below in ARCHITECTURE) */
 const FB_FAVW3=5;
 function fbFavW(){ return ENGINE_V>=3?FB_FAVW3:FB_READ.favW }
-function clubScheme(t,year){ return SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
+function clubScheme(t,year){ return rosterStyle(t,year)||SCHEME_KEYS[strHash(t+"|def|"+year)%SCHEME_KEYS.length] }
+/* round 92: their defense: the blitz from Pass rush, the two-deep shell from Coverage, the loaded box from Strength and Tackling */
+/* round 92 (engine 15, Ian: football's reads tied to the roster): the right answer is worth more when your offense suits
+   it: quick passes with Accuracy, the run with Blocking and Strength, shots downfield with Arm and Speed. Each answer's
+   term is taken against the league as the season opened (its mean and spread, gameCtx fbn), so across the league a right
+   read is worth what it was; FBR.k a spread, held to FBR.lo..FBR.hi. */
+const FBR={k:+(FB14_ENV("FBR_K")||0.3), lo:0.5, hi:1.5};
+const FB_ANS_TERM={quick:O=>O.acc, run:O=>O.blk+O.str, deep:O=>O.arm+O.spd};
+function fbReadFit(a,ctx,sd){ const N=ctx&&ctx.fbn, X=ctx&&ctx.sh&&ctx.sh[sd]; if(!N||!X||!N[a]||!(N[a].s>1e-9)||!FB_ANS_TERM[a])return 1;
+  return Math.max(FBR.lo,Math.min(FBR.hi,1+FBR.k*(FB_ANS_TERM[a](X.o)-N[a].m)/N[a].s)) }
+/* the league's offense terms for the answers, as the season opened (styleTable keeps them) */
+function sportSeasonNorms(sea){ const o={}; Object.keys(FB_ANS_TERM).forEach(a=>{ const v=Object.keys(sea.roster).filter(t=>Array.isArray(sea.roster[t])).map(t=>FB_ANS_TERM[a](fbShapeOf(sea.roster[t],null).o));
+  const m=v.reduce((x,y)=>x+y,0)/v.length; o[a]={m:m, s:Math.sqrt(v.reduce((x,y)=>x+(y-m)**2,0)/v.length)} }); return o }
+const sportStyleAttrs={blitz:"Pass rush",shell:"Coverage",box:"Strength and Tackling"};
+function sportStyleScores(R){ const T=fbShapeOf(R,null).d; return {blitz:T.rsh, shell:T.cov, box:T.str+T.tkl} }
 function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
-  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined} }
+  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined, fbn:ENGINE_V>=15&&typeof SEA!=="undefined"&&SEA&&SEA._styles?SEA._styles.norm:undefined} }
 function fbReport(fav,seed){
   const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b), n={};
   SCHEME_KEYS.forEach(k=>n[k]=0);
@@ -3328,7 +3342,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
   const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA); return home?M.home:M.away };   // engine 14 (the plan as it stands)
-  const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; return FB_ANSWERS[a].beats===D.sch?FB_READ.right:FB_READ.wrong };
+  const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; if(FB_ANSWERS[a].beats!==D.sch)return FB_READ.wrong;
+    const f=fbReadFit(a,ctx,sd); return f===1?FB_READ.right:{td:FB_READ.right.td*f, fg:FB_READ.right.fg*f, to:FB_READ.right.to*f} };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
     const x={bl:pz(t[0]),sh:pz(t[1]),bx:pz(t[2]),n:1}; ["bl","sh","bx","n"].forEach(k=>{ D.T[k]+=x[k]; if(D.half)D.T2[k]+=x[k] }); D.last=x };
 
@@ -4615,7 +4630,7 @@ function driveWord(d){
 function fbEvidenceHTML(g,my,dp){
   const opp=g.home===my?g.away:g.home;
   if(dp.k==="prep"){ const R=dp.report, n=dp.n||6;
-    return `<div class="evid"><div class="evh">${esc(opp)}: their last ${n} games on defense</div>
+    return `<div class="evid"><div class="evh">${esc(opp)}: their last ${n} games on defense</div>${styleRosterLine(opp)}
       ${SCHEME_KEYS.map(k=>`<div class="evr"><span class="evk">${esc(SCHEMES[k].l)}</span><span class="evv">${R[k]} of ${n}</span></div>`).join("")}
       <div class="evn">Most defenses have a way they like to play, but not every week. Get it right and the week's work shows; get it wrong and your offense plays into their hands until you change it.</div>${splitNote(R)}</div>` }
   if(dp.k!=="read"||!dp.tell)return "";
@@ -4804,6 +4819,7 @@ class Season{
     this.poll=new LEAGUE.Ranking(Object.assign({},u.perceived));
     SCHED_V=u.schedV||1;                    // see schedOrder
     ENGINE_V=u.engV||1;                     // round 71 (core 20_engine)
+    Object.defineProperty(this,"_styles",{value:typeof styleTable==="function"?styleTable(this):null,writable:true,enumerable:false});   // round 92: club styles from the opening rosters
     this.sched=LEAGUE.buildSchedule(this.rng,u.perceived,u.year);
     // a season begun before the deterministic draw (schedV 1) can come out differently on each load:
     // the first load on this build keeps its schedule and the dice after it (rebuild saves the lock),
@@ -6133,6 +6149,33 @@ function planFitWords(t,pl,lean){ if(typeof PLANS==="undefined"||typeof sportPla
   if(best!=="balanced"&&planEdge(t,best,planGapNow(t))<=0)best="balanced";
   if(best!==pl&&v[best]-v[pl]>=PLAN_PICK_MIN)return best==="balanced"?`Your roster doesn't suit this plan: <b>${esc(PLANS.balanced.l)}</b> fits it better.`:`Your roster leans to its ${lean[best]}: <b>${esc(PLANS[best].l)}</b> suits it.`;
   return best===pl&&pl!=="balanced"&&v[pl]>=PLAN_PICK_MIN?`This plan suits your ${lean[pl]}.`:"" }
+
+/* ============ round 92 (engine 15): each club's usual style comes from its roster ============
+   (Ian: the roster's lean, near-ties kept on the hash; set once as the season opens, so a trade doesn't change it and a
+   reload plays the same.) Each sport scores its styles from the opening roster's shape (sportStyleScores); each score
+   is taken against the league (z: the league's mean and spread that season), and a club plays the style it leans to
+   most. Where its top two are within STYLE_TIE of a spread, the old hash picks between those two, so a flat roster stays
+   hard to read. A league whose scores are all level (no attributes) keeps the hash outright. */
+const STYLE_TIE=0.25;
+function styleTable(sea){ if(typeof ENGINE_V==="undefined"||ENGINE_V<15||typeof sportStyleScores!=="function"||!sea||!sea.roster)return null;
+  const T=Object.keys(sea.roster).filter(t=>Array.isArray(sea.roster[t])), S={}; if(!T.length)return null;
+  T.forEach(t=>{ try{ S[t]=sportStyleScores(sea.roster[t])||null }catch(e){ S[t]=null } });
+  const K=Object.keys(S[T.find(t=>S[t])]||{}); if(!K.length)return null;
+  const mu={}, sd={}; K.forEach(k=>{ const v=T.map(t=>S[t]?S[t][k]:0); mu[k]=v.reduce((a,b)=>a+b,0)/v.length; sd[k]=Math.sqrt(v.reduce((a,b)=>a+(b-mu[k])**2,0)/v.length) });
+  if(K.every(k=>!(sd[k]>1e-9)))return null;
+  const out={style:{},rank:{},n:T.length};
+  T.forEach(t=>{ if(!S[t])return; const z=K.map(k=>[k,sd[k]>1e-9?(S[t][k]-mu[k])/sd[k]:0]).sort((a,b)=>b[1]-a[1]||(a[0]<b[0]?-1:1));
+    out.style[t]=z[0][1]-z[1][1]<STYLE_TIE?[z[0][0],z[1][0]].sort()[strHash(t+"|"+sea.year)%2]:z[0][0] });
+  K.forEach(k=>{ T.filter(t=>S[t]).sort((a,b)=>S[b][k]-S[a][k]||(a<b?-1:1)).forEach((t,i)=>{ (out.rank[t]=out.rank[t]||{})[k]=i+1 }) });
+  if(typeof sportSeasonNorms==="function")try{ out.norm=sportSeasonNorms(sea) }catch(e){}   // football: the league's offense, for reads tied to the roster
+  return out }
+/* the season's style for a club, when it comes from the roster (else null: the caller keeps its hash) */
+function rosterStyle(t,year){ try{ return typeof SEA!=="undefined"&&SEA&&SEA.year===year&&SEA._styles&&SEA._styles.style[t]||null }catch(e){ return null } }
+/* the scouting report's line on their roster (Ian: one line): where it ranks in the league for each style's attributes,
+   as the season opened (what the style was read from) */
+function styleRosterLine(t){ try{ const X=typeof SEA!=="undefined"&&SEA&&SEA._styles, R=X&&X.rank[t]; if(!R||typeof sportStyleAttrs==="undefined")return "";
+  const K=Object.keys(sportStyleAttrs).filter(k=>R[k]).sort((a,b)=>R[a]-R[b]);
+  return `<div class="evn"><b>Their roster</b>, as the season opened: ${K.map(k=>`${esc(sportStyleAttrs[k])} ${ordinal(R[k])}`).join(", ")} of ${X.n}. Clubs play to their rosters.</div>` }catch(e){ return "" } }
 /* ============ players you care about ============ */
 /* Your best players as people: how they're playing lately (form), where their
    careers are heading (the next milestone), whether this is their last year
@@ -6877,6 +6920,7 @@ function liveWPHTML(onCall){
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
     const Q=f.map(x=>Math.max(1,Math.min(98,x)));
+    { let ex=Q.reduce((a,b)=>a+b,0)-100; while(ex>0){ const j=Q.indexOf(Math.max(...Q)); Q[j]--; ex-- } while(ex<0){ const j=Q.indexOf(Math.max(...Q)); Q[j]++; ex++ } }   // round 92: a 0% held at 1 took the sum to 101 (W 85 D 15 L 1): the largest gives it back
     return `<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${Q[0]}%"></i><b style="width:${Q[1]}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${Q[0]}% &middot; D ${Q[1]}% &middot; L ${Q[2]}%</span>${pre}${LWHIDE}</div>` }
   return LEAGUE.draws&&dr>0.005?`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i><b style="width:${P(dr)}%"></b></span><span class="lwpct">${esc(S.myTeam)}: W ${P(w)}% &middot; D ${P(dr)}% &middot; L ${P(l)}%</span>${LWHIDE}</div>`
     :`<div class="livewp"><span class="lwlab">Right now</span><span class="lwbar"><i style="width:${P(w)}%"></i></span><span class="lwpct">${esc(S.myTeam)}: ${P(w)}% to win</span>${pre}${LWHIDE}</div>`;
@@ -10495,7 +10539,7 @@ function gameEdge(me,opp,atHome,neutral){
   if(S.myTeam){ SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null }
   try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; let x=(hm?d:-d)+(me===S.myTeam?planEdge(me,planPicked(),hm?d:-d):0);   // round 89: your plan's fit and its own worth at this gap
     // round 89: the computer's club plays the plan its roster suits, and that fit is in the game too
-    if(me===S.myTeam&&typeof sportPlanFit==="function"&&!(isHotSeat()&&coachIndexOf(opp)>=0)){ const op=cpuPlanOf(opp,hm?-d:d); if(op!=="balanced")x-=typeof sportPlanFitC==="function"?sportPlanFitC(opp,op):sportPlanFit(opp,op) }
+    if(me===S.myTeam&&typeof sportPlanFit==="function"&&!(isHotSeat()&&coachIndexOf(opp)>=0)){ const op=cpuPlanOf(opp,hm?-d:d); if(op!=="balanced")x-=(typeof sportPlanFitC==="function"?sportPlanFitC(opp,op):sportPlanFit(opp,op))+(ENGINE_V>=15&&typeof sportPlanShift==="function"?sportPlanShift(op,hm?-d:d):0) }   // round 92: and that plan's own worth at their gap, as cpuPlanOf weighs it (an outgunned club taking risks: the chance read 81% where the engine won 70%)
     return x }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
 }
