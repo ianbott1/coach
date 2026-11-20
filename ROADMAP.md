@@ -126,6 +126,16 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 92 (done)
+- Club styles come from rosters (engine 15, all seven): each club's usual offense, system, approach or defense is the one
+  its opening roster leans to (a flat roster keeps the old hash between its top two). The scouting report shows their
+  roster's ranks; its best rank names the usual style for about nine clubs in ten, though the night still varies.
+- Football's reads tied to your roster: a right answer is worth more when your offense suits it, the same on average.
+- League levels unchanged within noise in all seven.
+- Next: computer clubs draft, sign and trade for fit (its own round); per-attribute ceilings and breakouts; a kicker
+  slot. Watch: the roster line makes the usual style easy to read (the report's favourite was right about two times in
+  three before); football home wins a point low; soccer draws a point high.
+
 ## Round 91 (done)
 - Football engine 14 (college and pro): the attributes play. A team's shape moves its drives: Arm and Speed score
   touchdowns, Accuracy and Hands keep the ball and the drive going, Blocking gets stalled drives into field-goal range,

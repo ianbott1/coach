@@ -358,6 +358,39 @@ Round 38: decided games, and the basketball list (Grokbot):
   headline and replay figures from one set of replays; a team stats line on
   phones; a season story page with kept box scores.
 
+Round 92: club styles from rosters (engine 15, all seven). Design addition agreed in "Player attributes: design".
+- Each club's usual style (basketball's offense, hockey's system, soccer's approach, baseball's hitters, football's
+  defense) comes from its opening roster, not a hash of its name and the year (Ian: the roster's lean, near-ties kept on
+  the hash). core 93_attrs styleTable, made once in the Season constructor from its copy of the rosters (after
+  attrSync), kept off the save (SEA._styles): each sport scores its styles from the shape the engine reads
+  (sportStyleScores: basketball threes Shooting, paint Finishing+Rebounding, pick-and-roll Playmaking; hockey forecheck
+  Skating+Checking, trap Defence, cycle Passing; soccer press Stamina+Tackling, low block Positioning, flanks Pace, direct
+  Heading; baseball the nine regulars' Power, Eye, Contact by position weight; football blitz Pass rush, shell Coverage,
+  box Strength+Tackling), each taken against the league that season (z), and a club plays the style it leans to most;
+  top two within STYLE_TIE (0.25 of a spread) keep the old hash between those two. clubStyle/clubScheme read the table
+  (rosterStyle) and otherwise the hash, so engine-14 seasons are untouched. Fixed as the season opens: a trade doesn't
+  change it, a reload draws the same.
+- The scouting report's line on their roster (Ian: one line; styleRosterLine): each style's attributes ranked in the
+  league as the season opened ("Their roster, as the season opened: Strength and Tackling 3rd, Pass rush 24th, Coverage
+  28th of 32. Clubs play to their rosters."), in all five report screens. Measured (test/styles.js, four seeds): the
+  line's best rank names the club's usual style for 81-97% of clubs. The night still varies: the usual style shows
+  about two nights in three (favW), as before.
+- Football's reads tied to the roster (Ian: round 91's deferral): a right answer is worth more when your offense suits
+  it (quick passes Accuracy, the run Blocking+Strength, shots downfield Arm+Speed), 1 + 0.3 a spread against the league
+  as the season opened (FBR, fbReadFit; gameCtx fbn from styleTable's norms), held to 0.5-1.5. Across the league it
+  averages 0.985-1.006 by answer; a wrong answer costs what it did.
+- League levels, engine 14 against 15 (scratch r92 level.js, computer-only seasons; basketball pro, hockey, soccer, pro
+  football six seeds x four seasons, the rest three x four): baseball, college and pro football identical (their styles
+  touch only games against a person); pro basketball 227.5 points (227.5), home 59.5% (59.8), favourites 64.6% (65.1),
+  wins sd 11.5 (11.8); college basketball 143.9 (144.0), home 61.0% (60.7), favourites 67.6% (67.6); hockey 6.17 goals
+  (6.14), overtime 24.1% (24.6), favourites 55.8% (55.5), wins sd 7.7 (7.5); soccer 2.67 (2.67), draws 28.6% (28.3),
+  home 43.0% (42.9). All within noise; no retune.
+- Control: an engine-14 build of this round matches round 91's fast goldens exactly in all seven. At 15 every game's
+  goldens move: computer games where styles play (basketball, hockey, soccer), and your own games everywhere (the
+  opponent's style; football's read fit). engine-replay now replays engine 14 (round 91, a2b6b14).
+- Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
+  habit stays on the hash; a kicker.
+
 Round 91: football's attributes play (engine 14, college and pro). Design addition agreed in "Player attributes: design".
 - The drive engine plays a drive as one roll (touchdown, field goal, turnover, stall) with the spot a stalled drive dies;
   there are no plays, so no separate pass and run. A team's shape (50_drives fbShapeOf, through gameCtx sh): each
