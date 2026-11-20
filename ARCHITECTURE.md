@@ -407,6 +407,45 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 93: trust fixes from the November 20 reviews (engine 16 where a game's own play or credit moves; ENGINE_NOW 16).
+- A game is recorded only once its engine has finished (core finishLive drains it if not, and warns); held headers name
+  the moment shown; basketball clips name their moment inside the stretch (segMoment: "End of Q4" sat on clips from
+  84-94 of a 105-106 game). College basketball's false final: not reproduced in 155 live games; the guard is the cover.
+- Career games: banking a season added its games twice (addStats counts a game); every season in all seven read one
+  game too many. Banked by summing the season's numbers; old careers repaired once on load (carFix).
+- Hockey (engine 16): every goal has a scorer. The quarter round 90 left to "the fourth line" goes to the dressed men,
+  flat, a man behind the starters three times a starter (star-weighted, one backup scored 91; backups alone let
+  50-rated men lead). Leaders measured (scratch r90/reg.js, four seeds x two): goals 51-68, mean 60 (round 90: 55, band
+  45-57), points 94-122, mean 110 (95-112). Above the goals band: the roster carries ten skaters where a club dresses
+  eighteen, so the bottom six's goals land on them. Put to Ian as a decision. boxscore checks every goal is named.
+- Basketball (engine 16): a decided stretch, or one after you rest your starters, names the bench in the run of play,
+  the box and the clips (segment bn; regressions 89 checks the names after a rest).
+- Football: "Fourth and goal" in the call when the line to gain is past the goal line (engine 16; drive notes keep the
+  distance: a converted fourth and goal would read as nonsense). The onside call and Pearl count the possessions left:
+  none left for you, the onside kick is the way back; two scores needed with one possession, the same. Up 7, a
+  touchdown ties it; up 8, a touchdown and a two-point try.
+- Baseball (engine 16): a postseason series opens with the ace and turns four (spCtx from the phase's game number); the
+  regular season is untouched (bs-calibrate and bs-players identical to engine 15). The staff card shows ceilings and
+  lets you feature a top-four arm (Two deep already could).
+- Tried and taken out: productive grounders (runners up a base, the man on third home, 0.13 runs a side a game). Every
+  way of putting the run level back (the level, an edge scale, fewer sac flies) left bs-calibrate or bs-players a tenth
+  past an edge on their fixed seeds, the seasons swinging 106-114 best records on dice alone (16 seeds: 108 vs 111, inside
+  noise; the favourite's rate by gap matched engine 15). Needs multi-seed season checks first.
+- Not built: naming every bullpen inning (1.3 innings a side a game go to "Bullpen"; the roster carries two relievers
+  and a closer, so naming them would put 100+ more innings on each: needs real bullpen slots).
+- Reads: an in-game read that answers the style tonight's numbers fit best (dp.best, from the counts the call shows)
+  is never marked wrong: "Right read: they surprised you", not counted. One rule (readGraded) for the season's tally,
+  the month's and the repair: the month counted reads the season didn't (hockey's 17 of 23 by month against 12 of 16).
+- Help: the chance includes your plan (measured on the hub: pro football 30/34/44 by plan, hockey 26-32, college
+  basketball 84-87); the glossary and hub note said it didn't. The attribute page no longer says the 1-20s make up the
+  rating by eye.
+- Soccer's roster line ranks a club in its own division ("of 24 in their division"; the pyramid's 164 read as noise);
+  its best rank names the club's style for 85% of clubs. Contract rows (all five pro games) decide on their own button.
+- Not reproduced: pro football's second round labelled WILD CARD and the board objective staying up (both right after
+  a wild-card win and after a reload, scratch r93/nflwc.js).
+- Control: this build at ENGINE_NOW=15 matches round 92's fast goldens in games and records in all seven; screens differ
+  (the help text, the staff card, the read lines). engine-replay replays engine 15 (round 92, e8f58c2).
+
 Round 91: football's attributes play (engine 14, college and pro). Design addition agreed in "Player attributes: design".
 - The drive engine plays a drive as one roll (touchdown, field goal, turnover, stall) with the spot a stalled drive dies;
   there are no plays, so no separate pass and run. A team's shape (50_drives fbShapeOf, through gameCtx sh): each
