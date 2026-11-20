@@ -1,5 +1,5 @@
 {
- "fp": "3d608e259f148729",
+ "fp": "45dfdb495347726b",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -100,6 +100,11 @@
    "fp": "3d608e259f148729",
    "from": "27341bfa2106eb70",
    "note": "Round 87: engine 10, baseball's attributes play (Power/Contact/Eye, Stuff/Control/Stamina, Fielding, Speed/Arm). An engine-9 build of round 87 matches round 86 field by field apart from screens"
+  },
+  {
+   "fp": "45dfdb495347726b",
+   "from": "3d608e259f148729",
+   "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
   }
  ],
  "out": [
@@ -109,20 +114,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "79-83",
+      "rec": "80-82",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "5dcf0c963afad67c"
+     "book": "9ec528da9f4493ba"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "78-84",
+      "rec": "73-89",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "4385b90ade90cdea"
+     "book": "0e56c0628d0e00b9"
     }
    ]
   },
@@ -132,20 +137,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "58-104",
+      "rec": "73-89",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "cac82cdf9ec64399"
+     "book": "679befe38978de7f"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "86-76",
-      "result": "Missed the postseason",
-      "grade": "B"
+      "rec": "87-75",
+      "result": "WORLD SERIES CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "f546bcdbe57ede7c"
+     "book": "c92962a65f2fb822"
     }
    ]
   }

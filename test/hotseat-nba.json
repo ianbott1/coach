@@ -1,5 +1,5 @@
 {
- "fp": "feaa928dd7e4743e",
+ "fp": "5d5ec983b2fbadfe",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -300,6 +300,11 @@
    "fp": "feaa928dd7e4743e",
    "from": "d5aebb31af70dac1",
    "note": "round 89: engine 12 (hockey and soccer attributes play; computer clubs pick a plan for their roster in basketball, hockey and soccer; the engine stamp in every universe)"
+  },
+  {
+   "fp": "5d5ec983b2fbadfe",
+   "from": "feaa928dd7e4743e",
+   "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
   }
  ],
  "out": [
@@ -309,20 +314,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-44",
-      "result": "Lost in the play-in",
-      "grade": "C-"
+      "rec": "46-36",
+      "result": "Lost in the first round",
+      "grade": "B-"
      },
-     "book": "e9f3ae3b35a858de"
+     "book": "960ccbccdf061376"
     },
     {
      "team": "New York",
      "last": {
       "rec": "43-39",
-      "result": "Lost in the conference finals",
-      "grade": "B"
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "1661fbf81ca648b5"
+     "book": "9263462e2224ee5d"
     }
    ]
   },
@@ -332,20 +337,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "39-43",
-      "result": "Lost in the play-in",
-      "grade": "C-"
+      "rec": "18-64",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "a7c18daa3ebd1570"
+     "book": "88a84c3dcb1d6d45"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "47-35",
-      "result": "Lost in the NBA Finals",
-      "grade": "A-"
+      "rec": "38-44",
+      "result": "Lost in the play-in",
+      "grade": "C-"
      },
-     "book": "07f41ec8cfa4417b"
+     "book": "85a4a05e9994c0aa"
     }
    ]
   },
@@ -359,16 +364,16 @@
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "b39098dee7e9a859"
+     "book": "ca9792a9c6870698"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "52-30",
-      "result": "Lost in the conference semifinals",
-      "grade": "B+"
+      "rec": "43-39",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "6b608ceeaa007c31"
+     "book": "d890946494688587"
     }
    ]
   }

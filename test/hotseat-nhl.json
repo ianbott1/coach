@@ -1,5 +1,5 @@
 {
- "fp": "2138fe59caf20c09",
+ "fp": "2abce1ade03eb2dc",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -320,6 +320,11 @@
    "fp": "2138fe59caf20c09",
    "from": "3ca5c62d05917868",
    "note": "round 90, engine 13: hockey's credit moves the lines (records and results as round 89)"
+  },
+  {
+   "fp": "2abce1ade03eb2dc",
+   "from": "2138fe59caf20c09",
+   "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
   }
  ],
  "out": [
@@ -329,20 +334,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-31-10",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "45-30-9",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "d682f41d02af7f4c"
+     "book": "96f84c16814a3899"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "50-26-8",
-      "result": "Lost in the Stanley Cup Final",
-      "grade": "A+"
+      "rec": "48-26-10",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "d0b3c9a846926ff9"
+     "book": "63285513d893ec18"
     }
    ]
   },
@@ -352,20 +357,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-40-13",
+      "rec": "34-36-14",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "82320b95b5d18742"
+     "book": "dfeb3f31bc51a8d9"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "48-26-10",
-      "result": "Lost in the second round",
-      "grade": "A-"
+      "rec": "49-28-7",
+      "result": "Lost in the conference final",
+      "grade": "A"
      },
-     "book": "1f1092b0cf405401"
+     "book": "3db709ef52fc340f"
     }
    ]
   },
@@ -375,20 +380,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-33-8",
-      "result": "Missed the playoffs",
-      "grade": "C-"
+      "rec": "41-33-10",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "fdda03fc0815fd21"
+     "book": "1f5eb834b2c51a2e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "47-26-11",
-      "result": "Lost in the first round",
-      "grade": "A-"
+      "rec": "41-32-11",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "00b4a240b1bdee63"
+     "book": "616cb37270e731fd"
     }
    ]
   }

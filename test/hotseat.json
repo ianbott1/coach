@@ -1,5 +1,5 @@
 {
- "fp": "b823c19d9fa12ec2",
+ "fp": "3a094e06ed731a82",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -330,6 +330,11 @@
    "fp": "b823c19d9fa12ec2",
    "from": "3d3127fea1f45419",
    "note": "Round 91 (engine 14): football's attributes play"
+  },
+  {
+   "fp": "3a094e06ed731a82",
+   "from": "b823c19d9fa12ec2",
+   "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
   }
  ],
  "out": [
@@ -339,20 +344,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Alamo Bowl",
-      "grade": "C-"
+      "rec": "9-4",
+      "result": "Eliminated in the first round",
+      "grade": "C+"
      },
-     "book": "bff0389d1cb06ffb"
+     "book": "bf19de1b2b216555"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "1-11",
+      "rec": "2-10",
       "result": "No bowl game",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "fa116514834e4ae7"
+     "book": "6c2d38fc4eeff474"
     }
    ]
   },
@@ -362,20 +367,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Las Vegas Bowl",
+      "rec": "9-4",
+      "result": "Lost the Citrus Bowl",
       "grade": "C"
      },
-     "book": "f8d634cc13319e16"
+     "book": "a1fc8c864d082da1"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
-      "result": "No bowl game",
-      "grade": "C"
+      "rec": "9-4",
+      "result": "Won the Fenway Bowl",
+      "grade": "A+"
      },
-     "book": "725d15068ea4c5d0"
+     "book": "01998ebd6f0cfbd2"
     }
    ]
   },
@@ -385,20 +390,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Duke's Mayo Bowl",
+      "rec": "10-5",
+      "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "be86d4379a020609"
+     "book": "fe6b3f11f5f9734f"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "682120e2f86739dd"
+     "book": "4220c500ce602f94"
     }
    ]
   }
