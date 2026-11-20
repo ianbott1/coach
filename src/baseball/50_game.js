@@ -394,7 +394,10 @@ function sportStyleScores(R){ const o={pull:0,patient:0,contact:0}; if(!R||typeo
 /* the day's starters: the rotation turns one a game (the fourth and fifth men are the starters' backups) */
 function spCtx(t,step){
   try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t];
-    const k=(step+strHash(t))%5, idx=k<3?BS_SP[k]:BK(BS_SP[k-3]), p=R[idx]; if(!p)return null;
+    // round 93 (engine 16): a postseason series opens with the ace and turns four men (a tester's Game 1 went to his fifth
+    // starter); the regular season turns all five
+    const ph=ENGINE_V>=16&&typeof LEAGUE!=="undefined"&&LEAGUE.post&&LEAGUE.post.phases&&step>=LEAGUE.weeks?LEAGUE.post.phases[step-LEAGUE.weeks]:null, gk=ph?+(/g(\d+)$/.exec(ph)||[])[1]:0;
+    const k=gk?(gk-1)%4:(step+strHash(t))%5, idx=k<3?BS_SP[k]:BK(BS_SP[k-3]), p=R[idx]; if(!p)return null;
     const mean=(R[BS_SP[0]].r+R[BS_SP[1]].r+R[BS_SP[2]].r+(R[BK(BS_SP[0])]||R[BS_SP[0]]).r+(R[BK(BS_SP[1])]||R[BS_SP[1]]).r)/5;
     return {n:p.n, q:(p.r-mean)*(bsV5()?BS5.q:0.012)} }catch(e){ return null } }
 function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
