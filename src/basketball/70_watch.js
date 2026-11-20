@@ -16,6 +16,12 @@ function isBigGame(g,team,seaRankMap,rivalName){
   return false;
 }
 /* where the clock stands after segment s: "1st 15:00" ... "2nd 0:00", or OT */
+/* round 93: a moment inside stretch s, frac of the way through it (0..1): the game clock as a header shows it */
+function segMoment(s,frac){ if(s==="last")return "0:04"; const span=BB.quarters?6:5, f=Math.max(0.05,Math.min(0.95,frac||0.5));
+  const mm=x=>{ const t=Math.round(x*60), m=Math.floor(t/60), sec=t%60; return m+":"+(sec<10?"0":"")+sec };
+  if(s>=8)return "OT"+(s-7>1?(s-7):"")+" "+mm(5*(1-f));
+  if(BB.quarters){ const q=Math.floor(s/2)+1, start=s%2?6:12; return "Q"+q+" "+mm(start-6*f) }
+  const half=s<4?"1st":"2nd", start=20-5*(s%4); return half+" "+mm(start-5*f) }
 function segClock(s){
   if(s==="last")return "0:02";
   if(s>=8)return "OT"+(s-7>1?(s-7):"");

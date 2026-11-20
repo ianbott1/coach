@@ -156,7 +156,7 @@ function liveTick(){
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
     // was never handed back one stretch at a time: a played 3-4 overtime loss was recorded and replayed as
     // 3-3 at 54 minutes (Instinct)
-    if(r.done){ const k0=live.drives.length; syncTail(r);
+    if(r.done){ live.engDone=true; const k0=live.drives.length; syncTail(r);
       // round 67: overtime and a shoot-out are in the tail the engine hands back at the end; their highlights play
       // before the final whistle (Ian: a 5-4 shoot-out win he never saw)
       // the screen may still be the overtime call, with no pitch: the live view is drawn first, the score held
@@ -254,6 +254,15 @@ let liveEndedAt=0;
 function finishLive(){ liveEndedAt=Date.now();
   if(view!=="team"&&view!=="scores")view="team";   // the result card lives on the team page: a game started from Dynasty ended there, with no card (Grokbot)
   if(live.finished)return;                  // once per game, however it's reached
+  // round 93: a game is recorded only once its engine has finished. Muse saw college basketball's season-end card at
+  // 65-71 while the game was tied, and it then went to four overtimes (not reproduced in 155 live games); whatever
+  // reaches here early, the rest is played out first (the remaining calls your assistant's, as Skip leaves them)
+  if(!live.engDone){ if(live.tailQ){ while(live.tailQ.length)live.drives.push(live.tailQ.shift()); live.tailQ=null; live.tailShow=null }
+    let guard=0; while(guard++<4000){ const r=live.eng.next(); if(r.done){ syncTail(r); break }
+      if(r.ask){ const v=r.ask.opts[r.ask.opts.length-1][0]; live.eng.reply(v); S.calls=S.calls||{}; const k=live.ckey||callKey(live.step);
+        S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([(S.calls[k]||[]).length]); S.calls[k]=(S.calls[k]||[]).concat([v]); continue }
+      if(r.drive)live.drives.push(r.drive) }
+    live.engDone=true; live.done=true; if(typeof console!=="undefined")console.warn("finishLive before the final whistle: played out") }
   live.finished=true;
   const g=live.g;
   feelFinal(live);
@@ -371,7 +380,7 @@ function endLive(){
     let guard=0;
     while(guard++<400){
       const r=live.eng.next();
-      if(r.done){ syncTail(r); break }
+      if(r.done){ live.engDone=true; syncTail(r); break }
       // a skipped game's remaining calls take the neutral option (the last:
       // stay the course, play it straight), not the aggressive first one
       // your assistant's, and not graded as yours (Grokbot: a skipped read was graded on the card)

@@ -17,7 +17,8 @@ const HL_SPORT=(function(){
     if(!ev.length)return out;
     // the stretch's moment: the last side to score big, its draw picking which
     const e=ev[(ev.length-1+((ev[0].u||0)%2))%ev.length];
-    out.push(mk(L,Object.assign({},e,{m:segClock(d.seg)}),d));
+    const all2=d.ev||[], pos=(all2.indexOf(e)+1)/(all2.length+1);
+    out.push(mk(L,Object.assign({},e,{m:segMoment(d.seg,pos)}),d));   // round 93: the moment inside its stretch (every clip read the stretch's end: "End of Q4" at 84-94 of a 105-106 game)
     return out;
   }
   function mk(L,e,d){

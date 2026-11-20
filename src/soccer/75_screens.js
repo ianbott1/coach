@@ -141,8 +141,8 @@ function scoreTop(g,H,A,label,cls){
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
-  const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"KICK-OFF":esc(segLabel(last))}
+  const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"KICK-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):g.title?" &middot; "+esc(g.title)+(g.neutral?"":(g.home===my?", at home":", away")):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives)+`</div>`;
 }

@@ -94,8 +94,8 @@ function lineScore(g,drives,now){
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
-  const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"FIRST PITCH":"After the "+esc(segLabel(last))}
+  const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"FIRST PITCH":"After the "+esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab,"",lineScore(g,live.drives,{h:H,a:A}));
 }
