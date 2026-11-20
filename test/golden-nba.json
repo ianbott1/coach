@@ -1,5 +1,5 @@
 {
- "fp": "7098539e3a32ed8b",
+ "fp": "b6c224cec3291aca",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -505,6 +505,11 @@
    "fp": "7098539e3a32ed8b",
    "from": "3dab86698d327f2e",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "b6c224cec3291aca",
+   "from": "7098539e3a32ed8b",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -517,7 +522,7 @@
     "rec": "405be4d944391813",
     "poll": "add7dd1a0aac66b7",
     "heis": "2e72ff9c0de373c3",
-    "history": "d6f5bdf01988abf5",
+    "history": "4659872ec09e81a5",
     "universe": "f33a5b12ae8b97e1",
     "screens": "a9419101b769ef85"
    },
@@ -531,7 +536,7 @@
     "heis": "ff05d9be0d818f01",
     "history": "fb73b88581444424",
     "universe": "8e122a2128158222",
-    "screens": "e308a6ce3a030276"
+    "screens": "8bac90f737a06094"
    }
   ],
   "Detroit#777": [
@@ -543,9 +548,9 @@
     "rec": "72ec5bcc3481fdd2",
     "poll": "b0aa4188c55d7e1c",
     "heis": "0741786ae691fa38",
-    "history": "3d938fc6990fd2fd",
+    "history": "dccfb3df065bfe86",
     "universe": "dc8787f6a713a7fa",
-    "screens": "8d421c2da5c8311e"
+    "screens": "dfc84a96e2d924df"
    },
    {
     "year": 2027,

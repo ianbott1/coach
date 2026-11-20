@@ -1,5 +1,5 @@
 {
- "fp": "e4173bb024478e48",
+ "fp": "07beabd11e9a8b8a",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -554,6 +554,11 @@
    "fp": "e4173bb024478e48",
    "from": "ffd4e55771a07c3d",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "07beabd11e9a8b8a",
+   "from": "e4173bb024478e48",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -568,7 +573,7 @@
     "heis": "fe3b844ea8ac8986",
     "history": "1184cd714f342f34",
     "universe": "a3543718832a7a69",
-    "screens": "fc6f3d426b33a604"
+    "screens": "a1fab840b616c271"
    },
    {
     "year": 2027,
@@ -578,9 +583,9 @@
     "rec": "9bee311baf360ea7",
     "poll": "3514a7f9f020d216",
     "heis": "0fe82ce9b5360e94",
-    "history": "c031e6f9d229e218",
+    "history": "b0f6957cbdfb7216",
     "universe": "18e6f4f3ee4fc28d",
-    "screens": "7e7c12810bca3090"
+    "screens": "1e3547d3da751751"
    },
    {
     "year": 2028,
@@ -590,9 +595,9 @@
     "rec": "4d2eefe61f91f851",
     "poll": "aeaf1bb3520a1a8e",
     "heis": "8f1782294fbd750e",
-    "history": "a21f10991684417c",
+    "history": "dd0eb059da9d3c8b",
     "universe": "493237178878f7d9",
-    "screens": "c3ceeab18e3ba0c9"
+    "screens": "1e054d6647a343d7"
    },
    {
     "year": 2029,
@@ -604,7 +609,7 @@
     "heis": "3c71c66cb97b91ed",
     "history": "0ae318bd837fe666",
     "universe": "d6d22628d9517e87",
-    "screens": "5b1f69c58034ee16"
+    "screens": "3cddbb7ecfe6438c"
    }
   ],
   "Rice#2024": [
@@ -618,7 +623,7 @@
     "heis": "fdaea235b197e911",
     "history": "29dc6f5998deb1a5",
     "universe": "f979a930241c970a",
-    "screens": "00754f3a7bfbd0aa"
+    "screens": "1630b2028ce240e8"
    },
    {
     "year": 2027,
@@ -628,7 +633,7 @@
     "rec": "8d83b5ca907d26ec",
     "poll": "ba952223ac1a3470",
     "heis": "71dda2364541b9ad",
-    "history": "8434b87d2f34cc09",
+    "history": "57a5baaa14fcc3ca",
     "universe": "2add27401590fd68",
     "screens": "d6169d70462ed113"
    },
@@ -640,9 +645,9 @@
     "rec": "c0d24896d67b2c52",
     "poll": "0464f200734f4822",
     "heis": "8b4d9bb63ee6c16b",
-    "history": "f680d1fa9df5120a",
+    "history": "dd127abaa5b7389a",
     "universe": "460ad126e4c4b3ea",
-    "screens": "ef97f01cbf94dccd"
+    "screens": "1967e5f2870c7656"
    },
    {
     "year": 2029,
@@ -654,7 +659,7 @@
     "heis": "ba0f94c904953f4a",
     "history": "7c78e52c859dc7a7",
     "universe": "5f7302305c2cb8c3",
-    "screens": "62fc9ff98bd676b7"
+    "screens": "6bd567449747405d"
    }
   ],
   "Oregon#777": [
@@ -668,7 +673,7 @@
     "heis": "d705f7994043877a",
     "history": "21afdc2284ff393d",
     "universe": "11e1c16fabe6d087",
-    "screens": "fe05b4590c111ebe"
+    "screens": "cda9db8d9a84b883"
    },
    {
     "year": 2027,
@@ -678,9 +683,9 @@
     "rec": "0015e173eb2f72eb",
     "poll": "03a5fcf59aa36fc1",
     "heis": "56d54490e9ae167d",
-    "history": "b5e2a4468f97916f",
+    "history": "3f81e39bab239596",
     "universe": "38c2fcbf0e85e220",
-    "screens": "1c8e8d404bd612f7"
+    "screens": "cb12730e5135f8c5"
    },
    {
     "year": 2028,
@@ -692,7 +697,7 @@
     "heis": "5259580ae5bc1fbf",
     "history": "8f6f7033bb76665b",
     "universe": "29e220ab1c8369ea",
-    "screens": "bbeb9cd81489c723"
+    "screens": "7165bb3b130954ea"
    }
   ],
   "Kent State#31337": [
@@ -704,7 +709,7 @@
     "rec": "3587f0b53a34a520",
     "poll": "4d3ce5db4c54faa7",
     "heis": "8d1e53cf7fe78dac",
-    "history": "ac8762463bf7f8d2",
+    "history": "70f2c157f793525d",
     "universe": "e3f9c9de0afb4985",
     "screens": "8017362232ff998d"
    },
@@ -716,7 +721,7 @@
     "rec": "b168d19a275ec7f8",
     "poll": "188b5de8e7996cd7",
     "heis": "4c846c72e8385e61",
-    "history": "a10f81d75d781bd5",
+    "history": "c610d9165bbbd65b",
     "universe": "db921073fbeb5b12",
     "screens": "d2b624843a8ca90c"
    },
@@ -730,7 +735,7 @@
     "heis": "9ba1b362317e6372",
     "history": "40f1875578d72354",
     "universe": "4fc572d97b222a4b",
-    "screens": "8fee4c93dc05cddf"
+    "screens": "8c3de1f11247c227"
    }
   ],
   "schedules#60": [

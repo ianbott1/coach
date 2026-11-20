@@ -1,5 +1,5 @@
 {
- "fp": "7adb38dded49f7c1",
+ "fp": "144bb6b1835c4fe4",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -530,6 +530,11 @@
    "fp": "7adb38dded49f7c1",
    "from": "6e937316ef1c3c37",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "144bb6b1835c4fe4",
+   "from": "7adb38dded49f7c1",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -542,7 +547,7 @@
     "rec": "104b3096641d19c3",
     "poll": "4bc3c7a768f80a03",
     "heis": "e68426346440a7dc",
-    "history": "cfe78f1accc46ed5",
+    "history": "623155bf99bc006f",
     "universe": "29f584c2d60aae93",
     "screens": "59acd2537d4fe27c"
    },
@@ -554,9 +559,9 @@
     "rec": "2c9d21b1c19b7715",
     "poll": "fb8d51938af00435",
     "heis": "cb8877db3b230a9e",
-    "history": "7ba01e4204275c5c",
+    "history": "2d51673971cbf59f",
     "universe": "e25117fb1119a2bb",
-    "screens": "ebdcda65bd347f97"
+    "screens": "18c8d66acb8944a1"
    }
   ],
   "Coppin State#2024": [
@@ -568,9 +573,9 @@
     "rec": "0184404fdba6d3a0",
     "poll": "9950b081db0e3f3d",
     "heis": "3909cdf8f023514e",
-    "history": "a5a7905df2894bbc",
+    "history": "0dafda258815473c",
     "universe": "b0913df932a86903",
-    "screens": "719a564a8cac8edb"
+    "screens": "5a468bce4f4afd1f"
    },
    {
     "year": 2027,
@@ -582,7 +587,7 @@
     "heis": "ac3673da9804e0c6",
     "history": "11a66939686e2214",
     "universe": "e6ada64aa41a3c57",
-    "screens": "ae1477d4974d8fb5"
+    "screens": "381c42f8caed4c20"
    }
   ],
   "Gonzaga#777": [
@@ -596,7 +601,7 @@
     "heis": "4f6330961317fe74",
     "history": "587f4a9436ff7034",
     "universe": "54db3ab50c9f242e",
-    "screens": "bb48b9a94823e628"
+    "screens": "30ab2fa0d9690d7c"
    },
    {
     "year": 2027,
@@ -606,9 +611,9 @@
     "rec": "dfcf7e5c0085ff26",
     "poll": "f76e5f22b76e475b",
     "heis": "baadbeb97d360284",
-    "history": "bf07256d1b243937",
+    "history": "6d0db1805f5a0154",
     "universe": "e8c66cac2f4f5e74",
-    "screens": "754eb50f6acc1ecf"
+    "screens": "69e5fe6a1bc9b223"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "54c34d1c1f3e8c0c",
+ "fp": "cd11941faa319794",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -520,6 +520,11 @@
    "fp": "54c34d1c1f3e8c0c",
    "from": "cadb2575a68d16c8",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "cd11941faa319794",
+   "from": "54c34d1c1f3e8c0c",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -532,9 +537,9 @@
     "rec": "55a0011909aa30d9",
     "poll": "68a648891f520e55",
     "heis": "8bf90a5ec934f0ed",
-    "history": "975a40338827001b",
+    "history": "4f2ca04aa4ad79ca",
     "universe": "cbfb329d916b2b7e",
-    "screens": "848525589f2f5bf0"
+    "screens": "3de2328930e49aed"
    },
    {
     "year": 2027,
@@ -546,7 +551,7 @@
     "heis": "fa20d195f26cfe06",
     "history": "6f4d68bc755264e9",
     "universe": "01435c9de3102a89",
-    "screens": "9e59f3c8c5ddac43"
+    "screens": "1091130093546bde"
    }
   ],
   "Edmonton#777": [
@@ -560,7 +565,7 @@
     "heis": "73fa0ad3d24f8f05",
     "history": "750fc294f69f3c05",
     "universe": "e628133ac36eab99",
-    "screens": "e3e12b018a6be840"
+    "screens": "f991117c8ee78662"
    },
    {
     "year": 2027,
@@ -572,7 +577,7 @@
     "heis": "b9d68a50dff3e64a",
     "history": "aa2ef07033a5d921",
     "universe": "8e55bcabc7518785",
-    "screens": "10985273a62f6de6"
+    "screens": "e65c75cbaa569647"
    }
   ],
   "schedules#60": [

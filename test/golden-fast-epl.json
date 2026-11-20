@@ -1,5 +1,5 @@
 {
- "fp": "a1657327598e06e9",
+ "fp": "49d81e765ce267d3",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -55,6 +55,11 @@
    "fp": "a1657327598e06e9",
    "from": "6ff03e6c7d0acaf9",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "49d81e765ce267d3",
+   "from": "a1657327598e06e9",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -69,7 +74,7 @@
     "heis": "7cde9b9934ac38c8",
     "history": "e0ec124f750879e1",
     "universe": "e089db4d5b4facf1",
-    "screens": "4f2afca507d8bd42"
+    "screens": "e8f69d4ab6e4052a"
    }
   ]
  }

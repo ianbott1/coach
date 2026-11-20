@@ -1,5 +1,5 @@
 {
- "fp": "64eaf59e1f4f064d",
+ "fp": "1512fdee0b6bb4b3",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -580,6 +580,11 @@
    "fp": "64eaf59e1f4f064d",
    "from": "b2275b7f56cd0ae3",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "1512fdee0b6bb4b3",
+   "from": "64eaf59e1f4f064d",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -592,9 +597,9 @@
     "rec": "d007a16a00f65e61",
     "poll": "51e8803471f58e5b",
     "heis": "d4811c96ea805499",
-    "history": "cc32264a47f41afc",
+    "history": "3538815ad928cc42",
     "universe": "fcbdf51236b78d50",
-    "screens": "adfff21d88019273"
+    "screens": "b2b0856789c74044"
    },
    {
     "year": 2027,
@@ -606,7 +611,7 @@
     "heis": "f35ce2ef0417c70d",
     "history": "a2c9178082f79322",
     "universe": "6a56684b5fee862b",
-    "screens": "2dfc40372c51d0e1"
+    "screens": "bbbe0cddc90b94a4"
    },
    {
     "year": 2028,
@@ -618,7 +623,7 @@
     "heis": "37c267e86f8c60b7",
     "history": "39aa352199393409",
     "universe": "1b56ccc44ddad226",
-    "screens": "ae6e856e13f2843f"
+    "screens": "48a3b4b451bc91bc"
    },
    {
     "year": 2029,
@@ -630,7 +635,7 @@
     "heis": "bbcf9ac5518882ed",
     "history": "0d582f4fa0f7c164",
     "universe": "71b7e70c36924c75",
-    "screens": "4c996a01a41cbb30"
+    "screens": "e4576102def61cd9"
    }
   ],
   "Tennessee#2024": [
@@ -644,7 +649,7 @@
     "heis": "4bff4545f3a0465b",
     "history": "95baccd0d6e4e455",
     "universe": "58e8388d43551e86",
-    "screens": "a5314987bfa61dd2"
+    "screens": "3c18a366446d1dd3"
    },
    {
     "year": 2027,
@@ -656,7 +661,7 @@
     "heis": "34a9ec74339188ad",
     "history": "df1337ead148d448",
     "universe": "b4717dd8c11f436d",
-    "screens": "5f62fad26a81b0bc"
+    "screens": "983f0860ba27411a"
    },
    {
     "year": 2028,
@@ -666,9 +671,9 @@
     "rec": "a1dba262813c1fdd",
     "poll": "481a6a4cc6c3317a",
     "heis": "76f651ff7a09d0b8",
-    "history": "e0d779103b2591e0",
+    "history": "b494e4e7f68e5176",
     "universe": "cb5f9cff2b955d6a",
-    "screens": "208ba063b2a58fb6"
+    "screens": "d227de415f48fc86"
    },
    {
     "year": 2029,
@@ -678,9 +683,9 @@
     "rec": "139409a73310bdf3",
     "poll": "b15181399f3cce1e",
     "heis": "78e3c87a2cc9debd",
-    "history": "2261f31c01e78a48",
+    "history": "b6c1e8603e347ff0",
     "universe": "a8f0eb97728ef0a0",
-    "screens": "eb31d63fd2f1a961"
+    "screens": "845c553d9c3ac016"
    }
   ],
   "Detroit#777": [
@@ -694,7 +699,7 @@
     "heis": "053b5464d2ef7fed",
     "history": "27806e8828791efb",
     "universe": "91b241b1483a8860",
-    "screens": "930ed14e48792a74"
+    "screens": "3b08892d2d6903aa"
    },
    {
     "year": 2027,
@@ -706,7 +711,7 @@
     "heis": "971394d1aaf45174",
     "history": "e92b71bc260d447a",
     "universe": "8c5aae40267d04d3",
-    "screens": "d22c8279ce89e5ab"
+    "screens": "a150198745d4a654"
    },
    {
     "year": 2028,
@@ -716,9 +721,9 @@
     "rec": "eba752a1f6b03984",
     "poll": "bfeca2576c03f09f",
     "heis": "c72199be24cd35c5",
-    "history": "ab1acd9633cb9e23",
+    "history": "6a36171956d827ef",
     "universe": "8e58dc99531b9de1",
-    "screens": "89e345fbd90cef3d"
+    "screens": "0ffb4590872db5ec"
    }
   ],
   "NY Giants#31337": [
@@ -756,7 +761,7 @@
     "heis": "4e0a243c2c89fbb6",
     "history": "1ddd358a956bc6df",
     "universe": "2d4bfc6476f0a57c",
-    "screens": "371d19addbf41de8"
+    "screens": "4412720b6a550371"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "d27a05c78752daf1",
+ "fp": "67b3ddf02167831e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -500,6 +500,11 @@
    "fp": "d27a05c78752daf1",
    "from": "075aa63b3448d26c",
    "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
+  },
+  {
+   "fp": "67b3ddf02167831e",
+   "from": "d27a05c78752daf1",
+   "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
   }
  ],
  "result": {
@@ -514,7 +519,7 @@
     "heis": "7cde9b9934ac38c8",
     "history": "e0ec124f750879e1",
     "universe": "e089db4d5b4facf1",
-    "screens": "4f2afca507d8bd42"
+    "screens": "e8f69d4ab6e4052a"
    },
    {
     "year": 2027,
@@ -526,7 +531,7 @@
     "heis": "39c5f4741d06d03f",
     "history": "e66388864663a800",
     "universe": "cabed7b2e447d8b3",
-    "screens": "5ddd8d222f87b9e6"
+    "screens": "89f500b02ecd0382"
    }
   ],
   "Wrexham#777": [
