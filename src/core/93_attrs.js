@@ -92,7 +92,7 @@ function attrGridHTML(p){
   const role=attrRole(p);
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
     <div class="attrgrid" style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px">${cols}</div>
-    <div class="fnote" style="margin:4px 0 10px">1-20 against the league. Together they make up his rating (${p.r}); ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
+    <div class="fnote" style="margin:4px 0 10px">1-20 against the league's players. His rating (${p.r}) is a weighted mix of these on the rating's own scale, so the 1-20s won't average to it by eye: they show where he leans; ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){

@@ -135,7 +135,7 @@ const LEAGUE={
        "Quarterbacks last longer."],
       ["Salary cap","A hard limit on what you pay the players who matter. Stars are expensive; "+
        "rookie contracts are the cheapest good players in the league."],
-      ["Chance to win","The game's own chance, before it starts, from the strengths it will be played with: your lineup and injuries, featuring, staff and home field. Your gameplan doesn't move it: plans change how swingy a game is, and are judged on the result card."],
+      ["Chance to win","The game's own chance, before it starts, from the strengths it will be played with: your lineup and injuries, featuring, staff and home field. Your gameplan isn't in that number: it's shown with a balanced plan, so the headline doesn't move as you try plans. The plan you pick still counts in the game: one that suits your roster adds a little to your real chance and one that doesn't takes a little away (the plan rows say which suits you), and the riskier plans make a game swingier. The result card judges the choice."],
       ["Replays (on the result card)","After a call, the rest of the game is replayed many times with each option. Each option's percentage is its own win rate from that moment, so the figures don't add up to 100: 62% and 55% means going for it won 62% of its replays and the kick won 55% of its own."],   // Muse: a card's pair summed to 162%
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."],
       ["Reputation","What other front offices think of you. It decides which jobs open up when "+
