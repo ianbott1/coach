@@ -379,8 +379,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
-    if(dp.k==="read"&&v==="keep"&&COUNTERS[X.ctr]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:X.ctr,truth:t,right:COUNTERS[X.ctr].beats===t,evid:dp.best}); return }
-    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best}) }
+    if(dp.k==="read"&&v==="keep"&&COUNTERS[X.ctr]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:X.ctr,truth:t,right:COUNTERS[X.ctr].beats===t,evid:dp.best,fe:COUNTERS[X.ctr].beats===dp.best}); return }
+    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best,fe:COUNTERS[v].beats===dp.best}) }
     // a near-even count is a coin flip: not graded (Grokbot: Left 10, Right 9, graded on the truth behind it)
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak, F=dp.flank||[0,0], near=Math.abs(F[0]-F[1])<=Math.max(1,0.12*(F[0]+F[1]));
       st.log.push({side:side,h:dp.h,k:"flank",pick:v,truth:t,right:v===t,unclear:near}) }
