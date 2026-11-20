@@ -388,6 +388,19 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Control: an engine-14 build of this round matches round 91's fast goldens exactly in all seven. At 15 every game's
   goldens move: computer games where styles play (basketball, hockey, soccer), and your own games everywhere (the
   opponent's style; football's read fit). engine-replay now replays engine 14 (round 91, a2b6b14).
+- The chance before a game (core gameEdge, engine 15): the computer opponent's plan now counts its own worth at their gap
+  (sportPlanShift, as cpuPlanOf weighs it), not only its roster fit. Found when regressions 37 was widened from one
+  pair to six opponents at several gaps: an outgunned college football club taking risks is worth up to 60+ Elo, and
+  the chance read 81% where the engine won 70% (Tulane, gap 289; 74% after). The same was true in rounds 89-91 for
+  hockey, soccer and basketball's plan picks. Engine 14 seasons keep the old rule (the control).
+- Watch (measured, not fixed): over six opponents a club's own games can run 2-2.5 points off the chance on average
+  (hockey's Vegas -2.4, pro basketball's Orlando +2.0, the same on engine 14); the curve by gap holds within a point
+  (scratch r92 curve.js) and a club's own style is worth under a point (ownstyle.js), so it is the meeting of two shapes
+  and two styles, which no plan fit carries. Across random pairs the shapes' meeting is at the noise (median 0.6-1.0
+  win points), up to 2-3.5 for strongly shaped pairs (Duke-UCLA: UCLA takes few threes, so Duke's perimeter defence
+  counts for less). Counting matchups would need the chance to simulate the game: a later round's question.
+- Tests: test/styles.js (quick tier); regressions 37 over six opponents (mean within 3, each within 7); engine-replay's
+  limit 2700s (twelve old builds took past 1500s beside the browser tests).
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 

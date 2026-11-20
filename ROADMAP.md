@@ -132,6 +132,10 @@ on numbers they can't trust and a sport they read rather than watch.
   roster's ranks; its best rank names the usual style for about nine clubs in ten, though the night still varies.
 - Football's reads tied to your roster: a right answer is worth more when your offense suits it, the same on average.
 - League levels unchanged within noise in all seven.
+- Fixed: the pre-game chance now counts the computer opponent's plan's own worth, not only its fit (an outgunned college
+  football club taking risks read 81% for you where you won 70%).
+- Watch: a club's own games can run 2-2.5 points off the pre-game chance (how two rosters' shapes and styles meet, which
+  the chance doesn't simulate; the same on engine 14).
 - Next: computer clubs draft, sign and trade for fit (its own round); per-attribute ceilings and breakouts; a kicker
   slot. Watch: the roster line makes the usual style easy to read (the report's favourite was right about two times in
   three before); football home wins a point low; soccer draws a point high.
