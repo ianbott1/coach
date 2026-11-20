@@ -1,5 +1,5 @@
 {
- "fp": "2abce1ade03eb2dc",
+ "fp": "1e4a684107e683b6",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -325,6 +325,11 @@
    "fp": "2abce1ade03eb2dc",
    "from": "2138fe59caf20c09",
    "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
+  },
+  {
+   "fp": "1e4a684107e683b6",
+   "from": "2abce1ade03eb2dc",
+   "note": "Round 92 (engine 15): the chance counts the opponent's plan's own worth"
   }
  ],
  "out": [
@@ -393,7 +398,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "616cb37270e731fd"
+     "book": "ac281dedf3a11fa8"
     }
    ]
   }

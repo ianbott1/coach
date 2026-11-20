@@ -1,5 +1,5 @@
 {
- "fp": "b3fe4cd4b3a61e16",
+ "fp": "9894c07f9019b5c7",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -360,6 +360,11 @@
    "fp": "b3fe4cd4b3a61e16",
    "from": "72aafdff0f2ff689",
    "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
+  },
+  {
+   "fp": "9894c07f9019b5c7",
+   "from": "b3fe4cd4b3a61e16",
+   "note": "Round 92 (engine 15): the chance counts the opponent's plan's own worth"
   }
  ],
  "out": [
@@ -382,7 +387,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "a471b9d8924c9fbc"
+     "book": "858f6ad28354ff29"
     }
    ]
   },
@@ -405,7 +410,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "36fd6ea19cfcb4ba"
+     "book": "68b508c3ac09ccf7"
     }
    ]
   },
@@ -428,7 +433,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "d997fc75e7bae014"
+     "book": "622f97f5fbcec325"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "3a094e06ed731a82",
+ "fp": "5a88448d5969ff05",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -335,6 +335,11 @@
    "fp": "3a094e06ed731a82",
    "from": "b823c19d9fa12ec2",
    "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
+  },
+  {
+   "fp": "5a88448d5969ff05",
+   "from": "3a094e06ed731a82",
+   "note": "Round 92 (engine 15): the chance counts the opponent's plan's own worth"
   }
  ],
  "out": [
@@ -357,7 +362,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "6c2d38fc4eeff474"
+     "book": "15f0d32b2b7f964e"
     }
    ]
   },
@@ -380,7 +385,7 @@
       "result": "Won the Fenway Bowl",
       "grade": "A+"
      },
-     "book": "01998ebd6f0cfbd2"
+     "book": "580019df61522e41"
     }
    ]
   },
@@ -403,7 +408,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "4220c500ce602f94"
+     "book": "5ee6b72a2992c5f5"
     }
    ]
   }
