@@ -34,6 +34,7 @@ for(const [f,team] of CASES.filter(c=>!process.argv[2]||c[0].startsWith(process.
           ok(q&&S2(sd,'cyd',x=>x.pos!=='QB')<=q.s.pyd&&S2(sd,'rec',x=>x.pos!=='QB')<=q.s.cmp,`${tag} ${sd}: receivers' yards or catches over the passer's`) }
         if(sp==='hockey'){ const G=goals.filter(e=>e.side===sd), named=G.filter(e=>!A.hkGoalNames(sd==='home'?g.home:g.away,e).depth).length;
           ok(S2(sd,'goals',x=>x.pos!=='G')===named,`${tag} ${sd}: ${S2(sd,'goals',x=>x.pos!=='G')} goals credited, ${named} named`);
+          if(A.ENGINE_V>=16)ok(named===G.length,`${tag} ${sd}: every goal has a scorer's name (round 93): ${named} of ${G.length}`);
           ok(S2(sd,'ga',x=>x.pos==='G')===goals.filter(e=>e.side===o2(sd)&&!e.en).length,`${tag} ${sd}: the goalie's goals against`) }
         if(sp==='soccer'){ ok(S2(sd,'goals')===goals.filter(e=>e.side===sd).length,`${tag} ${sd}: ${S2(sd,'goals')} goals credited, ${goals.filter(e=>e.side===sd).length} scored`);
           ok(S2(sd,'ga',x=>x.pos==='GK')===goals.filter(e=>e.side===o2(sd)).length,`${tag} ${sd}: the keeper's goals against`) }

@@ -33,6 +33,7 @@ const HK13_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k])||n
    the depth man 0.7 of his weight (0.9), the men the roster doesn't carry a quarter of the goals (0.17) */
 const HK13={lk:+(HK13_ENV("HK13_LK")||0.12), lmin:+(HK13_ENV("HK13_LMIN")||0.75), lmax:+(HK13_ENV("HK13_LMAX")||1.35), pstar:+(HK13_ENV("HK13_PSTAR")||0.55), depthw:+(HK13_ENV("HK13_DW")||0.7), un:+(HK13_ENV("HK13_UN")||0.25)};
 const hkV13=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=13;
+const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: every goal named (credit only)
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
@@ -58,7 +59,13 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
   const u=e.u||0, D=hkDressed(tm,HK_GW,"sht"), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
   let n, depth=false;
   const UN=hkV13()?HK13.un:HK_UNNAMED;
-  if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
+  // round 93 (engine 16): the depth share is named too, from the dressed men behind the starters (both testers: goals to
+  // "the fourth line" left the named goals short of the score); the starters' share is round 90's, so the leaders hold
+  // flat, a man behind the starters three times a starter (r90/reg.js: star-weighted gave one backup 91; backups alone let
+  // 50-rated men lead; 3:1 leaders 51-68, mean 60, points 110, a backup or two in the top ten)
+  const DB=hkV16()?D.map(o=>({n:o.n,w:o.i>=6?3:1})):[];
+  if(x>=1-UN&&DB.length)n=hkWPick(DB,(x-(1-UN))/UN)||DB[0].n;
+  else if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
   const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW,"pas"),(((u*7+3)%100)+0.5)/100,n);
   return {n:n, a:a||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
