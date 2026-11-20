@@ -60,7 +60,8 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
   let n, depth=false;
   const UN=hkV13()?HK13.un:HK_UNNAMED;
   // round 93 (engine 16): the depth share is named too, from the dressed men behind the starters (both testers: goals to
-  // "the fourth line" left the named goals short of the score); the starters' share is round 90's, so the leaders hold
+  // "the fourth line" left the named goals short of the score). The leaders rise with it: the roster carries ten skaters
+  // where a club dresses eighteen, so the bottom six's goals land on them (mean 60 against round 90's 55 and its 45-57 band)
   // flat, a man behind the starters three times a starter (r90/reg.js: star-weighted gave one backup 91; backups alone let
   // 50-rated men lead; 3:1 leaders 51-68, mean 60, points 110, a backup or two in the top ten)
   const DB=hkV16()?D.map(o=>({n:o.n,w:o.i>=6?3:1})):[];
