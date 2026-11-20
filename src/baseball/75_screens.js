@@ -270,6 +270,7 @@ function staffRolesHTML(){
   const rows=BS_ROLES().map(([i,lab],k)=>{ const p=R[i]; if(!p)return ""; const sel=ROLE_SEL===i, line=p.st2&&p.st2.g?statLine(p.st2.gs?"SP":"CL",p.st2):"";
     return `${k===5?`<div class="fnote" style="margin:10px 0 2px">Bullpen</div>`:""}<div class="prow2${sel?" feat":""}" style="align-items:center">
       <div class="pmain"><div class="pname"><span style="color:var(--muted);font-size:12px;display:inline-block;min-width:78px">${esc(lab)}</span>${plLink(my,p.n)}${hurt[i]?` <span class="outtag">OUT ${outFor(hurt[i].w)}</span>`:""}</div>
-        ${line?`<div class="psub">${esc(line)}</div>`:""}</div>
+        <div class="psub">${p.pot>p.r?"ceiling "+p.pot:"at ceiling"}${line?" &middot; "+esc(line):""}</div></div>
+      ${i<POS.length&&ROLE_SEL===null?`<button class="promo" data-feat="${i}" aria-pressed="${S.featured===i}">${S.featured===i?"Featured":"Feature"}</button>`:""}
       <button class="promo" data-role="${i}" aria-pressed="${sel}">${sel?"Cancel":ROLE_SEL!==null?"Swap here":"Move"}</button><span class="prate">${p.r}</span></div>` }).join("");
-  return `<div class="grouphead">Pitching staff</div><div class="note">${ROLE_SEL!==null?`Now tap the job to give ${esc((R[ROLE_SEL]||{}).n||"")}: the two trade places.`:"Five starters take a game each; the closer has the 9th, the set-up man the 8th, the long man comes in early. Tap Move, then another pitcher, to trade their jobs."}</div><div class="card" style="padding:6px 12px">${rows}</div>` }
+  return `<div class="grouphead">Pitching staff</div><div class="note">${ROLE_SEL!==null?`Now tap the job to give ${esc((R[ROLE_SEL]||{}).n||"")}: the two trade places.`:"Five starters take a game each; the closer has the 9th, the set-up man the 8th, the long man comes in early. Tap Move, then another pitcher, to trade their jobs; Feature gives a top-four arm more innings and faster development."}</div><div class="card" style="padding:6px 12px">${rows}</div>` }
