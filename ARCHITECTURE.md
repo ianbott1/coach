@@ -399,8 +399,11 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
   and two styles, which no plan fit carries. Across random pairs the shapes' meeting is at the noise (median 0.6-1.0
   win points), up to 2-3.5 for strongly shaped pairs (Duke-UCLA: UCLA takes few threes, so Duke's perimeter defence
   counts for less). Counting matchups would need the chance to simulate the game: a later round's question.
-- Tests: test/styles.js (quick tier); regressions 37 over six opponents (mean within 3, each within 7); engine-replay's
-  limit 2700s (twelve old builds took past 1500s beside the browser tests).
+- Tests: test/styles.js (quick tier); regressions 37 over six opponents (mean within 3, each within 7), 79 counts the
+  opponent plan's own worth as the chance does; engine-replay's limit 2700s (twelve old builds took past 1500s beside the
+  browser tests); stakes finds Manchester City's clinch on seed 17 (engine 15: seeds 11-21 clinch on 11, 14-17 and 20).
+- Fixed on the way: soccer's live W/D/L read 101 when a sub-1% chance was shown as 1% (W 85 D 15 L 1; callwp found it):
+  the largest gives the point back.
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
