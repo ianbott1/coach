@@ -78,9 +78,9 @@ const SC12_SHIFT={safe:[7.3,0.026], aggressive:[-25.1,-0.163]};
 function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T[k]); return R_SLOPE*SC12.a*v }
 /* round 94 (engine 17): one spread of fit (11-17 Elo across the pyramid: scratch r94 fitsd.js) to 8 points on soccer's
    W/D/L model (123 Elo: soccer's draws flatten win chance), held to 15 points (226); played through the plan's channel: taking the game to them makes more
-   chances, sitting deep allows fewer */
+   chances, sitting deep makes more on the break */
 const SC17_ENV=k=>SC12_ENV(k)&&+SC12_ENV(k);
-const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||1};
+const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||0.95};   // g: the league's goals held (2.81 a game on 17 before, 2.66 on 16)   // g: the league's chances back to 2.7 goals (more clubs sit deep on 17)
 function sportPlanFit(t,pl){ return scV12()?planAmp(scFitOf(SC12_FIT[pl],scShapeT(t)),SC17):0 }
 function sportPlanFitC(t,pl){ return scV12()?planAmp(scFitOf(SC12_FITC[pl],scShapeT(t)),SC17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
@@ -89,6 +89,7 @@ function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
 const SC12_SHIFTH={safe:[-11.7,0.0614], aggressive:[-19.9,-0.241]};
 function sportPlanShiftH(pl,gap){ return scV12()?planShiftAt(SC12_SHIFTH[pl],gap):0 }
 function sportShape(t){ return scV12()?scShapeT(t):null }
+const PLAN_LEAN={safe:"passers",aggressive:"pace and shape"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return scV12()?planFitWords(t,pl,{safe:"passers",aggressive:"pace and shape"}):"" }
 
 /* gameplans and in-game modes: how many chances a side creates, and allows */
@@ -257,7 +258,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!SC12_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
     const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]); return M[pl]=planAmp(f,SC17)-f };
   const ampF=sd=>{ if(!SH||!planAmpV())return 1; let f=SC17.g; const o=other(sd); if(st.mode[sd]==="safe")f*=1+SC17.gs*ampE(sd,"safe")*SC12.c.pas/R_SLOPE;
-    if(st.mode[o]==="aggressive")f*=1-SC17.ga*ampE(o,"aggressive")*SC12.c.pos/R_SLOPE; return Math.max(0.3,f) };
+    if(st.mode[sd]==="aggressive")f*=1+SC17.ga*ampE(sd,"aggressive")*SC12.c.pac/R_SLOPE; return Math.max(0.3,f) };   // sitting deep: the extra is the counter, chances on the break (cutting theirs drew 32% of games)
   // Stamina: the legs go slower, and the last half hour's chances are a fitter side's (a drain alone saturated: no legs to lose)
   const legsF=(sd)=>SH?Math.max(0.5,1-SC12.a*SC12.c.sta*SH[sd].sta):1;
   const lateF=(sd,s)=>SH&&s>=12?Math.max(0.5,1+SC12.a*SC12.c.staL*(SH[sd].sta-SH[other(sd)].sta)):1;

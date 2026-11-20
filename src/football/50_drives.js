@@ -127,14 +127,15 @@ const fbLg=T=>T[LEAGUE.id]||T.cfb;
 function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
 /* round 94 (engine 17): one spread of fit (college 35 Elo, the pros 24: scratch r94 fitsd.js) to 8 points on each curve
    (57 and 43 Elo), held to 15 points (111, 83) */
-const FB17=Object.assign({cfb:{m:1.6,cap:111,gs:1.6,ga:1.1}, nfl:{m:1.8,cap:83,gs:1.4,ga:1}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
-  FB14_ENV("FB17_M")?{m:+FB14_ENV("FB17_M")}:{}, FB14_ENV("FB17_GS")?{gs:+FB14_ENV("FB17_GS")}:{}, FB14_ENV("FB17_GA")?{ga:+FB14_ENV("FB17_GA")}:{});
+const FB17=Object.assign({cfb:{m:1.6,cap:111,gs:1.6,ga:1.1,g:0.967}, nfl:{m:1.8,cap:83,gs:1.4,ga:1,g:0.966}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
+  FB14_ENV("FB17_M")?{m:+FB14_ENV("FB17_M")}:{}, FB14_ENV("FB17_GS")?{gs:+FB14_ENV("FB17_GS")}:{}, FB14_ENV("FB17_GA")?{ga:+FB14_ENV("FB17_GA")}:{}, FB14_ENV("FB17_G")?{g:+FB14_ENV("FB17_G")}:{});
 function sportPlanFit(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)),FB17):0 }
 function sportPlanFitC(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)),FB17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
 function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
 /* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */
 function sportShape(t){ if(!fbV14())return null; const T=fbShapeT(t); return {arm:T.o.arm,acc:T.o.acc,hnd:T.o.hnd,blk:T.o.blk,spd:T.o.spd+T.d.spd,str:T.o.str+T.d.str,cov:T.d.cov,tkl:T.d.tkl,rsh:T.d.rsh} }
+const PLAN_LEAN={safe:"accuracy, hands and blocking",aggressive:"arm and speed"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return fbV14()?planFitWords(t,pl,{safe:"accuracy, hands and blocking",aggressive:"arm and speed"}):"" }
 function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
@@ -150,7 +151,7 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   if(ENGINE_V>=2)fg*=(KICK2[LEAGUE.id]||KICK2.cfb).fg;   // round 71: kicks now miss at their odds; held to the same points
   let to = 0.135 - x * 0.0339 + A.to;
   if(sm){ td+=sm.td+sm.brk*(100-startYd)/73; to+=sm.to; td*=1+sm.sus; fg*=1+sm.sus }
-  if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g }   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
+  if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g; if(planAmpV()){ td*=FB17.g; fg*=FB17.g } }   // engine 17: suited plans everywhere score more; held to the league's level   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
   to = Math.max(0.03, Math.min(0.30, to));

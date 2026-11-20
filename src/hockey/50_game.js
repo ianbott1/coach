@@ -107,6 +107,7 @@ function sportPlanShift(pl,gap){ return planShiftAt(HK12_SHIFT[pl],gap) }
 const HK12_SHIFTH={safe:[-21.4,0.0519], aggressive:[12,-0.0929]};
 function sportPlanShiftH(pl,gap){ return hkV12()?planShiftAt(HK12_SHIFTH[pl],gap):0 }
 function sportShape(t){ if(!hkV12())return null; const T=hkShapeT(t); return Object.assign({},T.sk,T.g[0]) }
+const PLAN_LEAN={safe:"skaters",aggressive:"checking and defence"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return hkV12()?planFitWords(t,pl,{safe:"skaters",aggressive:"checking and defence"}):"" }
 /* gameplans and in-game modes: how many events a side creates, and allows */
 const AGGR = {

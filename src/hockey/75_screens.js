@@ -34,6 +34,10 @@ const HK13_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k])||n
 const HK13={lk:+(HK13_ENV("HK13_LK")||0.12), lmin:+(HK13_ENV("HK13_LMIN")||0.75), lmax:+(HK13_ENV("HK13_LMAX")||1.35), pstar:+(HK13_ENV("HK13_PSTAR")||0.55), depthw:+(HK13_ENV("HK13_DW")||0.7), un:+(HK13_ENV("HK13_UN")||0.25)};
 const hkV13=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=13;
 const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: every goal named (credit only)
+/* round 94 (engine 17, credit only; Ian: back into the 45-57 band): the depth share weighed s:d (starter : the man behind
+   him) and the star factor ps */
+const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||3), ps:+(HK13_ENV("HK17C_PS")||0.55), un:+(HK13_ENV("HK17C_UN")||0.25)};
+const hkV17=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=17;
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
@@ -42,7 +46,7 @@ function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof 
 function hkDressed(tm,W,lk){
   const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
   const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
-  const PS=hkV13()?HK13.pstar:HK_PSTAR, DW=hkV13()?HK13.depthw:HK_DEPTHW, star=p=>Math.max(0.3,1+(p.r-60)/20*PS);
+  const PS=hkV17()?HK17C.ps:hkV13()?HK13.pstar:HK_PSTAR, DW=hkV13()?HK13.depthw:HK_DEPTHW, star=p=>Math.max(0.3,1+(p.r-60)/20*PS);
   ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
     const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*DW*b/0.3;
     if(st&&bk){ out.push({n:st.n,w:top*star(st)*hkLean(st,lk),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk)*hkLean(bk,lk),p:bk,i:BK(i)}) }
@@ -58,13 +62,13 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
     return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
   const u=e.u||0, D=hkDressed(tm,HK_GW,"sht"), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
   let n, depth=false;
-  const UN=hkV13()?HK13.un:HK_UNNAMED;
+  const UN=hkV17()?HK17C.un:hkV13()?HK13.un:HK_UNNAMED;
   // round 93 (engine 16): the depth share is named too, from the dressed men behind the starters (both testers: goals to
   // "the fourth line" left the named goals short of the score). The leaders rise with it: the roster carries ten skaters
   // where a club dresses eighteen, so the bottom six's goals land on them (mean 60 against round 90's 55 and its 45-57 band)
   // flat, a man behind the starters three times a starter (r90/reg.js: star-weighted gave one backup 91; backups alone let
   // 50-rated men lead; 3:1 leaders 51-68, mean 60, points 110, a backup or two in the top ten)
-  const DB=hkV16()?D.map(o=>({n:o.n,w:o.i>=6?3:1})):[];
+  const DB=hkV16()?D.map(o=>({n:o.n,w:hkV17()?(o.i>=6?HK17C.d:HK17C.s):(o.i>=6?3:1)})):[];
   if(x>=1-UN&&DB.length)n=hkWPick(DB,(x-(1-UN))/UN)||DB[0].n;
   else if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
   const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW,"pas"),(((u*7+3)%100)+0.5)/100,n);

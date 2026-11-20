@@ -2086,9 +2086,27 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
+  if(planAmpV()&&typeof PLAN_LEAN!=="undefined"){ const r=planReasonHTML(kept&&S.planStep!=null&&S.planStep!==SEA.step); if(r!==null)return r }   // kept: chosen before today's game (a plan picked today isn't "kept")
   const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
   if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
   return planFitOld(wp,kept) }
+/* round 94 (engine 17; Grokbot: "next to the chance, a one-line reason such as +9 because your arm and speed fit Take
+   risks"): one line, from the same chance as the number above it (each plan's chance less balanced's, so the line can't
+   disagree with the number or with itself, as the fit line and the underdog line did). Whether it's the roster or the
+   gap: the fit and the plan's own worth tonight are told apart. */
+function planChances(){ const my=S.myTeam, g=SEA&&SEA.nextGame?SEA.nextGame(my):null; if(!g)return null; const opp=g.home===my?g.away:g.home; if(!opp)return null;
+  const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,g.home===my,!!g.neutral)[0]:winProb(my,opp,g.home===my,!!g.neutral) }) }finally{ plan=was }
+  const d=SEA.matchupElo(g,"balanced"), gap=g.home===my?d.h-d.a:d.a-d.h; return {p:o, gap:gap} }
+function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, d=k=>Math.round(100*(P[k]-P.balanced)), my=S.myTeam;
+  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>{ const f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
+    const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
+    return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) };
+  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), keptS=kept?"Kept from your last game. ":"";
+  if(plan!=="balanced"){ const v=d(plan); let t=`${keptS}<b>${sg(v)}</b> from <b>${esc(PLANS[plan].l)}</b>: ${why(plan)}.`;
+    if(v<0&&best!==plan&&d(best)>0)t+=` <b>${esc(PLANS[best].l)}</b> would be ${sg(d(best))} (${why(best)}).`; else if(v<=0&&d(best)<=0)t+=` <b>${esc(PLANS.balanced.l)}</b> is the better plan tonight.`;
+    return `<div class="pland planfit">${t}</div>` }
+  if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
+  return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
 function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
@@ -3162,7 +3180,12 @@ function simTargets(){
   out.push({k:"end",l:"To the end of the regular season",to:LEAGUE.weeks});
   return out;
 }
-const SIM_WHY={big:"A big game is next.",slide:"Three defeats in a row: worth a look.",hurt:"One of your players is hurt.",decide:"Something needs a decision."};
+const SIM_WHY={big:"A big game is next.",slide:"Three defeats in a row: worth a look.",hurt:"One of your players is hurt.",decide:"Something needs a decision.",star:"One of your two best players is out for the season."};
+/* round 94 (Grokbot: the sim lost an 80-rated star for the season without stopping): whatever the stop settings, a sim
+   ahead stops when one of your two best players is hurt for the rest of the regular season */
+function starsOutForSeason(t){ const R=SEA.roster&&SEA.roster[t]; if(!R)return []; const left=LEAGUE.weeks-SEA.step;
+  const top=R.map((p,i)=>[p&&p.r||0,i]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]);
+  return SEA.talent.active(t).filter(e=>top.indexOf(e.idx)>=0&&e.w>=left).map(e=>e.idx) }
 function hurtCount(t){ return SEA.talent.active(t).length }
 function attnCount(t){ return (attentionHTML(t).match(/class="attn"/g)||[]).length }
 /* the decisions on screen, by name (data-fire="oc", data-promo="3") */
@@ -3181,7 +3204,7 @@ function simRun(to){
   while(SEA.phase==="week"&&SEA.step<to){
     // before your game: is it one you'd want to play yourself?
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
-    const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
+    const h0=hurtCount(my), st0=streakOf(my), so0=starsOutForSeason(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     { const ap=ENGINE_V>=12?"auto":"balanced"; S.plans[planKey(SEA.step,SEA.half)]=ap; SEA.plan=ap }   // round 89: simming ahead leaves the plan to your assistant (the one your roster suits)
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); clinchAfter(); S.steps++;
@@ -3190,6 +3213,7 @@ function simRun(to){
     const st=streakOf(my);
     // once per losing run: when it reaches three, not again at four, five... (it stopped after every defeat: Grokbot)
     if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=3)){why="slide";break}
+    if(starsOutForSeason(my).some(i=>so0.indexOf(i)<0)){why="star";break}
     if(stops.hurt&&hurtCount(my)>h0){why="hurt";break}
     if(stops.decide&&newDecision(my)){why="decide";break}
   }
@@ -3578,7 +3602,7 @@ function render0(){
   const df=el("dfind"); if(df)df.oninput=()=>{dynQ=df.value;
     const p=df.selectionStart; render();
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
-  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; save()} render()});
+  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; S.planStep=SEA?SEA.step:null; save()} const y=typeof window!=="undefined"&&window.scrollY||0; render(); if(y&&typeof window.scrollTo==="function")window.scrollTo(0,y)});   // round 94: stay where you were (Grokbot: the page went back to the top after every plan click)
   // (the bottom bar's Sim ahead button is bound with skip2, above)
   // it asks, and says where the career is saved, or that it isn't (storage blocked: leaving loses it)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};

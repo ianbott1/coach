@@ -291,6 +291,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s>=SEGS-2){ m.p2+=a*c.sta*X.sta; m.p3+=a*c.sta*X.sta*2/3 }   // the closing minutes: who still has legs
     // engine 17 (round 94): the plan's fit amplified, the extra (Elo) through its own shots (a point of Finishing moves the
     // two-point rate by a*c.fin and is worth a rating points: c.fin/R_SLOPE a rate point per Elo; Shooting the same on threes)
+    if(planAmpV()){ m.p2-=BB17.k*0.5; m.p3-=BB17.k*0.36 }   // the league's points held (suited plans everywhere score more on 17)
     if(s<SEGS){ const pl=st.mode[sd], E=ampE(sd,pl); if(E){ if(pl==="safe")m.p2+=BB17.gs*E*c.fin/R_SLOPE; else if(pl==="aggressive")m.p3+=BB17.ga*E*c.sht/R_SLOPE } } };
   const ampMemo={home:{},away:{}};
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!BB11_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
@@ -494,8 +495,8 @@ function bbFitOf(F,t){ if(!bbV11()||!F)return 0; const T=bbShapeT(t); return R_S
    (59 and 39 Elo), held to 15 points; played through the plan's own shots: working it inside makes more of its twos,
    shortening the game more of its threes */
 const BB17_ENV=k=>BB11_ENV(k)&&+BB11_ENV(k);
-const BB17=Object.assign({ncaab:{m:2.0,cap:113,gs:1,ga:0.87}, nba:{m:3.5,cap:75,gs:1,ga:0.7}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nba"?"nba":"ncaab"],
-  BB17_ENV("BB17_M")?{m:BB17_ENV("BB17_M")}:{}, BB17_ENV("BB17_GS")?{gs:BB17_ENV("BB17_GS")}:{}, BB17_ENV("BB17_GA")?{ga:BB17_ENV("BB17_GA")}:{});
+const BB17=Object.assign({ncaab:{m:2.0,cap:113,gs:1,ga:0.87,k:0.014}, nba:{m:3.5,cap:75,gs:1,ga:0.7,k:0.019}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nba"?"nba":"ncaab"],
+  BB17_ENV("BB17_M")?{m:BB17_ENV("BB17_M")}:{}, BB17_ENV("BB17_GS")?{gs:BB17_ENV("BB17_GS")}:{}, BB17_ENV("BB17_GA")?{ga:BB17_ENV("BB17_GA")}:{}, BB17_ENV("BB17_K")?{k:BB17_ENV("BB17_K")}:{});
 function bbFitSh(F,T){ return F&&T?R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin):0 }
 function sportPlanFit(t,pl){ return planAmp(bbFitOf(BB11_FIT[pl],t),BB17) }
 function sportPlanFitC(t,pl){ return planAmp(bbFitOf(BB11_FITC[pl],t),BB17) }
@@ -510,6 +511,7 @@ const BB12_SHIFTH={nba:{safe:[1.6,0.0733],aggressive:[-11.1,-0.0267]}, ncaab:{sa
 function sportPlanShiftH(pl,gap){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12)return 0; const T=typeof LEAGUE!=="undefined"&&BB12_SHIFTH[LEAGUE.id]; return planShiftAt(T&&T[pl],gap) }
 /* in words, on the plan rows: which plan your shape suits, once the difference is worth about a point and a half of
    win chance (a lean of half a league spread) */
+const PLAN_LEAN={safe:"finishers",aggressive:"shooters"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ if(!bbV11()||typeof PLANS==="undefined")return "";
   const v={safe:sportPlanFit(t,"safe"),balanced:0,aggressive:sportPlanFit(t,"aggressive")}; let best=Object.keys(v).reduce((a,b)=>v[b]>v[a]?b:a,"balanced");
   if(best!=="balanced"&&typeof planEdge==="function"&&planEdge(t,best,planGapNow(t))<=0)best="balanced";   // round 89: never a net loss tonight
