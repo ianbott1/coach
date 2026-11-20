@@ -1,5 +1,5 @@
 {
- "fp": "4a7ba5b44be11012",
+ "fp": "d6151f3c759da89b",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -55,6 +55,11 @@
    "fp": "4a7ba5b44be11012",
    "from": "4a7ba5b44be11012",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "d6151f3c759da89b",
+   "from": "4a7ba5b44be11012",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -62,14 +67,14 @@
    {
     "year": 2026,
     "games": "1cfb61114a592f30",
-    "post": "5e0fe4dc085a2dbb",
-    "champion": "Texas",
+    "post": "afa3a897283c7dac",
+    "champion": "Atlanta",
     "rec": "24ca0ce1a15ba793",
-    "poll": "7e77bfd6c2e868e9",
+    "poll": "ee8447cdeb3f8915",
     "heis": "6bed3abd357b5037",
-    "history": "ba9e1bbc7b8c0396",
-    "universe": "f0f3a4ed12688c65",
-    "screens": "28aac7d23427d2fc"
+    "history": "33bbf9605d28643c",
+    "universe": "e20093215ad54a08",
+    "screens": "fbb1d68fbb4fd01d"
    }
   ]
  }

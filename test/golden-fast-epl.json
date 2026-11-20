@@ -1,5 +1,5 @@
 {
- "fp": "49d81e765ce267d3",
+ "fp": "25c060654fec188a",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -60,6 +60,11 @@
    "fp": "49d81e765ce267d3",
    "from": "a1657327598e06e9",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "25c060654fec188a",
+   "from": "49d81e765ce267d3",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -73,8 +78,8 @@
     "poll": "4ef59f5e7cfcb04e",
     "heis": "7cde9b9934ac38c8",
     "history": "e0ec124f750879e1",
-    "universe": "e089db4d5b4facf1",
-    "screens": "e8f69d4ab6e4052a"
+    "universe": "a4c8062247100c1e",
+    "screens": "be933243f0cd4353"
    }
   ]
  }

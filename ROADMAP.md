@@ -126,6 +126,28 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 93 (done): trust fixes from the November 20 reviews
+- A game is recorded only once its engine has finished; held headers and basketball clips name the moment shown.
+- Career games: every season counted one game too many in all seven; banked right now, old careers repaired once.
+- Hockey (engine 16): every goal has a scorer; the named goals add up to the score. The leaders rise to about 60 goals
+  (51-68; round 90's band was 45-57) because the roster carries ten skaters, not eighteen: a decision for Ian.
+- Basketball (engine 16): once the starters sit (a rest, or a decided game) the run of play, box and clips name the bench.
+- Football: "Fourth and goal" inside the line to gain; the onside call and Pearl count the possessions left; up 7, a
+  touchdown ties it.
+- Baseball (engine 16): a postseason series opens with the ace (four-man turn). The staff card shows ceilings and can
+  feature an arm (Two deep already could).
+- Reads: answering what tonight's numbers fit best is never marked wrong ("Right read: they surprised you"); the month
+  and season tallies use one rule.
+- Help: the chance includes your plan (it moves with the plan; the glossary said it didn't). The attribute page wording.
+- Soccer's roster line ranks within the division. Contract rows decide on their own button.
+- Taken back out: productive grounders (runners up on a groundout). Putting the run level back left the baseball
+  season checks a tenth past their edges on fixed seeds; it needs multi-seed season checks first.
+- Not built: naming every bullpen inning (needs real bullpen slots); the field presentation items (football returner
+  and defenders, kick numbers, names on the field; soccer names, shirt numbers, pace): with the 2D round.
+- Not reproduced: pro football's second round labelled WILD CARD, the board objective staying up, soccer's "of 184".
+- Next: round 94, plans that play and attributes you can feel (Ian's decisions first); round 95, the Coach rename,
+  title page and the game page.
+
 ## Round 92 (done)
 - Club styles come from rosters (engine 15, all seven): each club's usual offense, system, approach or defense is the one
   its opening roster leans to (a flat roster keeps the old hash between its top two). The scouting report shows their

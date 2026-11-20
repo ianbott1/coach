@@ -1,5 +1,5 @@
 {
- "fp": "9cfa90fe41b03984",
+ "fp": "071ad7f3deb6bfa7",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -60,6 +60,11 @@
    "fp": "9cfa90fe41b03984",
    "from": "cfba12f9ece58510",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "071ad7f3deb6bfa7",
+   "from": "9cfa90fe41b03984",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -71,10 +76,10 @@
     "champion": "Toronto",
     "rec": "55a0011909aa30d9",
     "poll": "68a648891f520e55",
-    "heis": "8bf90a5ec934f0ed",
-    "history": "4f2ca04aa4ad79ca",
-    "universe": "cbfb329d916b2b7e",
-    "screens": "3de2328930e49aed"
+    "heis": "6ba2174a2ca19c95",
+    "history": "7ed8e0f16856c063",
+    "universe": "faa1d374e6fe2cd1",
+    "screens": "4e35a34cfd61d917"
    }
   ]
  }

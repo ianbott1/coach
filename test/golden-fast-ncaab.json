@@ -1,5 +1,5 @@
 {
- "fp": "23cf6741724bb1be",
+ "fp": "c5745b81717ebb51",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -50,6 +50,11 @@
    "fp": "23cf6741724bb1be",
    "from": "491cb0d82df7720c",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "c5745b81717ebb51",
+   "from": "23cf6741724bb1be",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -61,10 +66,10 @@
     "champion": "North Carolina",
     "rec": "104b3096641d19c3",
     "poll": "4bc3c7a768f80a03",
-    "heis": "e68426346440a7dc",
-    "history": "623155bf99bc006f",
-    "universe": "29f584c2d60aae93",
-    "screens": "59acd2537d4fe27c"
+    "heis": "0aeddeb9bcd17862",
+    "history": "893921b658d56cba",
+    "universe": "59f4ba108ce781d9",
+    "screens": "4bf8046618a321f0"
    }
   ]
  }
