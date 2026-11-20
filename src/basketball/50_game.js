@@ -350,10 +350,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         ev.push({side:sd,k:"cue",cue:k,u:u}); if(u%3===0)X.lastCue=k }
       const tf=Math.max(0,Math.round(rng.gauss(BB.teamFouls/SEGS*crew,1.4)));
       st.fouls[sd]+=tf; st.lastSeg[sd]=tf });
+    // round 93 (engine 16): the stretch's benches, for the names (Instinct: "rests the starters", then a starter's three):
+    // decided (both sides) or a side that rested its starters; drawn from nothing, so the game is the same
+    const gb=Math.min(s,SEGS-1)>=5&&s<SEGS&&Math.abs(st.h-st.a)>=BB.garbage, bn=typeof ENGINE_V!=="undefined"&&ENGINE_V>=16&&(gb||(st.rest&&(st.rest.home||st.rest.away)))?{home:!!(gb||(st.rest&&st.rest.home)),away:!!(gb||(st.rest&&st.rest.away))}:null;
     st.h+=dh; st.a+=da;
     const d={seg:s,h:dh,a:da,sh:st.h,sa:st.a,ot:s>=SEGS?s-SEGS+1:0,ev:ev,
       T:{home:Object.assign({},H.tell),away:Object.assign({},A.tell)}, star:{home:[H.f,onH,H.out],away:[A.f,onA,A.out]},
       fouls:Object.assign({},st.fouls), ln:{home:Object.assign({},st.lines.h),away:Object.assign({},st.lines.a)}};   // round 73: the box score's team lines, as they stand (no draws)
+    if(bn)d.bn=bn;
     st.drives.push(d); return d;
   };
   // the last possession, when a side trails by two: a three to win or a two to tie

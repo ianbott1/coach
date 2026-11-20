@@ -27,7 +27,8 @@ const HL_SPORT=(function(){
     const kind=e.k==="last"||e.k==="lastmiss"?(e.choice==="three"?"three":"two"):e.k;
     const made=e.k!=="lastmiss";
     const idx=kind==="three"?[1,2,0,1,2][u%5]:kind==="inside"?[4,3,4,2][u%4]:(u%2?0:1);
-    let nm=""; try{ nm=bbPlayer(tm,idx,u)||(e.k==="last"||e.k==="lastmiss"?bbStar(tm):"") }catch(er){}
+    const bnA=!!(d&&d.bn&&d.bn[e.side]), bnD=!!(d&&d.bn&&d.bn[e.side==="home"?"away":"home"]);
+    let nm=""; try{ nm=bbPlayer(tm,idx,u,bnA)||(e.k==="last"||e.k==="lastmiss"?bbStar(tm):"") }catch(er){}
     if(e.k==="last"||e.k==="lastmiss"){ try{ nm=bbStar(tm) }catch(er){} }
     // the spot: a three from the corner, the wing or the top; inside at the rim; a two from the elbow
     const spot=kind==="three"?[[0.92,0.035],[0.77,0.14],[0.69,0.5],[0.77,0.86],[0.92,0.965]][Math.floor(r()*5)]:kind==="inside"?[0.93,0.5+(r()-0.5)*0.12]:[0.84,0.38+r()*0.24];
@@ -44,13 +45,13 @@ const HL_SPORT=(function(){
     // minutes), each position on its own rhythm; the shooter's man is the one the run of play names, starter or backup
     const opp=e.side==="home"?g.away:g.home, seg=d&&typeof d.seg==="number"?d.seg:-1;
     const BENCH_P=[0,0.45,0.3,0.05,0,0.45,0.3,0.05];
-    const floor=(team,salt,shooter)=>{ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
+    const floor=(team,salt,shooter,bn)=>{ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
       let h=0; for(const ch of team+salt)h=(h*31+ch.charCodeAt(0))>>>0;
       return [0,1,2,3,4].map(i=>{ const st=hurt.has(i)?-1:i, b=R[bk(i)]&&!hurt.has(bk(i))?bk(i):-1;
         if(shooter&&i===idx){ const n=nm; if(b>=0&&R[b].n===n)return b; if(st>=0)return st; return b>=0?b:i }
-        const x=(((h+i*97+(seg+1)*53)%100)+0.5)/100, benchIn=seg>=0&&x<(BENCH_P[seg%8]||0);
+        const x=(((h+i*97+(seg+1)*53)%100)+0.5)/100, benchIn=bn||(seg>=0&&x<(BENCH_P[seg%8]||0));
         return st<0?(b>=0?b:i):benchIn&&b>=0?b:st }) };
-    const an=hlNamed(tm,floor(tm,"a",true)), dn=hlNamed(opp,floor(opp,"d",false)), kits=hlKits(g.home,g.away);
+    const an=hlNamed(tm,floor(tm,"a",true,bnA)), dn=hlNamed(opp,floor(opp,"d",false,bnD)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[e.side==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[e.side==="home"?1:0],list:dn.filter(Boolean)}];
     return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,an,dn,legend,
       andOne:kind==="inside",text:""};

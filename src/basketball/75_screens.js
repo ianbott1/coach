@@ -4,11 +4,11 @@
    call screen with the staff's advice, and the replay view. */
 
 /* ---- names ---- */
-function bbPlayer(team,i,u){
+function bbPlayer(team,i,u,bn){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
   // an injured player isn't on the floor (Grokbot: "OUT 4 more weeks", and he hit threes)
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
-  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; const pick=(b&&(u%10)<2)||!p?b:p; return pick?pick.n:null;
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; const pick=(b&&(bn||(u%10)<2))||!p?b:p; return pick?pick.n:null;   // bn: the bench is in (round 93)
 }
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
@@ -22,11 +22,11 @@ const BB_CUE={
   pnr:["{t} run high pick-and-roll again","Ball screen, ball screen: {t} keep running it","{t} attack off the high screen"]
 };
 function pickOf(a,u){return a[u%a.length]}
-function bbEventText(g,e){
+function bbEventText(g,e,d){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
-  const tm=e.side==="home"?g.home:g.away, u=e.u||0;
-  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
-  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
+  const tm=e.side==="home"?g.home:g.away, u=e.u||0, bn=!!(d&&d.bn&&d.bn[e.side]);
+  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u,bn); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
+  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u,bn); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
   if(e.k==="foul"){ const n=bbStar(tm); return {team:tm,tag:e.f>=BB.foulOut-2?"FOULS":"",text:`${n} picks up his ${ordw(e.f)} foul`} }
   if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }
   if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
@@ -42,7 +42,7 @@ function rowsOf(g,drives){
       rows.push({m:"0:02",team:tm,tag:d.made?"GOOD":"MISS",text:`${bbPlayer(tm,0,7)||"The point guard"} ${d.choice==="three"?"pulls up from three":"drives for two"}: ${d.made?"good!":"no good."}`,h:d.sh,a:d.sa,goal:d.made});
       return }
     const lab=segClock(d.seg);
-    (d.ev||[]).filter(shown).forEach(e=>{ const t=bbEventText(g,e); rows.push({m:lab,team:t.team,tag:t.tag,text:t.text,h:d.sh,a:d.sa,cue:t.cue}) });
+    (d.ev||[]).filter(shown).forEach(e=>{ const t=bbEventText(g,e,d); rows.push({m:lab,team:t.team,tag:t.tag,text:t.text,h:d.sh,a:d.sa,cue:t.cue}) });
     const run=Math.abs(d.h-d.a)>=8, tm=d.h>=d.a?g.home:g.away;
     rows.push({m:lab,team:run?tm:"",tag:run?"RUN":"",text:run?`a ${Math.max(d.h,d.a)}-${Math.min(d.h,d.a)} stretch`:`${d.h}-${d.a} stretch, ${g.home} first`,h:d.sh,a:d.sa,seg:true,run:run});
   });
