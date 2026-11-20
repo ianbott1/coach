@@ -445,6 +445,7 @@ Round 93: trust fixes from the November 20 reviews (engine 16 where a game's own
   a wild-card win and after a reload, scratch r93/nflwc.js).
 - Control: this build at ENGINE_NOW=15 matches round 92's fast goldens in games and records in all seven; screens differ
   (the help text, the staff card, the read lines). engine-replay replays engine 15 (round 92, e8f58c2).
+- Full suite: 81 of 81 passed (one resume after the two-hour limit; quick tier and hot seats too).
 
 Round 91: football's attributes play (engine 14, college and pro). Design addition agreed in "Player attributes: design".
 - The drive engine plays a drive as one roll (touchdown, field goal, turnover, stall) with the spot a stalled drive dies;
