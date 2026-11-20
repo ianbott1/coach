@@ -65,7 +65,7 @@ const HL_SPORT=(function(){
     return Object.assign(base(L,d),{kind:"punt",los,land,end,ret,tb,fair,lane:0.35+r()*0.3,who:"",base:3600+ret*35,reveal:0.95}) }
   function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(30,Math.min(90,d.lost||d.stall||70));
     const rcv=r()<0.6?2:3; let len=Math.round(8+r()*Math.min(25,100-los-2));
-    let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
+    let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,Math.min(99,los+len)-end) }   // round 94: from where he catches it (a pick past 99 is caught at 99: the return ran 4 yards long)
     if(ret!=null){ const m=/intercepted by (.*)$/.exec(rowText(L,d)), f=ret>3?0.6:0.86;
       return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-rtp}) }
     const m=/intercepted by (.*)$/.exec(rowText(L,d));

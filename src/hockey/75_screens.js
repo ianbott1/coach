@@ -36,12 +36,15 @@ const hkV13=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=13;
 const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: every goal named (credit only)
 /* round 94 (engine 17, credit only; Ian: back into the 45-57 band): the depth share weighed s:d (starter : the man behind
    him) and the star factor ps */
-const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||3), ps:+(HK13_ENV("HK17C_PS")||0.55), un:+(HK13_ENV("HK17C_UN")||0.25)};
+/* measured (scratch r94 reg.js, regular seasons, four seeds): leaders 56.8 goals (61, 55, 58, 53) and 110 points (113,
+   116, 109, 102) against round 93's 60 and 110-139; the lean 0.06 a spread held to 0.75-1.2 (round 90's 0.12 and 1.35),
+   the star factor 0.35 (0.55), the depth share 0.3 shared evenly between a starter and the man behind him */
+const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||1), ps:+(HK13_ENV("HK17C_PS")||0.35), un:+(HK13_ENV("HK17C_UN")||0.3), lk:+(HK13_ENV("HK17C_LK")||0.06), lmax:+(HK13_ENV("HK17C_LMAX")||1.2)};
 const hkV17=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=17;
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
-  const v=hkV13()?HK13:{lk:0.22,lmin:0.6,lmax:1.6};
+  const v=hkV17()?{lk:HK17C.lk,lmin:HK13.lmin,lmax:HK17C.lmax}:hkV13()?HK13:{lk:0.22,lmin:0.6,lmax:1.6};
   return Math.max(v.lmin,Math.min(v.lmax,Math.exp(v.lk*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)))) }
 function hkDressed(tm,W,lk){
   const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
