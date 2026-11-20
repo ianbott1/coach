@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="eed9162";
+<script>const BUILD_ID="307db9b";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1593,7 +1593,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||15);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||16);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -3254,7 +3254,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].sys, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
-    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best}) }
+    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best,fe:ANSWERS[v].beats===dp.best}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,h:dp.h,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the system as it was" } return }
     if(dp.k==="third"){ const t=st.S[other(side)].sys, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
@@ -3879,6 +3879,7 @@ const HK13_ENV=k=>(typeof process!=="undefined"&&process.env&&process.env[k])||n
    the depth man 0.7 of his weight (0.9), the men the roster doesn't carry a quarter of the goals (0.17) */
 const HK13={lk:+(HK13_ENV("HK13_LK")||0.12), lmin:+(HK13_ENV("HK13_LMIN")||0.75), lmax:+(HK13_ENV("HK13_LMAX")||1.35), pstar:+(HK13_ENV("HK13_PSTAR")||0.55), depthw:+(HK13_ENV("HK13_DW")||0.7), un:+(HK13_ENV("HK13_UN")||0.25)};
 const hkV13=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=13;
+const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: every goal named (credit only)
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
@@ -3904,7 +3905,14 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
   const u=e.u||0, D=hkDressed(tm,HK_GW,"sht"), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
   let n, depth=false;
   const UN=hkV13()?HK13.un:HK_UNNAMED;
-  if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
+  // round 93 (engine 16): the depth share is named too, from the dressed men behind the starters (both testers: goals to
+  // "the fourth line" left the named goals short of the score). The leaders rise with it: the roster carries ten skaters
+  // where a club dresses eighteen, so the bottom six's goals land on them (mean 60 against round 90's 55 and its 45-57 band)
+  // flat, a man behind the starters three times a starter (r90/reg.js: star-weighted gave one backup 91; backups alone let
+  // 50-rated men lead; 3:1 leaders 51-68, mean 60, points 110, a backup or two in the top ten)
+  const DB=hkV16()?D.map(o=>({n:o.n,w:o.i>=6?3:1})):[];
+  if(x>=1-UN&&DB.length)n=hkWPick(DB,(x-(1-UN))/UN)||DB[0].n;
+  else if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
   const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW,"pas"),(((u*7+3)%100)+0.5)/100,n);
   return {n:n, a:a||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
@@ -4035,8 +4043,8 @@ function shotBars(g,drives){
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
-  const last=live.drives[live.drives.length-1];
-  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!live.drives.length?"PUCK DROP":esc(segLabel(last))}
+  const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"PUCK DROP":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab,"",shotBars(g,live.drives));
 }
@@ -4575,6 +4583,7 @@ class Season{
     // the season's box scores live on this Season's roster copy; the careers
     // they feed belong to the universe's roster, so read one and write the other
     if(!u.roster||!this.roster)return;
+    u.carFix=1;
     NAMES.forEach(t=>{
       const live=this.roster[t]||[], keep=u.roster[t]||[];
       keep.forEach((pl,i)=>{
@@ -4586,7 +4595,7 @@ class Season{
         let li=live[i]&&live[i].n===pl.n?i:live.findIndex(x=>x&&x.n===pl.n); const src=li>=0?live[li]:null;
         if(!src||!src.st2)return;
         if(!pl.car){pl.car=blankStats(POS[li%POS.length].p); pl.car.yrs=0}
-        addStats(pl.car,src.st2);
+        Object.keys(src.st2).forEach(k=>{ if(typeof src.st2[k]==="number")pl.car[k]=(pl.car[k]||0)+src.st2[k] });   // round 93: a season's totals (addStats adds one game per call: every banked season counted one game too many, all seven)
         pl.car.yrs=(pl.car.yrs||0)+1;
         // round 69: the season kept as its own line, for the player's page (careers before this have only the total)
         (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[li%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
@@ -5511,7 +5520,7 @@ function attrGridHTML(p){
   const role=attrRole(p);
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
     <div class="attrgrid" style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px">${cols}</div>
-    <div class="fnote" style="margin:4px 0 10px">1-20 against the league. Together they make up his rating (${p.r}); ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
+    <div class="fnote" style="margin:4px 0 10px">1-20 against the league's players. His rating (${p.r}) is a weighted mix of these on the rating's own scale, so the 1-20s won't average to it by eye: they show where he leans; ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){
@@ -5591,8 +5600,12 @@ function rosterStyle(t,year){ try{ return typeof SEA!=="undefined"&&SEA&&SEA.yea
 /* the scouting report's line on their roster (Ian: one line): where it ranks in the league for each style's attributes,
    as the season opened (what the style was read from) */
 function styleRosterLine(t){ try{ const X=typeof SEA!=="undefined"&&SEA&&SEA._styles, R=X&&X.rank[t]; if(!R||typeof sportStyleAttrs==="undefined")return "";
-  const K=Object.keys(sportStyleAttrs).filter(k=>R[k]).sort((a,b)=>R[a]-R[b]);
-  return `<div class="evn"><b>Their roster</b>, as the season opened: ${K.map(k=>`${esc(sportStyleAttrs[k])} ${ordinal(R[k])}`).join(", ")} of ${X.n}. Clubs play to their rosters.</div>` }catch(e){ return "" } }
+  // round 93: soccer ranks a club in its own division (a tester's Championship line read "of 184", then "of 164": the whole
+  // pyramid); the order is the table's, so the style it names is the same
+  let rk=R, n=X.n; if(typeof LEAGUE!=="undefined"&&LEAGUE.id==="epl"&&typeof CONF!=="undefined"&&CONF[t]!==undefined){ const P=Object.keys(X.rank).filter(o=>CONF[o]===CONF[t]); n=P.length; rk={};
+    Object.keys(R).forEach(k=>{ rk[k]=1+P.filter(o=>X.rank[o][k]<R[k]).length }) }
+  const K=Object.keys(sportStyleAttrs).filter(k=>rk[k]).sort((a,b)=>rk[a]-rk[b]||R[a]-R[b]);
+  return `<div class="evn"><b>Their roster</b>, as the season opened: ${K.map(k=>`${esc(sportStyleAttrs[k])} ${ordinal(rk[k])}`).join(", ")} of ${n}${n<X.n?" in their division":""}. Clubs play to their rosters.</div>` }catch(e){ return "" } }
 /* ============ players you care about ============ */
 /* Your best players as people: how they're playing lately (form), where their
    careers are heading (the next milestone), whether this is their last year
@@ -6233,7 +6246,7 @@ function impactHTML(P){
   // a read graded wrong is never headlined as a good call: "A STRONG CALL" sat above a cross for the same game plan
   // (Grokbot, pro basketball); the two judge different things (against the assistant; against the truth), so then
   // the card says the plain line instead
-  const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear));
+  const crossed=P.some(q=>(q.reads||[]).some(r=>r.pick===c.pk&&r.right===false&&!r.unclear&&!r.fe));
   if(Math.abs(k)<=7||(k>0&&crossed)){   // no headline: one plain line, sized to the gap
     const lead=Math.abs(k)<=3&&c.altv>=0.03?`${esc(c.h)}: ${pickWord(c)}, level with your assistant's call over many replays, but "${esc(c.alt)}" was the better option: about ${Math.round(c.altv*100)} more wins in 100.${repRates(c)} <span class="reprate">"${esc(c.alt)}" won ${c.wa}%.</span>`
       :Math.abs(k)<=3?`${esc(c.h)}: ${pickWord(c)}, and over many replays it was close either way &mdash; not graded, right or wrong.`   // the same footing as "a little better" (Muse)
@@ -8029,10 +8042,10 @@ function offseasonScreen(){
   if(tax>LEAGUE.cap)h+=`<div class="note">You can go over the cap to re-sign your own players, up to the $${tax}M tax line. Over the cap, you can't sign other teams' free agents.</div>`;
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
-    return `<div class="cand ${on?'on':''}" data-resign="${i}">
+    return `<div class="cand ${on?'on':''}">
       <div class="candtop"><div><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
       <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
-      <span class="cgrade">${on?"re-sign":"let go"}</span></div>
+      <button class="promo" data-resign="${i}" aria-pressed="${on}" title="${on?"Tap to let him go":"Tap to re-sign him"}">${on?"Re-signing":"Letting go"}</button></div>
       <div class="cdesc">Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
         p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
   h+=`<div class="grouphead">${n(2)}. Free agency</div>`;
@@ -8563,7 +8576,7 @@ function liveTick(){
     // a period the engine plays inside its finish (hockey's overtime, a shoot-out) is in its drive list but
     // was never handed back one stretch at a time: a played 3-4 overtime loss was recorded and replayed as
     // 3-3 at 54 minutes (Instinct)
-    if(r.done){ const k0=live.drives.length; syncTail(r);
+    if(r.done){ live.engDone=true; const k0=live.drives.length; syncTail(r);
       // round 67: overtime and a shoot-out are in the tail the engine hands back at the end; their highlights play
       // before the final whistle (Ian: a 5-4 shoot-out win he never saw)
       // the screen may still be the overtime call, with no pitch: the live view is drawn first, the score held
@@ -8661,6 +8674,15 @@ let liveEndedAt=0;
 function finishLive(){ liveEndedAt=Date.now();
   if(view!=="team"&&view!=="scores")view="team";   // the result card lives on the team page: a game started from Dynasty ended there, with no card (Grokbot)
   if(live.finished)return;                  // once per game, however it's reached
+  // round 93: a game is recorded only once its engine has finished. Muse saw college basketball's season-end card at
+  // 65-71 while the game was tied, and it then went to four overtimes (not reproduced in 155 live games); whatever
+  // reaches here early, the rest is played out first (the remaining calls your assistant's, as Skip leaves them)
+  if(!live.engDone){ if(live.tailQ){ while(live.tailQ.length)live.drives.push(live.tailQ.shift()); live.tailQ=null; live.tailShow=null }
+    let guard=0; while(guard++<4000){ const r=live.eng.next(); if(r.done){ syncTail(r); break }
+      if(r.ask){ const v=r.ask.opts[r.ask.opts.length-1][0]; live.eng.reply(v); S.calls=S.calls||{}; const k=live.ckey||callKey(live.step);
+        S.callAuto=S.callAuto||{}; S.callAuto[k]=(S.callAuto[k]||[]).concat([(S.calls[k]||[]).length]); S.calls[k]=(S.calls[k]||[]).concat([v]); continue }
+      if(r.drive)live.drives.push(r.drive) }
+    live.engDone=true; live.done=true; if(typeof console!=="undefined")console.warn("finishLive before the final whistle: played out") }
   live.finished=true;
   const g=live.g;
   feelFinal(live);
@@ -8703,7 +8725,7 @@ function finishLive(){ liveEndedAt=Date.now();
       const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
       // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
       // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
-      R.forEach(x=>{ if(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
+      R.forEach(x=>{ if(!readGraded(x))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -8778,7 +8800,7 @@ function endLive(){
     let guard=0;
     while(guard++<400){
       const r=live.eng.next();
-      if(r.done){ syncTail(r); break }
+      if(r.done){ live.engDone=true; syncTail(r); break }
       // a skipped game's remaining calls take the neutral option (the last:
       // stay the course, play it straight), not the aggressive first one
       // your assistant's, and not graded as yours (Grokbot: a skipped read was graded on the card)
@@ -8878,10 +8900,13 @@ function promote(i){
   save(); render();
 }
 
+/* round 93: careers banked before this counted one game too many a season (Instinct, all seven: 177 games, Career 178);
+   once per universe, each banked season gives its game back (players gone from the rosters keep their lines) */
+function carFix(u){ if(!u||u.carFix)return; Object.keys(u.roster||{}).forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(p&&p.car&&p.car.yrs)p.car.g=Math.max(0,(p.car.g||0)-p.car.yrs) })); u.carFix=1 }
 function rebuild(){
   if(S&&S.myTeam&&typeof careerCalls==="function")careerCalls(true);   // round 71: the career count is fixed as the career opens, then only added to
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
-  U=snap(S.uStart);
+  carFix(S.uStart); U=snap(S.uStart);
   syncConf(U);
   attrSync(U);   // round 87: a career from before attributes gets them now, from its players as they are (no draws)
   NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct
@@ -9100,6 +9125,10 @@ async function moveForeignSaves(){
 }
 /* saves from before a finished game was recorded only once: drop the extra
    copies, and count the tally again from the games that are left */
+/* a read that counts in the tallies: not a split report, not a call, not one left to the assistant, not a followed report,
+   not a surprise after following the screen (round 93: one rule for the season's tally, the month's and the repair; the
+   month's counted reads the season's didn't, so hockey's months didn't add up to its season) */
+function readGraded(x){ return !(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe&&!x.right)) }
 function repairPlayed(d){
   if(!d||!d.played)return d;
   const T=d.readTally;
@@ -9107,7 +9136,7 @@ function repairPlayed(d){
     d.played[k]=d.played[k].filter(p=>{ const id=p.team+"|"+p.other+"|"+!!p.cup+"|"+p.mine+"-"+p.theirs;
       if(!seen.has(id)){seen.add(id); return true}
       // a copy: take its reads back out of the tally they inflated
-      if(T)(p.reads||[]).forEach(x=>{ T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
+      if(T)(p.reads||[]).forEach(x=>{ if(!readGraded(x))return; T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
       return false }) });
   if(T){ T.n=Math.max(0,T.n); T.right=Math.max(0,Math.min(T.right,T.n)) }
   return d;
@@ -9870,7 +9899,7 @@ function readsByMonthHTML(){
   const pre=SEA.year+":", M={}, order=[];
   Object.keys(S.played).forEach(k=>{ if(k.indexOf(pre)!==0)return; const st=+k.slice(pre.length), d=LEAGUE.dates[st]; if(!d)return;
     const m=String(d).split(" ")[0];
-    S.played[k].forEach(p=>{ if(p.team!==S.myTeam||!p.reads)return; p.reads.forEach(x=>{ if(x.unclear||x.k==="call")return;
+    S.played[k].forEach(p=>{ if(p.team!==S.myTeam||!p.reads)return; p.reads.forEach(x=>{ if(!readGraded(x))return;
       if(!M[m]){ M[m]={n:0,r:0,st:st}; order.push(m) } M[m].n++; if(x.right)M[m].r++ }) }) });
   const ms=order.sort((a,b)=>M[a].st-M[b].st); if(ms.length<2)return "";
   return `<div class="fnote tallynote">By month: ${ms.map(m=>`${esc(m)} ${M[m].r}/${M[m].n}`).join(" &middot; ")}</div>
@@ -9931,6 +9960,9 @@ function readsHTML(step){
     // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
     // not counted either way.
     if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
+    // round 93: an in-game read that answered the style tonight's numbers fit best (dp.best, from the same counts the call
+    // shows) is never marked wrong (testers: graded wrong for reading the evidence as it stood); said as a surprise, not counted
+    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", the answer to what tonight's numbers fit best. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
   // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result
@@ -10594,7 +10626,7 @@ function nextUpHTML(my,rk){
         :((LEAGUE.cup&&LEAGUE.cup.groupLine&&LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng)))?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag)}</span><span class="sline">${LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng))}</span></div><button class="rewatch seedraw" data-cupview="1">See the Cup</button>`:"")
         +st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
         <span class="sline">${x.l}</span></div>`).join("")}
-      ${guideNote("hub","The percentage is the game's own chance of winning, worked out from the lineup you've picked: start a backup and it moves. Your gameplan below doesn't move it on purpose: plans trade safety for variance, and each is judged on the result card.")}
+      ${guideNote("hub","The percentage is the game's own chance of winning, worked out from the lineup you've picked: start a backup and it moves. "+(typeof sportPlanFit==="function"?"Your gameplan below is in it too: a plan that suits your roster, or a risky one when you're the underdog, moves it up, and the plan rows say which suits you. Each is judged on the result card.":"Your gameplan below trades safety for variance, and each is judged on the result card."))}
       ${planPickerHTML(wp)}</div>`;
   }
   // a cup tie this week too (soccer's FA Cup): its own card, midweek
