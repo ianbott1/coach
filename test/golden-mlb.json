@@ -1,5 +1,5 @@
 {
- "fp": "1e8e8b9b6c75d343",
+ "fp": "aede6bacb269ad70",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -175,6 +175,11 @@
    "fp": "1e8e8b9b6c75d343",
    "from": "1e8e8b9b6c75d343",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "aede6bacb269ad70",
+   "from": "1e8e8b9b6c75d343",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -182,52 +187,52 @@
    {
     "year": 2026,
     "games": "1cfb61114a592f30",
-    "post": "5e0fe4dc085a2dbb",
-    "champion": "Texas",
+    "post": "afa3a897283c7dac",
+    "champion": "Atlanta",
     "rec": "24ca0ce1a15ba793",
-    "poll": "7e77bfd6c2e868e9",
+    "poll": "ee8447cdeb3f8915",
     "heis": "6bed3abd357b5037",
-    "history": "ba9e1bbc7b8c0396",
-    "universe": "f0f3a4ed12688c65",
-    "screens": "28aac7d23427d2fc"
+    "history": "33bbf9605d28643c",
+    "universe": "e20093215ad54a08",
+    "screens": "fbb1d68fbb4fd01d"
    },
    {
     "year": 2027,
-    "games": "f309c31759d99212",
-    "post": "804eb5aea046f03b",
-    "champion": "Houston",
-    "rec": "c92e834d4bbb1079",
-    "poll": "91fbf3c60fa18dfc",
-    "heis": "34e9d4b118af20c9",
-    "history": "e3ef6103b48eea1e",
-    "universe": "e4ee8091cee0d25f",
-    "screens": "84192c6ff807d327"
+    "games": "1ebe10f0cebdd7c0",
+    "post": "01ac83399b90257b",
+    "champion": "Boston",
+    "rec": "0dbf8cb1fe12feba",
+    "poll": "d7e7fb334f9176d5",
+    "heis": "af27786db92f1b83",
+    "history": "a51156385043d5c8",
+    "universe": "dbd53782fbc24dc2",
+    "screens": "cdb82322a724185a"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
     "games": "9e9294880392a37b",
-    "post": "8a2dcc6abcdfbc0f",
-    "champion": "Arizona",
+    "post": "faa3227553bc2ae8",
+    "champion": "Chicago Cubs",
     "rec": "4ce31ac263b0313e",
-    "poll": "b6d87dae3b1ad1a0",
+    "poll": "98d257fdc8f709df",
     "heis": "f56a3b2d179cd0af",
-    "history": "1cb3f59b0aec705f",
-    "universe": "ed9718b9422eabdb",
-    "screens": "71af29811481ee96"
+    "history": "0efa24ad3fc5264d",
+    "universe": "bd371c896a1b4e92",
+    "screens": "cbe051970fe1c4e6"
    },
    {
     "year": 2027,
-    "games": "00f7f2b1e16d8ac0",
-    "post": "7ce44a7bf28b1dff",
-    "champion": "LA Dodgers",
-    "rec": "447c0354e760128e",
-    "poll": "98b36ad8bda1e2bb",
-    "heis": "0b7f6da537155ad8",
-    "history": "68eb16bc0b4027c0",
-    "universe": "0f5d23dfe2ccf92a",
-    "screens": "ae68bdb08a3de525"
+    "games": "646de01948452304",
+    "post": "bdea51c63b7ad412",
+    "champion": "NY Mets",
+    "rec": "07074dbc062311a9",
+    "poll": "9deaa86d9188cd83",
+    "heis": "f7f1f3f5ab746109",
+    "history": "38f2273e6e59103f",
+    "universe": "f4f31590bdfc8b28",
+    "screens": "5dd3e41576450ec5"
    }
   ],
   "schedules#60": [

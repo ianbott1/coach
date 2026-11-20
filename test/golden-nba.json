@@ -1,5 +1,5 @@
 {
- "fp": "b6c224cec3291aca",
+ "fp": "5dae5e4b19596338",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -510,6 +510,11 @@
    "fp": "b6c224cec3291aca",
    "from": "7098539e3a32ed8b",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "5dae5e4b19596338",
+   "from": "b6c224cec3291aca",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -521,10 +526,10 @@
     "champion": "Denver",
     "rec": "405be4d944391813",
     "poll": "add7dd1a0aac66b7",
-    "heis": "2e72ff9c0de373c3",
-    "history": "4659872ec09e81a5",
-    "universe": "f33a5b12ae8b97e1",
-    "screens": "a9419101b769ef85"
+    "heis": "b9b2aa429ba4f700",
+    "history": "a9f6100307739e55",
+    "universe": "abe340935913dc1c",
+    "screens": "1b60cad6a281a2e0"
    },
    {
     "year": 2027,
@@ -533,10 +538,10 @@
     "champion": "San Antonio",
     "rec": "78189c849074debe",
     "poll": "07a58cff6ccd8b0a",
-    "heis": "ff05d9be0d818f01",
-    "history": "fb73b88581444424",
-    "universe": "8e122a2128158222",
-    "screens": "8bac90f737a06094"
+    "heis": "2ed6c4178bf45765",
+    "history": "450b160f92872773",
+    "universe": "cdb4286b47be112b",
+    "screens": "94a5ec2163d1b6f5"
    }
   ],
   "Detroit#777": [
@@ -548,9 +553,9 @@
     "rec": "72ec5bcc3481fdd2",
     "poll": "b0aa4188c55d7e1c",
     "heis": "0741786ae691fa38",
-    "history": "dccfb3df065bfe86",
-    "universe": "dc8787f6a713a7fa",
-    "screens": "dfc84a96e2d924df"
+    "history": "3ef1d532f0013b68",
+    "universe": "5aaeb5990605700e",
+    "screens": "a7d88e8894e0bcb1"
    },
    {
     "year": 2027,
@@ -559,10 +564,10 @@
     "champion": "Oklahoma City",
     "rec": "01f936bb9544f40f",
     "poll": "59af4de43247b921",
-    "heis": "f8762bc6b23e1594",
-    "history": "ced8bea6a07a425f",
-    "universe": "40b1f79b16f044c9",
-    "screens": "320d591c7f14f175"
+    "heis": "f8f70b158726bb0c",
+    "history": "a8b193864ac3588a",
+    "universe": "9d8cd2b10891d49f",
+    "screens": "f3c0143fa6f82772"
    }
   ],
   "schedules#60": [

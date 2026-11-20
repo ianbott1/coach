@@ -1,5 +1,5 @@
 {
- "fp": "5a88448d5969ff05",
+ "fp": "066e62b4751bfb02",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -340,6 +340,11 @@
    "fp": "5a88448d5969ff05",
    "from": "3a094e06ed731a82",
    "note": "Round 92 (engine 15): the chance counts the opponent's plan's own worth"
+  },
+  {
+   "fp": "066e62b4751bfb02",
+   "from": "5a88448d5969ff05",
+   "note": "round 93: engine 16"
   }
  ],
  "out": [
@@ -353,7 +358,7 @@
       "result": "Eliminated in the first round",
       "grade": "C+"
      },
-     "book": "bf19de1b2b216555"
+     "book": "98e59b80401a358e"
     },
     {
      "team": "Rice",
@@ -362,7 +367,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "15f0d32b2b7f964e"
+     "book": "ea4d0004c4e1861a"
     }
    ]
   },
@@ -376,7 +381,7 @@
       "result": "Lost the Citrus Bowl",
       "grade": "C"
      },
-     "book": "a1fc8c864d082da1"
+     "book": "a4ed2bbba4df69ac"
     },
     {
      "team": "Rice",
@@ -385,7 +390,7 @@
       "result": "Won the Fenway Bowl",
       "grade": "A+"
      },
-     "book": "580019df61522e41"
+     "book": "26fa3e433f6e56ee"
     }
    ]
   },
@@ -399,7 +404,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "fe6b3f11f5f9734f"
+     "book": "672654a290350f4c"
     },
     {
      "team": "Rice",
@@ -408,7 +413,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "5ee6b72a2992c5f5"
+     "book": "76b641ac1f7e3185"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "1e4a684107e683b6",
+ "fp": "ea496115e44e0213",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -330,6 +330,11 @@
    "fp": "1e4a684107e683b6",
    "from": "2abce1ade03eb2dc",
    "note": "Round 92 (engine 15): the chance counts the opponent's plan's own worth"
+  },
+  {
+   "fp": "ea496115e44e0213",
+   "from": "1e4a684107e683b6",
+   "note": "round 93: engine 16"
   }
  ],
  "out": [
@@ -343,7 +348,7 @@
       "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "96f84c16814a3899"
+     "book": "9462471c525a6671"
     },
     {
      "team": "Montreal",
@@ -352,7 +357,7 @@
       "result": "Lost in the first round",
       "grade": "B+"
      },
-     "book": "63285513d893ec18"
+     "book": "49fab7af25c88849"
     }
    ]
   },
@@ -366,7 +371,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "dfeb3f31bc51a8d9"
+     "book": "9ac816d481d6079a"
     },
     {
      "team": "Montreal",
@@ -375,7 +380,7 @@
       "result": "Lost in the conference final",
       "grade": "A"
      },
-     "book": "3db709ef52fc340f"
+     "book": "90348949b6d1c6a0"
     }
    ]
   },
@@ -389,7 +394,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "1f5eb834b2c51a2e"
+     "book": "d0ed12e39a5bc63b"
     },
     {
      "team": "Montreal",
@@ -398,7 +403,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "ac281dedf3a11fa8"
+     "book": "4968cb2ecbba6b8e"
     }
    ]
   }

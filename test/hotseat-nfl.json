@@ -365,6 +365,11 @@
    "fp": "9894c07f9019b5c7",
    "from": "b3fe4cd4b3a61e16",
    "note": "Round 92 (engine 15): the chance counts the opponent's plan's own worth"
+  },
+  {
+   "fp": "9894c07f9019b5c7",
+   "from": "9894c07f9019b5c7",
+   "note": "round 93: engine 16"
   }
  ],
  "out": [

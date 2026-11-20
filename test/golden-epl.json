@@ -1,5 +1,5 @@
 {
- "fp": "67b3ddf02167831e",
+ "fp": "81a70a41c5a8dd4c",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -505,6 +505,11 @@
    "fp": "67b3ddf02167831e",
    "from": "d27a05c78752daf1",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "81a70a41c5a8dd4c",
+   "from": "67b3ddf02167831e",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -518,8 +523,8 @@
     "poll": "4ef59f5e7cfcb04e",
     "heis": "7cde9b9934ac38c8",
     "history": "e0ec124f750879e1",
-    "universe": "e089db4d5b4facf1",
-    "screens": "e8f69d4ab6e4052a"
+    "universe": "a4c8062247100c1e",
+    "screens": "be933243f0cd4353"
    },
    {
     "year": 2027,
@@ -530,8 +535,8 @@
     "poll": "3cb22a82bc018a8c",
     "heis": "39c5f4741d06d03f",
     "history": "e66388864663a800",
-    "universe": "cabed7b2e447d8b3",
-    "screens": "89f500b02ecd0382"
+    "universe": "21b190dbd2b51d33",
+    "screens": "565a63f29848e8a7"
    }
   ],
   "Wrexham#777": [
@@ -544,8 +549,8 @@
     "poll": "5b7f8a8419474e84",
     "heis": "b35a1714a78fece2",
     "history": "eb591fb6ac418cc5",
-    "universe": "d99333f318756a08",
-    "screens": "92169be4c0cb0f38"
+    "universe": "b6bdaf837dd691bf",
+    "screens": "4e5d5b6b769fd15e"
    },
    {
     "year": 2027,
@@ -556,8 +561,8 @@
     "poll": "cb564c3d4f6af439",
     "heis": "c40c022dbf8e922d",
     "history": "b9b01fa04aa1b06a",
-    "universe": "e5b5aa8a956fdeb2",
-    "screens": "7df1d40015ee2757"
+    "universe": "9272e6fb655d5ba3",
+    "screens": "b433fd0abe7ab009"
    }
   ],
   "schedules#60": [

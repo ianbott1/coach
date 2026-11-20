@@ -1,5 +1,5 @@
 {
- "fp": "cd11941faa319794",
+ "fp": "4dc1e55b0714c7c5",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -525,6 +525,11 @@
    "fp": "cd11941faa319794",
    "from": "54c34d1c1f3e8c0c",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "4dc1e55b0714c7c5",
+   "from": "cd11941faa319794",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -536,10 +541,10 @@
     "champion": "Toronto",
     "rec": "55a0011909aa30d9",
     "poll": "68a648891f520e55",
-    "heis": "8bf90a5ec934f0ed",
-    "history": "4f2ca04aa4ad79ca",
-    "universe": "cbfb329d916b2b7e",
-    "screens": "3de2328930e49aed"
+    "heis": "6ba2174a2ca19c95",
+    "history": "7ed8e0f16856c063",
+    "universe": "faa1d374e6fe2cd1",
+    "screens": "4e35a34cfd61d917"
    },
    {
     "year": 2027,
@@ -548,10 +553,10 @@
     "champion": "Winnipeg",
     "rec": "3013604d6f816a33",
     "poll": "564f8f3d504127f4",
-    "heis": "fa20d195f26cfe06",
-    "history": "6f4d68bc755264e9",
-    "universe": "01435c9de3102a89",
-    "screens": "1091130093546bde"
+    "heis": "5c480e467b896d61",
+    "history": "647f32ce87119967",
+    "universe": "c69a9eab49e8f1ee",
+    "screens": "4e7b5309e323f11a"
    }
   ],
   "Edmonton#777": [
@@ -562,10 +567,10 @@
     "champion": "Vegas",
     "rec": "8c10c2f0d7543857",
     "poll": "295f661b331e6b33",
-    "heis": "73fa0ad3d24f8f05",
-    "history": "750fc294f69f3c05",
-    "universe": "e628133ac36eab99",
-    "screens": "f991117c8ee78662"
+    "heis": "a279f8d0a341d95e",
+    "history": "dd32ba3887285fba",
+    "universe": "2aad0f5476f584f9",
+    "screens": "348700df1bf7905d"
    },
    {
     "year": 2027,
@@ -574,10 +579,10 @@
     "champion": "Edmonton",
     "rec": "cc7fb0643fac8b2b",
     "poll": "79bf6ef92b9a4d20",
-    "heis": "b9d68a50dff3e64a",
-    "history": "aa2ef07033a5d921",
-    "universe": "8e55bcabc7518785",
-    "screens": "e65c75cbaa569647"
+    "heis": "eff619779820d7cc",
+    "history": "d9ffebd40b792628",
+    "universe": "94c4142c8e577bda",
+    "screens": "ccb5c17f7e0c595b"
    }
   ],
   "schedules#60": [

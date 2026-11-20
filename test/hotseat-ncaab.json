@@ -1,5 +1,5 @@
 {
- "fp": "2f3109fa70436a2d",
+ "fp": "ba50e8ea27976cb0",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -315,6 +315,11 @@
    "fp": "2f3109fa70436a2d",
    "from": "7657357d4aa1e05b",
    "note": "Round 92 (engine 15): club styles from rosters; football reads tied to the roster"
+  },
+  {
+   "fp": "ba50e8ea27976cb0",
+   "from": "2f3109fa70436a2d",
+   "note": "round 93: engine 16"
   }
  ],
  "out": [
@@ -328,7 +333,7 @@
       "result": "Lost in the Second Round",
       "grade": "A-"
      },
-     "book": "384dfb04e71b7eaa"
+     "book": "28c9e723ef41a984"
     },
     {
      "team": "North Carolina",
@@ -337,7 +342,7 @@
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "3abf5a1adea9a996"
+     "book": "610308f69815ca5e"
     }
    ]
   },
@@ -351,7 +356,7 @@
       "result": "Lost the national championship",
       "grade": "A+"
      },
-     "book": "0caa380d32b909ba"
+     "book": "48e35fcd804f186e"
     },
     {
      "team": "North Carolina",
@@ -360,7 +365,7 @@
       "result": "Lost in the First Round",
       "grade": "C+"
      },
-     "book": "fe3753e7b36c1670"
+     "book": "2f567e3512e1aa82"
     }
    ]
   },
@@ -374,7 +379,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A"
      },
-     "book": "9c1769c37c529df2"
+     "book": "6e20b035f85339cb"
     },
     {
      "team": "North Carolina",
@@ -383,7 +388,7 @@
       "result": "Lost in the Elite Eight",
       "grade": "A"
      },
-     "book": "efd514b79baf00b0"
+     "book": "abc2b04135662502"
     }
    ]
   }

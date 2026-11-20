@@ -1,5 +1,5 @@
 {
- "fp": "1512fdee0b6bb4b3",
+ "fp": "bb98ebcfcc690eca",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -585,6 +585,11 @@
    "fp": "1512fdee0b6bb4b3",
    "from": "64eaf59e1f4f064d",
    "note": "Round 92 (engine 15): club styles from rosters; the chance counts the opponent's plan's own worth; an engine-14 control matches round 91"
+  },
+  {
+   "fp": "bb98ebcfcc690eca",
+   "from": "1512fdee0b6bb4b3",
+   "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
   }
  ],
  "result": {
@@ -598,8 +603,8 @@
     "poll": "51e8803471f58e5b",
     "heis": "d4811c96ea805499",
     "history": "3538815ad928cc42",
-    "universe": "fcbdf51236b78d50",
-    "screens": "b2b0856789c74044"
+    "universe": "0df96d50992fa4f2",
+    "screens": "2ad3cdb888906c47"
    },
    {
     "year": 2027,
@@ -610,8 +615,8 @@
     "poll": "420fce3c9dc8ec47",
     "heis": "f35ce2ef0417c70d",
     "history": "a2c9178082f79322",
-    "universe": "6a56684b5fee862b",
-    "screens": "bbbe0cddc90b94a4"
+    "universe": "a0648321a95d42fb",
+    "screens": "746b72ccfa474814"
    },
    {
     "year": 2028,
@@ -622,8 +627,8 @@
     "poll": "39fc25e598956bf1",
     "heis": "37c267e86f8c60b7",
     "history": "39aa352199393409",
-    "universe": "1b56ccc44ddad226",
-    "screens": "48a3b4b451bc91bc"
+    "universe": "ff9d536a30a2539a",
+    "screens": "4eb2a3b3bd6b859b"
    },
    {
     "year": 2029,
@@ -634,8 +639,8 @@
     "poll": "f5d61e1dc6d79671",
     "heis": "bbcf9ac5518882ed",
     "history": "0d582f4fa0f7c164",
-    "universe": "71b7e70c36924c75",
-    "screens": "e4576102def61cd9"
+    "universe": "9a950539ba6723c0",
+    "screens": "52eab22539bf3f49"
    }
   ],
   "Tennessee#2024": [
@@ -648,8 +653,8 @@
     "poll": "953ebaeb082958d8",
     "heis": "4bff4545f3a0465b",
     "history": "95baccd0d6e4e455",
-    "universe": "58e8388d43551e86",
-    "screens": "3c18a366446d1dd3"
+    "universe": "bbf0b6e77c4c4266",
+    "screens": "9eeece8b1aa31082"
    },
    {
     "year": 2027,
@@ -660,8 +665,8 @@
     "poll": "cd54198fe5be8fc0",
     "heis": "34a9ec74339188ad",
     "history": "df1337ead148d448",
-    "universe": "b4717dd8c11f436d",
-    "screens": "983f0860ba27411a"
+    "universe": "ab31fd7e6374108c",
+    "screens": "d4bcffa47d8dc9f8"
    },
    {
     "year": 2028,
@@ -672,8 +677,8 @@
     "poll": "481a6a4cc6c3317a",
     "heis": "76f651ff7a09d0b8",
     "history": "b494e4e7f68e5176",
-    "universe": "cb5f9cff2b955d6a",
-    "screens": "d227de415f48fc86"
+    "universe": "317ca4d1496a367e",
+    "screens": "331390b54f6be99e"
    },
    {
     "year": 2029,
@@ -684,8 +689,8 @@
     "poll": "b15181399f3cce1e",
     "heis": "78e3c87a2cc9debd",
     "history": "b6c1e8603e347ff0",
-    "universe": "a8f0eb97728ef0a0",
-    "screens": "845c553d9c3ac016"
+    "universe": "aaaf303630193576",
+    "screens": "a51a64c2f7022ddc"
    }
   ],
   "Detroit#777": [
@@ -698,8 +703,8 @@
     "poll": "65236458839c0858",
     "heis": "053b5464d2ef7fed",
     "history": "27806e8828791efb",
-    "universe": "91b241b1483a8860",
-    "screens": "3b08892d2d6903aa"
+    "universe": "34afd96bbeda268d",
+    "screens": "469b29d099b158b5"
    },
    {
     "year": 2027,
@@ -710,8 +715,8 @@
     "poll": "18e46b9b0b110867",
     "heis": "971394d1aaf45174",
     "history": "e92b71bc260d447a",
-    "universe": "8c5aae40267d04d3",
-    "screens": "a150198745d4a654"
+    "universe": "ec7cdb2f8e019a7c",
+    "screens": "e39092b713d5daba"
    },
    {
     "year": 2028,
@@ -722,8 +727,8 @@
     "poll": "bfeca2576c03f09f",
     "heis": "c72199be24cd35c5",
     "history": "6a36171956d827ef",
-    "universe": "8e58dc99531b9de1",
-    "screens": "0ffb4590872db5ec"
+    "universe": "6fb1c8af7e4473e3",
+    "screens": "43fb867debf2c033"
    }
   ],
   "NY Giants#31337": [
@@ -736,8 +741,8 @@
     "poll": "ecf0ab8169c673ef",
     "heis": "e42c2e6dde1103df",
     "history": "12b4e58fbbd33d5d",
-    "universe": "f8ce1a82e69bb5e2",
-    "screens": "92e952758affe6b5"
+    "universe": "d93d52912945e03f",
+    "screens": "0ddce2606ac44d76"
    },
    {
     "year": 2027,
@@ -748,8 +753,8 @@
     "poll": "ee81071c5ec4e5b2",
     "heis": "b3863581675d5483",
     "history": "0339b7aeedc97105",
-    "universe": "109a1bf021401b94",
-    "screens": "1462743ccd4d44a2"
+    "universe": "dbbfa75f0f8c62a3",
+    "screens": "3facd11277bf8851"
    },
    {
     "year": 2028,
@@ -760,8 +765,8 @@
     "poll": "912f5b51429ceb0f",
     "heis": "4e0a243c2c89fbb6",
     "history": "1ddd358a956bc6df",
-    "universe": "2d4bfc6476f0a57c",
-    "screens": "4412720b6a550371"
+    "universe": "291ec2a3984df15d",
+    "screens": "deea78154f13c20d"
    }
   ],
   "schedules#60": [
