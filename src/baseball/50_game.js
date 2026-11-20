@@ -184,6 +184,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const e=(bat==="home"?gap:-gap)*BS.edge*100/100, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
     const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
+    // engine 17 (round 94): the plan your lineup suits, through its own outcomes (one-sided: twice the gap's log-odds a point)
+    if(ctx.lz&&planAmpV()){ const pl=st.mode[bat], E=bsFitZ(ctx.lz[bat],pl), xe=2*E*BS.edge;
+      if(E&&pl==="aggressive")p.hr*=Math.exp(BS17.ga*2.2*xe); else if(E&&pl==="safe"){ p.s1*=Math.exp(BS17.gs*2.2*xe); p.bb*=Math.exp(BS17.gs*2.2*xe); p.k*=Math.exp(-BS17.gs*1.6*xe) } }
     // engine 5: the hitter's own edge (hx) shows most in his power and his eye, least in his singles (a star's .385 was all singles)
     if(hx&&typeof hx==="object"){ const H5=BS5_HX, h=BS5.hit, q=BS10.s2pow;   // engine 10: by attribute, each term recentred for its spread
       p.hr*=Math.exp(hx.pow*H5.hr-bsHalfVar(H5.hr*h)); p.s2*=Math.exp((q*hx.pow+(1-q)*hx.con)*H5.s2-bsHalfVar(H5.s2*h)*(q*q+(1-q)*(1-q)));
@@ -400,7 +403,26 @@ function spCtx(t,step){
     const k=gk?(gk-1)%4:(step+strHash(t))%5, idx=k<3?BS_SP[k]:BK(BS_SP[k-3]), p=R[idx]; if(!p)return null;
     const mean=(R[BS_SP[0]].r+R[BS_SP[1]].r+R[BS_SP[2]].r+(R[BK(BS_SP[0])]||R[BS_SP[0]]).r+(R[BK(BS_SP[1])]||R[BS_SP[1]]).r)/5;
     return {n:p.n, q:(p.r-mean)*(bsV5()?BS5.q:0.012)} }catch(e){ return null } }
-function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
+/* ============ round 94 (engine 17): the plan your lineup suits ============
+   (design: Ian, after Grokbot: baseball had no fit at all.) The nine regulars' lean, Power against Contact and Eye (the
+   scouting report's roster line reads the same: sportStyleScores), taken against the league's spread: a power lineup
+   suits Swing for the fences (the extra plays as home runs), a contact-and-eye lineup Small ball (more singles and walks,
+   fewer strikeouts). One spread is worth BS17.e Elo (8 points on baseball's curve, 680), held to 15 points (BS17.cap). */
+const BS17_ENV=k=>typeof process!=="undefined"&&process.env&&process.env[k]?+process.env[k]:0;
+const BS17={e:BS17_ENV("BS17_E")||95, cap:BS17_ENV("BS17_CAP")||183, gs:BS17_ENV("BS17_GS")||1.4, ga:BS17_ENV("BS17_GA")||2.3};
+const SPORT_FIT_FROM=17;   // core: the plan is in the chance from engine 17 here (round 94)
+function bsLeanOf(R){ const o=sportStyleScores(R); return o.pull-(o.patient+o.contact)/2 }
+const BS17_SD=new WeakMap();   // the league's spread of that lean, once a season (a Season is a fresh object each season and load)
+function bsLeanSD(){ if(typeof SEA==="undefined"||!SEA||!SEA.roster)return 0; const k=SEA, c=BS17_SD.get(k); if(c&&c.y===SEA.year)return c.v;
+  const v=Object.keys(SEA.roster).filter(t=>Array.isArray(SEA.roster[t])).map(t=>bsLeanOf(SEA.roster[t])), m=v.reduce((a,b)=>a+b,0)/(v.length||1),
+    sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/(v.length||1)); BS17_SD.set(k,{y:SEA.year,v:sd}); return sd }
+/* the lineup's lean in league spreads (positive: power) */
+function bsLeanZ(t){ if(!planAmpV()||typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return 0; const sd=bsLeanSD(); return sd>0?bsLeanOf(SEA.roster[t])/sd:0 }
+function bsFitZ(z,pl){ if(!z||!pl||pl==="balanced")return 0; const v=BS17.e*(pl==="aggressive"?z:-z); return Math.max(-BS17.cap,Math.min(BS17.cap,v)) }
+function sportPlanFit(t,pl){ return planAmpV()?bsFitZ(bsLeanZ(t),pl):0 }
+function sportPlanFitC(t,pl){ return sportPlanFit(t,pl) }
+function sportPlanFitLine(t,pl){ return planAmpV()?planFitWords(t,pl,{safe:"contact and eye",aggressive:"power"}):"" }
+function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {lz:planAmpV()?{home:Math.round(bsLeanZ(h)*1000)/1000,away:Math.round(bsLeanZ(a)*1000)/1000}:undefined, fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
   lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
   rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h,step,LH,BH),away:bsAttrs(a,step,LA,BA)}:undefined} }
 /* engine 10: the attributes of the men the engine reads today (the nine, the bench bat, the day's starter, the long man

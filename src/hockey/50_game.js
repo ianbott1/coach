@@ -95,8 +95,12 @@ const HK12_FITC={safe:{sht:0.044,pas:0.250,skt:0.457,chk:-0.213,def:-0.198,rfx:0
    (scratch r89 pv.js, 60,000 games a point). Clogging it up is worth about 15 at even: more overtime, more loser points */
 const HK12_SHIFT={safe:[-2.4,0.0305], aggressive:[17,-0.033]};
 function hkFitOf(F,T){ if(!F)return 0; let v=0; HK_SHK.forEach(k=>v+=(F[k]||0)*T.sk[k]); HK_GK.forEach(k=>v+=(F[k]||0)*T.g[0][k]); return R_SLOPE*HK12.a*v }
-function sportPlanFit(t,pl){ return hkV12()?hkFitOf(HK12_FIT[pl],hkShapeT(t)):0 }
-function sportPlanFitC(t,pl){ return hkV12()?hkFitOf(HK12_FITC[pl],hkShapeT(t)):0 }
+/* round 94 (engine 17): one spread of fit (7.3 Elo, scratch r94 fitsd.js) to 8 points on hockey's curve (91 Elo), held
+   to 15 points (176). Played through the plan's channel: skating with them makes more shots, clogging it up allows fewer */
+const HK17_ENV=k=>HK12_ENV(k)&&+HK12_ENV(k);
+const HK17={m:HK17_ENV("HK17_M")||12.5, cap:HK17_ENV("HK17_CAP")||176, gs:HK17_ENV("HK17_GS")||1.15, ga:HK17_ENV("HK17_GA")||1.4, g:HK17_ENV("HK17_G")||1.02};   // g: the league's shots back to 6.1 goals (more clubs clog it up on 17)
+function sportPlanFit(t,pl){ return hkV12()?planAmp(hkFitOf(HK12_FIT[pl],hkShapeT(t)),HK17):0 }
+function sportPlanFitC(t,pl){ return hkV12()?planAmp(hkFitOf(HK12_FITC[pl],hkShapeT(t)),HK17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(HK12_SHIFT[pl],gap) }
 /* the same on a person's path (the plan also sets your system: skating with them is a forecheck, clogging it up a trap),
    measured (r89 pvh.js, 60,000 games a point): Ian (round 89) chose to put it in the chance before a game */
@@ -241,6 +245,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     return Math.max(0.3,1+HK12.a*(c.sht*pwOf(mX,"sht")*X.sht-c.def*pwOf(mY,"def")*Y.def)) };
   const finG=(sd,pp)=>{ if(!SH)return 0; const G=SH[other(sd)].g[st.S[other(sd)].backupIn?1:0], c=HK12.c;
     return -HK12.a*(c.rfx*(pp?c.rfxPP:1)*G.rfx+c.gpo*(pp?c.gpoPP:1)*G.gpo) };
+  // engine 17 (round 94): the plan's fit amplified, the extra (in Elo) played through its channel at hockey's own rates
+  // (a point of Passing moves shots by c.pas and is worth HK12.a rating points: c.pas/R_SLOPE a shot factor per Elo)
+  const ampMemo={home:{},away:{}};
+  const ampE=(sd,m)=>{ if(!SH||!planAmpV()||!m||m==="balanced"||!HK12_FIT[m])return 0; const M=ampMemo[sd]; if(M[m]!==undefined)return M[m];
+    const f=hkFitOf((humans[sd]?HK12_FIT:HK12_FITC)[m],SH[sd]); return M[m]=planAmp(f,HK17)-f };
+  const ampF=(sd,mX,mY)=>{ let f=1; if(mX==="safe")f*=1+HK17.gs*ampE(sd,mX)*HK12.c.pas/R_SLOPE; if(mY==="aggressive")f*=1-HK17.ga*ampE(other(sd),mY)*HK12.c.chk/R_SLOPE; return Math.max(0.3,f)*(planAmpV()?HK17.g:1) };
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's system: the better side forechecks, the weaker traps
   const pickSys=(side)=>{
@@ -273,8 +283,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(X.prepd)f*=ANSWERS[X.ans].beats===O.sys?HK.prepped.own:HK.misprep.own;
       if(O.prepd)f*=ANSWERS[O.ans].beats===X.sys?HK.prepped.opp:HK.misprep.opp;
       return f };
-    let lamH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home")*shotF("home",mH,mA);
-    let lamA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away")*shotF("away",mA,mH);
+    let lamH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home")*shotF("home",mH,mA)*ampF("home",mH,mA);
+    let lamA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away")*shotF("away",mA,mH)*ampF("away",mA,mH);
     if(s>=8&&st.h!==st.a){ if(st.h<st.a){lamH*=1+HK.scoreFx;lamA*=1-HK.scoreFx*0.6} else {lamA*=1+HK.scoreFx;lamH*=1-HK.scoreFx*0.6} }
     // a shot's chance: the shooter's edge, and the goalie it's against
     const kH=finSk("home",mH,mA), kA=finSk("away",mA,mH);

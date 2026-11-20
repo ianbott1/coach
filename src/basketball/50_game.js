@@ -288,7 +288,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const ds=a*c.shr*X.sht, d3=a*c.sht*X.sht;   // more threes, and better ones: the extra the two earn together is taken back (ds*d3/share), so a lean holds its worth
     m.share+=ds; m.p3+=d3-ds*d3/(0.38+ds)-a*c.pd*Y.pd; m.p2+=a*(c.fin*X.fin-c.id*Y.id+c.ath*X.ath);
     m.to+=a*(c.athd*Y.ath-c.ply*X.ply); m.or=(m.or||0)+a*c.reb*(X.reb-Y.reb);
-    if(s>=SEGS-2){ m.p2+=a*c.sta*X.sta; m.p3+=a*c.sta*X.sta*2/3 } };   // the closing minutes: who still has legs
+    if(s>=SEGS-2){ m.p2+=a*c.sta*X.sta; m.p3+=a*c.sta*X.sta*2/3 }   // the closing minutes: who still has legs
+    // engine 17 (round 94): the plan's fit amplified, the extra (Elo) through its own shots (a point of Finishing moves the
+    // two-point rate by a*c.fin and is worth a rating points: c.fin/R_SLOPE a rate point per Elo; Shooting the same on threes)
+    if(s<SEGS){ const pl=st.mode[sd], E=ampE(sd,pl); if(E){ if(pl==="safe")m.p2+=BB17.gs*E*c.fin/R_SLOPE; else if(pl==="aggressive")m.p3+=BB17.ga*E*c.sht/R_SLOPE } } };
+  const ampMemo={home:{},away:{}};
+  const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!BB11_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
+    const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]); return M[pl]=planAmp(f,BB17)-f };
   const starOn=(X,s)=>!X.out&&!(s<X.sitTo);
   const playSeg=(s)=>{
     const n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
@@ -484,8 +490,15 @@ function bbShapeOf(R,H){ const T={}; BB_SHK.forEach(k=>T[k]=0); if(!R||typeof at
 const BB11_FIT={safe:{sht:-0.71,fin:0.52}, aggressive:{sht:0.78,fin:-0.56}};
 const BB11_FITC={safe:{sht:-0.39,fin:0.29}, aggressive:{sht:0.51,fin:-0.35}};
 function bbFitOf(F,t){ if(!bbV11()||!F)return 0; const T=bbShapeT(t); return R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin) }
-function sportPlanFit(t,pl){ return bbFitOf(BB11_FIT[pl],t) }
-function sportPlanFitC(t,pl){ return bbFitOf(BB11_FITC[pl],t) }
+/* round 94 (engine 17): one spread of fit (college 29 Elo, the pros 11: scratch r94 fitsd.js) to 8 points on each curve
+   (59 and 39 Elo), held to 15 points; played through the plan's own shots: working it inside makes more of its twos,
+   shortening the game more of its threes */
+const BB17_ENV=k=>BB11_ENV(k)&&+BB11_ENV(k);
+const BB17=Object.assign({ncaab:{m:2.0,cap:113,gs:1,ga:0.87}, nba:{m:3.5,cap:75,gs:1,ga:0.7}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nba"?"nba":"ncaab"],
+  BB17_ENV("BB17_M")?{m:BB17_ENV("BB17_M")}:{}, BB17_ENV("BB17_GS")?{gs:BB17_ENV("BB17_GS")}:{}, BB17_ENV("BB17_GA")?{ga:BB17_ENV("BB17_GA")}:{});
+function bbFitSh(F,T){ return F&&T?R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin):0 }
+function sportPlanFit(t,pl){ return planAmp(bbFitOf(BB11_FIT[pl],t),BB17) }
+function sportPlanFitC(t,pl){ return planAmp(bbFitOf(BB11_FITC[pl],t),BB17) }
 function sportShape(t){ return bbV11()?bbShapeT(t):null }
 /* round 89 (engine 12, the computer's plan): a plan's own worth at a gap, no lean, in wins: Elo on the balanced curve
    [at even, per Elo of gap] (scratch r89 pv.js, 40,000 games a point) */

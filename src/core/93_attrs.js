@@ -132,6 +132,13 @@ function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||
   ["safe","aggressive"].forEach(pl=>{ const f=human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl); if(!(f>=PLAN_PICK_MIN))return;
     const v=f+(typeof sportPlanShift==="function"?sportPlanShift(pl,gap||0):0); if(v>bv){ bv=v; best=pl } });
   return best }
+/* round 94 (engine 17): the plan your roster suits is worth about 8 points of win chance at even for a roster one league
+   spread off the average, up to 15 (Ian, after Grokbot: "make roster fit move the win chance in every game"). Each sport
+   keeps its measured fit (round 88-92: what the plan's own channels already give a lean) and amplifies it by its own M
+   (one spread of fit to 8 points on its curve), held to +/-cap; the extra is played through the plan's own events, so
+   the box score carries it. Balanced is untouched. */
+function planAmpV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=17 }
+function planAmp(f,A){ if(!planAmpV()||!A||!f)return f||0; const v=A.m*f; return Math.max(-A.cap,Math.min(A.cap,v)) }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
 function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||0)):0 }
 /* what your plan is worth tonight on your own path, in Elo on the balanced curve: your roster's fit, and (engine 12,

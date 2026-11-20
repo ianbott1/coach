@@ -76,8 +76,13 @@ const SC12_FITC={safe:{fin:0.025,pas:0.286,pac:-0.169,tck:0.134,hed:0.031,sta:0.
    60,000 games a point). Sitting deep costs about 25 at even (draws: a point, not three) and pays only an underdog */
 const SC12_SHIFT={safe:[7.3,0.026], aggressive:[-25.1,-0.163]};
 function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T[k]); return R_SLOPE*SC12.a*v }
-function sportPlanFit(t,pl){ return scV12()?scFitOf(SC12_FIT[pl],scShapeT(t)):0 }
-function sportPlanFitC(t,pl){ return scV12()?scFitOf(SC12_FITC[pl],scShapeT(t)):0 }
+/* round 94 (engine 17): one spread of fit (11-17 Elo across the pyramid: scratch r94 fitsd.js) to 8 points on soccer's
+   W/D/L model (123 Elo: soccer's draws flatten win chance), held to 15 points (226); played through the plan's channel: taking the game to them makes more
+   chances, sitting deep allows fewer */
+const SC17_ENV=k=>SC12_ENV(k)&&+SC12_ENV(k);
+const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||1};
+function sportPlanFit(t,pl){ return scV12()?planAmp(scFitOf(SC12_FIT[pl],scShapeT(t)),SC17):0 }
+function sportPlanFitC(t,pl){ return scV12()?planAmp(scFitOf(SC12_FITC[pl],scShapeT(t)),SC17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
 /* the same on a person's path (the plan also sets your approach: a press, a low block), measured (r89 pvh.js, 60,000
    games a point): Ian (round 89) chose to put it in the chance before a game */
@@ -246,6 +251,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const makeF=(sd,mX,mY)=>{ if(!SH)return 1; const X=SH[sd], Y=SH[other(sd)], c=SC12.c;
     return Math.max(0.3,1+SC12.a*(c.pas*pwOf(mX,"pas")*X.pas+c.pac*pwOf(mX,"pac")*X.pac+c.hedO*X.hed-c.tck*pwOf(mY,"tck")*Y.tck-c.pos*pwOf(mY,"pos")*Y.pos-c.hedD*Y.hed)) };
   const finF=(sd)=>{ if(!SH)return 1; const X=SH[sd], Y=SH[other(sd)], c=SC12.c; return Math.max(0.3,1+SC12.a*(c.fin*X.fin-c.han*Y.han)) };
+  // engine 17 (round 94): the plan's fit amplified, the extra (Elo) through its channel at soccer's own rates (a point of
+  // Passing moves chances made by a*c.pas and is worth a rating points: c.pas/R_SLOPE a chance factor per Elo)
+  const ampMemo={home:{},away:{}};
+  const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!SC12_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
+    const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]); return M[pl]=planAmp(f,SC17)-f };
+  const ampF=sd=>{ if(!SH||!planAmpV())return 1; let f=SC17.g; const o=other(sd); if(st.mode[sd]==="safe")f*=1+SC17.gs*ampE(sd,"safe")*SC12.c.pas/R_SLOPE;
+    if(st.mode[o]==="aggressive")f*=1-SC17.ga*ampE(o,"aggressive")*SC12.c.pos/R_SLOPE; return Math.max(0.3,f) };
   // Stamina: the legs go slower, and the last half hour's chances are a fitter side's (a drain alone saturated: no legs to lose)
   const legsF=(sd)=>SH?Math.max(0.5,1-SC12.a*SC12.c.sta*SH[sd].sta):1;
   const lateF=(sd,s)=>SH&&s>=12?Math.max(0.5,1+SC12.a*SC12.c.staL*(SH[sd].sta-SH[other(sd)].sta)):1;
@@ -293,7 +305,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       const myLegs=(X.E[2]*0.6+X.E[1]*0.4), theirLegs=(O.E[0]*0.6+O.E[1]*0.4);
       own*=(1-SC.tiredOwn*(1-myLegs))*(1+SC.tiredOpp*(1-theirLegs));
       if(X.red)own*=SC.red.own; if(O.red)own*=SC.red.opp;
-      return own*makeF(side,m[side],m[other(side)])*lateF(side,s);
+      return own*makeF(side,m[side],m[other(side)])*lateF(side,s)*ampF(side);
     };
     const fH=finF("home"), fA=finF("away");
     const G0=scV12()?SC.goals*SC12.g:SC.goals;

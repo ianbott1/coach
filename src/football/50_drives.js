@@ -104,8 +104,15 @@ function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=FB14.c, w=FB14.pw[
   return {td:c.arm*m("arm")*O.arm-c.covT*D.cov, to:-c.acc*m("acc")*O.acc-c.hnd*m("hnd")*O.hnd+c.covI*D.cov+c.tklF*D.tkl,
     brk:c.spd*m("spd")*O.spd-c.tklB*D.tkl-c.spdD*D.spd, gain:c.blk*m("blk")*O.blk-c.rsh*D.rsh,
     sus:c.str*m("str")*O.str+c.accS*m("acc")*O.acc+c.hndS*m("hnd")*O.hnd-c.strD*D.str} }
-function fbSideMods(ctx,planH,planA){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.home||!S.away)return {home:null,away:null};
-  return {home:fbDriveMod(S.home.o,S.away.d,planH), away:fbDriveMod(S.away.o,S.home.d,planA)} }
+function fbSideMods(ctx,planH,planA,hum){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.home||!S.away)return {home:null,away:null};
+  const M={home:fbDriveMod(S.home.o,S.away.d,planH), away:fbDriveMod(S.away.o,S.home.d,planA)};
+  // engine 17 (round 94): the plan's fit amplified, the extra (Elo) through its channel: taking risks scores more touchdowns,
+  // playing it safe keeps more drives going (a point of Arm adds c.arm to the touchdown rate and is worth FB14.a rating
+  // points: c.arm/(a R_SLOPE) a touchdown point per Elo; Accuracy's drives the same through c.accS)
+  if(planAmpV())[["home",planH],["away",planA]].forEach(([sd,pl])=>{ if(!M[sd]||!pl||pl==="balanced")return;
+    const F=fbLg(hum&&hum[sd]?FB14_FIT:FB14_FITC)[pl]; if(!F)return; const f=fbFitOf(F,S[sd]), E=planAmp(f,FB17)-f, u=E/(FB14.a*R_SLOPE);
+    if(pl==="aggressive")M[sd].td+=FB17.ga*u*FB14.c.arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*FB14.c.accS });
+  return M }
 /* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
    path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */
 const FB14_FIT={nfl:{safe:{"o.arm":-0.371,"o.acc":0.495,"o.spd":-0.367,"o.hnd":0.495,"o.blk":0.515}, aggressive:{"o.arm":0.483,"o.acc":-0.422,"o.spd":0.492,"o.hnd":-0.422,"o.blk":-0.479}},
@@ -118,8 +125,12 @@ const FB14_SHIFT={nfl:{safe:[-4.5,0.2432],aggressive:[6.7,-0.3604]}, cfb:{safe:[
 const FB14_SHIFTH={nfl:{safe:[-7.6,0.2318],aggressive:[12,-0.3529]}, cfb:{safe:[-8,0.1552],aggressive:[10.1,-0.2395]}};   // 100,000 games a point
 const fbLg=T=>T[LEAGUE.id]||T.cfb;
 function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
-function sportPlanFit(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)):0 }
-function sportPlanFitC(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)):0 }
+/* round 94 (engine 17): one spread of fit (college 35 Elo, the pros 24: scratch r94 fitsd.js) to 8 points on each curve
+   (57 and 43 Elo), held to 15 points (111, 83) */
+const FB17=Object.assign({cfb:{m:1.6,cap:111,gs:1.6,ga:1.1}, nfl:{m:1.8,cap:83,gs:1.4,ga:1}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
+  FB14_ENV("FB17_M")?{m:+FB14_ENV("FB17_M")}:{}, FB14_ENV("FB17_GS")?{gs:+FB14_ENV("FB17_GS")}:{}, FB14_ENV("FB17_GA")?{ga:+FB14_ENV("FB17_GA")}:{});
+function sportPlanFit(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)),FB17):0 }
+function sportPlanFitC(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)),FB17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
 function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
 /* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */
@@ -265,7 +276,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     baseH:planH||"balanced", baseA:planA||"balanced",
     used:{}, rng:rng
   };
-  const M=fbSideMods(opts.ctx,planH||"balanced",planA||"balanced");   // engine 14: each side's shape against the other's
+  const M=fbSideMods(opts.ctx,planH||"balanced",planA||"balanced",opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:null);   // engine 14: each side's shape against the other's
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
@@ -469,7 +480,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
-  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA); return home?M.home:M.away };   // engine 14 (the plan as it stands)
+  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA,humans); return home?M.home:M.away };   // engine 14 (the plan as it stands)
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; if(FB_ANSWERS[a].beats!==D.sch)return FB_READ.wrong;
     const f=fbReadFit(a,ctx,sd); return f===1?FB_READ.right:{td:FB_READ.right.td*f, fg:FB_READ.right.fg*f, to:FB_READ.right.to*f} };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
