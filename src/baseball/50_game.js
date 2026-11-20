@@ -40,6 +40,7 @@ function bsV5(){ return ENGINE_V>=5 }
    The decisions are the scorer's: the win to the pitcher of record when his side took the lead for good (a starter
    short of five innings gives it to the first reliever), the loss to the pitcher who was on when they fell behind for
    good, the save to the last man if he came in to protect one to three runs. */
+const BS16={gb:+((typeof process!=="undefined"&&process.env&&process.env.BS16_GB)||0.3), x:+((typeof process!=="undefined"&&process.env&&process.env.BS16_X)||-0.009), e:+((typeof process!=="undefined"&&process.env&&process.env.BS16_E)||0.98)};   // round 93: productive grounders, and the run level
 const BS6={stamCut:+((typeof process!=="undefined"&&process.env&&process.env.BS6_SC)||1), x:+((typeof process!=="undefined"&&process.env&&process.env.BS6_X)||-0.005), send:+((typeof process!=="undefined"&&process.env&&process.env.BS6_SEND)||0.70), burn:+((typeof process!=="undefined"&&process.env&&process.env.BS6_BURN)||0.45), fast:+((typeof process!=="undefined"&&process.env&&process.env.BS6_FAST)||0.28), avg:+((typeof process!=="undefined"&&process.env&&process.env.BS6_AVG)||0.16)};
 const BS_SPEED6=[["a burner",0.14,"burn"],["fast",0.08,"fast"],["fast",0.08,"fast"],["fast",0.08,"fast"],["fast",0.08,"fast"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],
   ["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["average",0,"avg"],["slow",-0.12,"slow"],["slow",-0.12,"slow"],["slow",-0.12,"slow"],["slow",-0.12,"slow"]];
@@ -181,8 +182,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };
   /* one plate appearance: the batting side (bat), the side in the field (fs) */
   function pa(bat,fs,extra,hx){
-    const e=(bat==="home"?gap:-gap)*BS.edge*100/100, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
-    const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
+    const e=(bat==="home"?gap:-gap)*BS.edge*(ENGINE_V>=16?BS16.e:1), pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
+    const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0)+(ENGINE_V>=16?BS16.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 5: the hitter's own edge (hx) shows most in his power and his eye, least in his singles (a star's .385 was all singles)
     if(hx&&typeof hx==="object"){ const H5=BS5_HX, h=BS5.hit, q=BS10.s2pow;   // engine 10: by attribute, each term recentred for its spread
@@ -269,6 +270,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     else{ // an out in play
       if(b[0]&&H.outs<2&&rng.r()<BS.dp){ H.outs+=2; b[0]=0; if(H.outs<3&&b[2]&&rng.r()<0.4){ score(1); b[2]=0 } H.ev.push({k:"dp",side:fs,u:rng.int(100),inn:inn()}) }
       else if(b[2]&&H.outs<2&&rng.r()<BS.sf){ H.outs++; b[2]=0; score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) }
+      // round 93 (engine 16): a ground ball the other way moves everyone up a base, the man on third home (a tester: the bases
+      // loaded, a grounder to first, and nobody moved); the run level is put back with BS16.x
+      else if(ENGINE_V>=16&&H.outs<2&&(b[0]||b[1]||b[2])&&rng.r()<BS16.gb){ H.outs++; const n=b[2]; b[2]=b[1]; b[1]=b[0]; b[0]=0;
+        if(n){ score(1); H.ev.push({k:"rbi",side:bat,n:1,hit:0,gb:1,u:rng.int(100),inn:inn(),slot:slot,nm:nm}) } }
       else{ H.outs++; if(H.outs<3&&b[1]&&!b[2]&&rng.r()<0.3){ b[2]=1; b[1]=0 } } }
     if(H.outs>=3)L.lob+=b[0]+b[1]+b[2];
     // round 70, for the highlights only (no draws, nothing the game reads): who was on, who pitched, the game's last out

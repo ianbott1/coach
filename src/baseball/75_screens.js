@@ -27,7 +27,7 @@ function bsEventText(g,e){
   const who=e.nm||bsBatter(tm,e.slot!==undefined?e.slot:u%9,u)||"their hitter";   // round 56: the engine names him
   if(e.k==="hr")return {team:tm,tag:e.n===4?"SLAM":"HR",text:`${who}: ${HR_WORD[Math.min(3,(e.n||1)-1)]} ${pickOf(HR_HOW,u>>2)}, ${hrFeet(e)} feet`};
   if(e.k==="rbi"){ if(e.hit<0)return {team:tm,tag:"RUN",text:e.hit===-2?`${who} is hit by a pitch with the bases loaded: a run scores`:`${who} draws a bases-loaded walk: a run scores`};
-    return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?`drives in ${["","one","two","three"][e.n]||e.n} with`:"brings one home with"} a ${HIT_WORD[e.hit]}`:`${who} lifts a sacrifice fly: a run scores`} }
+    return {team:tm,tag:"RUN",text:e.hit?`${who} ${e.n>1?`drives in ${["","one","two","three"][e.n]||e.n} with`:"brings one home with"} a ${HIT_WORD[e.hit]}`:e.gb?`${who} grounds out, and a run scores`:`${who} lifts a sacrifice fly: a run scores`} }
   if(e.k==="kk")return {team:tm,tag:"",text:pickOf(KK_LINE,u)(e.on>=3?"the bases loaded":"two on")};
   if(e.k==="dp")return {team:tm,tag:"",text:pickOf(DP_LINE,u)};
   if(e.k==="sb")return {team:tm,tag:"SB",text:`${who} steals second`};

@@ -15,7 +15,7 @@ const HL_SPORT=(function(){
       if(e.k==="hr"){ if(mode!=="goals"||close||e.n>=3)C.push([9+e.n,e]); return }
       if(mode==="goals")return;
       if(e.k==="rbi"&&e.hit>=1&&close)C.push([e.hit+e.n+(late?1:0),e]);
-      else if(e.k==="rbi"&&e.hit===0&&close)C.push([3+(late?1:0),e]);          // a sacrifice fly
+      else if(e.k==="rbi"&&e.hit===0&&!e.gb&&close)C.push([3+(late?1:0),e]);          // a sacrifice fly
       else if(e.k==="dp"&&close&&late)C.push([4,e]);
       else if(e.k==="kk"&&close&&(e.on||0)>=2)C.push([3+(late?1:0),e]);
       else if(e.k==="cs"&&close&&late)C.push([2,e]); });
