@@ -210,12 +210,12 @@ function endgameDrive(rng,res,d,left,offE,defE,sm){
   if(!FB_END||left>2||d>=0)return res;
   const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
     if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
-      note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
+      note:`needed ${d<=-4?"a touchdown":"points"}: went for it on ${fourthAnd(tg,res.stall)} and came up short`};
     const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent",null,sm);
-    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
+    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on ${fourthAnd(tg,res.stall)}, then scored`}
       :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
-    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
-    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on fourth and ${tg}, then scored`:`converted on fourth and ${tg}, drive stalled later`}) };
+    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on ${fourthAnd(tg,res.stall)}, then turned it over on downs`};
+    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on ${fourthAnd(tg,res.stall)}, then scored`:`converted on ${fourthAnd(tg,res.stall)}, drive stalled later`}) };
   if(res.kind==="FG"&&d<=-4){                            // three points don't help: from the red zone, go for the end zone
     if(rng.r()<0.40)return {pts:7,kind:"TD",stall:100,note:"passed up the field goal and scored"};
     return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,note:"needed a touchdown: passed up the field goal and came up short"} }
@@ -398,6 +398,9 @@ function fbReadCall(stage,T,T2,last,cur){
 /* A game you step through one drive at a time. next() returns either a drive,
    a decision that needs an answer, or done. */
 
+/* "fourth and 5", or "fourth and goal" when the line to gain is past the goal line (round 93, engine 16) */
+function fourthAnd(tg,stall,cap){ const goal=typeof ENGINE_V!=="undefined"&&ENGINE_V>=16&&stall!=null&&tg>=100-stall;
+  return (cap?"Fourth":"fourth")+" and "+(goal?"goal":tg) }
 /* A decision offered when a drive dies in makeable territory. */
 function fourthDownCall(stall, togo, offElo, defElo){
   // fourth and 10 or more: left to the assistant. It moved 4.7 points a call, 60% under 3 (test/call-weight.js,
@@ -408,15 +411,17 @@ function fourthDownCall(stall, togo, offElo, defElo){
   const gp = Math.round(goOdds(togo, offElo, defElo)*100);
   const fp = Math.round(fgOdds(stall)*100);
   const where = stall>=50 ? `their ${yard}` : `your own ${stall}`;
+  // round 93: inside their 10 with the line to gain past the goal line, it's fourth and goal (a tester: "4th and 5 at their 4")
+  const fd = fourthAnd(togo,stall,true);
   if (stall >= 62) {
-    return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
+    return {k:"fourth", h:`${fd} at ${where}`,
       b:`A ${dist}-yard attempt from here, or keep the drive alive.`,
       opts:[["go",`Go for it \u00b7 ${gp}% to convert`],
             ["kick",`Kick it \u00b7 ${dist} yds \u00b7 ${fp}% to make`],
             stall<78?["punt","Pin them deep"]:null].filter(Boolean)};
   }
   if (stall >= 44) {
-    return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
+    return {k:"fourth", h:`${fd} at ${where}`,
       // too far to kick, and it says so (Grokbot: "72 yards is a long way for the kicker", and Go or Punt
       // with no word on why there was no kick)
       b:`Too far to kick: it would be a ${dist}-yard try. Go for it, or punt and flip the field.`,
@@ -424,7 +429,7 @@ function fourthDownCall(stall, togo, offElo, defElo){
   }
   // fourth and short in your own half: the call coaches are second-guessed on most (added Nov 2026)
   if (stall >= 30 && togo <= 2) {
-    return {k:"fourth", h:`Fourth and ${togo} at ${where}`,
+    return {k:"fourth", h:`${fd} at ${where}`,
       b:`Short yardage in your own half. Keep the drive alive, or punt and play the field?`,
       opts:[["go",`Go for it \u00b7 ${gp}% to convert`],["punt","Punt it away"]]};
   }
@@ -542,12 +547,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
             const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent",null,smOf(home));
             res=r2;
             res.converted=true;
-            res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
-                                : `converted on fourth and ${tg}, drive stalled later`;
+            res.note = r2.pts>0 ? `converted on ${fourthAnd(tg,P.res.stall)}, then scored`
+                                : `converted on ${fourthAnd(tg,P.res.stall)}, drive stalled later`;
           } else {
             res={pts:0,kind:"DOWNS",stall:P.res.stall,
                  converted:false,
-                 note:`went for it on fourth and ${tg} and came up short`};
+                 note:`went for it on ${fourthAnd(tg,P.res.stall)} and came up short`};
           }
         } else if(choice==="kick"){
           res = rng.r()<fgOdds(P.res.stall)
@@ -706,13 +711,18 @@ function possLeft(left,mineNext){
 const ONSIDE_P=(LEAGUE.tuning&&LEAGUE.tuning.onside)||0.12;   // about one in eight recovered, under today's kickoff rules
 function onsideCall(diff,left){
   // left: possessions to go, theirs next. Kick deep and they get theirs; recover it and theirs is gone.
-  const need=-diff<=3?"a field goal":-diff<=8?"a touchdown":"two scores";
+  const need=-diff<=3?"a field goal":-diff<=8?"a touchdown":"two scores", you=Math.floor(left/2);
+  // round 93: with no possession left for you, a deep kick hands them the game (a tester: the advice said "one more stop")
+  const ask=you===0?"Kick it deep and you won't see the ball again unless they give it away: the onside kick is the way back."
+    :-diff>8&&you<2?"Kick it deep and you get one more possession for the two scores you need: the onside kick buys another."
+    :"Kick it deep and make a stop, or try the onside kick?";
   return {k:"onside",h:`Down ${-diff} after your score`,
-    b:`You need ${need}. Kick it deep and make a stop, or try the onside kick? About one in eight is recovered; a miss hands them a short field. ${possLeft(left,false)}`,
-    opts:[["onside","Onside kick"],["normal","Kick it deep, as your assistant would"]],left:left,diff:diff};
+    b:`You need ${need}. ${ask} About one in eight is recovered; a miss hands them a short field. ${possLeft(left,false)}`,
+    opts:[["onside","Onside kick"],["normal","Kick it deep, as your assistant would"]],left:left,diff:diff,you:you};
 }
 function defendCall(diff,left){
-  const what=diff===0?"Any score beats you.":diff<=3?"A field goal "+(diff===3?"ties it":"beats you")+".":"Only a touchdown beats you.";
+  // round 93: up 7 a touchdown ties it, up 8 it takes a touchdown and two (a tester: "only a touchdown beats a seven-point lead")
+  const what=diff===0?"Any score beats you.":diff<=3?"A field goal "+(diff===3?"ties it":"beats you")+".":diff<=6?"Only a touchdown beats you.":diff===7?"Only a touchdown ties it.":"Only a touchdown and a two-point try tie it.";
   return {k:"defend",h:diff===0?"Tied, and they have the ball":`Up ${diff}, and they have the ball`,
     b:`${what} Prevent defense gives up yards and field goals to stop the big play; pressure takes the ball away more often and gives up more touchdowns. ${possLeft(left,false)}`,
     opts:[["prevent","Prevent: nothing deep"],["pressure","Bring pressure"],["normal","Play it straight, as your assistant would"]],left:left,diff:diff};

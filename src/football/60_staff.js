@@ -234,8 +234,11 @@ function staffTake(dp, ctx){
   else if(dp.k==="onside"){
     const d=dp.diff||diff;
     R.push({who:"bears", pick:"onside", line:bearYell("chase",seed)});
-    R.push({who:"pearl", pick:d<=-9?"onside":"normal", line:pearlSay(d<=-9
-      ? `We need two scores and there isn't time for them to have the ball. Onside!`
+    // round 93: kicking deep only works if a possession is left for us: none left (or too few for two scores), onside
+    const you=dp.you!==undefined?dp.you:2, short=you===0||(d<=-9&&you<2);
+    R.push({who:"pearl", pick:short?"onside":"normal", line:pearlSay(you===0
+      ? `If we kick it deep we never get the ball back! It has to be the onside kick!`
+      : short?`We need two scores and there isn't time for them to have the ball. Onside!`
       : `One more stop and we get it back! Kick it deep and trust the defense.`,seed)});
     R.push({who:"capy", pick:"normal", line:`One in eight, I believe. And a short field for them the other seven times. I'd kick it deep.`});
   }
@@ -243,7 +246,7 @@ function staffTake(dp, ctx){
     const d=dp.diff;
     R.push({who:"bears", pick:"pressure", line:bearYell("protect",seed)});
     R.push({who:"pearl", pick:d>=4?"prevent":"pressure", line:pearlSay(d>=4
-      ? `Only a touchdown beats us! Keep everything in front and let them kick.`
+      ? (d<=6?`Only a touchdown beats us! Keep everything in front and let them kick.`:`Only a touchdown can catch us! Keep everything in front and let them kick.`)
       : d===0?`Any score beats us, so a field goal's as bad as a touchdown. Go and get the ball!`:`A field goal ${d===3?"ties it":"beats us"}, so letting them kick doesn't help. Go after them!`,seed)});
     R.push({who:"capy", pick:"prevent", line:`It seems to me the big play is what loses these. I'd keep everyone deep, whatever the score.`});
   }
