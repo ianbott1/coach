@@ -7,7 +7,7 @@ const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
 const mk=()=>{const m={exports:{}};new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);return m.exports.load};
 // the older build: OLD=dir, or the pages of the last engine-3 release (round 73, 787c225) out of the repository's history
 // (round 75: and engine 4's, round 74 at 422d434: a season begun there replays too)
-const OLD_REVS=['787c225','422d434','d4e4511','ccb8bef','45aadc8','6ca161d','b56cce8','0be3e6a','953f097','30013f3','98999e1','a2b6b14'];   // engines 3 to 14 (rounds 73, 74, 76, 77, 79, 84, 86, 87, 88, 89, 90, 91)
+const OLD_REVS=['787c225','422d434','d4e4511','ccb8bef','45aadc8','6ca161d','b56cce8','0be3e6a','953f097','30013f3','98999e1','a2b6b14','e8f58c2'];   // engines 3 to 15 (rounds 73, 74, 76, 77, 79, 84, 86, 87, 88, 89, 90, 91, 92)
 const pages=rev=>{ const d=path.join(require('os').tmpdir(),'engine-replay-'+rev); try{ fs.mkdirSync(d,{recursive:true});
   for(const c of ['football-coach','football-coach-pro','basketball-coach','basketball-coach-pro','hockey-coach-pro','soccer-coach','baseball-coach-pro']){ const f=path.join(d,c+'.html');
     if(!fs.existsSync(f))fs.writeFileSync(f,require('child_process').execSync(`git show ${rev}:${c}.html`,{cwd:path.join(__dirname,'..'),maxBuffer:64<<20})) } }catch(e){ return path.join(d,'missing') } return d };
