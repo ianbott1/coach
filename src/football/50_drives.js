@@ -210,12 +210,12 @@ function endgameDrive(rng,res,d,left,offE,defE,sm){
   if(!FB_END||left>2||d>=0)return res;
   const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
     if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
-      note:`needed ${d<=-4?"a touchdown":"points"}: went for it on ${fourthAnd(tg,res.stall)} and came up short`};
+      note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
     const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent",null,sm);
-    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on ${fourthAnd(tg,res.stall)}, then scored`}
+    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
       :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
-    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on ${fourthAnd(tg,res.stall)}, then turned it over on downs`};
-    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on ${fourthAnd(tg,res.stall)}, then scored`:`converted on ${fourthAnd(tg,res.stall)}, drive stalled later`}) };
+    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
+    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on fourth and ${tg}, then scored`:`converted on fourth and ${tg}, drive stalled later`}) };
   if(res.kind==="FG"&&d<=-4){                            // three points don't help: from the red zone, go for the end zone
     if(rng.r()<0.40)return {pts:7,kind:"TD",stall:100,note:"passed up the field goal and scored"};
     return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,note:"needed a touchdown: passed up the field goal and came up short"} }
@@ -547,12 +547,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
             const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent",null,smOf(home));
             res=r2;
             res.converted=true;
-            res.note = r2.pts>0 ? `converted on ${fourthAnd(tg,P.res.stall)}, then scored`
-                                : `converted on ${fourthAnd(tg,P.res.stall)}, drive stalled later`;
+            res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
+                                : `converted on fourth and ${tg}, drive stalled later`;
           } else {
             res={pts:0,kind:"DOWNS",stall:P.res.stall,
                  converted:false,
-                 note:`went for it on ${fourthAnd(tg,P.res.stall)} and came up short`};
+                 note:`went for it on fourth and ${tg} and came up short`};
           }
         } else if(choice==="kick"){
           res = rng.r()<fgOdds(P.res.stall)

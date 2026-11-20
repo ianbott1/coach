@@ -1540,9 +1540,9 @@ function readsHTML(step){
     // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
     // not counted either way.
     if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
-    // round 93: an in-game read that followed what the screen's numbers showed is never marked wrong (Muse, Instinct: graded
-    // wrong for reading the evidence as it stood); a surprise is said as one, and not counted
-    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", what the numbers on screen pointed to. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
+    // round 93: an in-game read that answered the style tonight's numbers fit best (dp.best, from the same counts the call
+    // shows) is never marked wrong (testers: graded wrong for reading the evidence as it stood); said as a surprise, not counted
+    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", the answer to what tonight's numbers fit best. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
   // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result

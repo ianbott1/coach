@@ -48,7 +48,7 @@ const HL_SPORT=(function(){
   function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.lost||d.stall||50)), len=Math.round(3+r()*8);
     const m=/recovered by (.*)$/.exec(rowText(L,d));
     return Object.assign(base(L,d),{kind:"fum",pass:false,los,rcv:1,len,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:m?surname(m[1]):"",base:3200,reveal:0.66}) }
-  function mkDowns(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?23:37))>>>0), los=Math.max(20,Math.min(97,d.stall||(d.start||30)+20+Math.round(r()*20))), tg0=d.togo||(/fourth and goal/.test(d.note||"")&&d.stall?100-d.stall:0)||+((/fourth and (\d+)/.exec(d.note||"")||[])[1])||2, tg=Math.max(1,Math.min(9,tg0)), len=Math.max(0,tg-1-Math.floor(r()*Math.min(3,tg)));
+  function mkDowns(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?23:37))>>>0), los=Math.max(20,Math.min(97,d.stall||(d.start||30)+20+Math.round(r()*20))), tg0=d.togo||+((/fourth and (\d+)/.exec(d.note||"")||[])[1])||2, tg=Math.max(1,Math.min(9,tg0)), len=Math.max(0,tg-1-Math.floor(r()*Math.min(3,tg)));
     return Object.assign(base(L,d),{kind:"downs",pass:false,los,rcv:1,len,togo:tg,catchY:Math.min(99,los+len),lane:0.4+r()*0.2,who:"",base:3000,reveal:0.86}) }
   function mkConv(L,d){ const r=mulberry32(((d.n||1)*7919+(d.start||0)*131+(d.home?41:43))>>>0), tg=Math.max(1,Math.min(9,+(/converted on fourth and (\d+)/.exec(d.note||"")||[0,2])[1])),
       los=Math.max(25,Math.min(90,(d.start||25)+12+Math.round(r()*30))), len=tg+Math.round(r()*Math.min(6,95-los-tg));
@@ -225,7 +225,7 @@ const HL_SPORT=(function(){
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} ball`;   // round 67: no "12 yards out" before it's done
     const te=c.kind==="fum"?c.reveal:tEnd;
-    const end=t>=te&&c.kind==="conv"?`FIRST DOWN! ${c.len} yards on fourth and ${c.togo>=100-c.los?"goal":c.togo}`:t>=te&&c.kind==="int"&&c.ret!=null&&t>=0.97?`INTERCEPTED!${c.who?" "+c.who+",":""} ${c.ret?"returned "+c.ret+" yard"+(c.ret===1?"":"s"):"no return"}`:t>=te&&c.kind==="downs"?`STOPPED! ${c.len?c.len+" yard"+(c.len===1?"":"s")+",":"No gain,"} ${c.togo} needed`:t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
+    const end=t>=te&&c.kind==="conv"?`FIRST DOWN! ${c.len} yards on fourth and ${c.togo}`:t>=te&&c.kind==="int"&&c.ret!=null&&t>=0.97?`INTERCEPTED!${c.who?" "+c.who+",":""} ${c.ret?"returned "+c.ret+" yard"+(c.ret===1?"":"s"):"no return"}`:t>=te&&c.kind==="downs"?`STOPPED! ${c.len?c.len+" yard"+(c.len===1?"":"s")+",":"No gain,"} ${c.togo} needed`:t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
     if(c.kind==="downs"||c.kind==="conv"){ const [mx,my]=P(W,H,c,Math.min(99.5,c.los+c.togo),0), [mx2,my2]=P(W,H,c,Math.min(99.5,c.los+c.togo),1); x.save(); x.strokeStyle="#F2D24B"; x.lineWidth=2; x.beginPath(); x.moveTo(mx,my); x.lineTo(mx2,my2); x.stroke(); x.restore() }   // the line to gain
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink);
   }
