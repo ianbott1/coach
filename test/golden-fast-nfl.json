@@ -1,5 +1,5 @@
 {
- "fp": "df8d8dac091b3561",
+ "fp": "9f95655c10f0060d",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -45,21 +45,26 @@
    "fp": "df8d8dac091b3561",
    "from": "aa33e0415044cdc2",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "9f95655c10f0060d",
+   "from": "df8d8dac091b3561",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "68bfd2a9c3fcf5eb",
-    "post": "3f324aa723decefe",
-    "champion": "LA Rams",
-    "rec": "d47dcef8ffb14748",
-    "poll": "8ec1f59720a74c16",
-    "heis": "4be5c65f9dd7b59e",
-    "history": "1d05fe63e728b720",
-    "universe": "4aca29c52dea663d",
-    "screens": "f0f297a55c5ef1da"
+    "games": "a472ecd28d817d03",
+    "post": "4ea9aacce686e59d",
+    "champion": "Buffalo",
+    "rec": "d007a16a00f65e61",
+    "poll": "51e8803471f58e5b",
+    "heis": "d4811c96ea805499",
+    "history": "cc32264a47f41afc",
+    "universe": "fcbdf51236b78d50",
+    "screens": "adfff21d88019273"
    }
   ]
  }

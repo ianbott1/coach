@@ -1,5 +1,5 @@
 {
- "fp": "3dab86698d327f2e",
+ "fp": "7098539e3a32ed8b",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -500,59 +500,64 @@
    "fp": "3dab86698d327f2e",
    "from": "a944a23ae0074b92",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "7098539e3a32ed8b",
+   "from": "3dab86698d327f2e",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "a45a3730736b4409",
-    "post": "fc8f46ef0e7fd5e4",
-    "champion": "Minnesota",
-    "rec": "349cb5f4dec010da",
-    "poll": "cce4fcc1c41ffa8d",
-    "heis": "0e6ceba0babc8976",
-    "history": "724480b7073c4379",
-    "universe": "7d887df1e7aab70c",
-    "screens": "c6fabf0b4f3d3676"
+    "games": "2d31fe3b0edb678a",
+    "post": "cfa95399d0790ec8",
+    "champion": "Denver",
+    "rec": "405be4d944391813",
+    "poll": "add7dd1a0aac66b7",
+    "heis": "2e72ff9c0de373c3",
+    "history": "d6f5bdf01988abf5",
+    "universe": "f33a5b12ae8b97e1",
+    "screens": "a9419101b769ef85"
    },
    {
     "year": 2027,
-    "games": "92c78982a22e0e19",
-    "post": "a0b438f2ac652e97",
+    "games": "4e6fa2471b6a6121",
+    "post": "691e5e3da99c02a3",
     "champion": "San Antonio",
-    "rec": "15f793908154e793",
-    "poll": "bc17add9b7adea52",
-    "heis": "69ca3e871808d3fc",
-    "history": "5007b8de89a74066",
-    "universe": "dc420c32578642f4",
-    "screens": "fda136432bb4937f"
+    "rec": "78189c849074debe",
+    "poll": "07a58cff6ccd8b0a",
+    "heis": "ff05d9be0d818f01",
+    "history": "fb73b88581444424",
+    "universe": "8e122a2128158222",
+    "screens": "e308a6ce3a030276"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "c3e01678bf257786",
-    "post": "c04cea105feb3b5d",
-    "champion": "Oklahoma City",
-    "rec": "ce6293f5357fa46f",
-    "poll": "4072ff30d801f4ba",
-    "heis": "4cc42d6fdd7504a9",
-    "history": "aff8a72e5e1ba960",
-    "universe": "4bf3dd7972fde3c7",
-    "screens": "b054822d43fee17f"
+    "games": "c8d005910fee52ab",
+    "post": "34157973817688bd",
+    "champion": "Toronto",
+    "rec": "72ec5bcc3481fdd2",
+    "poll": "b0aa4188c55d7e1c",
+    "heis": "0741786ae691fa38",
+    "history": "3d938fc6990fd2fd",
+    "universe": "dc8787f6a713a7fa",
+    "screens": "8d421c2da5c8311e"
    },
    {
     "year": 2027,
-    "games": "acb0517d6cdf77bb",
-    "post": "f1d2d1c03756cbc5",
-    "champion": "Houston",
-    "rec": "6055c876cd7a75e1",
-    "poll": "504b97d4538520e9",
-    "heis": "23107d98b79442e0",
-    "history": "8da6f285708862db",
-    "universe": "89582bbde4faf7b5",
-    "screens": "8bee084fa9200a50"
+    "games": "26159cad7572883f",
+    "post": "bf3c6da5913669aa",
+    "champion": "Oklahoma City",
+    "rec": "01f936bb9544f40f",
+    "poll": "59af4de43247b921",
+    "heis": "f8762bc6b23e1594",
+    "history": "ced8bea6a07a425f",
+    "universe": "40b1f79b16f044c9",
+    "screens": "320d591c7f14f175"
    }
   ],
   "schedules#60": [

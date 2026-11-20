@@ -1,5 +1,5 @@
 {
- "fp": "f214db05f92f6d16",
+ "fp": "491cb0d82df7720c",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -40,21 +40,26 @@
    "fp": "f214db05f92f6d16",
    "from": "93d21347f4221c4f",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "491cb0d82df7720c",
+   "from": "f214db05f92f6d16",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "b6a0951069965316",
-    "post": "928d3647aed7e7d5",
-    "champion": "Kentucky",
-    "rec": "d29240aaffbe6ae4",
-    "poll": "ba45948789d433d0",
-    "heis": "9095bc65653d64bc",
-    "history": "5feb9c1e14f3173e",
-    "universe": "9561cdad145bfb4b",
-    "screens": "57cc5ca5a101178a"
+    "games": "429a9fd123cf52b2",
+    "post": "2c966e3df483b56c",
+    "champion": "North Carolina",
+    "rec": "104b3096641d19c3",
+    "poll": "4bc3c7a768f80a03",
+    "heis": "e68426346440a7dc",
+    "history": "cfe78f1accc46ed5",
+    "universe": "29f584c2d60aae93",
+    "screens": "59acd2537d4fe27c"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "80a84951498d6141",
+ "fp": "cfba12f9ece58510",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -50,21 +50,26 @@
    "fp": "80a84951498d6141",
    "from": "49e5a3b15a6bd094",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "cfba12f9ece58510",
+   "from": "80a84951498d6141",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "c1e703fadbd9dbbd",
-    "post": "8d422e4dcec12f11",
-    "champion": "NY Islanders",
-    "rec": "235dd03943e2517b",
-    "poll": "e4752cadc3527a03",
-    "heis": "189cb60089db4620",
-    "history": "89ae462b230a19eb",
-    "universe": "cbd9e7eee1204acd",
-    "screens": "61bb939c2961c9f4"
+    "games": "26d1b3b139f4b273",
+    "post": "4dfaca876926f654",
+    "champion": "Toronto",
+    "rec": "55a0011909aa30d9",
+    "poll": "68a648891f520e55",
+    "heis": "8bf90a5ec934f0ed",
+    "history": "975a40338827001b",
+    "universe": "cbfb329d916b2b7e",
+    "screens": "848525589f2f5bf0"
    }
   ]
  }

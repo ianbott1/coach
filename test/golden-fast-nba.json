@@ -1,5 +1,5 @@
 {
- "fp": "23c7f81f35e71bc7",
+ "fp": "006a3416bb130180",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -45,21 +45,26 @@
    "fp": "23c7f81f35e71bc7",
    "from": "6ec03b9eec0c5edc",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "006a3416bb130180",
+   "from": "23c7f81f35e71bc7",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "a45a3730736b4409",
-    "post": "fc8f46ef0e7fd5e4",
-    "champion": "Minnesota",
-    "rec": "349cb5f4dec010da",
-    "poll": "cce4fcc1c41ffa8d",
-    "heis": "0e6ceba0babc8976",
-    "history": "724480b7073c4379",
-    "universe": "7d887df1e7aab70c",
-    "screens": "c6fabf0b4f3d3676"
+    "games": "2d31fe3b0edb678a",
+    "post": "cfa95399d0790ec8",
+    "champion": "Denver",
+    "rec": "405be4d944391813",
+    "poll": "add7dd1a0aac66b7",
+    "heis": "2e72ff9c0de373c3",
+    "history": "d6f5bdf01988abf5",
+    "universe": "f33a5b12ae8b97e1",
+    "screens": "a9419101b769ef85"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "6ff03e6c7d0acaf9",
+ "fp": "a1657327598e06e9",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -50,21 +50,26 @@
    "fp": "6ff03e6c7d0acaf9",
    "from": "24d7de78e77bb5cc",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "a1657327598e06e9",
+   "from": "6ff03e6c7d0acaf9",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "7035f8bdc79f1ef9",
-    "post": "df84dda09554213b",
+    "games": "3a545491a66b791f",
+    "post": "4a0c883543c4fd0a",
     "champion": "Manchester City",
-    "rec": "4b2b87d0c1aea84e",
-    "poll": "75245bfea1417250",
-    "heis": "1522f75d20688343",
-    "history": "8b408d01692687fb",
-    "universe": "53865de8001c3ef9",
-    "screens": "edeb2d48ba8e68cc"
+    "rec": "8f9f2980c8fbfd65",
+    "poll": "4ef59f5e7cfcb04e",
+    "heis": "7cde9b9934ac38c8",
+    "history": "e0ec124f750879e1",
+    "universe": "e089db4d5b4facf1",
+    "screens": "4f2afca507d8bd42"
    }
   ]
  }

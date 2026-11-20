@@ -1,5 +1,5 @@
 {
- "fp": "137085ed34932d1d",
+ "fp": "1e8e8b9b6c75d343",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -165,59 +165,64 @@
    "fp": "137085ed34932d1d",
    "from": "9f68ec38af997628",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "1e8e8b9b6c75d343",
+   "from": "137085ed34932d1d",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "60ccc756a48a1a47",
+    "games": "1cfb61114a592f30",
     "post": "5e0fe4dc085a2dbb",
     "champion": "Texas",
-    "rec": "6c6fb3ee020c15d0",
-    "poll": "ef882af51f3262c7",
-    "heis": "66f26d873ae5048f",
-    "history": "083412b3ebbf4097",
-    "universe": "48c39f44038da07e",
-    "screens": "ff60399c044a24a9"
+    "rec": "24ca0ce1a15ba793",
+    "poll": "7e77bfd6c2e868e9",
+    "heis": "6bed3abd357b5037",
+    "history": "ba9e1bbc7b8c0396",
+    "universe": "f0f3a4ed12688c65",
+    "screens": "28aac7d23427d2fc"
    },
    {
     "year": 2027,
-    "games": "1601c4cc3595a95a",
-    "post": "f549787450d3581f",
-    "champion": "Milwaukee",
-    "rec": "6a554e76765c7c05",
-    "poll": "a4610ed83d0f311f",
-    "heis": "61420132dca2d9a9",
-    "history": "b091eb46cbc25620",
-    "universe": "658f50bdf02bedcb",
-    "screens": "b92bebacda7e7600"
+    "games": "f309c31759d99212",
+    "post": "804eb5aea046f03b",
+    "champion": "Houston",
+    "rec": "c92e834d4bbb1079",
+    "poll": "91fbf3c60fa18dfc",
+    "heis": "34e9d4b118af20c9",
+    "history": "e3ef6103b48eea1e",
+    "universe": "e4ee8091cee0d25f",
+    "screens": "84192c6ff807d327"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "53c454c445caf974",
-    "post": "776cee8c28bfb805",
-    "champion": "LA Dodgers",
-    "rec": "395b03e5df5a54d5",
-    "poll": "3d241b5e0176fd0b",
-    "heis": "682449cbdaf8fbe5",
-    "history": "7b15639434cdb66b",
-    "universe": "6d4801d37c953f84",
-    "screens": "81bd449b08cdda84"
+    "games": "9e9294880392a37b",
+    "post": "8a2dcc6abcdfbc0f",
+    "champion": "Arizona",
+    "rec": "4ce31ac263b0313e",
+    "poll": "b6d87dae3b1ad1a0",
+    "heis": "f56a3b2d179cd0af",
+    "history": "1cb3f59b0aec705f",
+    "universe": "ed9718b9422eabdb",
+    "screens": "71af29811481ee96"
    },
    {
     "year": 2027,
-    "games": "a7767015abf91707",
-    "post": "19d7a56eb5ed5a11",
+    "games": "00f7f2b1e16d8ac0",
+    "post": "7ce44a7bf28b1dff",
     "champion": "LA Dodgers",
-    "rec": "14b1b4966cc88e9a",
-    "poll": "a133bdd8d193d51b",
-    "heis": "69ef1f816846ca83",
-    "history": "a76408fcd690bb26",
-    "universe": "469a6a6eda6dae47",
-    "screens": "d9bc15be0ab945e1"
+    "rec": "447c0354e760128e",
+    "poll": "98b36ad8bda1e2bb",
+    "heis": "0b7f6da537155ad8",
+    "history": "68eb16bc0b4027c0",
+    "universe": "0f5d23dfe2ccf92a",
+    "screens": "ae68bdb08a3de525"
    }
   ],
   "schedules#60": [

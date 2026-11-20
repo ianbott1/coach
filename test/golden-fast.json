@@ -1,5 +1,5 @@
 {
- "fp": "05c1672d9516d92d",
+ "fp": "cf5d4d9d6442e292",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -40,21 +40,26 @@
    "fp": "05c1672d9516d92d",
    "from": "042d2d02aa29e981",
    "note": "Round 91 (engine 14): football's attributes play; the other five games equal an engine-13 control with the engine stamp stripped"
+  },
+  {
+   "fp": "cf5d4d9d6442e292",
+   "from": "05c1672d9516d92d",
+   "note": "Round 92 (engine 15): club styles from opening rosters, the report's roster line, football reads tied to the roster; an engine-14 control matches round 91 in all seven"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "f798bd96251e749e",
-    "post": "4b8345dc73b907b0",
-    "champion": "Tennessee",
-    "rec": "daf7b9afef4d857a",
-    "poll": "8d71be70a6732c3b",
+    "games": "64e11ec2d7605dc6",
+    "post": "9a393adcca34709d",
+    "champion": "Ohio State",
+    "rec": "7ce2d48c59e1df8e",
+    "poll": "46a14b714d20efa4",
     "heis": "fe3b844ea8ac8986",
-    "history": "edbb67c88a4b38f8",
-    "universe": "b3e0d3dcf4903b5d",
-    "screens": "dbd6706ba60140f0"
+    "history": "1184cd714f342f34",
+    "universe": "a3543718832a7a69",
+    "screens": "fc6f3d426b33a604"
    }
   ]
  }
