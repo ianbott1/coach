@@ -480,10 +480,13 @@ function promote(i){
   save(); render();
 }
 
+/* round 93: careers banked before this counted one game too many a season (Instinct, all seven: 177 games, Career 178);
+   once per universe, each banked season gives its game back (players gone from the rosters keep their lines) */
+function carFix(u){ if(!u||u.carFix)return; Object.keys(u.roster||{}).forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(p&&p.car&&p.car.yrs)p.car.g=Math.max(0,(p.car.g||0)-p.car.yrs) })); u.carFix=1 }
 function rebuild(){
   if(S&&S.myTeam&&typeof careerCalls==="function")careerCalls(true);   // round 71: the career count is fixed as the career opens, then only added to
   plan=(!S.coaches||S.coaches.length<2)&&S.planNow?S.planNow:"balanced";   // the gameplan you last chose
-  U=snap(S.uStart);
+  carFix(S.uStart); U=snap(S.uStart);
   syncConf(U);
   attrSync(U);   // round 87: a career from before attributes gets them now, from its players as they are (no draws)
   NAMES.forEach(t=>distinctStaff(U,t)); distinctLeague(U);   // saves from before names were kept distinct

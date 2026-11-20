@@ -367,6 +367,7 @@ class Season{
     // the season's box scores live on this Season's roster copy; the careers
     // they feed belong to the universe's roster, so read one and write the other
     if(!u.roster||!this.roster)return;
+    u.carFix=1;
     NAMES.forEach(t=>{
       const live=this.roster[t]||[], keep=u.roster[t]||[];
       keep.forEach((pl,i)=>{
@@ -378,7 +379,7 @@ class Season{
         let li=live[i]&&live[i].n===pl.n?i:live.findIndex(x=>x&&x.n===pl.n); const src=li>=0?live[li]:null;
         if(!src||!src.st2)return;
         if(!pl.car){pl.car=blankStats(POS[li%POS.length].p); pl.car.yrs=0}
-        addStats(pl.car,src.st2);
+        Object.keys(src.st2).forEach(k=>{ if(typeof src.st2[k]==="number")pl.car[k]=(pl.car[k]||0)+src.st2[k] });   // round 93: a season's totals (addStats adds one game per call: every banked season counted one game too many, all seven)
         pl.car.yrs=(pl.car.yrs||0)+1;
         // round 69: the season kept as its own line, for the player's page (careers before this have only the total)
         (pl.hist=pl.hist||[]).push({y:this.year,t:t,p:POS[li%POS.length].p,r:src.r,s:Object.assign({},src.st2)});
