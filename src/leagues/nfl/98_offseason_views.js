@@ -258,10 +258,10 @@ function offseasonScreen(){
     room>=0?"$"+room.toFixed(1)+"M room":"$"+(-room).toFixed(1)+"M over the cap"}</div>`;
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
-    return `<div class="cand ${on?'on':''}" data-resign="${i}">
+    return `<div class="cand ${on?'on':''}">
       <div class="candtop"><div><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
       <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
-      <span class="cgrade">${on?"re-sign":"let go"}</span></div>
+      <button class="promo" data-resign="${i}" aria-pressed="${on}" title="${on?"Tap to let him go":"Tap to re-sign him"}">${on?"Re-signing":"Letting go"}</button></div>
       <div class="cdesc">Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
         p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
   h+=`<div class="grouphead">${n(2)}. Free agency</div>`;

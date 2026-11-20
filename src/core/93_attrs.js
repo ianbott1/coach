@@ -172,5 +172,9 @@ function rosterStyle(t,year){ try{ return typeof SEA!=="undefined"&&SEA&&SEA.yea
 /* the scouting report's line on their roster (Ian: one line): where it ranks in the league for each style's attributes,
    as the season opened (what the style was read from) */
 function styleRosterLine(t){ try{ const X=typeof SEA!=="undefined"&&SEA&&SEA._styles, R=X&&X.rank[t]; if(!R||typeof sportStyleAttrs==="undefined")return "";
-  const K=Object.keys(sportStyleAttrs).filter(k=>R[k]).sort((a,b)=>R[a]-R[b]);
-  return `<div class="evn"><b>Their roster</b>, as the season opened: ${K.map(k=>`${esc(sportStyleAttrs[k])} ${ordinal(R[k])}`).join(", ")} of ${X.n}. Clubs play to their rosters.</div>` }catch(e){ return "" } }
+  // round 93: soccer ranks a club in its own division (a tester's Championship line read "of 184", then "of 164": the whole
+  // pyramid); the order is the table's, so the style it names is the same
+  let rk=R, n=X.n; if(typeof LEAGUE!=="undefined"&&LEAGUE.id==="epl"&&typeof CONF!=="undefined"&&CONF[t]!==undefined){ const P=Object.keys(X.rank).filter(o=>CONF[o]===CONF[t]); n=P.length; rk={};
+    Object.keys(R).forEach(k=>{ rk[k]=1+P.filter(o=>X.rank[o][k]<R[k]).length }) }
+  const K=Object.keys(sportStyleAttrs).filter(k=>rk[k]).sort((a,b)=>rk[a]-rk[b]||R[a]-R[b]);
+  return `<div class="evn"><b>Their roster</b>, as the season opened: ${K.map(k=>`${esc(sportStyleAttrs[k])} ${ordinal(rk[k])}`).join(", ")} of ${n}${n<X.n?" in their division":""}. Clubs play to their rosters.</div>` }catch(e){ return "" } }
