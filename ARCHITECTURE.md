@@ -477,27 +477,35 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   - Opening night, context matched: Vegas +0.7 / -1.1 (round 93 / 94), Edmonton +0.7 / +1.1, Toronto +0.9 / -0.0. With
     the old gains Vegas reads -0.8: the raise neither fixed nor broke it; kept for the computer path.
   - After five weeks played, that night's chance against that night's context: Edmonton +3.1 / +4.4, Toronto +3.0 / +4.3,
-    Vegas -0.4 / -4.3. The mid-season chance is off on both builds and further off on 17. Not fixed: open, Ian's call.
-    The test now reads opening night (SEA.step after a new career), so it no longer sees this. Cause not measured; the
-    guess is that the chance's shape is the whole roster while the game plays tonight's lines and goalie, and 17
-    amplifies the shape.
+    Vegas -0.4 / -4.3 (round 93 / 94 before the fix). Cause found (scratch r94 pre37.js GKLOG, gkelo.js): the second night
+    of a back-to-back dresses the backup goalie, and the chance didn't know. Without back-to-backs the three read -0.5 to
+    +1.2. A backup is worth -4.45 Elo a point behind the starter (8 points -43, 16 -72, 24 -104). Fixed (Ian: "find and fix
+    it now"): hockey's sportTonightEdge(t) takes that off a club whose goalie tonight is the backup (gkCtx's b2b, the
+    measured gap), and core gameEdge adds sportTonightEdge(me) - sportTonightEdge(opp) where a sport defines it; engine 17
+    only (planAmpV). After, week 5: Vegas -0.3, Edmonton +1.4, Toronto +1.3. Test 37 now also reads hockey after five
+    weeks (Vegas, Edmonton) besides opening night.
+  - Every game after five weeks (scratch r94 p37/): college football Alabama +3.0 (opening night 0.1, week 9 2.0; round 93
+    +1.6), Denver -0.8, Duke 0.2, Orlando 2.3, Seattle (lean only) 1.2, Vegas 0.2. Alabama's week 5 sits on the bound:
+    watch item, not in the test.
   - Pro basketball: Orlando reads +2.0 / +3.1 over the test's six opponents and +1.3 / +2.0 over twelve (the test now uses
     twelve); six other clubs read -1.1 to +1.2 on 17.
   - Baseball: the test plays the lineup's lean only. With lineups and starters, on tonight's context, Seattle reads -3.9:
     the chance doesn't carry tonight's lineups and starters (at equal ratings Seattle beats the Dodgers 58%, Miami Colorado
     55%, scratch r94 neut.js); over a season it holds (live-wp PRE: engine 16 45/46 and 56/58). Pre-existing, watch item.
-- Baseball's league is wider than MLB on 17 (bs-calibrate, computer-only seasons; scratch r94 bscal.js): the spread of
+- Baseball's league was wider than MLB on 17 (bs-calibrate, computer-only seasons; scratch r94 bscal.js): the spread of
   wins 16.0 and best record 114 on the test's five seeds (round 93: 14.3, 109; MLB 10-15, under 112); over ten seeds 15.1
-  and 111 (round 93: 13.3, 108). The suited plans add spread on top of talent (15.1^2 - 13.3^2 = 51). Tried: u 0.6 gives
-  14.4 / 107 but should drop the computer's played-to-counted ratio to about 0.8; the cap at 110 gives 14.7 / 109 over ten
-  seeds; a computer share of the fit (as basketball's) at 0.5 gives 14.7 but best 114 on the five seeds. None taken: Ian's
-  call between a smaller baseball fit, talent counting for less on 17, or a wider band. bs-calibrate fails until then.
+  and 111 (round 93: 13.3, 108). The suited plans add spread on top of talent. Ian chose a smaller baseball fit: BS17.e 95
+  to 80 Elo a spread. After: 14.8 and 110 on the test's seeds, 14.7 and 109 over ten; runs a side as played 4.37;
+  computer path 1.06 of the curve, yours 1.04; the best plan over balanced median 6.8 to 5.8 points, 90th percentile 12.0
+  to 10.7. Baseball's plan is now worth about 6 points at the median, under the 8 asked for everywhere else. bs-calibrate
+  and bs-players pass. The innings leader read 231 in one season (MLB to 225); eight seasons average 219.0 (round 93
+  218.8), so bs-players now judges it on its two seasons' average (223), as it does home runs.
 - Objectives and recruiting (found by the suite): with your club left on Balanced all season, the pro games met 41% of
   objectives (round 93: 53%, eight seasons) and chasing the best recruits read +3.0 a spot (round 93 +2.4, bound 2.5).
   On your assistant's plan, as Sim ahead plays it: objectives 54% (round 93: 55%); recruiting +2.7 over five seeds
   (round 93 +2.6). A person who never touches the plan now falls well behind the computer's clubs: that is what 8-15
   points costs, for Ian to judge. Hockey's live chance read 18.7 in one band on the default seed and 6.0-7.8 on three
-  others (engine 16: 8.8). Firing (cfb) timed out beside the browser tests and passed alone.
+  others (engine 16: 8.8). Firing (cfb) timed out beside the browser tests (again in the final run).
 - Smaller: a sim ahead always stops when one of your two best players is out for the rest of the regular season (Grokbot:
   college basketball lost an 80-rated star without stopping); the page keeps its place after a plan click (not reproduced
   in Chromium at phone or laptop width on round 93; now held explicitly); a pick caught past the 99 returned 4 yards long in
@@ -511,8 +519,8 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   on 17 (its sign and size are the card's rounded change; under balanced only when another plan adds 2); featuring's
   check lets the rounded number stand when the chance moves under a point (baseball 50.5 to 51.5, both "51%");
   bs-players' engine games play each club's suited plan (the league's level is set that way on 17).
-  Second pass: regressions' plan-line check reads soccer's win share; regressions 37 on tonight's context (opening night)
-  over twelve opponents, bound unchanged; objectives and recruiting sim your club on the assistant's plan; recruiting's
+  Second pass: regressions' plan-line check reads soccer's win share; regressions 37 on tonight's context (opening night,
+  and hockey after five weeks) over twelve opponents, bound unchanged; objectives and recruiting sim your club on the assistant's plan; recruiting's
   free-upgrade bound 2.5 to 3.5 (loosened: five seeds read +2.6 on round 93 and +2.7 on 94 on the assistant's plan; round
   93 read +2.4 and +1.8 under the old test); bs-calibrate reads runs a side from the seasons as played (4.43; round 93
   4.41) and holds the bare Balanced-v-Balanced game, no lineups, above 3.9 (it reads 4.09: engine 17's 1.5% off every hit
