@@ -299,12 +299,17 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
    the curve by gap holds within a point: scratch r92 curve.js), the meeting of two shapes and styles that neither plan fit
    carries. Watch item; the bound is what the chance can promise today. Round 92 fixed one cause it found: the computer
    opponent's plan counted its fit but not its own worth at the gap (college football's Tulane read 81% where it won 70%) */
-for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP.concat(['cpuPlanOf','gameCtx','sportPlanFit'])}); A.newDynasty(team,5,'T');
+/* round 94: and hockey after five weeks, on that night's context: the chance didn't count the backup a club starts on
+   the second night of a back-to-back (Edmonton +4.4, Toronto +4.3, Vegas -4.3; counted: +1.4, +1.3, -0.3; scratch r94
+   pre37.js ADV=5). The rest are read on opening night only; after five weeks (round 94, scratch r94 p37/m5-*) they read
+   -0.8 to +2.3, college football's Alabama +3.0 (published build +1.6: its big favourites, a watch item) */
+for(const [f,team,adv] of GAMES.filter(g=>!/soccer/.test(g[0])).map(g=>[g[0],g[1],0]).concat([['hockey-coach-pro.html','Vegas',5],['hockey-coach-pro.html','Edmonton',5]])){ const A=load({settable:SET,file:D(f),expose:EXP.concat(['cpuPlanOf','gameCtx','sportPlanFit'])}); A.newDynasty(team,5,'T');
+  for(let k=0;k<adv&&A.SEA.phase==='week';k++){ A.SEA.userTeam=null; A.SEA.advance() }
   const my=A.S.myTeam, pick=gap=>A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[b]-A.SEA.elo[my]-gap)-Math.abs(A.SEA.elo[a]-A.SEA.elo[my]-gap)).pop();
   const opps=[...new Set([150,-150,75,-75,250,-250,30,-30,110,-110,200,-200].map(pick))]; let sum=0, worst=0, wmsg='', n=0;   // round 94: twelve (Orlando read +3.1 over six, +2.0 over these twelve; the bound didn't move)
   for(const opp of opps){ const shown=A.winProb(my,opp,false,true); A.SEA.userTeam=my; const e=A.SEA.matchupElo({home:my,away:opp,neutral:true},'balanced'), r=new A.RNG(3); let w=0,N=2500;
     // the computer's club plays the plan its roster suits, and both shapes play (the chance counts its fit)
-    const op=typeof A.cpuPlanOf==='function'?A.cpuPlanOf(opp,e.a-e.h):'balanced', ctx0=typeof A.gameCtx==='function'&&typeof A.sportPlanFit==='function'?A.gameCtx(my,opp,A.SEA.year,A.SEA.step):undefined;   // round 94: tonight's context, the game the chance is for (week 5's put a different goalie in: Edmonton read +5.7 on round 93 that way, +0.7 on tonight's)
+    const op=typeof A.cpuPlanOf==='function'?A.cpuPlanOf(opp,e.a-e.h):'balanced', ctx0=typeof A.gameCtx==='function'&&typeof A.sportPlanFit==='function'?A.gameCtx(my,opp,A.SEA.year,A.SEA.step):undefined;   // round 94: tonight's context, the game the chance is for (week 5's against opening night's chance: Edmonton read +5.7 on round 93 that way, +0.7 matched)
     // (round 94, scratch r94 pre37.js: on tonight's context Seattle still reads -3.9 with lineups and starters, so that gap is
     // real and not the week-5 mismatch)
     // (baseball's context is its lineups and tonight's starters, which the chance doesn't carry: the test played without
@@ -313,7 +318,7 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
     const ctx=ctx0&&ctx0.lz?{lz:ctx0.lz}:ctx0;
     for(let i=0;i<N;i++){ const g=A.playGame(r,e.h,e.a,'balanced',op,{neutral:true,ctx:ctx}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
     const d=shown-w/N; sum+=d; n++; if(Math.abs(d)>Math.abs(worst)){ worst=d; wmsg=`${opp} (gap ${Math.round(e.h-e.a)}): shows ${(100*shown).toFixed(0)}%, wins ${(100*w/N).toFixed(0)}%` } }
-  ok(Math.abs(sum/n)<0.03&&Math.abs(worst)<0.07,`${f}: the chance shown against the engine over ${n} opponents: mean ${(100*sum/n).toFixed(1)} points, worst ${wmsg}`) }
+  ok(Math.abs(sum/n)<0.03&&Math.abs(worst)<0.07,`${f}${adv?' after '+adv+' weeks':''}: the chance shown against the engine over ${n} opponents: mean ${(100*sum/n).toFixed(1)} points, worst ${wmsg}`) }
 /* 38. the offseason plan card shows your changes */
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Seattle',5,'T'); play(A,999); A.openOffseason();
   const P=A.S.off.picks, ex=Object.keys(P.asks||{}); if(ex.length){ const i=ex[0], was=!!P.resign[i]; P.resign[i]=!was;
