@@ -18,7 +18,9 @@ for(const file of ['football-coach.html','football-coach-pro.html','basketball-c
       ok(L.length>=2&&L.length<=3,`${name}: ${L.length} objectives`);
       // the same objectives from scratch (a reload, a hot seat)
       const keep=JSON.stringify(L); A.S.obj=null; ok(JSON.stringify(A.seasonObjectives(my))===keep,`${name}: objectives change when worked out again`);
-      let g=0; while(A.SEA.phase!=='done'&&g++<400)A.SEA.advance();
+      A.SEA.plan='auto'; let g=0; while(A.SEA.phase!=='done'&&g++<400)A.SEA.advance();
+      // round 94: left to your assistant means his plan, as Sim ahead leaves it ("auto"): on Balanced all season, with the
+      // plans worth 8-15 points, the pro games met 41% (round 93: 53%); on his plans 54% (round 93: 55%), 8 seasons each
       L.forEach(o=>{ const s=A.objStatus(o,my).s; ok(s==='met'||s==='miss',`${name}: "${o.l}" still open at the end`);
         K[o.k]=K[o.k]||[0,0]; K[o.k][1]++; if(s==='met')K[o.k][0]++ });
       A.openOffseason(); for(let c=0;c<4;c++){const S=A.S; if(!S.off)break; if(S.off.act.userOpen&&S.off.move===null)S.off.move=S.myTeam; A.commitOffseason()}
