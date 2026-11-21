@@ -431,8 +431,16 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   roster (FITC is about half FIT); the other sports' paths are within 10%.
 - Baseball's fit (design addition, new): the nine regulars' lean, Power against Contact and Eye (sportStyleScores, as the
   report's roster line), in league spreads (bsLeanZ; the spread from the opening rosters, core styleTable's leanSD, so a
-  promotion before the first game can't move it between a play and its reload); 95 Elo a spread, held to 183; Swing for the
-  fences plays it as home runs, Small ball as singles and walks and fewer strikeouts. In the game's context (ctx.lz).
+  promotion before the first game can't move it between a play and its reload); 95 Elo a spread, held to 146 (12 points,
+  not 15: below). In the game's context (ctx.lz). Played as a better side plays (BS17: x0.79 of the fit's log-odds through
+  every hit and walk, half at the plate for the suited club and half in the field against its opponents), not through the
+  plan's own outcomes. The first build played it all as home runs (Swing for the fences, up to x1.77) or singles and walks
+  (Small ball, x1.42): the full suite's MLB player check failed 10 ranges, home-run leaders 60-79 (engine 16: 40-46), the
+  best average .375, runs 156-159, RBI 148-164, while the league's runs held at 4.50. All through every hit at the plate:
+  home runs back (58.5) but runs 168-177. Half in the field: the hitters back, but an ace reached 227-236 innings (MLB to
+  225: fewer runners, longer starts) at the 15-point cap. Held to 12 points, the check passes (scratch r94 bsp-d.txt). Six
+  seasons on 17 against 16 (bsp6-*.txt, before the cap): home-run leaders 52.2 against 43.5, runs and RBI leaders within a
+  few. Measured after: the computer's path 1.04 of the curve, yours 1.12, 8.61-8.81 runs a game (8.82).
 - The chance before a game counts it (sportPlanFit returns the amplified fit; gameEdge unchanged), so do computer clubs'
   plan picks (cpuPlanOf) and the opponent's fit. Measured in a browser, each plan clicked: Tulane 43 / 36 / 52, the LA
   Clippers 63 / 49 / 74, Boston (hockey) 41 / 54 / 29, Cincinnati (baseball) 45 / 32 / 58.
@@ -445,7 +453,7 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   everywhere scored more (baseball 8.8 to 11.1 runs a game, pro basketball +4 points, football +1.6 to 1.8, soccer's
   sitting deep 2.66 to 2.39 goals and 32% draws), so each is recentred on 17 only: hockey's shots x1.02 (HK17.g),
   basketball's make rates -0.014/-0.019 x (0.5, 0.36) (BB17.k), football's touchdowns and kicks x0.967/0.966 (FB17.g),
-  soccer's chances x0.95 (SC17.g), baseball's hits and walks x0.905 (BS17.g). After: baseball 8.80 runs (8.82), pro
+  soccer's chances x0.95 (SC17.g), baseball's hits and walks x0.905 (BS17.g; 0.985 once the fit plays half in the field). After: baseball 8.80 runs (8.82), pro
   basketball 228.9 (227.7), college 144.2 (143.9), pro football 45.6 (45.4), college 53.6 (53.7), hockey 6.10 goals (6.14),
   overtime 23.7% (23.6%), soccer 2.70 goals (2.66), draws 29.9% (28.9%: a point higher again; watch), home wins 41.9% (42.8%). The cost, as
   told to Ian before building: the standings spread out where seasons are long and fit is a whole spread of wins (wins sd
@@ -460,6 +468,16 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   defencemen (HK17C.dw 2.4) centres the leaders (51.9) but a defenceman led the league with 55 goals and the first
   pair's best reached 86 points (target 35-45): left at 1. The real fix is a deeper roster (or unnamed depth goals
   again): Ian's call.
+- The full suite then (round 94's first run): beyond baseball's players, the chance before a game against the engine
+  (regressions 37) read hockey -3.7 and pro basketball +3.1 (bound 3): hockey's computer path played 0.92 of its counted
+  extra (scratch r94 amp2all.txt; the others 0.97-1.16), so hockey's channel gains rose (HK17 gs 1.15 to 1.25, ga 1.4 to
+  1.52: computer 0.99; your path 1.10 to 1.15 at 10,000 games a plan, within noise; Vegas then -1.1). Pro basketball's
+  +3.1 is mostly round 92's Orlando shape gap (engine 16 reads +1.8 on the same pairs). Baseball: the test now plays the
+  lineup's lean but not the lineups and starters, as before round 94 (it passed no context then). Found doing it, not
+  round 94's: the chance before a baseball game doesn't carry tonight's lineups and starters; at equal ratings Seattle
+  beats the Dodgers 58%, Miami Colorado 55% (scratch r94 neut.js); over a season the shown chance holds (live-wp PRE: engine
+  16 45/46 and 56/58). Watch item for Ian. Hockey's live chance read 18.7 in one band on the default seed and 6.0-7.8 on
+  three others (engine 16: 8.8). Firing (cfb) timed out beside the browser tests and passed alone.
 - Smaller: a sim ahead always stops when one of your two best players is out for the rest of the regular season (Grokbot:
   college basketball lost an 80-rated star without stopping); the page keeps its place after a plan click (not reproduced
   in Chromium at phone or laptop width on round 93; now held explicitly); a pick caught past the 99 returned 4 yards long in
@@ -469,7 +487,10 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
 - Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven. engine-replay now
   replays engine 16 (round 93, 446b6e3).
 - Tests changed after they failed, each measured: hk-lines over four clubs and its last-pass line at 0.85 (engine 16 127 of
-  140, 90.7%; engine 17 103 of 116, 88.8%; two clubs read 47 of 53).
+  140, 90.7%; engine 17 103 of 116, 88.8%; two clubs read 47 of 53); regressions' plan-line check reads the reason line
+  on 17 (its sign and size are the card's rounded change; under balanced only when another plan adds 2); featuring's
+  check lets the rounded number stand when the chance moves under a point (baseball 50.5 to 51.5, both "51%");
+  bs-players' engine games play each club's suited plan (the league's level is set that way on 17).
 - Not built (round 95): a post-game line on what the plan and the attributes did (Grokbot's point 3), late calls with
   options that really differ (point 6), the odd attribute grids (point 4).
 
