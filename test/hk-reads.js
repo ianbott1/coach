@@ -13,7 +13,7 @@ const core=fs.readFileSync(path.join(__dirname,'..','src','core','20_engine.js')
 const rngSrc=core.slice(core.indexOf('function mulberry32'),core.indexOf('\n}\n',core.indexOf('class RNG'))+3);
 const N=+(process.argv.find(a=>/^\d+$/.test(a))||20000);
 function engine(file){ const eng=fs.readFileSync(file,'utf8');
-  return new Function(rngSrc+'function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}\nconst LEAGUE={tuning:{}};const HK_TRY='+(process.env.HK_TRY||'{}')+';\n'+eng+';return {RNG,playGame,makeLiveGame,SYSTEM:typeof SYSTEM!=="undefined"?SYSTEM:null,HK,KEYS:typeof SYSTEM_KEYS!=="undefined"?SYSTEM_KEYS:null};')(); }
+  return new Function(rngSrc+'function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}\nfunction planAmpV(){return typeof ENGINE_V!=="undefined"&&ENGINE_V>=17}\nconst LEAGUE={tuning:{}};const HK_TRY='+(process.env.HK_TRY||'{}')+';\n'+eng+';return {RNG,playGame,makeLiveGame,SYSTEM:typeof SYSTEM!=="undefined"?SYSTEM:null,HK,KEYS:typeof SYSTEM_KEYS!=="undefined"?SYSTEM_KEYS:null};')(); }
 const G=engine(process.env.HK_FILE||path.join(__dirname,'..','src','hockey','50_game.js'));
 const oldFile=process.argv.slice(2).find(a=>/\.js$/.test(a));
 let bad=0; const ok=(c,m)=>{ if(!c){bad++; console.log('  FAIL '+m)} };
