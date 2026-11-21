@@ -118,7 +118,9 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
   const my=A.S.myTeam, opp=A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[a]-A.SEA.elo[my])-Math.abs(A.SEA.elo[b]-A.SEA.elo[my]))[0];
   const show=()=>strip(A.oddsHTML(my,opp,true,false,A.winProb(my,opp,true,false))), p0=A.winProb(my,opp,true,false), s0=show();
   A.S.featured=1; A.SEA.featured=1; const p1=A.winProb(my,opp,true,false), s1=show();
-  ok(p1>p0&&s1!==s0,`${f}: featuring left the odds at "${s0}"`); A.S.featured=null; A.SEA.featured=null; }
+  // (round 94: featuring is about a point; a shown 51% can stay 51% when the chance moves 50.5 to 51.5, so the words
+  // must change unless the rounded number can't)
+  ok(p1>p0&&(s1!==s0||Math.round(100*p1)===Math.round(100*p0)),`${f}: featuring left the odds at "${s0}" (${(100*p0).toFixed(1)} to ${(100*p1).toFixed(1)})`); A.S.featured=null; A.SEA.featured=null; }
 /* 11. a club page's "starters average" is the starters' (it averaged the squad) */
 for(const [f,team] of [['football-coach.html','Alabama'],['soccer-coach.html','Arsenal']]){
   const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(team,5,'T');
