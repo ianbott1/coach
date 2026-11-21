@@ -18,7 +18,7 @@ for(const [f,t] of GAMES){ if(only&&!f.startsWith(only))continue;
     const h=A.heroResult(), pm=String(h).match(/<div class="planpost">(.*?)<\/div>/), line=pm?strip(pm[1]):'';
     const has=A.flash&&A.S.planPre&&A.S.planPre[A.SEA.year+':'+A.flash.step]; if(!has){ continue }
     n++; if(line)shown++;
-    const num=/no better than/.test(line)?'0':(line.match(/: ([+-]?\d+) before kickoff/)||[])[1];
+    const num=/no better than/.test(line)?'0':(line.match(/: ([+-]?\d+) before the game/)||[])[1];
     if(A.plan!=='balanced'&&C){ if(!line){bad++; console.log('  NO LINE',f,k,A.plan,card)} else if(+num!==want){bad++; console.log('  DIFF',f,k,line,'| want',want,'| card',card)} }
     out.push([A.SEA.step,line]) }
   if(n-n0<4){bad++; console.log('  only',n-n0,'games judged',f)}
