@@ -1003,7 +1003,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="cfbfe5c";
+<script>const BUILD_ID="ec810a0";
 /* ============ league: pro football ============ */
 /* Thirty-two franchises, named by city, in eight divisions of four. Players
    are fictional. The structure is the real league's: a 17-game schedule over
@@ -1613,7 +1613,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||16);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||17);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -2981,8 +2981,15 @@ function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=FB14.c, w=FB14.pw[
   return {td:c.arm*m("arm")*O.arm-c.covT*D.cov, to:-c.acc*m("acc")*O.acc-c.hnd*m("hnd")*O.hnd+c.covI*D.cov+c.tklF*D.tkl,
     brk:c.spd*m("spd")*O.spd-c.tklB*D.tkl-c.spdD*D.spd, gain:c.blk*m("blk")*O.blk-c.rsh*D.rsh,
     sus:c.str*m("str")*O.str+c.accS*m("acc")*O.acc+c.hndS*m("hnd")*O.hnd-c.strD*D.str} }
-function fbSideMods(ctx,planH,planA){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.home||!S.away)return {home:null,away:null};
-  return {home:fbDriveMod(S.home.o,S.away.d,planH), away:fbDriveMod(S.away.o,S.home.d,planA)} }
+function fbSideMods(ctx,planH,planA,hum){ const S=ctx&&ctx.sh; if(!fbV14()||!S||!S.home||!S.away)return {home:null,away:null};
+  const M={home:fbDriveMod(S.home.o,S.away.d,planH), away:fbDriveMod(S.away.o,S.home.d,planA)};
+  // engine 17 (round 94): the plan's fit amplified, the extra (Elo) through its channel: taking risks scores more touchdowns,
+  // playing it safe keeps more drives going (a point of Arm adds c.arm to the touchdown rate and is worth FB14.a rating
+  // points: c.arm/(a R_SLOPE) a touchdown point per Elo; Accuracy's drives the same through c.accS)
+  if(planAmpV())[["home",planH],["away",planA]].forEach(([sd,pl])=>{ if(!M[sd]||!pl||pl==="balanced")return;
+    const F=fbLg(hum&&hum[sd]?FB14_FIT:FB14_FITC)[pl]; if(!F)return; const f=fbFitOf(F,S[sd]), E=planAmp(f,FB17)-f, u=E/(FB14.a*R_SLOPE);
+    if(pl==="aggressive")M[sd].td+=FB17.ga*u*FB14.c.arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*FB14.c.accS });
+  return M }
 /* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
    path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */
 const FB14_FIT={nfl:{safe:{"o.arm":-0.371,"o.acc":0.495,"o.spd":-0.367,"o.hnd":0.495,"o.blk":0.515}, aggressive:{"o.arm":0.483,"o.acc":-0.422,"o.spd":0.492,"o.hnd":-0.422,"o.blk":-0.479}},
@@ -2995,12 +3002,17 @@ const FB14_SHIFT={nfl:{safe:[-4.5,0.2432],aggressive:[6.7,-0.3604]}, cfb:{safe:[
 const FB14_SHIFTH={nfl:{safe:[-7.6,0.2318],aggressive:[12,-0.3529]}, cfb:{safe:[-8,0.1552],aggressive:[10.1,-0.2395]}};   // 100,000 games a point
 const fbLg=T=>T[LEAGUE.id]||T.cfb;
 function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
-function sportPlanFit(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)):0 }
-function sportPlanFitC(t,pl){ return fbV14()?fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)):0 }
+/* round 94 (engine 17): one spread of fit (college 35 Elo, the pros 24: scratch r94 fitsd.js) to 8 points on each curve
+   (57 and 43 Elo), held to 15 points (111, 83) */
+const FB17=Object.assign({cfb:{m:1.6,cap:111,gs:1.6,ga:1.1,g:0.967}, nfl:{m:1.8,cap:83,gs:1.4,ga:1,g:0.966}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
+  FB14_ENV("FB17_M")?{m:+FB14_ENV("FB17_M")}:{}, FB14_ENV("FB17_GS")?{gs:+FB14_ENV("FB17_GS")}:{}, FB14_ENV("FB17_GA")?{ga:+FB14_ENV("FB17_GA")}:{}, FB14_ENV("FB17_G")?{g:+FB14_ENV("FB17_G")}:{});
+function sportPlanFit(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)),FB17):0 }
+function sportPlanFitC(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)),FB17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
 function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
 /* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */
 function sportShape(t){ if(!fbV14())return null; const T=fbShapeT(t); return {arm:T.o.arm,acc:T.o.acc,hnd:T.o.hnd,blk:T.o.blk,spd:T.o.spd+T.d.spd,str:T.o.str+T.d.str,cov:T.d.cov,tkl:T.d.tkl,rsh:T.d.rsh} }
+const PLAN_LEAN={safe:"accuracy, hands and blocking",aggressive:"arm and speed"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return fbV14()?planFitWords(t,pl,{safe:"accuracy, hands and blocking",aggressive:"arm and speed"}):"" }
 function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   const A0 = AGGR[aggr] || AGGR.balanced, D = typeof dmode==="string" ? DEF_MODE[dmode] : dmode;
@@ -3016,7 +3028,7 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   if(ENGINE_V>=2)fg*=(KICK2[LEAGUE.id]||KICK2.cfb).fg;   // round 71: kicks now miss at their odds; held to the same points
   let to = 0.135 - x * 0.0339 + A.to;
   if(sm){ td+=sm.td+sm.brk*(100-startYd)/73; to+=sm.to; td*=1+sm.sus; fg*=1+sm.sus }
-  if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g }   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
+  if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g; if(planAmpV()){ td*=FB17.g; fg*=FB17.g } }   // engine 17: suited plans everywhere score more; held to the league's level   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
   to = Math.max(0.03, Math.min(0.30, to));
@@ -3142,7 +3154,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
     baseH:planH||"balanced", baseA:planA||"balanced",
     used:{}, rng:rng
   };
-  const M=fbSideMods(opts.ctx,planH||"balanced",planA||"balanced");   // engine 14: each side's shape against the other's
+  const M=fbSideMods(opts.ctx,planH||"balanced",planA||"balanced",opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:null);   // engine 14: each side's shape against the other's
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
@@ -3346,7 +3358,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
-  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA); return home?M.home:M.away };   // engine 14 (the plan as it stands)
+  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA,humans); return home?M.home:M.away };   // engine 14 (the plan as it stands)
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; if(FB_ANSWERS[a].beats!==D.sch)return FB_READ.wrong;
     const f=fbReadFit(a,ctx,sd); return f===1?FB_READ.right:{td:FB_READ.right.td*f, fg:FB_READ.right.fg*f, to:FB_READ.right.to*f} };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
@@ -4237,7 +4249,7 @@ const HL_SPORT=(function(){
     return Object.assign(base(L,d),{kind:"punt",los,land,end,ret,tb,fair,lane:0.35+r()*0.3,who:"",base:3600+ret*35,reveal:0.95}) }
   function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(30,Math.min(90,d.lost||d.stall||70));
     const rcv=r()<0.6?2:3; let len=Math.round(8+r()*Math.min(25,100-los-2));
-    let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,los+len-end) }
+    let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,Math.min(99,los+len)-end) }   // round 94: from where he catches it (a pick past 99 is caught at 99: the return ran 4 yards long)
     if(ret!=null){ const m=/intercepted by (.*)$/.exec(rowText(L,d)), f=ret>3?0.6:0.86;
       return Object.assign(base(L,d),{kind:"int",who:m?surname(m[1]):"",tight:true,pass:true,los,rcv,len,catchY:Math.min(99,los+len),lane:(rcv===2?0.18:0.82)+(r()-0.5)*0.1,base:3400+(f<0.86?1200+40*ret:0),reveal:f,f,ret,retEnd:100-rtp}) }
     const m=/intercepted by (.*)$/.exec(rowText(L,d));
@@ -6148,6 +6160,13 @@ function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||
   ["safe","aggressive"].forEach(pl=>{ const f=human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl); if(!(f>=PLAN_PICK_MIN))return;
     const v=f+(typeof sportPlanShift==="function"?sportPlanShift(pl,gap||0):0); if(v>bv){ bv=v; best=pl } });
   return best }
+/* round 94 (engine 17): the plan your roster suits is worth about 8 points of win chance at even for a roster one league
+   spread off the average, up to 15 (Ian, after Grokbot: "make roster fit move the win chance in every game"). Each sport
+   keeps its measured fit (round 88-92: what the plan's own channels already give a lean) and amplifies it by its own M
+   (one spread of fit to 8 points on its curve), held to +/-cap; the extra is played through the plan's own events, so
+   the box score carries it. Balanced is untouched. */
+function planAmpV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=17 }
+function planAmp(f,A){ if(!planAmpV()||!A||!f)return f||0; const v=A.m*f; return Math.max(-A.cap,Math.min(A.cap,v)) }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
 function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||0)):0 }
 /* what your plan is worth tonight on your own path, in Elo on the balanced curve: your roster's fit, and (engine 12,
@@ -6182,6 +6201,7 @@ function styleTable(sea){ if(typeof ENGINE_V==="undefined"||ENGINE_V<15||typeof 
     out.style[t]=z[0][1]-z[1][1]<STYLE_TIE?[z[0][0],z[1][0]].sort()[strHash(t+"|"+sea.year)%2]:z[0][0] });
   K.forEach(k=>{ T.filter(t=>S[t]).sort((a,b)=>S[b][k]-S[a][k]||(a<b?-1:1)).forEach((t,i)=>{ (out.rank[t]=out.rank[t]||{})[k]=i+1 }) });
   if(typeof sportSeasonNorms==="function")try{ out.norm=sportSeasonNorms(sea) }catch(e){}   // football: the league's offense, for reads tied to the roster
+  if(typeof sportLeanSD==="function")try{ out.leanSD=sportLeanSD(S,T) }catch(e){}   // round 94: baseball's lineup lean, its spread fixed as the season opens (a reload asks at another moment)
   return out }
 /* the season's style for a club, when it comes from the roster (else null: the caller keeps its hash) */
 function rosterStyle(t,year){ try{ return typeof SEA!=="undefined"&&SEA&&SEA.year===year&&SEA._styles&&SEA._styles.style[t]||null }catch(e){ return null } }
@@ -10577,6 +10597,7 @@ function gameEdge(me,opp,atHome,neutral){
   try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; let x=(hm?d:-d)+(me===S.myTeam?planEdge(me,planPicked(),hm?d:-d):0);   // round 89: your plan's fit and its own worth at this gap
     // round 89: the computer's club plays the plan its roster suits, and that fit is in the game too
     if(me===S.myTeam&&typeof sportPlanFit==="function"&&!(isHotSeat()&&coachIndexOf(opp)>=0)){ const op=cpuPlanOf(opp,hm?-d:d); if(op!=="balanced")x-=(typeof sportPlanFitC==="function"?sportPlanFitC(opp,op):sportPlanFit(opp,op))+(ENGINE_V>=15&&typeof sportPlanShift==="function"?sportPlanShift(op,hm?-d:d):0) }   // round 92: and that plan's own worth at their gap, as cpuPlanOf weighs it (an outgunned club taking risks: the chance read 81% where the engine won 70%)
+    if(typeof sportTonightEdge==="function")x+=sportTonightEdge(me)-sportTonightEdge(opp);   // round 94: tonight's goalie (hockey's back-to-backs)
     return x }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
 }
@@ -11051,9 +11072,31 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
+  if(planAmpV()&&typeof PLAN_LEAN!=="undefined"){ const r=planReasonHTML(kept&&S.planStep!=null&&S.planStep!==SEA.step); if(r!==null)return r }   // kept: chosen before today's game (a plan picked today isn't "kept")
   const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
   if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
   return planFitOld(wp,kept) }
+/* round 94 (engine 17; Grokbot: "next to the chance, a one-line reason such as +9 because your arm and speed fit Take
+   risks"): one line, from the same chance as the number above it (each plan's chance less balanced's, so the line can't
+   disagree with the number or with itself, as the fit line and the underdog line did). Whether it's the roster or the
+   gap: the fit and the plan's own worth tonight are told apart. */
+function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
+  if(SEA&&SEA.phase==="week"){ const g=SEA.nextGame?SEA.nextGame(my):null; if(!g)return null; opp=g.home===my?g.away:g.home; atH=g.home===my; neu=!!g.neutral }
+  else { const pn=SEA&&SEA.postNext?SEA.postNext(my):null; if(!pn||!pn.opp)return null; opp=pn.opp; atH=pn.home===my||pn.home===true; neu=!!pn.neutral||pn.home===undefined }   // the postseason card, as it places the game
+  if(!opp)return null;
+  const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
+  let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap} }   // your edge before your plan
+/* in the units shown: each chance as the screen rounds it (round 71's lesson: the card's 41 and 54 with a line saying 14) */
+function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
+  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>{ const f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
+    const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
+    return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) };
+  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), keptS=kept?"Kept from your last game. ":"";
+  if(plan!=="balanced"){ const v=d(plan); let t=`${keptS}<b>${sg(v)}</b> from <b>${esc(PLANS[plan].l)}</b>: ${why(plan)}.`;
+    if(v<0&&best!==plan&&d(best)>0)t+=` <b>${esc(PLANS[best].l)}</b> would be ${sg(d(best))} (${why(best)}).`; else if(v<=0&&d(best)<=0)t+=` <b>${esc(PLANS.balanced.l)}</b> is the better plan tonight.`;
+    return `<div class="pland planfit">${t}</div>` }
+  if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
+  return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
 function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
@@ -11171,7 +11214,7 @@ function nextUpHTML(my,rk){
         :((LEAGUE.cup&&LEAGUE.cup.groupLine&&LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng)))?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag)}</span><span class="sline">${LEAGUE.cup.groupLine(Object.assign({week:ngStep},ng))}</span></div><button class="rewatch seedraw" data-cupview="1">See the Cup</button>`:"")
         +st.map(x=>`<div class="stake"><span class="stag">${esc(x.tag)}</span>
         <span class="sline">${x.l}</span></div>`).join("")}
-      ${guideNote("hub","The percentage is the game's own chance of winning, worked out from the lineup you've picked: start a backup and it moves. "+(typeof sportPlanFit==="function"?"Your gameplan below is in it too: a plan that suits your roster, or a risky one when you're the underdog, moves it up, and the plan rows say which suits you. Each is judged on the result card.":"Your gameplan below trades safety for variance, and each is judged on the result card."))}
+      ${guideNote("hub","The percentage is the game's own chance of winning, worked out from the lineup you've picked: start a backup and it moves. "+(typeof sportPlanFit==="function"&&(typeof SPORT_FIT_FROM==="undefined"||ENGINE_V>=SPORT_FIT_FROM)?"Your gameplan below is in it too: a plan that suits your roster, or a risky one when you're the underdog, moves it up, and the plan rows say which suits you. Each is judged on the result card.":"Your gameplan below trades safety for variance, and each is judged on the result card."))}
       ${planPickerHTML(wp)}</div>`;
   }
   // a cup tie this week too (soccer's FA Cup): its own card, midweek
@@ -12127,7 +12170,12 @@ function simTargets(){
   out.push({k:"end",l:"To the end of the regular season",to:LEAGUE.weeks});
   return out;
 }
-const SIM_WHY={big:"A big game is next.",slide:"Three defeats in a row: worth a look.",hurt:"One of your players is hurt.",decide:"Something needs a decision."};
+const SIM_WHY={big:"A big game is next.",slide:"Three defeats in a row: worth a look.",hurt:"One of your players is hurt.",decide:"Something needs a decision.",star:"One of your two best players is out for the season."};
+/* round 94 (Grokbot: the sim lost an 80-rated star for the season without stopping): whatever the stop settings, a sim
+   ahead stops when one of your two best players is hurt for the rest of the regular season */
+function starsOutForSeason(t){ const R=SEA.roster&&SEA.roster[t]; if(!R)return []; const left=LEAGUE.weeks-SEA.step;
+  const top=R.map((p,i)=>[p&&p.r||0,i]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]);
+  return SEA.talent.active(t).filter(e=>top.indexOf(e.idx)>=0&&e.w>=left).map(e=>e.idx) }
 function hurtCount(t){ return SEA.talent.active(t).length }
 function attnCount(t){ return (attentionHTML(t).match(/class="attn"/g)||[]).length }
 /* the decisions on screen, by name (data-fire="oc", data-promo="3") */
@@ -12146,7 +12194,7 @@ function simRun(to){
   while(SEA.phase==="week"&&SEA.step<to){
     // before your game: is it one you'd want to play yourself?
     if(SEA.step>from&&stops.big&&(weekWeight(SEA.step)>=3||myGamesIn(SEA.step).some(g=>g.cup||g.title))){why="big";break}
-    const h0=hurtCount(my), st0=streakOf(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
+    const h0=hurtCount(my), st0=streakOf(my), so0=starsOutForSeason(my); if(SEA.step===from)newDecision(my);   // what's on screen now isn't news
     { const ap=ENGINE_V>=12?"auto":"balanced"; S.plans[planKey(SEA.step,SEA.half)]=ap; SEA.plan=ap }   // round 89: simming ahead leaves the plan to your assistant (the one your roster suits)
     SEA.userTeam=my; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
     SEA.advance(); clinchAfter(); S.steps++;
@@ -12155,6 +12203,7 @@ function simRun(to){
     const st=streakOf(my);
     // once per losing run: when it reaches three, not again at four, five... (it stopped after every defeat: Grokbot)
     if(stops.slide&&st.won===false&&st.n>=3&&!(st0.won===false&&st0.n>=3)){why="slide";break}
+    if(starsOutForSeason(my).some(i=>so0.indexOf(i)<0)){why="star";break}
     if(stops.hurt&&hurtCount(my)>h0){why="hurt";break}
     if(stops.decide&&newDecision(my)){why="decide";break}
   }
@@ -12543,7 +12592,7 @@ function render0(){
   const df=el("dfind"); if(df)df.oninput=()=>{dynQ=df.value;
     const p=df.selectionStart; render();
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
-  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; save()} render()});
+  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; S.planStep=SEA?SEA.step:null; save()} const y=typeof window!=="undefined"&&window.scrollY||0; render(); if(y&&typeof window.scrollTo==="function")window.scrollTo(0,y)});   // round 94: stay where you were (Grokbot: the page went back to the top after every plan click)
   // (the bottom bar's Sim ahead button is bound with skip2, above)
   // it asks, and says where the career is saved, or that it isn't (storage blocked: leaving loses it)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};

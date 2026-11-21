@@ -526,6 +526,9 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   4.41) and holds the bare Balanced-v-Balanced game, no lineups, above 3.9 (it reads 4.09: engine 17's 1.5% off every hit
   that suited plans and lineups give back; whether any real game plays without lineups is not checked); hk-reads gets
   planAmpV when it loads the engine alone.
+- Full suite: 127 of 127 passed (33, then a resume after the two-hour limit with 94). Firing (cfb) timed out at 1500s
+  beside the browser tests; alone it took 1365s (its note said ~410s, from round 38; round 93's time not measured), so
+  its limit is now 2700s; it passed in the resume at 1385s.
 - Not built (round 95): a post-game line on what the plan and the attributes did (Grokbot's point 3), late calls with
   options that really differ (point 6), the odd attribute grids (point 4).
 
