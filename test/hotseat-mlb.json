@@ -1,5 +1,5 @@
 {
- "fp": "896eea2677a2cef2",
+ "fp": "bfe8c29d4adae266",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -120,6 +120,11 @@
    "fp": "896eea2677a2cef2",
    "from": "896eea2677a2cef2",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "bfe8c29d4adae266",
+   "from": "896eea2677a2cef2",
+   "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
   }
  ],
  "out": [
@@ -129,20 +134,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "59-103",
+      "rec": "62-100",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "38d86961f70bdd6d"
+     "book": "b43f5e77c0036c96"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "84-78",
-      "result": "Missed the postseason",
-      "grade": "C"
+      "rec": "72-90",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "67145490708b6825"
+     "book": "30ce277e1854e6c9"
     }
    ]
   },
@@ -152,20 +157,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "69-93",
+      "rec": "66-96",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "F"
      },
-     "book": "fd51a69ab07ce2bf"
+     "book": "e31683620c3c0654"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "88-74",
-      "result": "Lost in the wild-card series",
-      "grade": "B-"
+      "rec": "79-83",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "52871796a8f52b4e"
+     "book": "b04a410355d7cf54"
     }
    ]
   }

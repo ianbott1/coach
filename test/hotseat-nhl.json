@@ -1,5 +1,5 @@
 {
- "fp": "7279672404ee6bf0",
+ "fp": "3d6958cfceb3f3dd",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -345,6 +345,11 @@
    "fp": "7279672404ee6bf0",
    "from": "7279672404ee6bf0",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "3d6958cfceb3f3dd",
+   "from": "7279672404ee6bf0",
+   "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
   }
  ],
  "out": [
@@ -354,20 +359,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-38-14",
+      "rec": "30-39-15",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "D"
      },
-     "book": "63d8b245954199bb"
+     "book": "e0b0d03b644d1ff2"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "41-37-6",
+      "rec": "37-43-4",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C-"
      },
-     "book": "5ac25aa4589bd7ee"
+     "book": "292f6bcc23aa235e"
     }
    ]
   },
@@ -377,20 +382,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-45-9",
+      "rec": "27-42-15",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "a67c63bf184983e2"
+     "book": "acbafcafd8055b3b"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "39-38-7",
+      "rec": "37-37-10",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "B-"
      },
-     "book": "66c328ddba5c295f"
+     "book": "b0e43f389f6fabec"
     }
    ]
   },
@@ -400,20 +405,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-35-9",
+      "rec": "21-45-18",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "F"
      },
-     "book": "16eb410e7970371a"
+     "book": "f62756fa0fdcc0aa"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "34-40-10",
+      "rec": "35-40-9",
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "f0ff5a20bbb5b47c"
+     "book": "70c86d9dbe92d466"
     }
    ]
   }

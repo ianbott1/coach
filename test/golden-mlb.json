@@ -1,5 +1,5 @@
 {
- "fp": "ce2feb8db03ad853",
+ "fp": "1da55917c2e93f0e",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -190,59 +190,64 @@
    "fp": "ce2feb8db03ad853",
    "from": "08b05f55439026c0",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "1da55917c2e93f0e",
+   "from": "ce2feb8db03ad853",
+   "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "09683acb656e6487",
-    "post": "580b0c29644be7cf",
-    "champion": "Boston",
-    "rec": "be6247d5202aea95",
-    "poll": "34bb244466203595",
-    "heis": "9ef98335694c467c",
-    "history": "c68d9caed22bb722",
-    "universe": "9d8d4297fcdb1c81",
-    "screens": "53b83246dc2c5bfd"
+    "games": "021cb984719a717a",
+    "post": "ddb58cdbf21a1ead",
+    "champion": "Detroit",
+    "rec": "5602fe0e0a5c70f9",
+    "poll": "38df9e1c90ac4666",
+    "heis": "f4bdaa0d10e5b7dc",
+    "history": "454dddb6c142ac2b",
+    "universe": "d6333eebe32ceb21",
+    "screens": "ddb7ffeae09e9bad"
    },
    {
     "year": 2027,
-    "games": "0e38788f10093756",
-    "post": "e6dea58e345e069a",
-    "champion": "Houston",
-    "rec": "9f3297275d2ab9bb",
-    "poll": "2f92d2eead5f6464",
-    "heis": "97adc9f6a97d0648",
-    "history": "9ac0b569fe08ca07",
-    "universe": "44086e5a94fc9821",
-    "screens": "c770d81eeee2bb48"
+    "games": "e62afd3e038292a5",
+    "post": "5096e0a180684526",
+    "champion": "Milwaukee",
+    "rec": "afa6b9e1f4d59c3c",
+    "poll": "80798b10a438a24c",
+    "heis": "f77903d20a7f96ca",
+    "history": "f34c33e7e9ce5166",
+    "universe": "74bd028bd263d978",
+    "screens": "48e031dce6c3322a"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "982ead0e422d009c",
-    "post": "1506b41149b1e010",
-    "champion": "LA Dodgers",
-    "rec": "4ac0a9758a38e471",
-    "poll": "bcf58866d36b4801",
-    "heis": "0a9b2d729c747218",
-    "history": "ae2f1d4aa7d8d0a3",
-    "universe": "6fb83981a274defa",
-    "screens": "3125e4135dc07c7b"
+    "games": "ffb731d8dd5dd8a8",
+    "post": "3206879a77d63db5",
+    "champion": "Toronto",
+    "rec": "0a23f34e5433df5c",
+    "poll": "f9e2cc17b7a71648",
+    "heis": "2f465d2c2a64baac",
+    "history": "30818eb2c2525a07",
+    "universe": "e4d342e8348236f9",
+    "screens": "e0b116e069940870"
    },
    {
     "year": 2027,
-    "games": "5726945595355b03",
-    "post": "16ba571d7a855b40",
-    "champion": "Philadelphia",
-    "rec": "2e5a6f3732d89e93",
-    "poll": "66ab964ad0b15120",
-    "heis": "fae3ce5d2180df5b",
-    "history": "1296b67619197c58",
-    "universe": "1d454b4e734a617b",
-    "screens": "ab04064f1d3431cc"
+    "games": "92d4045b0dcbae5e",
+    "post": "31a740179dd69ec3",
+    "champion": "Toronto",
+    "rec": "60d450f5bbe5bb43",
+    "poll": "1f467ea1b12f159f",
+    "heis": "3d664fece5568e82",
+    "history": "70476b3262ca375c",
+    "universe": "bcf8a47a253308ed",
+    "screens": "aec0d695d0a013c9"
    }
   ],
   "schedules#60": [

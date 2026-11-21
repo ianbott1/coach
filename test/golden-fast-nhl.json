@@ -1,5 +1,5 @@
 {
- "fp": "e972e54fa151cd51",
+ "fp": "6c9fc38380c8a2d9",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -75,21 +75,26 @@
    "fp": "e972e54fa151cd51",
    "from": "b9f314f73e36c24a",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "6c9fc38380c8a2d9",
+   "from": "e972e54fa151cd51",
+   "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "b365213aca36ff39",
-    "post": "5811c16182f25ec7",
+    "games": "2857db7c74ec81a0",
+    "post": "dd258158286fb90f",
     "champion": "Los Angeles",
-    "rec": "ed65130a5a2d4953",
-    "poll": "b45386cced186ae9",
-    "heis": "60a9264100ed8ac4",
-    "history": "0597b7a3e97b4a8d",
-    "universe": "43087690ad88c74f",
-    "screens": "18eb4f775fa04036"
+    "rec": "c13c0896e2da7dfd",
+    "poll": "f84f32f04b212a6f",
+    "heis": "10b54c018859624a",
+    "history": "e826a6dc4fa845ba",
+    "universe": "2b5503c0dec60547",
+    "screens": "f9bcea08106e2d64"
    }
   ]
  }
