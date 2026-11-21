@@ -1,5 +1,5 @@
 {
- "fp": "a65df2937fdd3f40",
+ "fp": "49869e874adee152",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -545,6 +545,11 @@
    "fp": "a65df2937fdd3f40",
    "from": "2fce330ba364444b",
    "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
+  },
+  {
+   "fp": "49869e874adee152",
+   "from": "a65df2937fdd3f40",
+   "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
   }
  ],
  "result": {
@@ -557,9 +562,9 @@
     "rec": "c13c0896e2da7dfd",
     "poll": "f84f32f04b212a6f",
     "heis": "10b54c018859624a",
-    "history": "e826a6dc4fa845ba",
+    "history": "8bdaba3372d8ac69",
     "universe": "2b5503c0dec60547",
-    "screens": "f9bcea08106e2d64"
+    "screens": "5d3fb7df6483f4a4"
    },
    {
     "year": 2027,
@@ -571,7 +576,7 @@
     "heis": "79071ed8fad07d82",
     "history": "8645de9593841e4a",
     "universe": "d26d41313f0dc020",
-    "screens": "99c39ef72bc390e2"
+    "screens": "9ae18b2b4ce94349"
    }
   ],
   "Edmonton#777": [
@@ -583,9 +588,9 @@
     "rec": "d138d09c219c5daf",
     "poll": "f22fb5e0b2f8d3e2",
     "heis": "1c4ae75859058c6f",
-    "history": "7fb1b9c636905644",
+    "history": "16026caef124c2ca",
     "universe": "3645a43305f22286",
-    "screens": "e11b17f3ebcffadc"
+    "screens": "89ce2a4a8289e072"
    },
    {
     "year": 2027,
@@ -595,9 +600,9 @@
     "rec": "6a9d9d0d3a24e89f",
     "poll": "12dd8fcf54843133",
     "heis": "f1c27f2783301b2c",
-    "history": "0f9c6775ca69a1b7",
+    "history": "7ac2b208d970afe6",
     "universe": "97f2e2040dab07e8",
-    "screens": "13565f28c1cb101a"
+    "screens": "7ba81dc67426686b"
    }
   ],
   "schedules#60": [

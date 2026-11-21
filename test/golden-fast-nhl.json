@@ -1,5 +1,5 @@
 {
- "fp": "6c9fc38380c8a2d9",
+ "fp": "817423afe48098b0",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -80,6 +80,11 @@
    "fp": "6c9fc38380c8a2d9",
    "from": "e972e54fa151cd51",
    "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
+  },
+  {
+   "fp": "817423afe48098b0",
+   "from": "6c9fc38380c8a2d9",
+   "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
   }
  ],
  "result": {
@@ -92,9 +97,9 @@
     "rec": "c13c0896e2da7dfd",
     "poll": "f84f32f04b212a6f",
     "heis": "10b54c018859624a",
-    "history": "e826a6dc4fa845ba",
+    "history": "8bdaba3372d8ac69",
     "universe": "2b5503c0dec60547",
-    "screens": "f9bcea08106e2d64"
+    "screens": "5d3fb7df6483f4a4"
    }
   ]
  }

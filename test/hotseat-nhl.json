@@ -1,5 +1,5 @@
 {
- "fp": "3d6958cfceb3f3dd",
+ "fp": "9d41abfd7224dfe8",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -350,6 +350,11 @@
    "fp": "3d6958cfceb3f3dd",
    "from": "7279672404ee6bf0",
    "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
+  },
+  {
+   "fp": "9d41abfd7224dfe8",
+   "from": "3d6958cfceb3f3dd",
+   "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
   }
  ],
  "out": [
@@ -372,7 +377,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "292f6bcc23aa235e"
+     "book": "8cb0662c7511eb78"
     }
    ]
   },
@@ -395,7 +400,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "b0e43f389f6fabec"
+     "book": "5580552a8de40cfa"
     }
    ]
   },
@@ -418,7 +423,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "70c86d9dbe92d466"
+     "book": "083f1442cb561e05"
     }
    ]
   }

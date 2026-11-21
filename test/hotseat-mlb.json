@@ -1,5 +1,5 @@
 {
- "fp": "bfe8c29d4adae266",
+ "fp": "6936c4490e1b48a6",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -125,6 +125,11 @@
    "fp": "bfe8c29d4adae266",
    "from": "896eea2677a2cef2",
    "note": "round 94: baseball's fit through every hit, half in the field, held to 12 points (MLB's player ranges); hockey's plan extra at full strength (the computer's plan as counted)"
+  },
+  {
+   "fp": "6936c4490e1b48a6",
+   "from": "bfe8c29d4adae266",
+   "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
   }
  ],
  "out": [
@@ -134,20 +139,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "62-100",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "84-78",
+      "result": "Missed the postseason",
+      "grade": "C"
      },
-     "book": "b43f5e77c0036c96"
+     "book": "b9c781ba258fe510"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "72-90",
+      "rec": "71-91",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "30ce277e1854e6c9"
+     "book": "5af706b9a02cbc7b"
     }
    ]
   },
@@ -157,20 +162,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "66-96",
+      "rec": "70-92",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "e31683620c3c0654"
+     "book": "bf94aba46f35f5a6"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "79-83",
+      "rec": "73-89",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C+"
      },
-     "book": "b04a410355d7cf54"
+     "book": "43ee1d96c2a37171"
     }
    ]
   }
