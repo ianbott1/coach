@@ -2138,7 +2138,7 @@ function planLineHTML(step,half){ if(!PLANLINE_ON||step===undefined||step===null
   if(q.p==="balanced")t=q.vb>=2?`You kicked off on <b>${nm("balanced")}</b>. <b>${nm(q.b)}</b> would have added <b>${q.vb}</b> before kickoff${jw(q.wb)}.`
     :`You kicked off on <b>${nm("balanced")}</b>, and neither other plan added anything tonight.`;
   else if(q.v===0)t=`You kicked off on <b>${nm(q.p)}</b>: no better than <b>${nm("balanced")}</b> before kickoff.`+(q.b!==q.p&&q.vb>0?` <b>${nm(q.b)}</b> would have added ${q.vb}${jw(q.wb)}.`:"");
-  else { t=`You kicked off on <b>${nm(q.p)}</b>: <b>${sg(q.v)}</b> before kickoff, ${q.w}.`;
+  else { t=`You kicked off on <b>${nm(q.p)}</b>: <b>${sg(q.v)}</b> before kickoff (${q.c}% to win, against ${q.c-q.v}% on ${nm("balanced")}), ${q.w}.`;
     if(q.v<0&&q.b!==q.p&&q.vb>0)t+=` <b>${nm(q.b)}</b> would have been ${sg(q.vb)}.`; else if(q.v<0)t+=` <b>${nm("balanced")}</b> was the better plan.` }
   const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&PLANS[x[2]]);
   if(mine.length)t+=` You changed to <b>${nm(mine[mine.length-1][2])}</b> during the game.`;
