@@ -145,6 +145,8 @@ on numbers they can't trust and a sport they read rather than watch.
 - Tests loosened or changed, each measured: recruiting's bound 2.5 to 3.5; objectives and recruiting sim the
   assistant's plan; bs-calibrate's bare Balanced floor 3.9 and runs from seasons as played; bs-players' innings leader on
   a two-season average; hk-lines at 0.85; firing's limit 2700s. Full suite 127 of 127.
+- Open: college football sims about 1.25-1.6x slower than round 93 (the plan's fit worked out on every drive; cache it
+  per game, results unchanged).
 - Next: round 95, a post-game line on what the plan and attributes did, late calls with options that really differ, the
   odd attribute grids; the Coach rename, title page and the game page.
 

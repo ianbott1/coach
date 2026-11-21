@@ -527,8 +527,12 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   that suited plans and lineups give back; whether any real game plays without lineups is not checked); hk-reads gets
   planAmpV when it loads the engine alone.
 - Full suite: 127 of 127 passed (33, then a resume after the two-hour limit with 94). Firing (cfb) timed out at 1500s
-  beside the browser tests; alone it took 1365s (its note said ~410s, from round 38; round 93's time not measured), so
-  its limit is now 2700s; it passed in the resume at 1385s.
+  beside the browser tests; alone it took 1365s against round 93's 834s (same machine, same 104 offseasons), so
+  its limit is now 2700s; it passed in the resume at 1385s. College football sims about 1.25-1.6x slower on 17 (a fast
+  golden season 12.8s of CPU against 10.4s): profiled, the extra is fbSideMods working out the plan's amplified fit on
+  every drive (fbFitOf splits its keys each call: 0.54s plus 1.2s in its closure, against nothing on 16). The fit is
+  fixed for a game, so caching it per game should give the time back with identical results. Not done in this release
+  (it would need the goldens and the suite again): round 95, and check the other sports' per-drive paths too.
 - Not built (round 95): a post-game line on what the plan and the attributes did (Grokbot's point 3), late calls with
   options that really differ (point 6), the odd attribute grids (point 4).
 
