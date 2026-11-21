@@ -407,6 +407,54 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 95: what the plan did, and an 80th minute worth deciding (engine 18 for soccer's and hockey's late calls; ENGINE_NOW 18).
+- College football's sim time back (round 94 left it 1.25-1.6x slower): fbFitOf parses a fit table's keys once (FB_FITK),
+  the same sum in the same order. A fast golden season 11.4-12.3s against 14.4-16.2 (round 93 10.8-11.0); both footballs'
+  full goldens and hot seats identical.
+- After the game, the plan (Grokbot's point 3): the result card opens its audit with the plan you kicked off with, its
+  worth before kickoff as the card showed it and why ("You kicked off on Take risks: -5 before kickoff (43% to win,
+  against 48% on Balanced), as the better side tonight. Play it safe would have been +4."). Kept when the game starts
+  (doAdvance planPreKeep, S.planPre, this season only, checked against the card's opponent), so it never reads a later
+  step's injuries; on Balanced it names what the best other plan would have added; a change during the game is said;
+  simmed single games too, none for games simmed ahead on the assistant's plan or in a hot seat. No verdict on whether
+  the plan "worked" tonight: a plan's extra is a fraction of a score a game, one box score is luck. test/plan-line.js
+  (quick tier): all seven, 58 games, the card's number before kickoff equals the line's, and it is in the save.
+  PLANLINE_ON=0 matches round 94's fast goldens.
+- Late calls, measured (Grokbot's point 6; scratch r95 lc.js: engine games at random gaps, each option played on from
+  the call on fresh luck, 300 runs an option, hundreds of calls a kind). Most late calls were one of two kinds. Quizzes,
+  one answer always best: soccer's 80' in every state (down one push 180 of 180, up one sit 180 of 182, level go for the
+  win 172 of 201; 65' the same), hockey's pull (early 206 of 208), football's tied call (push 85%, worth 7-10 points),
+  football's defend up a score (prevent 84%, 2 points). Near coin flips: hockey's last five minutes (push minus sit 0.9
+  points tied, 0.6 up one), overtime, the goalie call, basketball's foul trouble, baseball's steal, pinch and pull,
+  football's protect. (Told to Ian first from 3-16 calls a kind; the lab corrected three: soccer level is a quiz, not a
+  coin flip; basketball's fouls are flat, not a quiz.) The ceiling at that minute: an absurd one-sided boost to one
+  option (own chances 3x, none against) is worth 10 points in hockey's last five minutes, 21 in soccer's last ten.
+- Soccer's 80' call rebuilt as a read (Ian): how to chase, see it out or go for it. Down: Go at them (press high) or Keep
+  the ball; level: those or Take the point; up: Keep the ball or Park the bus. The answer is in their back line's legs:
+  how hard the day has been on their defence and midfield (scLegsZ, from the stamina model's per-game drain SC.fit; the
+  energy itself sat near full at 80' after the 60' and 70' changes), shown on the call as the staff's read of each side's
+  legs, 0-100, a few points off (SC18.noise 8). Going at them: own chances x(1.8 + 2.0z), theirs x(1.6 - 0.8z) where z is
+  +1 for a back line that's gone and -1 for fresh legs; keeping the ball x(1.25 + 0.5z) and theirs x(0.75 - 0.7z), and
+  x1.35 more of your own when behind (it is still a chase); park the bus and take the point as before. Your answers only:
+  the computer's late modes and every computer game are untouched. Pearl reads the legs, the Bears always go, the
+  capybara never does. test/sc-final.js (quick tier, 700 games, 200 runs an option): reading the legs 41.2 against the
+  best fixed answer 40.2 and the assistant 37.6 level, 7.9 / 7.4 / 6.2 down, 90.6 / 90.0 / 87.9 up; best answers split
+  83/74/32, 72/66, 93/69. Honest size: the options now differ (level 8.4 points apart), but reading the legs adds under a
+  point over the best single answer; up and down stay small because ten minutes rarely changes a result. Your games'
+  goals 2.79 a game (round 94 2.78).
+- Hockey's late decision is the ten-minute read (Ian, after the ceiling above): the late floor's window opens at ten
+  minutes left (engine 18), where the third-period read is asked, and the read's counts are kept for games two apart
+  after two, so a game that comes within a goal gets it too (no system change, no draw). The five-minute call stays in
+  NEVER_ASK and now comes up only as the floor's fallback. late-calls (40 games): 18 of 18 close finishes asked the read,
+  the five-minute call twice. The pull stays a quiz (Ian).
+- Not done, for Ian: hockey graded in standings points (an overtime loss's point; the lab shows it flattens the tied
+  call further, 2.2 to 1.4, and the tied call is no longer asked); football's tied call (a 7-10 point quiz); the small
+  quizzes and coin flips left with the assistant or as they were.
+- Checks: sim parity MATCH (hockey -1.3, soccer +0.4); hk-reads MATCH; sc-decisions MATCH; ENGINE_NOW=17 matches round
+  94's fast goldens in all seven; at 18 the other five games differ by the universe's engine stamp only. engine-replay
+  replays round 94 (796a941, engine 17). Soccer's evidence rows keep their label at phone width ("Now1st, level", since
+  round 44).
+
 Round 94: plans you can feel (engine 17, all seven; ENGINE_NOW 17). Ian, after Grokbot's point 1 ("make roster fit move the
 win chance in every game, and show why"): about 8 points of win chance at even for a roster one league spread off the
 average, held to 15; the wrong plan costs as much; balanced plays as before.
