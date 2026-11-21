@@ -29,7 +29,7 @@ add('sim and skip (all six)',['sim-and-skip.js'],{fast:true}); add('sim ahead (a
 add('migrate old saves (college football)',['migrate.js']);
 // college football
 add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);
-add('firing (cfb)',['firing.js',D(G.cfb)],{timeout:1500000});   /* ~410s alone; over 900s when it shares the CPU with the browser tests (round 38) */ add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120'],{fast:true});
+add('firing (cfb)',['firing.js',D(G.cfb)],{timeout:2700000});   /* ~410s alone; over 900s when it shares the CPU with the browser tests (round 38); round 94: 1365s alone, past 1500s beside them */ add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120'],{fast:true});
 add('plans (cfb)',['plans.js',D(G.cfb)],{fast:true}); add('call verdicts (nfl)',['fb-verdicts.js',D(G.nfl),'60']); add('verdicts agree with the post-game line (nfl)',['verdict-agree.js',D(G.nfl)]); add('your players (all six)',['people.js']); add('a game is recorded once (cfb, nfl, epl)',['double-finish.js'],{fast:true});  add('the two-point call (cfb, nfl)',['two-point.js'],{fast:true}); add('postseason: only your own games (all six)',['postseason-gate.js']);
 // pro football
 add('rules (nfl)',['nfl.js',D(G.nfl),'3','8'],{timeout:1200000});   /* ~190s alone; ran 400-500s beside the browser tests and passed 600s in round 72 */ add('draft board (nfl)',['draftboard.js',D(G.nfl)]);
