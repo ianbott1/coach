@@ -167,6 +167,13 @@ function staffTake(dp, ctx){
     R.push({who:"capy", pick:"normal", line:"I would leave the shape alone. A count of attacks is, I believe, a small and noisy thing."});
     return R;
   }
+  if(dp.k==="final"&&dp.legs){   // round 95: the read is their legs; Pearl reads them, the Bears always go, the capybara never does
+    const t=dp.legs.theirs, gone=t<=55, fresh=t>=74;
+    const pp=gone?"press":fresh?(ahead&&o.indexOf("sit")>=0?"sit":"probe"):(o.indexOf("probe")>=0?"probe":"normal");
+    R.push({who:"bears", pick:o.indexOf("press")>=0?"press":"probe", line:bearYell(behind?"push":ahead?"lock":"level",seed)});
+    R.push({who:"pearl", pick:pp, line:pearlSay(gone?`Look at their back line! They've got nothing left. Go at them!`:fresh?`They've still got legs at the back. Don't run into them: ${pp==="sit"?"let's see it out":"keep the ball and make them chase"}!`:`Their legs are in between. Keep the ball and make them work for it!`,seed)});
+    R.push({who:"capy", pick:o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":"probe", line:behind?"Chasing a game, one finds, mostly concedes on the break.":ahead?"I would suggest keeping what we have.":(dp.ko?"Extra time, I do believe, is no disgrace.":"A point, I do believe, is a point.")});
+    return R }
   const bold=o.indexOf("push")>=0?"push":o.indexOf("win")>=0?"win":"normal";
   const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":o.indexOf("keep")>=0?"keep":"normal";
   R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"level",seed)});

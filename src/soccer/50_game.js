@@ -96,6 +96,9 @@ function sportPlanFitLine(t,pl){ return scV12()?planFitWords(t,pl,{safe:"passers
 const LATE_SEG=(typeof process!=="undefined"&&process.env&&+process.env.SC_LSEG)||13;   // the late call at 65' (round 33: 8.7 points a call, 4% close either way; at 70' 5.9, 29%; at 60' 7.2, but it halved the reading edge over Pearl, 1.2 -> 0.5)
 const LATE_K=(()=>{ const e=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?v.split(",").map(Number):null };
   return {push:e("SC_LPUSH")||[1.9,1.6], sit:e("SC_LSIT")||[0.38,0.62], win:e("SC_LWIN")||[1.55,1.35], point:e("SC_LPOINT")||[0.6,0.58]} })();
+const SC18_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
+function scV18(){ return (typeof ENGINE_V!=="undefined"&&ENGINE_V>=18)||SC18_ENV("SC18")===1 }
+const SC18={a0:SC18_ENV("SC18_A0")??1.8, a1:SC18_ENV("SC18_A1")??2.0, ao:SC18_ENV("SC18_AO")??1.6, ao1:SC18_ENV("SC18_AO1")??0.8, k0:SC18_ENV("SC18_K0")??1.25, k1:SC18_ENV("SC18_K1")??0.5, ko:SC18_ENV("SC18_KO")??0.75, ko1:SC18_ENV("SC18_KO1")??0.7, kd:SC18_ENV("SC18_KD")??1.35, noise:SC18_ENV("SC18_N")??8};
 const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
@@ -111,7 +114,9 @@ const AGGR = {
   upush:     {own:LATE_K.push[0], opp:LATE_K.push[1]},
   usit:      {own:LATE_K.sit[0],  opp:LATE_K.sit[1]},
   uwin:      {own:LATE_K.win[0],  opp:LATE_K.win[1]},
-  upoint:    {own:LATE_K.point[0],opp:LATE_K.point[1]}
+  upoint:    {own:LATE_K.point[0],opp:LATE_K.point[1]},
+  upress:    {own:1, opp:1},          // round 95: both from their legs (rateOf)
+  uprobe:    {own:1, opp:1}
 };
 /* approaches: what a side does with and without the ball. own and opp scale
    its chances and the chances it allows; legs is how hard it runs each unit
@@ -152,6 +157,20 @@ function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five"
 /* ten minutes left, within a goal: the second late call (round 40: nothing was asked after 65' in 29 of 29 close
    matches; Grokbot: an attacking change or parking the bus at 80') */
 const SC_FINAL=true;
+/* round 95 (engine 18; Grokbot's point 6, Ian: rebuild the 80' call): every answer at 80' had one right answer (down one,
+   push 180 of 180; up one, sit 180 of 182; level, go for the win 172 of 201: scratch r95 lc.js). Now the question is how,
+   and the answer is in their legs: going at them pays against a back line that's gone (their defence and midfield's
+   energy, the stamina model's own), and against fresh legs it opens you up; keeping the ball is the steady option. The
+   call shows each side's legs as the staff read them (a little off: SC18.noise). Your answers only: the computer's late
+   modes and every other game are as before. */
+const scLegsZ=X=>Math.max(-1,Math.min(1,((X.F[0]*0.7+X.F[1]*0.3)-1.05)/0.4));   // how hard the day has been on a back line (the defence's and the midfield's drain this game, SC.fit): +1 gone, -1 fresh
+function finalCall18(lead,ko,legs){
+  const A=["normal","Leave it to your assistant"], P=["press","Go at them: fresh legs on, press high"], Q=["probe","Keep the ball: make them chase it"];
+  if(lead<0)return {k:"final",legs:legs,h:`Down ${-lead}, ten minutes left`,q:"How do you chase it?",opts:[P,Q,A]};
+  if(lead>0)return {k:"final",legs:legs,h:`Up ${lead}, ten minutes left`,q:"How do you see it out?",opts:[Q,["sit","Park the bus: a defender on"],A]};
+  if(ko)return {k:"final",ko:true,legs:legs,h:"Level, ten minutes left",q:"Go for it, keep the ball, or keep it tight for extra time?",opts:[P,Q,["point","Keep it tight: extra time if it comes"],A]};
+  return {k:"final",legs:legs,h:"Level, ten minutes left",q:"Go for the win, keep the ball, or take the point?",opts:[P,Q,["point","Take the point"],A]};
+}
 function finalCall(lead,ko){
   const A=["normal","Leave it to your assistant"];
   // round 44, graded in league points: down one, everyone forward was the best answer in 128 of 144 matches; up one,
@@ -306,6 +325,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       const myLegs=(X.E[2]*0.6+X.E[1]*0.4), theirLegs=(O.E[0]*0.6+O.E[1]*0.4);
       own*=(1-SC.tiredOwn*(1-myLegs))*(1+SC.tiredOpp*(1-theirLegs));
       if(X.red)own*=SC.red.own; if(O.red)own*=SC.red.opp;
+      // round 95: going at them pays against a back line that's gone and opens you up against fresh legs; keeping the ball
+      // is the steady way, a little better against tired legs too (they can't get it back)
+      { const zo=scLegsZ(O), zx=scLegsZ(X); if(m[side]==="upress")own*=SC18.a0+SC18.a1*zo; else if(m[side]==="uprobe")own*=(SC18.k0+SC18.k1*zo)*(lead(side)<0?SC18.kd:1);   // behind, keeping it is still a chase: bodies forward, patiently
+        const mo=m[other(side)]; if(mo==="upress")own*=SC18.ao-SC18.ao1*zx; else if(mo==="uprobe")own*=SC18.ko-SC18.ko1*zx }
       return own*makeF(side,m[side],m[other(side)])*lateF(side,s)*ampF(side);
     };
     const fH=finF("home"), fA=finF("away");
@@ -440,7 +463,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,finalCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}
+    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))>1)return;
+      if(scV18()&&humans[sd]){ const rd=X=>Math.round(Math.max(5,Math.min(95,65-25*scLegsZ(X)+rng.gauss(0,SC18.noise))));   // the staff's read of each back line's legs, 0-100; drawn only for a person's side
+        queueCall(sd,finalCall18(lead(sd),st.playoff,{mine:rd(st.S[sd]),theirs:rd(st.S[other(sd)])})) }
+      else queueCall(sd,finalCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}
     if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;

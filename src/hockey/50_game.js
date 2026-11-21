@@ -431,7 +431,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         // the other bench may change its system for the third (only against a person: no other game moves)
         // only in a game within a goal: elsewhere no third-period read is asked, and a change nobody asks about only
         // erodes the first read (it halved its worth: test/hk-reads.js)
-        { const O=st.S[other(sd)]; if(!humans[other(sd)]&&Math.abs(L)<=1){ O.t3=Object.assign({},O.tell);
+        // round 95 (engine 18): two apart after two, the counts since are kept as well, so a game that comes within a goal
+        // by ten minutes left gets the read too (it is hockey's late decision now); no system change, no draw
+        { const O=st.S[other(sd)]; if(ENGINE_V>=18&&!humans[other(sd)]&&Math.abs(L)===2)O.t3=Object.assign({},O.tell);
+          if(!humans[other(sd)]&&Math.abs(L)<=1){ O.t3=Object.assign({},O.tell);
             if(rng.r()<(L>0?(HK.thirdSwitchBehind||0.5):(HK.thirdSwitch||0.25))){ const ks=SYSTEM_KEYS.filter(k=>k!==O.sys); O.sys=ks[rng.int(ks.length)] } } }
         askGoalie(sd,X,2);
         if(L!==0&&Math.abs(L)<=3)queueCall(sd,intCall(L)) });      // up four after two, it's gone

@@ -207,9 +207,13 @@ function evidenceHTML(g,my,d,kind){
 function finalSub(my,o){
   const R=SEA&&SEA.roster&&SEA.roster[my]; if(!R)return "";
   const nm=i=>R[i]&&R[i].n?surname(R[i].n):null, P=p=>POS.findIndex(x=>x.p===p);
-  const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")]}[o]; if(!sw)return "";
+  const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")], press:[BK(P("W")),P("CM")], probe:[BK(P("CM")),P("W")]}[o]; if(!sw)return "";
   const on=nm(sw[0]), off=nm(sw[1]); return on&&off?`${on} on, ${off} off`:"";
 }
+/* round 95: the 80' call's evidence, each back line's legs as the staff read them (a little off) */
+function legsHTML(dp){ const L=dp&&dp.legs; if(!L)return "";
+  const w=v=>v<=50?"gone":v<=60?"going":v<=72?"holding":"fresh", bar=(n,v)=>`<div class="legrow"><span>${n}</span><b>${v}</b><i>${w(v)}</i></div>`;
+  return `<div class="legs"><div class="legh">Legs at the back, as the staff read them</div>${bar("Theirs",L.theirs)}${bar("Yours",L.mine)}<div class="legn">Going at them pays against tired legs, and opens you up against fresh ones. The read is a few points off either way.</div></div>` }
 /* the table, beside the late calls (round 44): a point against three, in places. A league game in the season only. */
 function tableStakesHTML(g,my){
   if(!SEA||SEA.phase!=="week"||g.cup||typeof LEAGUE.points!=="function"||!CONF[my])return "";
@@ -277,7 +281,7 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.q||"")}</div>
     </div>
-    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?tableStakesHTML(g,my):""}
+    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?legsHTML(dp)+tableStakesHTML(g,my):""}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length,g:g,my:my}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
