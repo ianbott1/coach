@@ -126,17 +126,26 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
-## Round 94 (done): plans you can feel
-- Engine 17, all seven: the plan your roster suits is worth about 8 points of win chance at even for a roster one league
-  spread off the average (up to 15), and the wrong one costs as much. It plays through the game: more shots, more threes
-  or twos, more chances or counters, more touchdowns or sustained drives, more home runs or contact. Baseball gets a fit
-  for the first time (power against contact and eye).
-- A reason line under the plan buttons ("+11 from Shorten the game: your shooters suit it"), from the same chance as the
-  number above it; the contradicting hints are gone.
-- Leagues recentred; the standings spread out a little in hockey and baseball (the cost of a big fit in a long season).
-- Hockey's scoring leaders are not back in the band (about 60 over twelve seasons): ten rostered skaters carry every named goal. A deeper roster, or unnamed depth goals again, is Ian's call. A sim ahead stops for a top player out for the season.
-- Next (round 95): a post-game line on what the plan and attributes did; late calls with options that really differ;
-  odd attribute grids; the coach rename, the title page and the ESPN-style game page.
+## Round 94 (done): plans you can feel (engine 17, all seven)
+- A plan suited to the roster is worth about 8 points of win chance at even for a roster one league spread off average,
+  held to 15; the wrong plan costs as much. The extra plays through each sport's own events, so box scores carry it.
+  Measured on both the computer's path and yours (played against shown 0.93-1.08 in every sport).
+- Baseball gets a fit of its own (the lineup's Power against Contact and Eye). Ian chose a smaller fit so the league's
+  spread stays MLB-like: worth about 6 points at the median (90th percentile about 11), under the 8 elsewhere.
+- One reason line under the plan buttons names the roster or the gap ("+11 from Shorten the game: your shooters suit it").
+- Hockey: the chance now knows when tonight's goalie is the backup (the second night of a back-to-back); mid-season it
+  was 4 points off for some clubs and now reads within 1.4.
+- League levels recentred on engine 17 in every sport. Cost: standings spread a little wider where seasons are long
+  (hockey, baseball, soccer), and a player who leaves the plan on Balanced all season falls behind the computer's clubs
+  (pro objectives met 41% on Balanced against 54% on the assistant's plan).
+- Not reached: hockey's scoring leaders still about 60 goals (band 45-57); the fix is a deeper roster (Ian's call).
+- Watch: college football's chance after five weeks (Alabama +3.0 against a bound of 3); baseball's chance doesn't carry
+  tonight's lineups and starters (Seattle -3.9 in one context; holds over a season); soccer draws a point high.
+- Tests loosened or changed, each measured: recruiting's bound 2.5 to 3.5; objectives and recruiting sim the
+  assistant's plan; bs-calibrate's bare Balanced floor 3.9 and runs from seasons as played; bs-players' innings leader on
+  a two-season average; hk-lines at 0.85; firing's limit 2700s. Full suite 127 of 127.
+- Next: round 95, a post-game line on what the plan and attributes did, late calls with options that really differ, the
+  odd attribute grids; the Coach rename, title page and the game page.
 
 ## Round 93 (done): trust fixes from the November 20 reviews
 - A game is recorded only once its engine has finished; held headers and basketball clips name the moment shown.
