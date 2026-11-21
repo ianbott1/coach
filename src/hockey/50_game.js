@@ -462,6 +462,14 @@ function gkCtx(t,step){
     const b2b=step>0&&SEA.sched.some(g=>g.week===step-1&&(g.home===t||g.away===t)), R=SEA.roster[t], st=R[5], bk=R[BK(5)];
     if(!st||!bk)return {b2b:b2b};
     return {b2b:b2b, gap:st.r-bk.r, s:{n:st.n,r:st.r}, b:{n:bk.n,r:bk.r}} }catch(e){ return null } }
+/* round 94: tonight's goalie in the chance before a game. On the second night of a back-to-back the computer starts his
+   backup (and your assistant does too, unless you start the tired starter), and the chance never counted it: after five
+   weeks it read Edmonton +4.4, Toronto +4.3, Vegas -4.3 against the engine, and -0.5 to +1.2 with the back-to-backs
+   taken out (scratch r94 pre37.js NOGK). Measured worth (scratch r94 gkelo.js, equal clubs, 20,000 games a gap, engine
+   17): 8 points behind the starter -43 Elo, 16 -72, 24 -104, 4.45 a point. */
+const HK_BK_ELO=4.45;
+function sportTonightEdge(t){ if(!planAmpV()||!HK_GSTART||typeof SEA==="undefined"||!SEA)return 0; const G=gkCtx(t,SEA.step); if(!G||!G.b2b)return 0;
+  return -HK_BK_ELO*(G.gap!==undefined?Math.max(0,G.gap):HK.backup/HK.backupPer) }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, gk:HK_GSTART?{home:gkCtx(h,step),away:gkCtx(a,step)}:undefined, seed:strHash(h+"|"+a+"|"+year+"|"+step),
   sh:hkV12()?{home:hkShapeT(h),away:hkShapeT(a)}:undefined} }
 function playGame(rng, eloH, eloA, planH, planA, opts){
