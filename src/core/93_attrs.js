@@ -173,6 +173,7 @@ function styleTable(sea){ if(typeof ENGINE_V==="undefined"||ENGINE_V<15||typeof 
     out.style[t]=z[0][1]-z[1][1]<STYLE_TIE?[z[0][0],z[1][0]].sort()[strHash(t+"|"+sea.year)%2]:z[0][0] });
   K.forEach(k=>{ T.filter(t=>S[t]).sort((a,b)=>S[b][k]-S[a][k]||(a<b?-1:1)).forEach((t,i)=>{ (out.rank[t]=out.rank[t]||{})[k]=i+1 }) });
   if(typeof sportSeasonNorms==="function")try{ out.norm=sportSeasonNorms(sea) }catch(e){}   // football: the league's offense, for reads tied to the roster
+  if(typeof sportLeanSD==="function")try{ out.leanSD=sportLeanSD(S,T) }catch(e){}   // round 94: baseball's lineup lean, its spread fixed as the season opens (a reload asks at another moment)
   return out }
 /* the season's style for a club, when it comes from the roster (else null: the caller keeps its hash) */
 function rosterStyle(t,year){ try{ return typeof SEA!=="undefined"&&SEA&&SEA.year===year&&SEA._styles&&SEA._styles.style[t]||null }catch(e){ return null } }

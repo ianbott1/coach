@@ -413,10 +413,11 @@ const BS17_ENV=k=>typeof process!=="undefined"&&process.env&&process.env[k]?+pro
 const BS17={e:BS17_ENV("BS17_E")||95, cap:BS17_ENV("BS17_CAP")||183, gs:BS17_ENV("BS17_GS")||1.4, ga:BS17_ENV("BS17_GA")||2.3, g:BS17_ENV("BS17_G")||0.905};   // g: the league's run level held (suited plans everywhere hit more on 17)
 const SPORT_FIT_FROM=17;   // core: the plan is in the chance from engine 17 here (round 94)
 function bsLeanOf(R){ const o=sportStyleScores(R); return o.pull-(o.patient+o.contact)/2 }
-const BS17_SD=new WeakMap();   // the league's spread of that lean, once a season (a Season is a fresh object each season and load)
-function bsLeanSD(){ if(typeof SEA==="undefined"||!SEA||!SEA.roster)return 0; const k=SEA, c=BS17_SD.get(k); if(c&&c.y===SEA.year)return c.v;
-  const v=Object.keys(SEA.roster).filter(t=>Array.isArray(SEA.roster[t])).map(t=>bsLeanOf(SEA.roster[t])), m=v.reduce((a,b)=>a+b,0)/(v.length||1),
-    sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/(v.length||1)); BS17_SD.set(k,{y:SEA.year,v:sd}); return sd }
+/* the league's spread of that lean, from the opening rosters (core styleTable, made in the Season constructor), so a
+   promotion or a trade before the first game can't move it between a play and its reload */
+function sportLeanSD(S,T){ const v=T.filter(t=>S[t]).map(t=>S[t].pull-(S[t].patient+S[t].contact)/2), m=v.reduce((a,b)=>a+b,0)/(v.length||1);
+  return Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/(v.length||1)) }
+function bsLeanSD(){ return typeof SEA!=="undefined"&&SEA&&SEA._styles&&SEA._styles.leanSD||0 }
 /* the lineup's lean in league spreads (positive: power) */
 function bsLeanZ(t){ if(!planAmpV()||typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return 0; const sd=bsLeanSD(); return sd>0?bsLeanOf(SEA.roster[t])/sd:0 }
 function bsFitZ(z,pl){ if(!z||!pl||pl==="balanced")return 0; const v=BS17.e*(pl==="aggressive"?z:-z); return Math.max(-BS17.cap,Math.min(BS17.cap,v)) }

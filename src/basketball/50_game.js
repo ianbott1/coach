@@ -295,7 +295,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s<SEGS){ const pl=st.mode[sd], E=ampE(sd,pl); if(E){ if(pl==="safe")m.p2+=BB17.gs*E*c.fin/R_SLOPE; else if(pl==="aggressive")m.p3+=BB17.ga*E*c.sht/R_SLOPE } } };
   const ampMemo={home:{},away:{}};
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!BB11_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
-    const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]); return M[pl]=planAmp(f,BB17)-f };
+    const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]); return M[pl]=(planAmp(f,BB17)-f)*(humans[sd]?BB17.hg:1) };   // hg: a person's plan also sets his offence, so his path plays the extra louder (scratch r94 person.js: the pros 1.61x the shown change at 1, college 1.14x)
   const starOn=(X,s)=>!X.out&&!(s<X.sitTo);
   const playSeg=(s)=>{
     const n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
@@ -495,8 +495,8 @@ function bbFitOf(F,t){ if(!bbV11()||!F)return 0; const T=bbShapeT(t); return R_S
    (59 and 39 Elo), held to 15 points; played through the plan's own shots: working it inside makes more of its twos,
    shortening the game more of its threes */
 const BB17_ENV=k=>BB11_ENV(k)&&+BB11_ENV(k);
-const BB17=Object.assign({ncaab:{m:2.0,cap:113,gs:1,ga:0.87,k:0.014}, nba:{m:3.5,cap:75,gs:1,ga:0.7,k:0.019}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nba"?"nba":"ncaab"],
-  BB17_ENV("BB17_M")?{m:BB17_ENV("BB17_M")}:{}, BB17_ENV("BB17_GS")?{gs:BB17_ENV("BB17_GS")}:{}, BB17_ENV("BB17_GA")?{ga:BB17_ENV("BB17_GA")}:{}, BB17_ENV("BB17_K")?{k:BB17_ENV("BB17_K")}:{});
+const BB17=Object.assign({ncaab:{m:2.0,cap:113,gs:1,ga:0.87,k:0.014,hg:0.85}, nba:{m:3.5,cap:75,gs:1,ga:0.7,k:0.019,hg:0.58}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nba"?"nba":"ncaab"],
+  BB17_ENV("BB17_M")?{m:BB17_ENV("BB17_M")}:{}, BB17_ENV("BB17_GS")?{gs:BB17_ENV("BB17_GS")}:{}, BB17_ENV("BB17_GA")?{ga:BB17_ENV("BB17_GA")}:{}, BB17_ENV("BB17_K")?{k:BB17_ENV("BB17_K")}:{}, BB17_ENV("BB17_HG")?{hg:BB17_ENV("BB17_HG")}:{});
 function bbFitSh(F,T){ return F&&T?R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin):0 }
 function sportPlanFit(t,pl){ return planAmp(bbFitOf(BB11_FIT[pl],t),BB17) }
 function sportPlanFitC(t,pl){ return planAmp(bbFitOf(BB11_FITC[pl],t),BB17) }

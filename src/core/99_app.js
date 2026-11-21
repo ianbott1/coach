@@ -2094,10 +2094,14 @@ function planFitHTML(wp){
    risks"): one line, from the same chance as the number above it (each plan's chance less balanced's, so the line can't
    disagree with the number or with itself, as the fit line and the underdog line did). Whether it's the roster or the
    gap: the fit and the plan's own worth tonight are told apart. */
-function planChances(){ const my=S.myTeam, g=SEA&&SEA.nextGame?SEA.nextGame(my):null; if(!g)return null; const opp=g.home===my?g.away:g.home; if(!opp)return null;
-  const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,g.home===my,!!g.neutral)[0]:winProb(my,opp,g.home===my,!!g.neutral) }) }finally{ plan=was }
-  const d=SEA.matchupElo(g,"balanced"), gap=g.home===my?d.h-d.a:d.a-d.h; return {p:o, gap:gap} }
-function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, d=k=>Math.round(100*(P[k]-P.balanced)), my=S.myTeam;
+function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
+  if(SEA&&SEA.phase==="week"){ const g=SEA.nextGame?SEA.nextGame(my):null; if(!g)return null; opp=g.home===my?g.away:g.home; atH=g.home===my; neu=!!g.neutral }
+  else { const pn=SEA&&SEA.postNext?SEA.postNext(my):null; if(!pn||!pn.opp)return null; opp=pn.opp; atH=pn.home===my||pn.home===true; neu=!!pn.neutral||pn.home===undefined }   // the postseason card, as it places the game
+  if(!opp)return null;
+  const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
+  let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap} }   // your edge before your plan
+/* in the units shown: each chance as the screen rounds it (round 71's lesson: the card's 41 and 54 with a line saying 14) */
+function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
   const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>{ const f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
     const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
     return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) };

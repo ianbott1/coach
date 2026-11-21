@@ -421,11 +421,17 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   basketball (college 2.0, pros 3.5) working it inside makes more of its twos, shortening the game more of its threes;
   soccer (8.8: on its W/D/L model 8 points is 123 Elo, draws flatten it) taking the game to them makes more chances, sitting
   deep more on the break (cutting their chances drew 32% of games); football (college 1.6, pros 1.8) taking risks scores
-  more touchdowns, playing it safe keeps more drives going. Channel gains (gs, ga) set so the engine delivers what the
-  chance shows (scratch r94 ampcheck2.js, the same clubs and dice on 17 and 16, the computer's path): hockey 0.94,
-  college basketball 1.04, the pros 1.00, soccer 1.10, football 0.6-0.85 by plan before its gains, baseball 1.0 after.
+  more touchdowns, playing it safe keeps more drives going. Channel gains (gs, ga) set on the computer's path at the cap
+  (scratch r94 ampcheck2.js, the same clubs and dice on 17 and 16), then checked on yours where the shown number lives
+  (person.js: your club on your plan, calls left to the assistant, the opponent on its suited plan, clubs near one spread,
+  3,000 games a plan on common dice): played against shown hockey 0.93, college basketball 0.98, the pros 0.94, pro
+  football 0.98, college 1.00, soccer 1.08, baseball 0.97. Basketball's person path played the extra louder (the pros
+  1.61x at first: a person's plan also sets his offence), so a person's extra there is scaled (BB17.hg: college 0.85,
+  the pros 0.58). One M on both paths means a computer basketball club gets about half a person's fit from the same
+  roster (FITC is about half FIT); the other sports' paths are within 10%.
 - Baseball's fit (design addition, new): the nine regulars' lean, Power against Contact and Eye (sportStyleScores, as the
-  report's roster line), in league spreads (bsLeanZ, the spread once a season); 95 Elo a spread, held to 183; Swing for the
+  report's roster line), in league spreads (bsLeanZ; the spread from the opening rosters, core styleTable's leanSD, so a
+  promotion before the first game can't move it between a play and its reload); 95 Elo a spread, held to 183; Swing for the
   fences plays it as home runs, Small ball as singles and walks and fewer strikeouts. In the game's context (ctx.lz).
 - The chance before a game counts it (sportPlanFit returns the amplified fit; gameEdge unchanged), so do computer clubs'
   plan picks (cpuPlanOf) and the opponent's fit. Measured in a browser, each plan clicked: Tulane 43 / 36 / 52, the LA
@@ -443,10 +449,17 @@ average, held to 15; the wrong plan costs as much; balanced plays as before.
   basketball 228.9 (227.7), college 144.2 (143.9), pro football 45.6 (45.4), college 53.6 (53.7), hockey 6.10 goals (6.14),
   overtime 23.7% (23.6%), soccer 2.70 goals (2.66), draws 29.9% (28.9%: a point higher again; watch), home wins 41.9% (42.8%). The cost, as
   told to Ian before building: the standings spread out where seasons are long and fit is a whole spread of wins (wins sd
-  hockey 7.9 to 8.3, baseball 15.1 to 16.6; pro basketball, both footballs and soccer unchanged within noise).
-- Hockey's scoring leaders back in the band (Ian; credit only, engine 17): leaders 56.8 goals and 110 points over four
-  seeds (round 93: 60 and 110-139): the lean 0.06 a spread held to 0.75-1.2, the star factor 0.35, the depth share 0.3
-  split evenly between a starter and the man behind him (scratch r94 reg.js; HK17C).
+  hockey 7.9 to 8.3, baseball 15.1 to 16.6, soccer 4.67 to 4.88; pro basketball and both footballs unchanged within
+  noise). Balanced itself isn't the old game: the recentring moves every game a little, and nearly every computer club
+  now takes its suited plan, so staying on balanced gives the opponent's fit away.
+- Hockey's scoring leaders (Ian: back into 45-57; credit only, engine 17): NOT reached. The lean 0.06 a spread held to
+  0.75-1.2, the star factor 0.35, the depth share 0.3 split evenly between a starter and the man behind him (HK17C):
+  four seeds read 56.8 goals (61, 55, 58, 53), eight more seasons 61.8 (59-68): about 60 over twelve, as round 93; the
+  points leaders come down a little (110-119 against 107-139). Every goal is named among the ten skaters a roster
+  carries where a club dresses eighteen, so the stars take about a quarter of their club's goals. More weight to the
+  defencemen (HK17C.dw 2.4) centres the leaders (51.9) but a defenceman led the league with 55 goals and the first
+  pair's best reached 86 points (target 35-45): left at 1. The real fix is a deeper roster (or unnamed depth goals
+  again): Ian's call.
 - Smaller: a sim ahead always stops when one of your two best players is out for the rest of the regular season (Grokbot:
   college basketball lost an 80-rated star without stopping); the page keeps its place after a plan click (not reproduced
   in Chromium at phone or laptop width on round 93; now held explicitly); a pick caught past the 99 returned 4 yards long in

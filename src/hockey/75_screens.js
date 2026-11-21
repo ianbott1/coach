@@ -39,7 +39,7 @@ const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: ever
 /* measured (scratch r94 reg.js, regular seasons, four seeds): leaders 56.8 goals (61, 55, 58, 53) and 110 points (113,
    116, 109, 102) against round 93's 60 and 110-139; the lean 0.06 a spread held to 0.75-1.2 (round 90's 0.12 and 1.35),
    the star factor 0.35 (0.55), the depth share 0.3 shared evenly between a starter and the man behind him */
-const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||1), ps:+(HK13_ENV("HK17C_PS")||0.35), un:+(HK13_ENV("HK17C_UN")||0.3), lk:+(HK13_ENV("HK17C_LK")||0.06), lmax:+(HK13_ENV("HK17C_LMAX")||1.2)};
+const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||1), ps:+(HK13_ENV("HK17C_PS")||0.35), un:+(HK13_ENV("HK17C_UN")||0.3), lk:+(HK13_ENV("HK17C_LK")||0.06), lmax:+(HK13_ENV("HK17C_LMAX")||1.2), dw:+(HK13_ENV("HK17C_DW")||1)};
 const hkV17=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=17;
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
@@ -51,7 +51,8 @@ function hkDressed(tm,W,lk){
   const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
   const PS=hkV17()?HK17C.ps:hkV13()?HK13.pstar:HK_PSTAR, DW=hkV13()?HK13.depthw:HK_DEPTHW, star=p=>Math.max(0.3,1+(p.r-60)/20*PS);
   ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
-    const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=W[unit]*(1-b)/0.7, dp=W[unit]*DW*b/0.3;
+    const wu=W[unit]*(hkV17()&&i>=3&&W===HK_GW?HK17C.dw:1);   // round 94: defencemen's share of goals (dw)
+    const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=wu*(1-b)/0.7, dp=wu*DW*b/0.3;
     if(st&&bk){ out.push({n:st.n,w:top*star(st)*hkLean(st,lk),p:st,i:i}); out.push({n:bk.n,w:dp*star(bk)*hkLean(bk,lk),p:bk,i:BK(i)}) }
     else if(st||bk){ const p=st||bk; out.push({n:p.n,w:(top+dp)*star(p)*hkLean(p,lk),p:p,i:st?i:BK(i)}) } });
   return out;

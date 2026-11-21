@@ -134,7 +134,7 @@ on numbers they can't trust and a sport they read rather than watch.
 - A reason line under the plan buttons ("+11 from Shorten the game: your shooters suit it"), from the same chance as the
   number above it; the contradicting hints are gone.
 - Leagues recentred; the standings spread out a little in hockey and baseball (the cost of a big fit in a long season).
-- Hockey's scoring leaders back in the 45-57 band (credit only). A sim ahead stops for a top player out for the season.
+- Hockey's scoring leaders are not back in the band (about 60 over twelve seasons): ten rostered skaters carry every named goal. A deeper roster, or unnamed depth goals again, is Ian's call. A sim ahead stops for a top player out for the season.
 - Next (round 95): a post-game line on what the plan and attributes did; late calls with options that really differ;
   odd attribute grids; the coach rename, the title page and the ESPN-style game page.
 
