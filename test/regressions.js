@@ -301,7 +301,7 @@ for(const f of ['basketball-coach.html','basketball-coach-pro.html']){ const A=l
    opponent's plan counted its fit but not its own worth at the gap (college football's Tulane read 81% where it won 70%) */
 for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP.concat(['cpuPlanOf','gameCtx','sportPlanFit'])}); A.newDynasty(team,5,'T');
   const my=A.S.myTeam, pick=gap=>A.NAMES.filter(t=>t!==my).sort((a,b)=>Math.abs(A.SEA.elo[b]-A.SEA.elo[my]-gap)-Math.abs(A.SEA.elo[a]-A.SEA.elo[my]-gap)).pop();
-  const opps=[...new Set([150,-150,75,-75,250,-250,30,-30,110,-110,200,-200].map(pick))];   // round 94: twelve (Orlando read +3.1 over six, +2.0 over these twelve; the bound didn't move) let sum=0, worst=0, wmsg='', n=0;
+  const opps=[...new Set([150,-150,75,-75,250,-250,30,-30,110,-110,200,-200].map(pick))]; let sum=0, worst=0, wmsg='', n=0;   // round 94: twelve (Orlando read +3.1 over six, +2.0 over these twelve; the bound didn't move)
   for(const opp of opps){ const shown=A.winProb(my,opp,false,true); A.SEA.userTeam=my; const e=A.SEA.matchupElo({home:my,away:opp,neutral:true},'balanced'), r=new A.RNG(3); let w=0,N=2500;
     // the computer's club plays the plan its roster suits, and both shapes play (the chance counts its fit)
     const op=typeof A.cpuPlanOf==='function'?A.cpuPlanOf(opp,e.a-e.h):'balanced', ctx0=typeof A.gameCtx==='function'&&typeof A.sportPlanFit==='function'?A.gameCtx(my,opp,A.SEA.year,A.SEA.step):undefined;   // round 94: tonight's context, the game the chance is for (week 5's put a different goalie in: Edmonton read +5.7 on round 93 that way, +0.7 on tonight's)
