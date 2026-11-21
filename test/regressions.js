@@ -580,7 +580,7 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     // the best by fit, unless it is a net loss tonight (round 89)
     // round 94 (engine 17): the reason line is in the shown units: under a plan, "+N from <plan>: why", N the change on the
     // card against Balanced; under Balanced, a line only when another plan adds 2 or more
-    if(api.ENGV()>=17){ const pc=q=>parseInt(shown[q]), dv=q=>pc(q)-pc('balanced'), bestD=Math.max(dv('safe'),dv('aggressive'));
+    if(api.ENGV()>=17){ const pc=q=>parseInt((String(shown[q]).match(/\d+/)||[])[0]), dv=q=>pc(q)-pc('balanced'), bestD=Math.max(dv('safe'),dv('aggressive'));
       PL.forEach(p=>{ const t=strip(linesH[p]), has=/ from | would add /.test(t);
         if(has)lined++;
         if(p==='balanced')ok(has===(bestD>=2),`${f} ${tm}: under balanced the reason line ${has?'shows':'is missing'} (the best other plan adds ${bestD})`);
