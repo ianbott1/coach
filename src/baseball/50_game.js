@@ -412,7 +412,7 @@ function spCtx(t,step){
    suits Swing for the fences (the extra plays as home runs), a contact-and-eye lineup Small ball (more singles and walks,
    fewer strikeouts). One spread is worth BS17.e Elo (8 points on baseball's curve, 680), held to 15 points (BS17.cap). */
 const BS17_ENV=k=>typeof process!=="undefined"&&process.env&&process.env[k]?+process.env[k]:0;
-const BS17={e:BS17_ENV("BS17_E")||95, cap:BS17_ENV("BS17_CAP")||183, gs:BS17_ENV("BS17_GS")||1.4, ga:BS17_ENV("BS17_GA")||2.3, g:BS17_ENV("BS17_G")||0.905, w:typeof process!=="undefined"&&process.env&&process.env.BS17_W!=null?+process.env.BS17_W:1, u:BS17_ENV("BS17_U")||1, d:typeof process!=="undefined"&&process.env&&process.env.BS17_D!=null?+process.env.BS17_D:0};   // g: the league's run level held (suited plans everywhere hit more on 17)
+const BS17={e:BS17_ENV("BS17_E")||95, cap:BS17_ENV("BS17_CAP")||183, gs:BS17_ENV("BS17_GS")||1.4, ga:BS17_ENV("BS17_GA")||2.3, g:BS17_ENV("BS17_G")||0.99, w:typeof process!=="undefined"&&process.env&&process.env.BS17_W!=null?+process.env.BS17_W:0, u:BS17_ENV("BS17_U")||1, d:typeof process!=="undefined"&&process.env&&process.env.BS17_D!=null?+process.env.BS17_D:0.5};   // g: the league's run level held (suited plans everywhere hit more on 17)
 const SPORT_FIT_FROM=17;   // core: the plan is in the chance from engine 17 here (round 94)
 function bsLeanOf(R){ const o=sportStyleScores(R); return o.pull-(o.patient+o.contact)/2 }
 /* the league's spread of that lean, from the opening rosters (core styleTable, made in the Season constructor), so a
