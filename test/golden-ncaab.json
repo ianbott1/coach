@@ -1,5 +1,5 @@
 {
- "fp": "084e018951df7bc0",
+ "fp": "444238c1d0188f60",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -545,6 +545,11 @@
    "fp": "084e018951df7bc0",
    "from": "e76f8c1360b0d6f5",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "444238c1d0188f60",
+   "from": "084e018951df7bc0",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -571,7 +576,7 @@
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
     "universe": "521cc8fd941897d7",
-    "screens": "601696919e382bb0"
+    "screens": "488082eedc45b185"
    }
   ],
   "Coppin State#2024": [
@@ -611,7 +616,7 @@
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
     "universe": "6507f3a6e6c96d8b",
-    "screens": "cd6255de660b6644"
+    "screens": "2567325bdbf9ef49"
    },
    {
     "year": 2027,
@@ -623,7 +628,7 @@
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
     "universe": "5ca339a8596d8188",
-    "screens": "a648d64e52274107"
+    "screens": "bf9a81a586e198f8"
    }
   ],
   "schedules#60": [

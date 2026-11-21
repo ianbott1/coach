@@ -1,5 +1,5 @@
 {
- "fp": "08b05f55439026c0",
+ "fp": "ce2feb8db03ad853",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -185,6 +185,11 @@
    "fp": "08b05f55439026c0",
    "from": "aede6bacb269ad70",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "ce2feb8db03ad853",
+   "from": "08b05f55439026c0",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -199,7 +204,7 @@
     "heis": "9ef98335694c467c",
     "history": "c68d9caed22bb722",
     "universe": "9d8d4297fcdb1c81",
-    "screens": "057d8172364656c8"
+    "screens": "53b83246dc2c5bfd"
    },
    {
     "year": 2027,
@@ -211,7 +216,7 @@
     "heis": "97adc9f6a97d0648",
     "history": "9ac0b569fe08ca07",
     "universe": "44086e5a94fc9821",
-    "screens": "3026ce0bb58019dc"
+    "screens": "c770d81eeee2bb48"
    }
   ],
   "Colorado#777": [
@@ -225,7 +230,7 @@
     "heis": "0a9b2d729c747218",
     "history": "ae2f1d4aa7d8d0a3",
     "universe": "6fb83981a274defa",
-    "screens": "2f1d343e65c16be8"
+    "screens": "3125e4135dc07c7b"
    },
    {
     "year": 2027,
@@ -237,7 +242,7 @@
     "heis": "fae3ce5d2180df5b",
     "history": "1296b67619197c58",
     "universe": "1d454b4e734a617b",
-    "screens": "33dac1f3e6a189c0"
+    "screens": "ab04064f1d3431cc"
    }
   ],
   "schedules#60": [

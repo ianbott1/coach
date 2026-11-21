@@ -1,5 +1,5 @@
 {
- "fp": "18e52bda115b0be4",
+ "fp": "756aa394c31a74a5",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -595,6 +595,11 @@
    "fp": "18e52bda115b0be4",
    "from": "bb98ebcfcc690eca",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "756aa394c31a74a5",
+   "from": "18e52bda115b0be4",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -609,7 +614,7 @@
     "heis": "7c80c4b6be17173f",
     "history": "c11c72a9148450dc",
     "universe": "36578329d53d5e33",
-    "screens": "572ee69744717f62"
+    "screens": "8544859ec52fba25"
    },
    {
     "year": 2027,
@@ -621,7 +626,7 @@
     "heis": "e325c071b7f95605",
     "history": "ba96a66c22df472f",
     "universe": "3ddae776c4edfefe",
-    "screens": "b4b368d36f60005c"
+    "screens": "1cb1e8b544a05b08"
    },
    {
     "year": 2028,
@@ -633,7 +638,7 @@
     "heis": "d657a390aebab7d5",
     "history": "7ae3bb48a04b56c2",
     "universe": "7680d107647a2290",
-    "screens": "4c11bba1c38fad05"
+    "screens": "f4394f6d3105403f"
    },
    {
     "year": 2029,
@@ -645,7 +650,7 @@
     "heis": "107812a835389d14",
     "history": "3a977c12920d5fd3",
     "universe": "80540b2756daa05d",
-    "screens": "65638b47434ae8a5"
+    "screens": "10b83faca19706b4"
    }
   ],
   "Tennessee#2024": [
@@ -659,7 +664,7 @@
     "heis": "9ee138b08a6c93a6",
     "history": "644a135e22347820",
     "universe": "951e5eb984b47759",
-    "screens": "9671dc9c6561cbd2"
+    "screens": "7fc5011ea3720069"
    },
    {
     "year": 2027,
@@ -683,7 +688,7 @@
     "heis": "205a7c45b38c0d45",
     "history": "2692fc8510596ac3",
     "universe": "63450e9f6f5266c6",
-    "screens": "826619ad69897ce1"
+    "screens": "4f1119c36922e030"
    },
    {
     "year": 2029,
@@ -721,7 +726,7 @@
     "heis": "8f011c2ed3c47c1e",
     "history": "60375ea9b01c54e8",
     "universe": "437c863fa18b831a",
-    "screens": "fe1ddf0ea50de72d"
+    "screens": "24bf6096ac5d6298"
    },
    {
     "year": 2028,
@@ -733,7 +738,7 @@
     "heis": "40fba4e84e915fa8",
     "history": "9ef989beaaeddf97",
     "universe": "4ad1b1ace9900387",
-    "screens": "767090abb1a4d823"
+    "screens": "58fbff01693fcf52"
    }
   ],
   "NY Giants#31337": [
@@ -747,7 +752,7 @@
     "heis": "654c742bd04993b2",
     "history": "2d97e943fb616478",
     "universe": "bfac544418eea516",
-    "screens": "d7f0126e0935d89e"
+    "screens": "313d0241f36ab72d"
    },
    {
     "year": 2027,
@@ -759,7 +764,7 @@
     "heis": "704dc09525b01515",
     "history": "789f2028806968a6",
     "universe": "43d21e24fabb1a9d",
-    "screens": "7baf39a070e026a8"
+    "screens": "dc0cbafe1dd86e60"
    },
    {
     "year": 2028,

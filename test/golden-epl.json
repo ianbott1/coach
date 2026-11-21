@@ -1,5 +1,5 @@
 {
- "fp": "ae91d19ab526622e",
+ "fp": "213495ab250d313f",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -515,6 +515,11 @@
    "fp": "ae91d19ab526622e",
    "from": "81a70a41c5a8dd4c",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "213495ab250d313f",
+   "from": "ae91d19ab526622e",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -529,7 +534,7 @@
     "heis": "c466ebe284e27c2e",
     "history": "1c5276ca3946c0d9",
     "universe": "45e53d9636b4d178",
-    "screens": "227253dfe7993bb6"
+    "screens": "a5cc41397a9b2140"
    },
    {
     "year": 2027,
@@ -541,7 +546,7 @@
     "heis": "da51562076fffd41",
     "history": "69d1552ec91b2a5c",
     "universe": "13be53006051baaf",
-    "screens": "b85fb08d3d07550e"
+    "screens": "0a5551496eb38ed6"
    }
   ],
   "Wrexham#777": [

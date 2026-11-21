@@ -1,5 +1,5 @@
 {
- "fp": "11523a6918778eb4",
+ "fp": "deae49d8bdcda88a",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -569,6 +569,11 @@
    "fp": "11523a6918778eb4",
    "from": "94f7eb4992ca1b7e",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "deae49d8bdcda88a",
+   "from": "11523a6918778eb4",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -583,7 +588,7 @@
     "heis": "18dfdd2f20eb3b97",
     "history": "8bc8417ba3331c9d",
     "universe": "6490feea8d4eb8c4",
-    "screens": "faa0dc911899e974"
+    "screens": "8a6b3e10436231e4"
    },
    {
     "year": 2027,
@@ -595,7 +600,7 @@
     "heis": "8b7a474aedecef62",
     "history": "c25c61904c331af4",
     "universe": "0d21fdcc2e10bc47",
-    "screens": "9079a64e90500152"
+    "screens": "f6de20d32dd6e3d9"
    },
    {
     "year": 2028,
@@ -607,7 +612,7 @@
     "heis": "86a1f37110996796",
     "history": "b596a8b16b9de67a",
     "universe": "11eec4dba9548211",
-    "screens": "c2a2c6f3313aaf09"
+    "screens": "1fae692400a00be4"
    },
    {
     "year": 2029,
@@ -619,7 +624,7 @@
     "heis": "c012d4792aa2ab0f",
     "history": "768b23524da2739c",
     "universe": "74298a03e7955333",
-    "screens": "998166b7f315ff3c"
+    "screens": "faf38d69af9bfee2"
    }
   ],
   "Rice#2024": [
@@ -633,7 +638,7 @@
     "heis": "22cd28654166ce01",
     "history": "da8be9bae788ea8d",
     "universe": "c35e2798f648b479",
-    "screens": "3ae47b25f93244a7"
+    "screens": "0adf36cd02fa114b"
    },
    {
     "year": 2027,
@@ -657,7 +662,7 @@
     "heis": "a16aace2f4251f32",
     "history": "937d62a7bdd4aae0",
     "universe": "6e04e6acc1251a67",
-    "screens": "24eefc168bc4c467"
+    "screens": "f377f4801f8b4f99"
    },
    {
     "year": 2029,
@@ -683,7 +688,7 @@
     "heis": "ae0fd0e488d8a51e",
     "history": "f7432cb1648a6e38",
     "universe": "7034c57f806ed15b",
-    "screens": "0409868ce9ad0dcc"
+    "screens": "1a33d819ffab8e41"
    },
    {
     "year": 2027,
@@ -733,7 +738,7 @@
     "heis": "d10b36dd5b6aed2e",
     "history": "7819caf2688199ed",
     "universe": "5edb51cf24a67ff2",
-    "screens": "353f148a6e488e65"
+    "screens": "d0d7118e409c9e21"
    },
    {
     "year": 2028,

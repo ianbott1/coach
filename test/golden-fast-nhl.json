@@ -1,5 +1,5 @@
 {
- "fp": "b9f314f73e36c24a",
+ "fp": "e972e54fa151cd51",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -70,6 +70,11 @@
    "fp": "b9f314f73e36c24a",
    "from": "071ad7f3deb6bfa7",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "e972e54fa151cd51",
+   "from": "b9f314f73e36c24a",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -84,7 +89,7 @@
     "heis": "60a9264100ed8ac4",
     "history": "0597b7a3e97b4a8d",
     "universe": "43087690ad88c74f",
-    "screens": "b2a3043addcd9aeb"
+    "screens": "18eb4f775fa04036"
    }
   ]
  }

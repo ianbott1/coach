@@ -1,5 +1,5 @@
 {
- "fp": "4327302651ca05fd",
+ "fp": "3b755f8a25445df9",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -520,6 +520,11 @@
    "fp": "4327302651ca05fd",
    "from": "5dae5e4b19596338",
    "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
+  },
+  {
+   "fp": "3b755f8a25445df9",
+   "from": "4327302651ca05fd",
+   "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
   }
  ],
  "result": {
@@ -534,7 +539,7 @@
     "heis": "65e742e6ca5bcee2",
     "history": "8d67ccb9859a8a92",
     "universe": "119513d259e19f13",
-    "screens": "02f72f9c73c81dab"
+    "screens": "27db94b12e6113a9"
    },
    {
     "year": 2027,
@@ -546,7 +551,7 @@
     "heis": "3c35d2cd6df6f75d",
     "history": "eab5b7c7bee2a93a",
     "universe": "06ac037ab056e8ac",
-    "screens": "c87187d46babb568"
+    "screens": "a6e4522593e644d3"
    }
   ],
   "Detroit#777": [
@@ -560,7 +565,7 @@
     "heis": "635d996bb8c406fc",
     "history": "814c3f190e949f80",
     "universe": "949c493421c2cef6",
-    "screens": "bc1a654a766f6feb"
+    "screens": "5881391c2225ec1c"
    },
    {
     "year": 2027,
@@ -572,7 +577,7 @@
     "heis": "785a75d5474ca8ef",
     "history": "1ae15d058a38da0f",
     "universe": "5ac7ddfb9bfcec74",
-    "screens": "0bfd6e7e0a7be41b"
+    "screens": "eec1f4012f969e0b"
    }
   ],
   "schedules#60": [
