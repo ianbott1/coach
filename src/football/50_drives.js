@@ -124,7 +124,11 @@ const FB14_FITC={nfl:{safe:{"o.arm":-0.394,"o.acc":0.486,"o.spd":-0.393,"o.hnd":
 const FB14_SHIFT={nfl:{safe:[-4.5,0.2432],aggressive:[6.7,-0.3604]}, cfb:{safe:[-5,0.1593],aggressive:[8.1,-0.2416]}};   // 200,000 games a point, gaps -225..225
 const FB14_SHIFTH={nfl:{safe:[-7.6,0.2318],aggressive:[12,-0.3529]}, cfb:{safe:[-8,0.1552],aggressive:[10.1,-0.2395]}};   // 100,000 games a point
 const fbLg=T=>T[LEAGUE.id]||T.cfb;
-function fbFitOf(F,T){ if(!F||!T)return 0; let v=0; Object.keys(F).forEach(k=>{ const [s,a]=k.split("."); v+=(F[k]||0)*((T[s]&&T[s][a])||0) }); return R_SLOPE*FB14.a*v }
+// round 95: a fit table's keys parsed once (FB_FITK): fbFitOf ran on every drive on engine 17 and splitting its keys each
+// time made college football sim 1.25-1.6x slower than engine 16. Same sum, same order, so the same number to the bit.
+const FB_FITK=new WeakMap();
+function fbFitOf(F,T){ if(!F||!T)return 0; let K=FB_FITK.get(F); if(!K){ K=Object.keys(F).map(k=>{ const [s,a]=k.split("."); return [s,a,F[k]||0] }); FB_FITK.set(F,K) }
+  let v=0; for(let i=0;i<K.length;i++){ const q=K[i], o=T[q[0]]; v+=q[2]*((o&&o[q[1]])||0) } return R_SLOPE*FB14.a*v }
 /* round 94 (engine 17): one spread of fit (college 35 Elo, the pros 24: scratch r94 fitsd.js) to 8 points on each curve
    (57 and 43 Elo), held to 15 points (111, 83) */
 const FB17=Object.assign({cfb:{m:1.6,cap:111,gs:1.6,ga:1.1,g:0.967}, nfl:{m:1.8,cap:83,gs:1.4,ga:1,g:0.966}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
