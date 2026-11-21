@@ -956,6 +956,7 @@ function doAdvance(){
   const ug=(SEA.phase==="week")?(mineNow?mineNow[doneN]||null:SEA.nextGame(S.myTeam))
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
   if(spectating()){ simPostOn(ph); return }
+  if(ug)planPreKeep(before,SEA.half,ug);   // round 95: the plan you kick off with and its worth, as the card showed it
   const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never" && !simOnce;
   // meeting a coach who comes later this turn: they play it, with both of you calling
   const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
@@ -1443,8 +1444,9 @@ function heroResult(){
   // the big nights in order (Instinct, round 15): what happened, what it means, and then, a tap away, the audit
   const banner=(won&&SEA.champion===my&&/Champions/.test(move||"")&&typeof titleNightHTML==="function"?titleNightHTML(my):"")+(typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):"");
   const moment=!!banner||/Season over|Out of the|out of the|beaten in the|Champions|WINNERS|winners/.test(move||"");
-  const audit=(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
-      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()+readsHTML(flash&&flash.step);
+  const audit=(()=>{ const st=flash&&flash.step; if(st===undefined||st===null)return "";
+      const pl=planLineHTML(st,!!(LEAGUE.splitCup&&flash&&flash.cup)); if(!S.played)return pl;   // round 95: a simmed game has its plan line too
+      return pl+impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()+readsHTML(flash&&flash.step);
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
@@ -2100,18 +2102,47 @@ function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
   else { const pn=SEA&&SEA.postNext?SEA.postNext(my):null; if(!pn||!pn.opp)return null; opp=pn.opp; atH=pn.home===my||pn.home===true; neu=!!pn.neutral||pn.home===undefined }   // the postseason card, as it places the game
   if(!opp)return null;
   const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
-  let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap} }   // your edge before your plan
+  let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap, opp:opp} }   // your edge before your plan
 /* in the units shown: each chance as the screen rounds it (round 71's lesson: the card's 41 and 54 with a line saying 14) */
+function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
+  const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
+  return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) }
 function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
-  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>{ const f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
-    const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
-    return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) };
+  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>planWhy(C,k);
   const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), keptS=kept?"Kept from your last game. ":"";
   if(plan!=="balanced"){ const v=d(plan); let t=`${keptS}<b>${sg(v)}</b> from <b>${esc(PLANS[plan].l)}</b>: ${why(plan)}.`;
     if(v<0&&best!==plan&&d(best)>0)t+=` <b>${esc(PLANS[best].l)}</b> would be ${sg(d(best))} (${why(best)}).`; else if(v<=0&&d(best)<=0)t+=` <b>${esc(PLANS.balanced.l)}</b> is the better plan tonight.`;
     return `<div class="pland planfit">${t}</div>` }
   if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
   return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
+/* round 95 (Grokbot's point 3: after the game, what the plan did): the plan you kicked off with, its worth as the card
+   showed it before kickoff, and why: kept with the game when it starts (doAdvance), so the line after the game reads the
+   same number as the card did, not one worked out again from a later step's injuries and roster. One night's box score is
+   mostly luck, so the line gives no verdict on whether the plan "worked" tonight; a sport's plain box fact sits beside it
+   where it has one (sportPlanFact). PLANLINE_ON off: nothing is kept or shown. */
+const PLANLINE_ON=!(typeof process!=="undefined"&&process.env&&process.env.PLANLINE_ON==="0");
+function planPreKey(step,half,year){ return (year||SEA.year)+":"+planKey(step,half) }
+function planPreNow(ug){ if(!PLANS[plan])return null; const C=planChances(); if(!C)return null;
+  if(ug&&ug.home!==undefined&&C.opp!==(ug.home===S.myTeam?ug.away:ug.home))return null;   // the card's game, or no line
+  const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced);
+  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe");
+  return {p:plan, c:R(P[plan]), v:d(plan), w:plan==="balanced"?"":planWhy(C,plan), b:best, vb:d(best), wb:planWhy(C,best)} }
+function planPreKeep(step,half,ug){ if(!PLANLINE_ON||!planAmpV()||typeof PLAN_LEAN==="undefined"||isHotSeat()||!SEA||!SEA.roster)return;
+  let q=null; try{ q=planPreNow(ug) }catch(e){ q=null } if(!q)return;
+  const K=S.planPre=S.planPre||{}, y=SEA.year+":"; Object.keys(K).forEach(k=>{ if(k.indexOf(y)!==0)delete K[k] });   // this season only
+  K[planPreKey(step,half)]=q }
+function planLineHTML(step,half){ if(!PLANLINE_ON||step===undefined||step===null||!S.planPre)return "";
+  const q=S.planPre[planPreKey(step,half)]; if(!q||!PLANS[q.p]||planFor(step,half)!==q.p)return "";   // simmed ahead on your assistant's plan: no line
+  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), nm=k=>esc(PLANS[k].l), jw=w=>/^as /.test(w)?" "+w:": "+w;
+  let t;
+  if(q.p==="balanced")t=q.vb>=2?`You kicked off on <b>${nm("balanced")}</b>. <b>${nm(q.b)}</b> would have added <b>${q.vb}</b> before kickoff${jw(q.wb)}.`
+    :`You kicked off on <b>${nm("balanced")}</b>, and neither other plan added anything tonight.`;
+  else if(q.v===0)t=`You kicked off on <b>${nm(q.p)}</b>: no better than <b>${nm("balanced")}</b> before kickoff.`+(q.b!==q.p&&q.vb>0?` <b>${nm(q.b)}</b> would have added ${q.vb}${jw(q.wb)}.`:"");
+  else { t=`You kicked off on <b>${nm(q.p)}</b>: <b>${sg(q.v)}</b> before kickoff, ${q.w}.`;
+    if(q.v<0&&q.b!==q.p&&q.vb>0)t+=` <b>${nm(q.b)}</b> would have been ${sg(q.vb)}.`; else if(q.v<0)t+=` <b>${nm("balanced")}</b> was the better plan.` }
+  const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&PLANS[x[2]]);
+  if(mine.length)t+=` You changed to <b>${nm(mine[mine.length-1][2])}</b> during the game.`;
+  return `<div class="planpost">${t}</div>` }
 function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
