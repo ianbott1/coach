@@ -560,8 +560,8 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
   const PL=['safe','balanced','aggressive'], FITLINE=/Your roster leans to|Your roster doesn't suit|This plan suits your/;
   let lined=0, moved=0;
   for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['soccer-coach.html','Arsenal'],['soccer-coach.html','Wrexham'],['soccer-coach.html','Liverpool'],['hockey-coach-pro.html','Boston'],['hockey-coach-pro.html','Edmonton'],['hockey-coach-pro.html','Toronto'],['football-coach.html','Alabama'],['football-coach.html','Rice'],['football-coach-pro.html','Kansas City'],['football-coach-pro.html','Detroit']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
-    const shown={}, lines={}, edge={}, fit={}; let h='';
-    PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
+    const shown={}, lines={}, linesH={}, edge={}, fit={}; let h='';
+    PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); linesH[pl]=(h.match(/<div class="pland planfit">[\s\S]*?<\/div>/)||[''])[0]; edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
     ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you to try a plan`);
     if(!shown.balanced&&!shown.safe){ console.log(`  ${f} ${tm}: no game on the card yet (skipped)`); continue }   // round 89: the Premier League starts a week later
     const fits=(/basketball/.test(f)&&api.ENGV()>=11)||(/hockey|soccer/.test(f)&&api.ENGV()>=12)||(/football/.test(f)&&api.ENGV()>=14);   // round 89: hockey and soccer on engine 12; round 91: football on 14
@@ -574,6 +574,15 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     if(new Set(Object.values(shown)).size>1)moved++;
     // a line exactly when another plan is 12 Elo better, or this one is the best by 12
     // the best by fit, unless it is a net loss tonight (round 89)
+    // round 94 (engine 17): the reason line is in the shown units: under a plan, "+N from <plan>: why", N the change on the
+    // card against Balanced; under Balanced, a line only when another plan adds 2 or more
+    if(api.ENGV()>=17){ const pc=q=>parseInt(shown[q]), dv=q=>pc(q)-pc('balanced'), bestD=Math.max(dv('safe'),dv('aggressive'));
+      PL.forEach(p=>{ const t=strip(linesH[p]), has=/ from | would add /.test(t);
+        if(has)lined++;
+        if(p==='balanced')ok(has===(bestD>=2),`${f} ${tm}: under balanced the reason line ${has?'shows':'is missing'} (the best other plan adds ${bestD})`);
+        else { const v=dv(p), want=(v>0?'+':v<0?'&minus;':'')+Math.abs(v)+' from';
+          ok(has&&t.includes(want),`${f} ${tm}: under ${p} the reason line doesn't say "${want}" (${t.slice(0,90)})`) } });
+      console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo`); continue }
     let bk=PL.reduce((a,q)=>fit[q]>fit[a]?q:a,'balanced'); if(bk!=='balanced'&&pe[bk]<=0)bk='balanced';
     PL.forEach(p=>{ const best=fit[bk], want=(bk!==p&&best-fit[p]>=12)||(p!=='balanced'&&p===bk&&fit[p]>=12);
       if(lines[p])lined++;
