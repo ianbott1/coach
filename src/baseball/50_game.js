@@ -186,8 +186,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 17 (round 94): the plan your lineup suits, through its own outcomes (one-sided: twice the gap's log-odds a point)
     if(planAmpV()){ p.s1*=BS17.g; p.s2*=BS17.g; p.s3*=BS17.g; p.hr*=BS17.g; p.bb*=BS17.g }
-    if(ctx.lz&&planAmpV()){ const pl=st.mode[bat], E=bsFitZ(ctx.lz[bat],pl), xe=2*E*BS.edge;
-      if(E&&pl==="aggressive")p.hr*=Math.exp(BS17.ga*2.2*xe); else if(E&&pl==="safe"){ p.s1*=Math.exp(BS17.gs*2.2*xe); p.bb*=Math.exp(BS17.gs*2.2*xe); p.k*=Math.exp(-BS17.gs*1.6*xe) } }
+    if(ctx.lz&&planAmpV()){ const pl=st.mode[bat], E=bsFitZ(ctx.lz[bat],pl), xe=2*E*BS.edge, w=BS17.w, xg=(1-w)*xe*BS17.u;
+      if(E&&xg){ p.s1*=Math.exp(xg*2.2); p.s2*=Math.exp(xg*2.2); p.hr*=Math.exp(xg*2.2); p.bb*=Math.exp(xg*2.2); p.k*=Math.exp(-xg*1.6) }
+      if(E&&w&&pl==="aggressive")p.hr*=Math.exp(w*BS17.ga*2.2*xe); else if(E&&w&&pl==="safe"){ p.s1*=Math.exp(w*BS17.gs*2.2*xe); p.bb*=Math.exp(w*BS17.gs*2.2*xe); p.k*=Math.exp(-w*BS17.gs*1.6*xe) } }
     // engine 5: the hitter's own edge (hx) shows most in his power and his eye, least in his singles (a star's .385 was all singles)
     if(hx&&typeof hx==="object"){ const H5=BS5_HX, h=BS5.hit, q=BS10.s2pow;   // engine 10: by attribute, each term recentred for its spread
       p.hr*=Math.exp(hx.pow*H5.hr-bsHalfVar(H5.hr*h)); p.s2*=Math.exp((q*hx.pow+(1-q)*hx.con)*H5.s2-bsHalfVar(H5.s2*h)*(q*q+(1-q)*(1-q)));
@@ -410,7 +411,7 @@ function spCtx(t,step){
    suits Swing for the fences (the extra plays as home runs), a contact-and-eye lineup Small ball (more singles and walks,
    fewer strikeouts). One spread is worth BS17.e Elo (8 points on baseball's curve, 680), held to 15 points (BS17.cap). */
 const BS17_ENV=k=>typeof process!=="undefined"&&process.env&&process.env[k]?+process.env[k]:0;
-const BS17={e:BS17_ENV("BS17_E")||95, cap:BS17_ENV("BS17_CAP")||183, gs:BS17_ENV("BS17_GS")||1.4, ga:BS17_ENV("BS17_GA")||2.3, g:BS17_ENV("BS17_G")||0.905};   // g: the league's run level held (suited plans everywhere hit more on 17)
+const BS17={e:BS17_ENV("BS17_E")||95, cap:BS17_ENV("BS17_CAP")||183, gs:BS17_ENV("BS17_GS")||1.4, ga:BS17_ENV("BS17_GA")||2.3, g:BS17_ENV("BS17_G")||0.905, w:typeof process!=="undefined"&&process.env&&process.env.BS17_W!=null?+process.env.BS17_W:1, u:BS17_ENV("BS17_U")||1};   // g: the league's run level held (suited plans everywhere hit more on 17)
 const SPORT_FIT_FROM=17;   // core: the plan is in the chance from engine 17 here (round 94)
 function bsLeanOf(R){ const o=sportStyleScores(R); return o.pull-(o.patient+o.contact)/2 }
 /* the league's spread of that lean, from the opening rosters (core styleTable, made in the Season constructor), so a

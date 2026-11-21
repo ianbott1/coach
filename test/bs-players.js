@@ -11,14 +11,15 @@ const F=path.join(process.env.DIST||path.join(__dirname,'..','dist'),'baseball-c
 const args=process.argv.slice(2), CHECK=args.includes('--check'), NS=+(args[args.indexOf('--seasons')+1]||2)||2;
 const out=[]; let bad=0; const rep=(k,v,lo,hi,f)=>{ const ok=v>=lo&&v<=hi; if(!ok)bad++; out.push(`  ${ok?'ok  ':'OFF '} ${k}: ${f?f(v):v} (MLB ${f?f(lo):lo} to ${f?f(hi):hi})`) };
 const r1=v=>v.toFixed(1), r2=v=>v.toFixed(2), r3=v=>v.toFixed(3).replace(/^0/,'');
-// the engine: games between average sides, each club's day lineup and starter
+// the engine: games between average sides, each club's day lineup and starter, and the plan its lineup suits (round 94:
+// from engine 17 the league's level is set with every club on its suited plan, as the computer coaches play)
 // round 79: three careers' worth (4,500 games), not one: the steal rate swung 77.4% to 82.3% between single seeds at
 // 1,500 games (six seeds, round 79), so one seed could fall outside MLB's range by chance alone
-{ const A=load({file:F,expose:['SEA','newDynasty','playGame','gameCtx','NAMES']});
+{ const A=load({file:F,expose:['SEA','newDynasty','playGame','gameCtx','NAMES','cpuPlanOf']});
   let starts=0,outs=0,six=0,seven=0,spER=0,bpER=0,bpOuts=0,clER=0,clOuts=0,g=0,runs=0,dec={w:0,l:0,sv:0},sb=0,cs=0;
   for(const seed of [11,12,13]){ A.newDynasty('Seattle',seed,'T');
   for(let i=0;i<1500;i++){ const h=A.NAMES[i%30], a=A.NAMES[(i*7+3)%30]; if(h===a)continue; g++;
-    const gs=A.playGame(A.SEA.rng,1500,1500,'balanced','balanced',{ctx:A.gameCtx(h,a,A.SEA.year,i)}), B=gs.drives[gs.drives.length-1].box; runs+=gs.h+gs.a;
+    const gs=A.playGame(A.SEA.rng,1500,1500,A.cpuPlanOf(h,0),A.cpuPlanOf(a,0),{ctx:A.gameCtx(h,a,A.SEA.year,i)}), B=gs.drives[gs.drives.length-1].box; runs+=gs.h+gs.a;
     gs.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==='sb')sb++; if(e.k==='cs')cs++ }));
     ['home','away'].forEach(sd=>{ const P=B[sd].pit; Object.keys(P).forEach(n=>{ const p=P[n];
       if(n==='bullpen'||(B[sd].sp&&n!==B[sd].sp&&n!=='closer')){ bpER+=p.er; bpOuts+=p.outs } else if(n==='closer'){ clER+=p.er; clOuts+=p.outs } else { starts++; outs+=p.outs; spER+=p.er; if(p.outs>=18)six++; if(p.outs>=21)seven++ } });
