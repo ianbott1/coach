@@ -98,7 +98,7 @@ function hkFitOf(F,T){ if(!F)return 0; let v=0; HK_SHK.forEach(k=>v+=(F[k]||0)*T
 /* round 94 (engine 17): one spread of fit (7.3 Elo, scratch r94 fitsd.js) to 8 points on hockey's curve (91 Elo), held
    to 15 points (176). Played through the plan's channel: skating with them makes more shots, clogging it up allows fewer */
 const HK17_ENV=k=>HK12_ENV(k)&&+HK12_ENV(k);
-const HK17={m:HK17_ENV("HK17_M")||12.5, cap:HK17_ENV("HK17_CAP")||176, gs:HK17_ENV("HK17_GS")||1.15, ga:HK17_ENV("HK17_GA")||1.4, g:HK17_ENV("HK17_G")||1.02};   // g: the league's shots back to 6.1 goals (more clubs clog it up on 17)
+const HK17={m:HK17_ENV("HK17_M")||12.5, cap:HK17_ENV("HK17_CAP")||176, gs:HK17_ENV("HK17_GS")||1.25, ga:HK17_ENV("HK17_GA")||1.52, g:HK17_ENV("HK17_G")||1.02};   // g: the league's shots back to 6.1 goals (more clubs clog it up on 17)
 function sportPlanFit(t,pl){ return hkV12()?planAmp(hkFitOf(HK12_FIT[pl],hkShapeT(t)),HK17):0 }
 function sportPlanFitC(t,pl){ return hkV12()?planAmp(hkFitOf(HK12_FITC[pl],hkShapeT(t)),HK17):0 }
 function sportPlanShift(pl,gap){ return planShiftAt(HK12_SHIFT[pl],gap) }

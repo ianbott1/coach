@@ -304,7 +304,11 @@ for(const [f,team] of GAMES.filter(g=>!/soccer/.test(g[0]))){ const A=load({sett
   const opps=[...new Set([150,-150,75,-75,250,-250].map(pick))]; let sum=0, worst=0, wmsg='', n=0;
   for(const opp of opps){ const shown=A.winProb(my,opp,false,true); A.SEA.userTeam=my; const e=A.SEA.matchupElo({home:my,away:opp,neutral:true},'balanced'), r=new A.RNG(3); let w=0,N=2500;
     // the computer's club plays the plan its roster suits, and both shapes play (the chance counts its fit)
-    const op=typeof A.cpuPlanOf==='function'?A.cpuPlanOf(opp,e.a-e.h):'balanced', ctx=typeof A.gameCtx==='function'&&typeof A.sportPlanFit==='function'?A.gameCtx(my,opp,A.SEA.year,5):undefined;   // (baseball's context is its lineups: the test played without it)
+    const op=typeof A.cpuPlanOf==='function'?A.cpuPlanOf(opp,e.a-e.h):'balanced', ctx0=typeof A.gameCtx==='function'&&typeof A.sportPlanFit==='function'?A.gameCtx(my,opp,A.SEA.year,5):undefined;
+    // (baseball's context is its lineups and tonight's starters, which the chance doesn't carry: the test played without
+    // them before round 94 and still does; only the lineup's lean, which its plan fit plays from. Round 94 measured the
+    // gap the rest makes at equal ratings: Seattle 58% over the Dodgers, Miami 55% over Colorado, scratch r94 neut.js)
+    const ctx=ctx0&&ctx0.lz?{lz:ctx0.lz}:ctx0;
     for(let i=0;i<N;i++){ const g=A.playGame(r,e.h,e.a,'balanced',op,{neutral:true,ctx:ctx}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
     const d=shown-w/N; sum+=d; n++; if(Math.abs(d)>Math.abs(worst)){ worst=d; wmsg=`${opp} (gap ${Math.round(e.h-e.a)}): shows ${(100*shown).toFixed(0)}%, wins ${(100*w/N).toFixed(0)}%` } }
   ok(Math.abs(sum/n)<0.03&&Math.abs(worst)<0.07,`${f}: the chance shown against the engine over ${n} opponents: mean ${(100*sum/n).toFixed(1)} points, worst ${wmsg}`) }
