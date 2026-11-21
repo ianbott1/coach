@@ -1,5 +1,5 @@
 {
- "fp": "df0432d727f253fb",
+ "fp": "7bd9dda11bef64a5",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -310,6 +310,11 @@
    "fp": "df0432d727f253fb",
    "from": "5d5ec983b2fbadfe",
    "note": "round 93: engine 16"
+  },
+  {
+   "fp": "7bd9dda11bef64a5",
+   "from": "df0432d727f253fb",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "out": [
@@ -319,20 +324,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "46-36",
-      "result": "Lost in the first round",
-      "grade": "B-"
+      "rec": "30-52",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "244c38367ccb827a"
+     "book": "384bde5565155325"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
+      "rec": "45-37",
       "result": "Lost in the first round",
       "grade": "C+"
      },
-     "book": "dba45fb929a53546"
+     "book": "e2d2ee6c10e0fbf9"
     }
    ]
   },
@@ -342,20 +347,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "18-64",
+      "rec": "21-61",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "1553ea95cbb500d7"
+     "book": "5fe9ffdc1ae99482"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "38-44",
-      "result": "Lost in the play-in",
-      "grade": "C-"
+      "rec": "31-51",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "391e2c1579e00915"
+     "book": "0b90d15f87aa9e58"
     }
    ]
   },
@@ -365,20 +370,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-52",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "40-42",
+      "result": "Lost in the play-in",
+      "grade": "C-"
      },
-     "book": "23254aac9703bf6c"
+     "book": "edef8ed9701c779f"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "43-39",
+      "rec": "47-35",
       "result": "Lost in the first round",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "48d26ddb59023bd1"
+     "book": "4e7d7800c11424d6"
     }
    ]
   }

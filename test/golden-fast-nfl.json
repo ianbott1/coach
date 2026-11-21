@@ -1,5 +1,5 @@
 {
- "fp": "6e39ffd26c6c0b0a",
+ "fp": "13f02a6d20f4bb36",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -60,21 +60,26 @@
    "fp": "6e39ffd26c6c0b0a",
    "from": "a44630cd1675dd76",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "13f02a6d20f4bb36",
+   "from": "6e39ffd26c6c0b0a",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "a472ecd28d817d03",
-    "post": "4ea9aacce686e59d",
-    "champion": "Buffalo",
-    "rec": "d007a16a00f65e61",
-    "poll": "51e8803471f58e5b",
-    "heis": "d4811c96ea805499",
-    "history": "3538815ad928cc42",
-    "universe": "0df96d50992fa4f2",
-    "screens": "2ad3cdb888906c47"
+    "games": "ee7901e80445d64c",
+    "post": "c47ce2ab2c3f4019",
+    "champion": "Chicago",
+    "rec": "208bc5e00c58f150",
+    "poll": "4536227ce4d3a1d2",
+    "heis": "7c80c4b6be17173f",
+    "history": "c11c72a9148450dc",
+    "universe": "36578329d53d5e33",
+    "screens": "572ee69744717f62"
    }
   ]
  }

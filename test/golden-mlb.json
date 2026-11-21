@@ -1,5 +1,5 @@
 {
- "fp": "aede6bacb269ad70",
+ "fp": "08b05f55439026c0",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -180,59 +180,64 @@
    "fp": "aede6bacb269ad70",
    "from": "1e8e8b9b6c75d343",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "08b05f55439026c0",
+   "from": "aede6bacb269ad70",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "1cfb61114a592f30",
-    "post": "afa3a897283c7dac",
-    "champion": "Atlanta",
-    "rec": "24ca0ce1a15ba793",
-    "poll": "ee8447cdeb3f8915",
-    "heis": "6bed3abd357b5037",
-    "history": "33bbf9605d28643c",
-    "universe": "e20093215ad54a08",
-    "screens": "fbb1d68fbb4fd01d"
+    "games": "09683acb656e6487",
+    "post": "580b0c29644be7cf",
+    "champion": "Boston",
+    "rec": "be6247d5202aea95",
+    "poll": "34bb244466203595",
+    "heis": "9ef98335694c467c",
+    "history": "c68d9caed22bb722",
+    "universe": "9d8d4297fcdb1c81",
+    "screens": "057d8172364656c8"
    },
    {
     "year": 2027,
-    "games": "1ebe10f0cebdd7c0",
-    "post": "01ac83399b90257b",
-    "champion": "Boston",
-    "rec": "0dbf8cb1fe12feba",
-    "poll": "d7e7fb334f9176d5",
-    "heis": "af27786db92f1b83",
-    "history": "a51156385043d5c8",
-    "universe": "dbd53782fbc24dc2",
-    "screens": "cdb82322a724185a"
+    "games": "0e38788f10093756",
+    "post": "e6dea58e345e069a",
+    "champion": "Houston",
+    "rec": "9f3297275d2ab9bb",
+    "poll": "2f92d2eead5f6464",
+    "heis": "97adc9f6a97d0648",
+    "history": "9ac0b569fe08ca07",
+    "universe": "44086e5a94fc9821",
+    "screens": "3026ce0bb58019dc"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "9e9294880392a37b",
-    "post": "faa3227553bc2ae8",
-    "champion": "Chicago Cubs",
-    "rec": "4ce31ac263b0313e",
-    "poll": "98d257fdc8f709df",
-    "heis": "f56a3b2d179cd0af",
-    "history": "0efa24ad3fc5264d",
-    "universe": "bd371c896a1b4e92",
-    "screens": "cbe051970fe1c4e6"
+    "games": "982ead0e422d009c",
+    "post": "1506b41149b1e010",
+    "champion": "LA Dodgers",
+    "rec": "4ac0a9758a38e471",
+    "poll": "bcf58866d36b4801",
+    "heis": "0a9b2d729c747218",
+    "history": "ae2f1d4aa7d8d0a3",
+    "universe": "6fb83981a274defa",
+    "screens": "2f1d343e65c16be8"
    },
    {
     "year": 2027,
-    "games": "646de01948452304",
-    "post": "bdea51c63b7ad412",
-    "champion": "NY Mets",
-    "rec": "07074dbc062311a9",
-    "poll": "9deaa86d9188cd83",
-    "heis": "f7f1f3f5ab746109",
-    "history": "38f2273e6e59103f",
-    "universe": "f4f31590bdfc8b28",
-    "screens": "5dd3e41576450ec5"
+    "games": "5726945595355b03",
+    "post": "16ba571d7a855b40",
+    "champion": "Philadelphia",
+    "rec": "2e5a6f3732d89e93",
+    "poll": "66ab964ad0b15120",
+    "heis": "fae3ce5d2180df5b",
+    "history": "1296b67619197c58",
+    "universe": "1d454b4e734a617b",
+    "screens": "33dac1f3e6a189c0"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "066e62b4751bfb02",
+ "fp": "8477a178b7be386b",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -345,6 +345,11 @@
    "fp": "066e62b4751bfb02",
    "from": "5a88448d5969ff05",
    "note": "round 93: engine 16"
+  },
+  {
+   "fp": "8477a178b7be386b",
+   "from": "066e62b4751bfb02",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "out": [
@@ -354,20 +359,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Eliminated in the first round",
-      "grade": "C+"
+      "rec": "8-5",
+      "result": "Lost the Citrus Bowl",
+      "grade": "C-"
      },
-     "book": "98e59b80401a358e"
+     "book": "22358f690d31ae84"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
-      "result": "No bowl game",
-      "grade": "C"
+      "rec": "6-7",
+      "result": "Lost the Idaho Potato Bowl",
+      "grade": "A-"
      },
-     "book": "ea4d0004c4e1861a"
+     "book": "fb6339b759f88c24"
     }
    ]
   },
@@ -377,20 +382,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
+      "rec": "8-5",
       "result": "Lost the Citrus Bowl",
-      "grade": "C"
+      "grade": "C-"
      },
-     "book": "a4ed2bbba4df69ac"
+     "book": "135ae6f7d28e6f66"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Fenway Bowl",
-      "grade": "A+"
+      "rec": "6-7",
+      "result": "Lost the Myrtle Beach Bowl",
+      "grade": "A-"
      },
-     "book": "26fa3e433f6e56ee"
+     "book": "8a12617b6c7cf8f6"
     }
    ]
   },
@@ -400,20 +405,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-5",
+      "rec": "10-4",
       "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "672654a290350f4c"
+     "book": "d8132cdcef68d511"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "2-10",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "C"
      },
-     "book": "76b641ac1f7e3185"
+     "book": "b716a1903edb925b"
     }
    ]
   }

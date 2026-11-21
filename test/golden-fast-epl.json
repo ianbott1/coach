@@ -1,5 +1,5 @@
 {
- "fp": "25c060654fec188a",
+ "fp": "0828476b060cc936",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -65,21 +65,26 @@
    "fp": "25c060654fec188a",
    "from": "49d81e765ce267d3",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "0828476b060cc936",
+   "from": "25c060654fec188a",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "3a545491a66b791f",
-    "post": "4a0c883543c4fd0a",
-    "champion": "Manchester City",
-    "rec": "8f9f2980c8fbfd65",
-    "poll": "4ef59f5e7cfcb04e",
-    "heis": "7cde9b9934ac38c8",
-    "history": "e0ec124f750879e1",
-    "universe": "a4c8062247100c1e",
-    "screens": "be933243f0cd4353"
+    "games": "83a523eeb63130aa",
+    "post": "c499f196baeef275",
+    "champion": "Manchester United",
+    "rec": "731f78582e01d055",
+    "poll": "5493779ff0421a1b",
+    "heis": "c466ebe284e27c2e",
+    "history": "1c5276ca3946c0d9",
+    "universe": "45e53d9636b4d178",
+    "screens": "227253dfe7993bb6"
    }
   ]
  }

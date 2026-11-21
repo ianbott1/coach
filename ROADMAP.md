@@ -126,6 +126,18 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 94 (done): plans you can feel
+- Engine 17, all seven: the plan your roster suits is worth about 8 points of win chance at even for a roster one league
+  spread off the average (up to 15), and the wrong one costs as much. It plays through the game: more shots, more threes
+  or twos, more chances or counters, more touchdowns or sustained drives, more home runs or contact. Baseball gets a fit
+  for the first time (power against contact and eye).
+- A reason line under the plan buttons ("+11 from Shorten the game: your shooters suit it"), from the same chance as the
+  number above it; the contradicting hints are gone.
+- Leagues recentred; the standings spread out a little in hockey and baseball (the cost of a big fit in a long season).
+- Hockey's scoring leaders back in the 45-57 band (credit only). A sim ahead stops for a top player out for the season.
+- Next (round 95): a post-game line on what the plan and attributes did; late calls with options that really differ;
+  odd attribute grids; the coach rename, the title page and the ESPN-style game page.
+
 ## Round 93 (done): trust fixes from the November 20 reviews
 - A game is recorded only once its engine has finished; held headers and basketball clips name the moment shown.
 - Career games: every season counted one game too many in all seven; banked right now, old careers repaired once.

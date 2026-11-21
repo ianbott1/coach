@@ -1,5 +1,5 @@
 {
- "fp": "81a70a41c5a8dd4c",
+ "fp": "ae91d19ab526622e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -510,59 +510,64 @@
    "fp": "81a70a41c5a8dd4c",
    "from": "67b3ddf02167831e",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "ae91d19ab526622e",
+   "from": "81a70a41c5a8dd4c",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "3a545491a66b791f",
-    "post": "4a0c883543c4fd0a",
-    "champion": "Manchester City",
-    "rec": "8f9f2980c8fbfd65",
-    "poll": "4ef59f5e7cfcb04e",
-    "heis": "7cde9b9934ac38c8",
-    "history": "e0ec124f750879e1",
-    "universe": "a4c8062247100c1e",
-    "screens": "be933243f0cd4353"
+    "games": "83a523eeb63130aa",
+    "post": "c499f196baeef275",
+    "champion": "Manchester United",
+    "rec": "731f78582e01d055",
+    "poll": "5493779ff0421a1b",
+    "heis": "c466ebe284e27c2e",
+    "history": "1c5276ca3946c0d9",
+    "universe": "45e53d9636b4d178",
+    "screens": "227253dfe7993bb6"
    },
    {
     "year": 2027,
-    "games": "dccb7120a16d38ec",
-    "post": "bdd0565366e92b59",
-    "champion": "Arsenal",
-    "rec": "134cdcf2e6e7b20a",
-    "poll": "3cb22a82bc018a8c",
-    "heis": "39c5f4741d06d03f",
-    "history": "e66388864663a800",
-    "universe": "21b190dbd2b51d33",
-    "screens": "565a63f29848e8a7"
+    "games": "c2123e42ec14c248",
+    "post": "ed76b252192aee47",
+    "champion": "Aston Villa",
+    "rec": "d0d488f0eb75660a",
+    "poll": "11736c75534c0667",
+    "heis": "da51562076fffd41",
+    "history": "69d1552ec91b2a5c",
+    "universe": "13be53006051baaf",
+    "screens": "b85fb08d3d07550e"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "57b0ebd0fdfc82f5",
-    "post": "a6bf87b952f52624",
-    "champion": "Chelsea",
-    "rec": "c6999ecf7448ca28",
-    "poll": "5b7f8a8419474e84",
-    "heis": "b35a1714a78fece2",
-    "history": "eb591fb6ac418cc5",
-    "universe": "b6bdaf837dd691bf",
-    "screens": "4e5d5b6b769fd15e"
+    "games": "9250d2604ee12c57",
+    "post": "5fda8dffb5001689",
+    "champion": "Manchester City",
+    "rec": "f0b1fc15e8668166",
+    "poll": "f0f3771b66d48ea5",
+    "heis": "c3ba80646ca3f1fd",
+    "history": "65345496f84bc7db",
+    "universe": "7e2d6426ab2e5c4e",
+    "screens": "470d51e4fdbd99b5"
    },
    {
     "year": 2027,
-    "games": "d7a2f50336b69dd2",
-    "post": "4db9f9486610ee18",
-    "champion": "Arsenal",
-    "rec": "02f6a6ee821a9410",
-    "poll": "cb564c3d4f6af439",
-    "heis": "c40c022dbf8e922d",
-    "history": "b9b01fa04aa1b06a",
-    "universe": "9272e6fb655d5ba3",
-    "screens": "b433fd0abe7ab009"
+    "games": "66ad5b8018cd4b8d",
+    "post": "65cac62fc3333f8d",
+    "champion": "Manchester City",
+    "rec": "219433d286dc7d0a",
+    "poll": "640478d6d55a5707",
+    "heis": "49af4ea8581d9644",
+    "history": "bbb9082fc9ae5267",
+    "universe": "6de8b772eac53f03",
+    "screens": "a1e20e63f8b3c851"
    }
   ],
   "schedules#60": [

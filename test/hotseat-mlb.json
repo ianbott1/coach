@@ -1,5 +1,5 @@
 {
- "fp": "3b3f62f859896fc0",
+ "fp": "896eea2677a2cef2",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -110,6 +110,11 @@
    "fp": "3b3f62f859896fc0",
    "from": "45dfdb495347726b",
    "note": "round 93: engine 16"
+  },
+  {
+   "fp": "896eea2677a2cef2",
+   "from": "3b3f62f859896fc0",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "out": [
@@ -119,20 +124,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "80-82",
+      "rec": "59-103",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "054745d42754c794"
+     "book": "38d86961f70bdd6d"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "73-89",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "84-78",
+      "result": "Missed the postseason",
+      "grade": "C"
      },
-     "book": "0e2f5c167944a175"
+     "book": "67145490708b6825"
     }
    ]
   },
@@ -142,20 +147,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "70-92",
+      "rec": "69-93",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C+"
      },
-     "book": "0de4e9e3faa4f96f"
+     "book": "fd51a69ab07ce2bf"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "76-86",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "88-74",
+      "result": "Lost in the wild-card series",
+      "grade": "B-"
      },
-     "book": "7a12a1dba69fb147"
+     "book": "52871796a8f52b4e"
     }
    ]
   }

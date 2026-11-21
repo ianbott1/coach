@@ -1,5 +1,5 @@
 {
- "fp": "9894c07f9019b5c7",
+ "fp": "7c77f5bce853bd97",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -370,6 +370,11 @@
    "fp": "9894c07f9019b5c7",
    "from": "9894c07f9019b5c7",
    "note": "round 93: engine 16"
+  },
+  {
+   "fp": "7c77f5bce853bd97",
+   "from": "9894c07f9019b5c7",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "out": [
@@ -379,11 +384,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the divisional round",
-      "grade": "B"
+      "rec": "11-6",
+      "result": "Lost in the wild card round",
+      "grade": "B+"
      },
-     "book": "7be9b28e03b20ca2"
+     "book": "09f0e623132ed12f"
     },
     {
      "team": "Tennessee",
@@ -392,7 +397,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "858f6ad28354ff29"
+     "book": "5f3332b9acc273fd"
     }
    ]
   },
@@ -402,20 +407,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
+      "rec": "10-7",
       "result": "Lost in the wild card round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "50c54faf83094d91"
+     "book": "fa7f65d122d217de"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "4-13",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "9-8",
+      "result": "Lost in the wild card round",
+      "grade": "A-"
      },
-     "book": "68b508c3ac09ccf7"
+     "book": "be8ae37f9544d637"
     }
    ]
   },
@@ -425,11 +430,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
+      "rec": "10-7",
       "result": "Lost in the wild card round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "f033330c32345972"
+     "book": "0176796ee54447c7"
     },
     {
      "team": "Tennessee",
@@ -438,7 +443,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "622f97f5fbcec325"
+     "book": "4cb82a9d62fcdde7"
     }
    ]
   }

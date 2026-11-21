@@ -407,6 +407,59 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 94: plans you can feel (engine 17, all seven; ENGINE_NOW 17). Ian, after Grokbot's point 1 ("make roster fit move the
+win chance in every game, and show why"): about 8 points of win chance at even for a roster one league spread off the
+average, held to 15; the wrong plan costs as much; balanced plays as before.
+- Measured first (scratch r94 plans2.js, every club against the club nearest in rating): the best plan over balanced, median
+  and 90th percentile, college football 3.8 / 8.6, pro football 5.0 / 9.2, college basketball 0.9 / 5.2, pro basketball 1.3 /
+  3.2, hockey 0.7 / 1.8, soccer about 0 / 1.8, baseball 0 (no fit at all). College basketball's "identical across plans" in
+  a browser was its opening schedule: mismatches at 97-99%, where no edge moves the number.
+- core planAmp(f, A): each sport's measured fit (rounds 88-92: what the plan's channels already give a lean, FIT on a
+  person's path, FITC on the computer's) times its M (one league spread of fit to 8 points on its curve), held to +/-cap
+  (15 points). The extra over the measured fit is played through the plan's own events at each sport's measured rate per
+  Elo, so a box score carries it: hockey (M 12.5) skating with them makes more shots, clogging it up allows fewer;
+  basketball (college 2.0, pros 3.5) working it inside makes more of its twos, shortening the game more of its threes;
+  soccer (8.8: on its W/D/L model 8 points is 123 Elo, draws flatten it) taking the game to them makes more chances, sitting
+  deep more on the break (cutting their chances drew 32% of games); football (college 1.6, pros 1.8) taking risks scores
+  more touchdowns, playing it safe keeps more drives going. Channel gains (gs, ga) set so the engine delivers what the
+  chance shows (scratch r94 ampcheck2.js, the same clubs and dice on 17 and 16, the computer's path): hockey 0.94,
+  college basketball 1.04, the pros 1.00, soccer 1.10, football 0.6-0.85 by plan before its gains, baseball 1.0 after.
+- Baseball's fit (design addition, new): the nine regulars' lean, Power against Contact and Eye (sportStyleScores, as the
+  report's roster line), in league spreads (bsLeanZ, the spread once a season); 95 Elo a spread, held to 183; Swing for the
+  fences plays it as home runs, Small ball as singles and walks and fewer strikeouts. In the game's context (ctx.lz).
+- The chance before a game counts it (sportPlanFit returns the amplified fit; gameEdge unchanged), so do computer clubs'
+  plan picks (cpuPlanOf) and the opponent's fit. Measured in a browser, each plan clicked: Tulane 43 / 36 / 52, the LA
+  Clippers 63 / 49 / 74, Boston (hockey) 41 / 54 / 29, Cincinnati (baseball) 45 / 32 / 58.
+- The reason line (planReasonHTML, engine 17; Grokbot: "+9 because your arm and speed fit Take risks"): one line under the
+  plan buttons from the same chance as the number above (each plan's chance less balanced's), naming the roster or the gap
+  ("+11 from Shorten the game: your shooters suit it. ", "Take risks would add 9: your arm and speed suit it."). It
+  replaces the fit line and the underdog line, which could contradict each other. "Kept from your last game" only when the
+  plan was chosen before today's game (S.planStep).
+- League levels, engine 16 against 17 (scratch r94 level.js, computer-only, three seeds x three seasons): suited plans
+  everywhere scored more (baseball 8.8 to 11.1 runs a game, pro basketball +4 points, football +1.6 to 1.8, soccer's
+  sitting deep 2.66 to 2.39 goals and 32% draws), so each is recentred on 17 only: hockey's shots x1.02 (HK17.g),
+  basketball's make rates -0.014/-0.019 x (0.5, 0.36) (BB17.k), football's touchdowns and kicks x0.967/0.966 (FB17.g),
+  soccer's chances x0.95 (SC17.g), baseball's hits and walks x0.905 (BS17.g). After: baseball 8.80 runs (8.82), pro
+  basketball 228.9 (227.7), college 144.2 (143.9), pro football 45.6 (45.4), college 53.6 (53.7), hockey 6.10 goals (6.14),
+  overtime 23.7% (23.6%), soccer 2.70 goals (2.66), draws 29.9% (28.9%: a point higher again; watch), home wins 41.9% (42.8%). The cost, as
+  told to Ian before building: the standings spread out where seasons are long and fit is a whole spread of wins (wins sd
+  hockey 7.9 to 8.3, baseball 15.1 to 16.6; pro basketball, both footballs and soccer unchanged within noise).
+- Hockey's scoring leaders back in the band (Ian; credit only, engine 17): leaders 56.8 goals and 110 points over four
+  seeds (round 93: 60 and 110-139): the lean 0.06 a spread held to 0.75-1.2, the star factor 0.35, the depth share 0.3
+  split evenly between a starter and the man behind him (scratch r94 reg.js; HK17C).
+- Smaller: a sim ahead always stops when one of your two best players is out for the rest of the regular season (Grokbot:
+  college basketball lost an 80-rated star without stopping); the page keeps its place after a plan click (not reproduced
+  in Chromium at phone or laptop width on round 93; now held explicitly); a pick caught past the 99 returned 4 yards long in
+  its clip (fb-clips found it on engine 17's dice).
+- Checked, not reproduced: the coach's name not sticking (college basketball, hockey, soccer, football, baseball: typed
+  with a space, by click and by Enter, kept through the team pick and a reload; scratch r94 cname.js, cname2.js).
+- Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven. engine-replay now
+  replays engine 16 (round 93, 446b6e3).
+- Tests changed after they failed, each measured: hk-lines over four clubs and its last-pass line at 0.85 (engine 16 127 of
+  140, 90.7%; engine 17 103 of 116, 88.8%; two clubs read 47 of 53).
+- Not built (round 95): a post-game line on what the plan and the attributes did (Grokbot's point 3), late calls with
+  options that really differ (point 6), the odd attribute grids (point 4).
+
 Round 93: trust fixes from the November 20 reviews (engine 16 where a game's own play or credit moves; ENGINE_NOW 16).
 - A game is recorded only once its engine has finished (core finishLive drains it if not, and warns); held headers name
   the moment shown; basketball clips name their moment inside the stretch (segMoment: "End of Q4" sat on clips from

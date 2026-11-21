@@ -1,5 +1,5 @@
 {
- "fp": "042089a247f517a2",
+ "fp": "b74f6198a9488041",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -60,21 +60,26 @@
    "fp": "042089a247f517a2",
    "from": "71f2739e029603ee",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "b74f6198a9488041",
+   "from": "042089a247f517a2",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "2d31fe3b0edb678a",
-    "post": "cfa95399d0790ec8",
-    "champion": "Denver",
-    "rec": "405be4d944391813",
-    "poll": "add7dd1a0aac66b7",
-    "heis": "b9b2aa429ba4f700",
-    "history": "a9f6100307739e55",
-    "universe": "abe340935913dc1c",
-    "screens": "1b60cad6a281a2e0"
+    "games": "e8f9c772284261ac",
+    "post": "bff9b4ef4f4e4b5c",
+    "champion": "New York",
+    "rec": "e36bf236ef0f38ed",
+    "poll": "80114e27e1f5f6de",
+    "heis": "65e742e6ca5bcee2",
+    "history": "8d67ccb9859a8a92",
+    "universe": "119513d259e19f13",
+    "screens": "02f72f9c73c81dab"
    }
   ]
  }

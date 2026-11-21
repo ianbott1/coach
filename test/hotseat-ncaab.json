@@ -1,5 +1,5 @@
 {
- "fp": "ba50e8ea27976cb0",
+ "fp": "b9f2c62c0ec5146e",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -320,6 +320,11 @@
    "fp": "ba50e8ea27976cb0",
    "from": "2f3109fa70436a2d",
    "note": "round 93: engine 16"
+  },
+  {
+   "fp": "b9f2c62c0ec5146e",
+   "from": "ba50e8ea27976cb0",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "out": [
@@ -329,20 +334,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "32-4",
-      "result": "Lost in the Second Round",
-      "grade": "A-"
+      "rec": "35-2",
+      "result": "Lost in the Elite Eight",
+      "grade": "A+"
      },
-     "book": "28c9e723ef41a984"
+     "book": "ecab9f1eb7d841ac"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "35-4",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "27-8",
+      "result": "Lost in the Second Round",
+      "grade": "B"
      },
-     "book": "610308f69815ca5e"
+     "book": "b5c8271c142c4fcc"
     }
    ]
   },
@@ -352,20 +357,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "32-7",
-      "result": "Lost the national championship",
-      "grade": "A+"
+      "rec": "33-3",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "48e35fcd804f186e"
+     "book": "9049ac00db289ad6"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "23-8",
+      "rec": "25-6",
       "result": "Lost in the First Round",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "2f567e3512e1aa82"
+     "book": "06ab0a02e60d15e8"
     }
    ]
   },
@@ -375,20 +380,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "35-1",
-      "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "rec": "18-13",
+      "result": "Missed the NCAA tournament",
+      "grade": "D"
      },
-     "book": "6e20b035f85339cb"
+     "book": "6ad5721e39c2ba20"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "33-5",
-      "result": "Lost in the Elite Eight",
-      "grade": "A"
+      "rec": "26-8",
+      "result": "Lost in the First Round",
+      "grade": "B-"
      },
-     "book": "abc2b04135662502"
+     "book": "514f95afb0269408"
     }
    ]
   }

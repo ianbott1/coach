@@ -1,5 +1,5 @@
 {
- "fp": "c5745b81717ebb51",
+ "fp": "9a4dcce04113e43f",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -55,21 +55,26 @@
    "fp": "c5745b81717ebb51",
    "from": "23cf6741724bb1be",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "9a4dcce04113e43f",
+   "from": "c5745b81717ebb51",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "429a9fd123cf52b2",
-    "post": "2c966e3df483b56c",
-    "champion": "North Carolina",
-    "rec": "104b3096641d19c3",
-    "poll": "4bc3c7a768f80a03",
-    "heis": "0aeddeb9bcd17862",
-    "history": "893921b658d56cba",
-    "universe": "59f4ba108ce781d9",
-    "screens": "4bf8046618a321f0"
+    "games": "271351c39fadc282",
+    "post": "b69d4c7aab97e870",
+    "champion": "Virginia",
+    "rec": "1d0e5919d6b8fe14",
+    "poll": "2a55a0cfd29942e4",
+    "heis": "dd994c11b697e524",
+    "history": "21cc7906f23c649c",
+    "universe": "2aae325e5f520978",
+    "screens": "7a8edff0a97432ac"
    }
   ]
  }

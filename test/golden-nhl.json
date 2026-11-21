@@ -1,5 +1,5 @@
 {
- "fp": "4dc1e55b0714c7c5",
+ "fp": "08ea1917e08bcf5f",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -530,59 +530,64 @@
    "fp": "4dc1e55b0714c7c5",
    "from": "cd11941faa319794",
    "note": "round 93: engine 16 (hockey names every goal, basketball's bench named, baseball's postseason rotation, fourth and goal); help text, staff card, read lines"
+  },
+  {
+   "fp": "08ea1917e08bcf5f",
+   "from": "4dc1e55b0714c7c5",
+   "note": "round 94, engine 17: the plan your roster suits is worth about 8 points a spread in all seven (played through each plan's own events; baseball's lineup fit is new), leagues recentred; hockey's credit back in its band; the reason line under the plan buttons. Control: this build at ENGINE_NOW=16 matches round 93's fast goldens in every field in all seven"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "26d1b3b139f4b273",
-    "post": "4dfaca876926f654",
-    "champion": "Toronto",
-    "rec": "55a0011909aa30d9",
-    "poll": "68a648891f520e55",
-    "heis": "6ba2174a2ca19c95",
-    "history": "7ed8e0f16856c063",
-    "universe": "faa1d374e6fe2cd1",
-    "screens": "4e35a34cfd61d917"
+    "games": "b365213aca36ff39",
+    "post": "5811c16182f25ec7",
+    "champion": "Los Angeles",
+    "rec": "ed65130a5a2d4953",
+    "poll": "b45386cced186ae9",
+    "heis": "60a9264100ed8ac4",
+    "history": "0597b7a3e97b4a8d",
+    "universe": "43087690ad88c74f",
+    "screens": "b2a3043addcd9aeb"
    },
    {
     "year": 2027,
-    "games": "323313ad8df7b89f",
-    "post": "3b044e883b87a624",
-    "champion": "Winnipeg",
-    "rec": "3013604d6f816a33",
-    "poll": "564f8f3d504127f4",
-    "heis": "5c480e467b896d61",
-    "history": "647f32ce87119967",
-    "universe": "c69a9eab49e8f1ee",
-    "screens": "4e7b5309e323f11a"
+    "games": "dfe214faee4a1858",
+    "post": "18b20299e1ddced1",
+    "champion": "Vegas",
+    "rec": "da806cb4dc8cb34b",
+    "poll": "595fe93b8b363857",
+    "heis": "a665f49653de4518",
+    "history": "773e7a36e2df7e27",
+    "universe": "f49de95c2d78aa9a",
+    "screens": "d66fa4ec10b075f2"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "93c62bec0ad701df",
-    "post": "11b623fda1ceac55",
-    "champion": "Vegas",
-    "rec": "8c10c2f0d7543857",
-    "poll": "295f661b331e6b33",
-    "heis": "a279f8d0a341d95e",
-    "history": "dd32ba3887285fba",
-    "universe": "2aad0f5476f584f9",
-    "screens": "348700df1bf7905d"
+    "games": "e03143ce948d903d",
+    "post": "537909050e9ecc66",
+    "champion": "Carolina",
+    "rec": "67c6efb2ea9e14f4",
+    "poll": "e18296e188b1d3fe",
+    "heis": "58c189bba4990e2f",
+    "history": "55119757d46ab0ed",
+    "universe": "18a3565f5887179b",
+    "screens": "7928babd8a917347"
    },
    {
     "year": 2027,
-    "games": "164c9295fb0219c9",
-    "post": "601a39f417727f72",
-    "champion": "Edmonton",
-    "rec": "cc7fb0643fac8b2b",
-    "poll": "79bf6ef92b9a4d20",
-    "heis": "eff619779820d7cc",
-    "history": "d9ffebd40b792628",
-    "universe": "94c4142c8e577bda",
-    "screens": "ccb5c17f7e0c595b"
+    "games": "29c25a18f32d538b",
+    "post": "3a51c11cef957590",
+    "champion": "Vancouver",
+    "rec": "5b59fc0b10e26643",
+    "poll": "6d059fc24066d92a",
+    "heis": "03d3b2ad6865799c",
+    "history": "f2f2bcb716d1707a",
+    "universe": "b7dbb3f150aab685",
+    "screens": "fd6fd29bb96261f8"
    }
   ],
   "schedules#60": [
