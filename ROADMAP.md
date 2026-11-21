@@ -129,7 +129,8 @@ on numbers they can't trust and a sport they read rather than watch.
 ## Round 94 (done): plans you can feel (engine 17, all seven)
 - A plan suited to the roster is worth about 8 points of win chance at even for a roster one league spread off average,
   held to 15; the wrong plan costs as much. The extra plays through each sport's own events, so box scores carry it.
-  Measured on both the computer's path and yours (played against shown 0.93-1.08 in every sport).
+  Measured on both the computer's path and yours (on yours, what the plan played against what the chance showed:
+  0.94-1.15 by sport, hockey the highest after its gains were raised for the computer's path).
 - Baseball gets a fit of its own (the lineup's Power against Contact and Eye). Ian chose a smaller fit so the league's
   spread stays MLB-like: worth about 6 points at the median (90th percentile about 11), under the 8 elsewhere.
 - One reason line under the plan buttons names the roster or the gap ("+11 from Shorten the game: your shooters suit it").
