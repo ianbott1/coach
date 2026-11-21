@@ -1,5 +1,5 @@
 {
- "fp": "50384cda9226e8e3",
+ "fp": "2b7987a31ae008d2",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -75,21 +75,26 @@
    "fp": "50384cda9226e8e3",
    "from": "0828476b060cc936",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "2b7987a31ae008d2",
+   "from": "50384cda9226e8e3",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "83a523eeb63130aa",
-    "post": "c499f196baeef275",
+    "games": "92f83a8e028072f9",
+    "post": "38b04255315ddcdd",
     "champion": "Manchester United",
-    "rec": "731f78582e01d055",
-    "poll": "5493779ff0421a1b",
-    "heis": "c466ebe284e27c2e",
-    "history": "1c5276ca3946c0d9",
-    "universe": "45e53d9636b4d178",
-    "screens": "a5cc41397a9b2140"
+    "rec": "8bbeb8b659813b30",
+    "poll": "a724b4fac2f06904",
+    "heis": "01dd37bc7325f176",
+    "history": "6384997958515063",
+    "universe": "a9f0de7aa1110492",
+    "screens": "9f27dc88fd3e99d8"
    }
   ]
  }

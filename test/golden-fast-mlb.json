@@ -1,5 +1,5 @@
 {
- "fp": "7f94689e29982db9",
+ "fp": "cbf03c2db2e8567b",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -80,6 +80,11 @@
    "fp": "7f94689e29982db9",
    "from": "fd7dc589a44a7fa2",
    "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
+  },
+  {
+   "fp": "cbf03c2db2e8567b",
+   "from": "7f94689e29982db9",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
@@ -93,7 +98,7 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "9871cf82977099df",
-    "universe": "ac9d64ee8079a225",
+    "universe": "269b8d5687372309",
     "screens": "2fe23f302cad11ba"
    }
   ]

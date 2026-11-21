@@ -1,5 +1,5 @@
 {
- "fp": "49869e874adee152",
+ "fp": "226a839a87aae6c5",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -550,59 +550,64 @@
    "fp": "49869e874adee152",
    "from": "a65df2937fdd3f40",
    "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
+  },
+  {
+   "fp": "226a839a87aae6c5",
+   "from": "49869e874adee152",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "2857db7c74ec81a0",
-    "post": "dd258158286fb90f",
-    "champion": "Los Angeles",
-    "rec": "c13c0896e2da7dfd",
-    "poll": "f84f32f04b212a6f",
-    "heis": "10b54c018859624a",
-    "history": "8bdaba3372d8ac69",
-    "universe": "2b5503c0dec60547",
-    "screens": "5d3fb7df6483f4a4"
+    "games": "4b375b5824914dfb",
+    "post": "2ce5cd62c82d3d44",
+    "champion": "Columbus",
+    "rec": "55f305fef7c7b9eb",
+    "poll": "3930f4d04e8ea79e",
+    "heis": "cb6ffd0cc49ff6af",
+    "history": "fa786d72b291d325",
+    "universe": "6f17402b91f7593b",
+    "screens": "5d3d8e1680f9c4b7"
    },
    {
     "year": 2027,
-    "games": "f06dc27dda09ef82",
-    "post": "1fef2e021e129167",
+    "games": "bf7968c9bf562981",
+    "post": "f3f35c7404a434b2",
     "champion": "Toronto",
-    "rec": "fcd7c3fb4db36b68",
-    "poll": "4f74f85e796cf28c",
-    "heis": "79071ed8fad07d82",
-    "history": "8645de9593841e4a",
-    "universe": "d26d41313f0dc020",
-    "screens": "9ae18b2b4ce94349"
+    "rec": "f051de7537522d58",
+    "poll": "9e1437b4306e21ad",
+    "heis": "5ed6f299aaee8f70",
+    "history": "7f2db36e6a75c3ca",
+    "universe": "64f492ea517ffc50",
+    "screens": "7d4b1b48cdd8ed81"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "f18008fd6227a386",
+    "games": "bd891d8c005cd02b",
     "post": "7d7b2c34aec1e7f4",
     "champion": "Colorado",
-    "rec": "d138d09c219c5daf",
-    "poll": "f22fb5e0b2f8d3e2",
-    "heis": "1c4ae75859058c6f",
-    "history": "16026caef124c2ca",
-    "universe": "3645a43305f22286",
-    "screens": "89ce2a4a8289e072"
+    "rec": "dc3fd307d0d0ec0e",
+    "poll": "103fbed1ccbe4635",
+    "heis": "5ee332f850b9731e",
+    "history": "c2ef3c8c856d0962",
+    "universe": "bbb2c5f2b8368427",
+    "screens": "59c02104a0e7b248"
    },
    {
     "year": 2027,
-    "games": "9fb8985cd56836ad",
-    "post": "9c269379d4f94adf",
-    "champion": "Vancouver",
-    "rec": "6a9d9d0d3a24e89f",
-    "poll": "12dd8fcf54843133",
-    "heis": "f1c27f2783301b2c",
-    "history": "7ac2b208d970afe6",
-    "universe": "97f2e2040dab07e8",
-    "screens": "7ba81dc67426686b"
+    "games": "8c46407e8062acf3",
+    "post": "b36f644e102bcb07",
+    "champion": "Montreal",
+    "rec": "ec0a5b5717cfeda6",
+    "poll": "6473ff5c85c28291",
+    "heis": "bb56911fa58c1c5b",
+    "history": "90d9fb97e15f5a7e",
+    "universe": "4a47d51d262fb6e2",
+    "screens": "4701ee7ccef047f6"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "0488beddbace103c",
+ "fp": "f86d5024fcc7702b",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -65,6 +65,11 @@
    "fp": "0488beddbace103c",
    "from": "666a99d66ea218b9",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "f86d5024fcc7702b",
+   "from": "0488beddbace103c",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
@@ -78,7 +83,7 @@
     "poll": "417ab7a88d36ae1f",
     "heis": "18dfdd2f20eb3b97",
     "history": "8bc8417ba3331c9d",
-    "universe": "6490feea8d4eb8c4",
+    "universe": "8db0fc25cb77d57b",
     "screens": "8a6b3e10436231e4"
    }
   ]

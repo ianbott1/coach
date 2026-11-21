@@ -1,5 +1,5 @@
 {
- "fp": "372d641d076f74dc",
+ "fp": "24084afa855a0a1e",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -320,6 +320,11 @@
    "fp": "372d641d076f74dc",
    "from": "372d641d076f74dc",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "24084afa855a0a1e",
+   "from": "372d641d076f74dc",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "out": [
@@ -329,20 +334,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-11-7",
+      "rec": "21-7-10",
       "result": "Finished 3rd in the Premier League",
       "grade": "B"
      },
-     "book": "9276b584dcffeaaf"
+     "book": "61a25953e3712da6"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "14-10-14",
-      "result": "Finished 12th in the Premier League",
-      "grade": "C+"
+      "rec": "11-9-18",
+      "result": "Finished 15th in the Premier League",
+      "grade": "C"
      },
-     "book": "2ba6fd05c4a37fa0"
+     "book": "7e0159705b0e5a3c"
     }
    ]
   },
@@ -352,20 +357,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "7-19-12",
+      "rec": "11-11-16",
       "result": "Finished 16th in the Premier League",
       "grade": "D"
      },
-     "book": "e8af931e4b79d1b6"
+     "book": "b1d3497b4e198f28"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "8-12-18",
-      "result": "Relegated (19th)",
-      "grade": "D"
+      "rec": "12-12-14",
+      "result": "Finished 13th in the Premier League",
+      "grade": "C+"
      },
-     "book": "37763656dfcd01dc"
+     "book": "8ab9813d80ed4b9e"
     }
    ]
   },
@@ -375,20 +380,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "18-8-12",
-      "result": "Finished 6th in the Premier League",
+      "rec": "16-8-14",
+      "result": "Finished 8th in the Premier League",
       "grade": "C+"
      },
-     "book": "0fed49cce0eb4f9a"
+     "book": "b2155b7a13d46046"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "16-12-18",
-      "result": "Finished 14th in the Championship",
-      "grade": "D"
+      "rec": "8-14-16",
+      "result": "Finished 15th in the Premier League",
+      "grade": "C"
      },
-     "book": "3ed428bbfd9a2e96"
+     "book": "74bd5fdce8fec7d5"
     }
    ]
   }

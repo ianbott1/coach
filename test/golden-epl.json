@@ -1,5 +1,5 @@
 {
- "fp": "213495ab250d313f",
+ "fp": "ded0f7bbc8a2bf16",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -520,59 +520,64 @@
    "fp": "213495ab250d313f",
    "from": "ae91d19ab526622e",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "ded0f7bbc8a2bf16",
+   "from": "213495ab250d313f",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "83a523eeb63130aa",
-    "post": "c499f196baeef275",
+    "games": "92f83a8e028072f9",
+    "post": "38b04255315ddcdd",
     "champion": "Manchester United",
-    "rec": "731f78582e01d055",
-    "poll": "5493779ff0421a1b",
-    "heis": "c466ebe284e27c2e",
-    "history": "1c5276ca3946c0d9",
-    "universe": "45e53d9636b4d178",
-    "screens": "a5cc41397a9b2140"
+    "rec": "8bbeb8b659813b30",
+    "poll": "a724b4fac2f06904",
+    "heis": "01dd37bc7325f176",
+    "history": "6384997958515063",
+    "universe": "a9f0de7aa1110492",
+    "screens": "9f27dc88fd3e99d8"
    },
    {
     "year": 2027,
-    "games": "c2123e42ec14c248",
-    "post": "ed76b252192aee47",
-    "champion": "Aston Villa",
-    "rec": "d0d488f0eb75660a",
-    "poll": "11736c75534c0667",
-    "heis": "da51562076fffd41",
-    "history": "69d1552ec91b2a5c",
-    "universe": "13be53006051baaf",
-    "screens": "0a5551496eb38ed6"
+    "games": "a8a4b4bf5bb013da",
+    "post": "42945fc450db6c8e",
+    "champion": "Manchester City",
+    "rec": "861dcdfa15362ead",
+    "poll": "46e5862a4e8ce7d7",
+    "heis": "eb3ac9729b9218e4",
+    "history": "90dec017a25fa243",
+    "universe": "084c0c4109e35ad9",
+    "screens": "ce2787014a18ab3d"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "9250d2604ee12c57",
-    "post": "5fda8dffb5001689",
+    "games": "589343fcd918a64a",
+    "post": "fd09bb65fec9feb9",
     "champion": "Manchester City",
-    "rec": "f0b1fc15e8668166",
-    "poll": "f0f3771b66d48ea5",
+    "rec": "2ec1c1e69f089773",
+    "poll": "bf7f1d88347a9787",
     "heis": "c3ba80646ca3f1fd",
-    "history": "65345496f84bc7db",
-    "universe": "7e2d6426ab2e5c4e",
-    "screens": "470d51e4fdbd99b5"
+    "history": "4c6b5a840a49e7ee",
+    "universe": "c3d9d34d7e0a690b",
+    "screens": "24f88f919ffd3932"
    },
    {
     "year": 2027,
-    "games": "66ad5b8018cd4b8d",
-    "post": "65cac62fc3333f8d",
+    "games": "855d2d3b04ab7f7a",
+    "post": "cfabbbce4a409b7c",
     "champion": "Manchester City",
-    "rec": "219433d286dc7d0a",
-    "poll": "640478d6d55a5707",
-    "heis": "49af4ea8581d9644",
-    "history": "bbb9082fc9ae5267",
-    "universe": "6de8b772eac53f03",
-    "screens": "a1e20e63f8b3c851"
+    "rec": "54301174b00560ad",
+    "poll": "5e70f7b5ad740403",
+    "heis": "6a9f17a496fb041d",
+    "history": "6412fe9f0c0ffec9",
+    "universe": "b493a8c2e62291eb",
+    "screens": "56c181993db53ca6"
    }
   ],
   "schedules#60": [

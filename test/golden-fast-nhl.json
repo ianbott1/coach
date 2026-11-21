@@ -1,5 +1,5 @@
 {
- "fp": "817423afe48098b0",
+ "fp": "d0ca31f14dfe2989",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -85,21 +85,26 @@
    "fp": "817423afe48098b0",
    "from": "6c9fc38380c8a2d9",
    "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
+  },
+  {
+   "fp": "d0ca31f14dfe2989",
+   "from": "817423afe48098b0",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "2857db7c74ec81a0",
-    "post": "dd258158286fb90f",
-    "champion": "Los Angeles",
-    "rec": "c13c0896e2da7dfd",
-    "poll": "f84f32f04b212a6f",
-    "heis": "10b54c018859624a",
-    "history": "8bdaba3372d8ac69",
-    "universe": "2b5503c0dec60547",
-    "screens": "5d3fb7df6483f4a4"
+    "games": "4b375b5824914dfb",
+    "post": "2ce5cd62c82d3d44",
+    "champion": "Columbus",
+    "rec": "55f305fef7c7b9eb",
+    "poll": "3930f4d04e8ea79e",
+    "heis": "cb6ffd0cc49ff6af",
+    "history": "fa786d72b291d325",
+    "universe": "6f17402b91f7593b",
+    "screens": "5d3d8e1680f9c4b7"
    }
   ]
  }

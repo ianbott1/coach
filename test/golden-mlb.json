@@ -1,5 +1,5 @@
 {
- "fp": "6ea501ab120d3565",
+ "fp": "0a68effae55e2a7d",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -200,6 +200,11 @@
    "fp": "6ea501ab120d3565",
    "from": "1da55917c2e93f0e",
    "note": "round 94, second pass: baseball's fit 80 a spread (Ian: a smaller fit; MLB's spread of wins); hockey's chance counts tonight's back-to-back goalie"
+  },
+  {
+   "fp": "0a68effae55e2a7d",
+   "from": "6ea501ab120d3565",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
@@ -213,7 +218,7 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "9871cf82977099df",
-    "universe": "ac9d64ee8079a225",
+    "universe": "269b8d5687372309",
     "screens": "2fe23f302cad11ba"
    },
    {
@@ -225,7 +230,7 @@
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
     "history": "2d1b251e35568853",
-    "universe": "b88252014f74e67b",
+    "universe": "263c5a75f4b14352",
     "screens": "94da2ab3fab6db36"
    }
   ],
@@ -239,7 +244,7 @@
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
     "history": "f4850ead28b247c1",
-    "universe": "0668a92b0950fc80",
+    "universe": "be6cba51ca7b517f",
     "screens": "67c8858f76a5c89b"
    },
    {
@@ -251,7 +256,7 @@
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
     "history": "fea76eae0a5ca0a4",
-    "universe": "550b1bbc76afc4dd",
+    "universe": "6c8a5dfad205dc44",
     "screens": "e9a57ea306dcbc87"
    }
   ],

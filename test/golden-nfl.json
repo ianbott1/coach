@@ -1,5 +1,5 @@
 {
- "fp": "756aa394c31a74a5",
+ "fp": "e73d1220551f7d71",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -600,6 +600,11 @@
    "fp": "756aa394c31a74a5",
    "from": "18e52bda115b0be4",
    "note": "round 94: the reason line in the units shown (screens only; games and records as the previous record)"
+  },
+  {
+   "fp": "e73d1220551f7d71",
+   "from": "756aa394c31a74a5",
+   "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
   }
  ],
  "result": {
@@ -613,7 +618,7 @@
     "poll": "4536227ce4d3a1d2",
     "heis": "7c80c4b6be17173f",
     "history": "c11c72a9148450dc",
-    "universe": "36578329d53d5e33",
+    "universe": "63e42ac77ce55e18",
     "screens": "8544859ec52fba25"
    },
    {
@@ -625,7 +630,7 @@
     "poll": "7005fe3b89739143",
     "heis": "e325c071b7f95605",
     "history": "ba96a66c22df472f",
-    "universe": "3ddae776c4edfefe",
+    "universe": "e378547abdec4068",
     "screens": "1cb1e8b544a05b08"
    },
    {
@@ -637,7 +642,7 @@
     "poll": "6d3d17899be313ae",
     "heis": "d657a390aebab7d5",
     "history": "7ae3bb48a04b56c2",
-    "universe": "7680d107647a2290",
+    "universe": "b4ef285d5c34e7c7",
     "screens": "f4394f6d3105403f"
    },
    {
@@ -649,7 +654,7 @@
     "poll": "a706eb9765189f1e",
     "heis": "107812a835389d14",
     "history": "3a977c12920d5fd3",
-    "universe": "80540b2756daa05d",
+    "universe": "cb672daf01d4c9db",
     "screens": "10b83faca19706b4"
    }
   ],
@@ -663,7 +668,7 @@
     "poll": "6ea1cb10f883b51d",
     "heis": "9ee138b08a6c93a6",
     "history": "644a135e22347820",
-    "universe": "951e5eb984b47759",
+    "universe": "e073a7223dd4ea4a",
     "screens": "7fc5011ea3720069"
    },
    {
@@ -675,7 +680,7 @@
     "poll": "204a8f3868f9821b",
     "heis": "ad11d43c811d6ecf",
     "history": "926cba788c4631fe",
-    "universe": "8d575ddda9ba5946",
+    "universe": "3a46278e1015da36",
     "screens": "cef2f22037e4ea5a"
    },
    {
@@ -687,7 +692,7 @@
     "poll": "a758a466228eb0c3",
     "heis": "205a7c45b38c0d45",
     "history": "2692fc8510596ac3",
-    "universe": "63450e9f6f5266c6",
+    "universe": "31eff8145e19ed76",
     "screens": "4f1119c36922e030"
    },
    {
@@ -699,7 +704,7 @@
     "poll": "5169cafe18f1897a",
     "heis": "2f2855b7414f1368",
     "history": "92ebb3b1335a649d",
-    "universe": "5980462c31d6bfc0",
+    "universe": "e14dbdcf6a425413",
     "screens": "67de3304e1686907"
    }
   ],
@@ -713,7 +718,7 @@
     "poll": "9c2878c1075f1fb7",
     "heis": "61c46ffe45c2e277",
     "history": "807180dc6580390f",
-    "universe": "b19b5f8219c44509",
+    "universe": "dd1466b24b2f98a1",
     "screens": "02ff30e79b809f4f"
    },
    {
@@ -725,7 +730,7 @@
     "poll": "5c5ecbd135d9b01e",
     "heis": "8f011c2ed3c47c1e",
     "history": "60375ea9b01c54e8",
-    "universe": "437c863fa18b831a",
+    "universe": "777b761e4bc9858c",
     "screens": "24bf6096ac5d6298"
    },
    {
@@ -737,7 +742,7 @@
     "poll": "f4fb7d2384c8cbca",
     "heis": "40fba4e84e915fa8",
     "history": "9ef989beaaeddf97",
-    "universe": "4ad1b1ace9900387",
+    "universe": "26696b1b8594b69a",
     "screens": "58fbff01693fcf52"
    }
   ],
@@ -751,7 +756,7 @@
     "poll": "2ec0be627f353dac",
     "heis": "654c742bd04993b2",
     "history": "2d97e943fb616478",
-    "universe": "bfac544418eea516",
+    "universe": "df150ec4dcba9dd0",
     "screens": "313d0241f36ab72d"
    },
    {
@@ -763,7 +768,7 @@
     "poll": "6faac6ddf0a2126c",
     "heis": "704dc09525b01515",
     "history": "789f2028806968a6",
-    "universe": "43d21e24fabb1a9d",
+    "universe": "34d5df391455d8b5",
     "screens": "dc0cbafe1dd86e60"
    },
    {
@@ -775,7 +780,7 @@
     "poll": "16ca8b68b7bfbc8e",
     "heis": "5503b5d0218740ba",
     "history": "d9d409cc46ade104",
-    "universe": "edb2dc8c5bc8b052",
+    "universe": "ce095088b4187943",
     "screens": "0ac38e47d16788e8"
    }
   ],
