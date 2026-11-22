@@ -1,5 +1,5 @@
 {
- "fp": "6936c4490e1b48a6",
+ "fp": "a8057d553642d8e4",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -135,6 +135,11 @@
    "fp": "6936c4490e1b48a6",
    "from": "6936c4490e1b48a6",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "a8057d553642d8e4",
+   "from": "6936c4490e1b48a6",
+   "note": "round 97: baseball's live chance shrinks as tau^0.7, so the season story's lowest and highest moments move; a control with the old shrink matched the old baseline (6936c449)"
   }
  ],
  "out": [
@@ -157,7 +162,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "5af706b9a02cbc7b"
+     "book": "f8912dc0c12fa899"
     }
    ]
   },
@@ -180,7 +185,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "43ee1d96c2a37171"
+     "book": "df1cb8d436f72fa9"
     }
    ]
   }
