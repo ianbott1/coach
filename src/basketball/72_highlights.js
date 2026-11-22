@@ -167,6 +167,14 @@ const HL_SPORT=(function(){
     (d.pl||[]).forEach((p,i)=>{ const acts=pbActs(d,i,p); let w=PB_W.base; acts.forEach(a=>{ w+=a.t==="to"?PB_W.to:a.t==="ft"?PB_W.ft:PB_W.att });
       out.push({side:p[0],acts:acts,w:w,at:tot,pts:2*p[7]+3*p[5]+p[3]}); tot+=w });
     return d._pb={P:out,tot:tot} }
+  /* the men the screen showed scoring in a stretch it played back: [side 0/1, kind 3 / 2 / 1 (a free throw), roster slot],
+     kept with the game so the box score credits them (teamLines) */
+  function namesOf(L,d){ if(!d||!Array.isArray(d.pl))return null; const g=L.g, plan=pbPlan(d), out=[];
+    const five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+    plan.P.forEach(q=>q.acts.forEach(a=>{ const sl=five[q.side][a.who]; if(sl==null)return;
+      if(a.t==="make"){ out.push([q.side,a.three?3:2,sl]); if(a.and1&&a.ftm)out.push([q.side,1,sl]) }
+      else if(a.t==="ft"){ for(let z=0;z<a.m;z++)out.push([q.side,1,sl]) } }));
+    return out }
   /* how long the stretch takes on screen (ms), or 0 where there's nothing to play back */
   function playback(L,d){ if(!d||!Array.isArray(d.pl)||!d.pl.length)return 0;
     const sp=typeof speedMult==="function"?speedMult():1; return Math.round(pbPlan(d).tot*700/Math.pow(Math.max(0.25,sp),0.75)) }
@@ -229,7 +237,7 @@ const HL_SPORT=(function(){
       if(a.t==="to"){ const sq=dn[a.st], st=surname(sq), e=hlEase(Math.min(1,ph/0.5));
         const at=att[a.who]; holder=a.who; ball=[hlLerp(at[0],0.5,ph>0.4?hlEase((ph-0.4)/0.6):0),hlLerp(at[1],0.5,ph>0.4?hlEase((ph-0.4)/0.6):0)]; held=ph>0.4;
         def=defOf(att,a.who); def[a.st]=[hlLerp(def[a.st][0],at[0],e),hlLerp(def[a.st][1],at[1],e)];
-        top=`${clk} · ${nm||aT}`; end=ph>0.35?`Turnover: ${st?st+" takes it":"they take it away"}`:""; endInk=kits[home?1:0].fill }
+        top=`${clk} · ${nm||aT}`; end=ph>0.35?`Turnover: ${dT} take it away`:""; endInk=kits[home?1:0].fill }   // the team: the box score shares steals out its own way
       else if(a.t==="ft"){ const sp=[0.81,0.5]; att=att.map((p,i)=>i===a.who?sp:[[0.86,0.33],[0.92,0.33],[0.86,0.67],[0.92,0.67],[0.7,0.5]][i]); def=att.map((p,i)=>i===a.who?[0.72,0.5]:[p[0]+0.03,p[1]+(p[1]<0.5?-0.04:0.04)]);
         const n=a.n, j=Math.min(n-1,Math.floor(ph*n)), pj=ph*n-j;   // made ones first: the order isn't kept, the count is
         const fly=Math.min(1,pj/0.6); ball=[hlLerp(sp[0],RIM[0],hlEase(fly)),hlLerp(sp[1],RIM[1],hlEase(fly))]; lift=Math.sin(fly*Math.PI)*0.05*W; held=false;
@@ -247,7 +255,7 @@ const HL_SPORT=(function(){
           held=false; ball=[hlLerp(RIM[0],RIM[0]-0.04,e2),hlLerp(RIM[1]+0.03,RIM[1],e2)] }
         top=`${clk} · ${nm||aT}${a.three?" for three":ph>=0.45?" shoots":""}`;
         if(ph>=0.75){ if(a.t==="make"){ end=`${nm||aT}${a.three?" from three!":a.and1?", and one!":": two"}`; endInk=kits[home?0:1].fill }
-          else { const rq=a.reb==="off"?an[a.rb]:dn[a.rb]; end=a.reb==="off"?`Offensive board: ${surname(rq)||aT}`:`No good. ${surname(rq)||dT} rebounds`; endInk=a.reb==="off"?kits[home?0:1].fill:kits[home?1:0].fill } }
+          else { end=a.reb==="off"?`Offensive board, ${aT}`:`No good. ${dT} rebound`; endInk=a.reb==="off"?kits[home?0:1].fill:kits[home?1:0].fill } }   // the team: the box score shares boards out its own way
       }
     }
     if(!def)def=defOf(att,holder);
@@ -287,5 +295,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  return {reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();

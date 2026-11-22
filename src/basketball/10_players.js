@@ -91,7 +91,11 @@ function teamLines(rng,c){
   // the play-by-play's men: a three, a bucket inside and its free throw
   const named=(nm,k)=>{ if(!nm)return; const j=sl.findIndex(s=>s.x.pl.n===nm); const t=j>=0?L[j]:(at[nm]?(extra[nm]=extra[nm]||line()):null); if(t)t[k]++ };
   let t3=M.tpm||0, t2=M.fgm2||0, t1=M.ftm||0;
-  c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0, bn=!!(d.bn&&d.bn[c.side]);
+  // round 101: a stretch played back in the full match names every man it showed scoring (d.pn, roster slots): he has it
+  const sd=c.side==="home"?0:1;
+  c.drives.forEach(d=>{ if(!Array.isArray(d.pn))return; d.pn.forEach(q=>{ if(q[0]!==sd)return; const p=c.R[q[2]]; if(!p)return;
+    if(q[1]===3&&t3>0){ named(p.n,"tpm"); t3-- } else if(q[1]===2&&t2>0){ named(p.n,"f2"); t2-- } else if(q[1]===1&&t1>0){ named(p.n,"ft"); t1-- } }) });
+  c.drives.forEach(d=>!Array.isArray(d.pn)&&(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0, bn=!!(d.bn&&d.bn[c.side]);
     if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u,bn),"tpm"); t3-- }
     if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u,bn); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
   const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)*bbLean(s.x.pl,k)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };

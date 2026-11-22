@@ -229,7 +229,7 @@ function liveTick(){
     // round 101: a sport that plays the stretch back possession by possession (basketball's full match) holds the score
     // for the whole stretch and moves it as each basket drops (HL_SPORT.playback: its length on screen, or 0)
     const pbMs=!live.ff&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan()?HL_SPORT.playback(live,r.drive):0;
-    if(pbMs){ live.hold={n:live.drives.length-1,h:pH,a:pA,clock:null}; live.pb={d:r.drive,at:Date.now(),ms:pbMs,h0:pH,a0:pA,frozen:null} }
+    if(pbMs){ live.hold={n:live.drives.length-1,h:pH,a:pA,clock:null}; live.pb={d:r.drive,at:Date.now(),ms:pbMs,h0:pH,a0:pA,frozen:null}; r.drive.pbShown=true }
     else if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     // round 79: skipping stops for a close finish, so it's watched, not told (Ian: Skip jumped to the final of a one-score
@@ -309,7 +309,11 @@ function finishLive(){ liveEndedAt=Date.now();
   const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives.map(d=>d&&d.pl?(({pl,...r})=>r)(d):d)};   // round 101: the full match's possession log stays with the live game, not the save
+              drives:live.drives.map(d=>{ if(!d||!d.pl)return d; const {pl,_pb,pbShown,...r}=d;
+                // round 101: the full match's possession log stays with the live game, not the save; a stretch it played
+                // back keeps the men it showed scoring (roster slots), and the box score credits them
+                if(pbShown&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.namesOf==="function"){ try{ const pn=HL_SPORT.namesOf(live,d); if(pn&&pn.length)r.pn=pn }catch(e){} }
+                return r })};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
   if(live.eng.rest&&live.eng.rest[meHome?"home":"away"])played.rested=true;   // starters rested: fewer knocks this week (Season._resolve)
   if(g.cup)played.cup=true;
