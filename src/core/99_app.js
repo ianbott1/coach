@@ -3241,6 +3241,11 @@ const SIM_STOPS=[["big","A big game is next (a rival, a top side"+(typeof LEAGUE
 /* off until you tick them (Ian: sim ahead should just sim). Saves that never touched them had them
    all on by default; they start off too. */
 function simStops(){ if(!S.simStops||!S.simStopsV){ S.simStops={big:false,slide:false,hurt:false,decide:false}; S.simStopsV=2 } return S.simStops }
+/* round 100: the plan the Play button will start on, under its label (Grokbot: the plan screens "silently carry the last
+   plan", and Play week on a result card started the next game on it without a word) */
+function advPlanTag(){ try{ if(typeof PLANS==="undefined"||!PLANS[plan]||S.off||(live&&!live.done)||!SEA||SEA.phase==="done")return "";
+  const has=SEA.phase==="week"?myGamesIn(SEA.step).length>0:!!(SEA.postNext&&SEA.postNext(S.myTeam));
+  return has?`<small class="advplan">on ${esc(PLANS[plan].l)}</small>`:"" }catch(e){ return "" } }
 function myGamesIn(w){ const my=S.myTeam; return SEA.gamesFor?SEA.gamesFor(my,w):SEA.sched.filter(g=>g.week===w&&(g.home===my||g.away===my)) }
 /* the step after your nth game from here */
 function afterGames(n){ let c=0; for(let w=SEA.step;w<LEAGUE.weeks;w++){ c+=myGamesIn(w).length; if(c>=n)return w+1 } return LEAGUE.weeks }
@@ -3617,7 +3622,7 @@ function render0(){
     <div class="cols">
     ${wide&&!inOff?`<aside id="side">${teamPanel()}
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
-        advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
+        advLabel()}${advPlanTag()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
@@ -3636,7 +3641,7 @@ function render0(){
               :LEAGUE.ui.offseasonBlock()!==null?LEAGUE.ui.offseasonBlock():
               S.off.move==="retire"?"Retire"
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
-              :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
+              :"Begin "+(SEA.year+1)+" season"):advLabel()+advPlanTag()}</button>
     </div>`;
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
   // round 69: players' pages, the leaders
