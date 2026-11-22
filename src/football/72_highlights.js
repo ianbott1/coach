@@ -10,7 +10,8 @@ const HL_SPORT=(function(){
   const DEF=[[1,0.42],[1,0.47],[1,0.53],[1,0.58],[4.5,0.35],[4.5,0.5],[4.5,0.65],[6,0.1],[6,0.9],[12,0.32],[12,0.68]];
   /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
   // round 72: the header names the drive a clip shows (it named the drive before it until the clip was over)
-  function clips(L,d,mode){ const out=clips0(L,d,mode), n=(L.drives||[]).indexOf(d);
+  function clips(L,d,mode){ let out=clips0(L,d,mode); const n=(L.drives||[]).indexOf(d);
+    if(mode==="full"){ const dc=mkDrive(L,d,out); if(dc)out=[dc].concat(out) }   // round 99: the drive itself, play by play
     out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
@@ -193,8 +194,45 @@ const HL_SPORT=(function(){
     const end=t>=tEnd?(c.kind==="fg"?"IT'S GOOD!":"NO GOOD! Wide "+(c.wide*(c.home?-1:1)>0?"left":"right")):null;
     hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null);
   }
+  /* ---- round 99 (Ian: "they should look like I showed up to watch the match"): in Full match every drive is played on
+     the field, snap by snap, from where it started to where it ended (the spot its outcome clip starts from, or where it
+     stalled), with the down and distance on the caption and the chains moving. The engine plays a drive as one roll, so
+     the plays inside it are drawn (from the drive's own number, no game dice) to add up to the real start and end; how
+     the drive ended (a touchdown, a kick, a punt, a pick, a turnover on downs) still plays as its own clip after it. */
+  function mkDrive(L,d,next){ if(d.start==null)return null; const nx=next&&next[0], start=Math.max(1,Math.min(95,d.start));
+    let end=nx&&nx.los!=null?nx.los:d.kind==="TD"?100:(d.stall!=null?d.stall:d.lost!=null?d.lost:start+3); end=Math.max(start,Math.min(99,end));
+    if(nx&&nx.kind==="td"&&nx.len!=null)end=Math.max(start,Math.min(99,nx.los));
+    const r=mulberry32(((d.n||1)*104729+start*131+(d.home?7:13))>>>0), yds=end-start, np=Math.max(3,Math.min(9,Math.round(yds/7)+2+Math.floor(r()*2)));
+    // gains that add up to the drive's yards: some short, some long, the odd one for nothing
+    let w=[...Array(np)].map(()=>{ const u=r(); return u<0.18?0:u<0.6?1+r()*2:2+r()*5 }), sw=w.reduce((a,b)=>a+b,0)||1;
+    let gains=w.map(v=>Math.round(v/sw*yds)); let diff=yds-gains.reduce((a,b)=>a+b,0); gains[gains.length-1]+=diff;
+    // downs: first and ten, chains moving on every ten gained; a drive the engine ended on a fourth down shows its last snap as third
+    const plays=[]; let spot=start, down=1, mark=start+10;
+    gains.forEach((g,i)=>{ plays.push({from:spot,g,down,togo:Math.max(1,Math.min(mark,100)-spot),pass:r()<0.55}); spot+=g; if(spot>=mark){ down=1; mark=spot+10 } else down=Math.min(3,down+1) });
+    if(!plays.length)return null;
+    return Object.assign(base(L,d),{kind:"drive",plays,start,end,base:Math.min(7800,plays.length*820),reveal:0.999}) }
+  function driveFrame(x,W,H,c,t){
+    const n=c.plays.length, f=Math.min(0.9999,t)*n, i=Math.floor(f), u=f-i, pl=c.plays[i], r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const snap=0.2, done=0.85, s=Math.max(0,Math.min(1,(u-snap)/(done-snap))), e=hlEase(s), los=pl.from, gain=pl.g;
+    // the chains: the line to gain in yellow, the line of scrimmage in blue
+    { const a=P(W,H,c,los,0.02), b=P(W,H,c,los,0.98), g1=P(W,H,c,Math.min(100,los+pl.togo),0.02), g2=P(W,H,c,Math.min(100,los+pl.togo),0.98); x.save(); x.lineWidth=Math.max(2,W/260);
+      x.strokeStyle="rgba(80,150,255,.85)"; x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); if(los+pl.togo<100){ x.strokeStyle="rgba(242,210,75,.9)"; x.beginPath(); x.moveTo(g1[0],g1[1]); x.lineTo(g2[0],g2[1]); x.stroke() } x.restore() }
+    let bx=los, by=0.5, z=0; const tgt=los+gain, lane=0.5+((i*37)%5-2)*0.09;
+    const carrier=pl.pass?[hlLerp(los-0.5,tgt,e),hlLerp(i%2?0.12:0.88,lane,Math.min(1,e*1.3))]:[hlLerp(los-7,tgt,e),hlLerp(0.5,lane,Math.min(1,e*1.5))];
+    if(u<snap){ bx=los; by=0.5 } else if(pl.pass){ const th=0.35; if(s<th){ bx=los-5-s*4; by=0.5 } else { const k=(s-th)/(1-th); bx=hlLerp(los-6,carrier[0],Math.min(1,k*1.6)); by=hlLerp(0.5,carrier[1],Math.min(1,k*1.6)); z=k<0.6?Math.sin(k/0.6*Math.PI)*0.05:0 } }
+    else { bx=carrier[0]; by=carrier[1] }
+    const off=OFF.map((p,j)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ if(pl.pass&&j===(i%2?2:3))return carrier; if(!pl.pass&&j===1)return carrier; if(j>=6)yd+=s*1.2; else if(j>=2)yd+=s*Math.min(8,gain*0.6) } return [yd,y] });
+    const def=DEF.map((p,j)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ const k=j<4?0.2:0.5*s; yd=hlLerp(yd,bx,k*0.7); y=hlLerp(y,by,k) } return [yd,y] });
+    if(u>=done){ const q=carrier, j=pl.pass?7:5; def[j]=[q[0]+0.6,q[1]+0.02] }   // and he's brought down
+    def.forEach((p,j)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[j]}:null) });
+    off.forEach((p,j)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",c.offN?{num:c.offN[j]}:null) });
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
+    const res=u>=done?(gain>0?`${pl.pass?"Pass":"Run"} for ${gain}`:gain<0?`Loss of ${-gain}`:"No gain"):null;
+    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} \u00b7 ${c.tm} \u00b7 ${ord} & ${togo} at ${spotTxt}`,res,null) }
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
+    if(c.kind==="drive")return driveFrame(x,W,H,c,t);
     if(c.kind==="fg"||c.kind==="miss")return kickFrame(x,W,H,c,t);
     if(c.kind==="punt")return puntFrame(x,W,H,c,t);
     const sf=(c.f||0.86)/0.86, snap=0.18*sf, throwT=0.5*sf, tEnd=0.86*sf;   // (round 80: a pick with a return catches earlier)
