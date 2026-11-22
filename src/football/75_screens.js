@@ -40,7 +40,18 @@ function driveScript(g,drives,rosters){
                 DOWNS:["turned over on downs"],MISS:["the field goal is no good"],   // a field goal: "the kick" read as a missed extra point (Grokbot)
                 INT:["threw an interception"],FUM:["fumble, recovered by the defense"]};
   const tot=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24;
-  return drives.map((d,di)=>{
+  // round 100: a game being played has no d.by yet (the season credits it at the end), so the line named an injured
+  // starter while the box score named his backup (Grokbot: a receiver out for 14 weeks caught a 64-yard touchdown).
+  // Until it's credited, the same rule the season uses (_creditV4, teamLines): a hurt man's backup plays his slot.
+  const liveBy=!rosters&&typeof SEA!=="undefined"&&SEA&&SEA.talent&&typeof BK==="function"&&!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4);
+  const byFor=d=>{ if(d.by||!liveBy)return d.by; const o={};
+    const side=(tm,R,keys,bks,pre)=>{ if(!R)return; const hurt=new Set(SEA.talent.active(tm).map(x=>x.idx)), act=new Set(POS.map((P,i)=>hurt.has(i)?R[BK(i)]:R[i]).filter(Boolean));
+      keys.forEach(i=>{ const p=hurt.has(i)?R[BK(i)]:R[i]; if(p)o[pre+i]=p.n }); bks.forEach(i=>{ const p=R[i]; if(p&&!act.has(p))o[pre+i]=p.n }) };
+    side(d.home?g.home:g.away,d.home?RH:RA,[0,1,2,3],[BK(2),BK(3)],"");
+    side(d.home?g.away:g.home,d.home?RA:RH,[7,8,9],[BK(8),BK(9)],"d");
+    return o };
+  return drives.map((d0,di)=>{
+    const d=d0.by||!liveBy?d0:Object.assign({},d0,{by:byFor(d0)});
     const off=d.home?RH:RA, def=d.home?RA:RH;
     // round 74: the names the season credited, if it has (d.by: whoever played that day, an injured starter's backup)
     const nm=i=>d.by&&d.by[i]?d.by[i]:off&&off[i]?off[i].n:"the offense";
