@@ -52,7 +52,7 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // the game's name on the card changed on purpose ("College Football Coach"),
       // and the owl's markup gained a (college: empty) helmet slot
       const renamed=x=>JSON.stringify(x).replace(/<!-- college: a football[\s\S]*?E45B4E[^>]*>/g,'')   // the college owl's football, new on purpose
-        .replace(/COLLEGE FOOTBALL COACH/g,'FOOTBALL COACH').replace(/College Football Coach/g,'Football Coach').replace(/(\\n\s*)+<!-- feet/g,'\\n <!-- feet')   /* any number of blank lines before the feet */.replace(/\s+/g,' ');
+        .replace(/COLLEGE FOOTBALL COACH/g,'FOOTBALL COACH').replace(/College Football Coach/g,'Football Coach').replace(/(\\n\s*)+<!-- feet/g,'\\n <!-- feet')   /* any number of blank lines before the feet */.replace(/ianbott1\.github\.io\/football-coach/g,'ianbott1.github.io/coach')   /* round 96: the set's new address, on purpose */.replace(/\s+/g,' ');
       wantC.forEach((w,i)=>{checks++;if(renamed(w)!==renamed(gotC[i])){bad++;console.log(`  ${team}#${seed}: card ${i} differs`)}});
       // migrated entries vs native v2 entries (strip changes content, so skip it there)
       // migrated entries have the same shape as the entries this build writes
