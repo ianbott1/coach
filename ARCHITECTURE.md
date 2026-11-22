@@ -409,6 +409,19 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 97: trust fixes from Grokbot's round 11 checklist, each measured first; only what reproduced on round 96.
+- Baseball's call screens (core liveWPHTML): a stretch is an inning, and baseball asks inside one, so a call showed the
+  last inning's reading ("8th inning, down 1" over the tied inning's 44%). On baseball's call screens the bar reads the
+  call's own score (ask.mine, ask.theirs), half an inning into the one under way.
+- Baseball's live chance shrinks its spread as tau^0.7 (LIVE_TAUP, was 1: linear). Measured on 1,500 even engine games
+  (scratch r97 bscal.js), linear read two runs down after eight as 0% where 4% came back, after seven 3% for 10%.
+  live-wp: best fit spread 4.20 (the build's), worst band 6.8 points. Spread unchanged.
+- A hurt man is never in a clip (core hlFit; hockey's lines and goalie, soccer's named units, football's tracked men):
+  measured before, hockey 144 of 900 clips named a hurt man (most often a hurt starting goalie in net), soccer 65 of 237,
+  pro football 80 of 343; now none. test/hl-hurt.js (quick tier, six games).
+- Not reproduced: baseball's last-out banner "down 2" at 11-10 (1,381 last-out clips, the gap right every time). Left: the
+  plan picker sits on the next-game card beside Play by design (no extra stop before a game); the rest of the checklist.
+
 Round 96: Coach (Ian: the set is "Coach", its title page, and an address without "football"); the attribute grids
 (Grokbot's point 4).
 - The title page (src/landing.html): COACH, seven games and five sports (it said six sports), the seven owls on their perches

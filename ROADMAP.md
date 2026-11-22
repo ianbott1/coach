@@ -126,6 +126,11 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 97 (done): trust fixes
+- Baseball's win chance on a call reads the call's score (it showed the inning before); late-game readings refit.
+- A hurt player is never drawn in a clip (hockey, soccer, football measured; none now).
+- Next: watching. The ball moving between moments; clock, down and distance, count and outs on the field.
+
 ## Round 96 (done): Coach
 - The Coach title page: seven games, five sports, the seven owls as links; every game links back to it.
 - The address moves to ianbott1.github.io/coach (Ian renames the repo); the old address forwards, saves come along.
