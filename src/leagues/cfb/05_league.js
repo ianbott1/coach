@@ -247,7 +247,7 @@ const LEAGUE={
     orgNote:base=>`Program strength is the slow-moving baseline &mdash; recruiting,
       resources, coaching. Measured against where each program stood in ${base}.`,
     gameName:"College Football Coach", eyebrow:"College",
-    site:"College Football Coach: ianbott1.github.io/football-coach",
+    site:"College Football Coach: ianbott1.github.io/coach",
     tiers:[
  {max:15, l:"Blue blood",   d:"A playoff berth is the expectation. Miss twice and you're gone.",
   c:"flag"},

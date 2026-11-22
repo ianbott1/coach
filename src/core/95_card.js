@@ -75,7 +75,7 @@ function seasonCardSVG(h, team){
       letter-spacing="2">${esc((LEAGUE.text.gameName||"Football Coach").toUpperCase())}</text>
     <text x="166" y="1020" fill="#7C879C" font-size="23"
       font-family="ui-monospace,Menlo,Consolas,monospace"
-      letter-spacing="2">ianbott1.github.io/football-coach</text>
+      letter-spacing="2">ianbott1.github.io/coach</text>
   </svg>`;
 }
 

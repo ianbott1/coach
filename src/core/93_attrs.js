@@ -1,4 +1,4 @@
-/* round 87 (Ian, the player attributes design): a player is a shape, not one number. Each sport names 8-10
+/* round 87 (Ian, the player attributes design): a player is a shape, not one number. Each sport names 7-10
    attributes (ATTRS, in its 10_players.js); each player carries the ones of his group (ATTRS.group: a stable group
    from his position, so a job change mid-season never changes which he has or how they weigh). They are kept on the
    rating's own scale and his rating is their weighted sum (ATTRS.w[group]), rounded, exactly: a 65 is a 65 however
@@ -89,18 +89,25 @@ function attrRoleRead(p,x,team){ const A=attrOf(p); if(!A)return ""; x=x||{};
 const ATTR_BANDS=[["t","Technical"],["m","Mental"],["p","Physical"]];
 function attrColor(v){ return v>=16?"var(--turf)":v>=12?"var(--bone)":v>=8?"var(--muted)":"var(--flag)" }
 function attrPlays(){ return typeof ATTRS!=="undefined"&&typeof ATTRS.plays==="function"&&ATTRS.plays() }
+/* round 96 (Grokbot's point 4, "explain how the attributes make the rating"): each attribute's weight for his position
+   beside it (pips: counts most, more, less), heaviest first in each band, and the line says which count most */
+function attrPips(w,mx){ const n=w>=mx*0.75?3:w>=mx*0.4?2:1; return n }
 function attrGridHTML(p){
-  const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g), was=Array.isArray(p.ap)&&p.ap.length===K.length?p.ap:null;
-  const cell=(k,j)=>{ const v=attrShow(A[k]), d=was?v-attrShow(was[j]):0;
-    return `<div class="attr" title="${esc(ATTRS.desc[k]||"")}"><div class="attrn">${esc(ATTRS.name[k])}<small>${esc(ATTRS.desc[k]||"")}</small></div>
+  const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g), W=ATTRS.w[g], was=Array.isArray(p.ap)&&p.ap.length===K.length?p.ap:null;
+  const mx=Math.max(...K.map(k=>W[k])), byW=K.slice().sort((x,y)=>W[y]-W[x]);
+  const pipWord=["","counts less toward his rating","counts more toward his rating","counts most toward his rating"];
+  const cell=(k,j)=>{ const v=attrShow(A[k]), d=was?v-attrShow(was[j]):0, n=attrPips(W[k],mx);
+    return `<div class="attr" title="${esc(ATTRS.desc[k]||"")}"><div class="attrn"><span class="attrw" title="${pipWord[n]}" aria-label="${pipWord[n]}">${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(3-n)}</span>${n===3?`<b>${esc(ATTRS.name[k])}</b>`:esc(ATTRS.name[k])}<small>${esc(ATTRS.desc[k]||"")}</small></div>
       <div class="attrbar" aria-hidden="true"><i style="width:${v*5}%;background:${attrColor(v)}"></i></div>
       <div class="attrv">${d>0?`<span style="color:var(--turf)">&#9650;${d}</span>`:d<0?`<span style="color:var(--flag)">&#9660;${-d}</span>`:""}<b style="color:${attrColor(v)}">${v}</b></div></div>` };
-  const rows=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b); if(!ks.length)return "";
+  const rows=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b).sort((x,y)=>W[y[0]]-W[x[0]]); if(!ks.length)return "";
     return `<div class="attrband">${l}</div>${ks.map(([k,j])=>cell(k,j)).join("")}` }).join("");
-  const role=attrRole(p);
+  const role=attrRole(p), nm=k=>esc(ATTRS.name[k]);
+  const most=byW.filter(k=>attrPips(W[k],mx)===3), least=byW[byW.length-1];
+  const how=`Weighted for his position: ${most.map(nm).join(" and ")} count${most.length>1?"":"s"} most${byW.length>most.length+1?`, ${nm(least)} least`:byW.length>most.length?`, then ${nm(least)}`:""}.`;
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
     <div class="attrgrid">${rows}</div>
-    <div class="fnote" style="margin:4px 0 10px">1-20 against every player in the league. They show where he leans; his rating (${p.r}) is what they add up to${attrPlays()?", and each plays in the game as it says":", though in this game they don't change how he plays yet, only how he develops"}.${was?" Arrows: last summer.":""}</div>` }
+    <div class="fnote" style="margin:4px 0 10px">${how} His rating (${p.r}) is that weighted mix, so the 1-20s won't average to it: they show where he leans, against every player in the league${attrPlays()?", and each plays in the game as it says":"; in this game they don't change how he plays yet, only how he develops"}.${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){

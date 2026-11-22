@@ -80,7 +80,7 @@ const LEAGUE={
     pickIntro:"Every franchise is a different job with different expectations. Win with a contender and it's what they pay you for; win with a rebuild and you'll have your pick of the jobs.",
     tagline:"Build a franchise. Win the pennant.",
     gameName:"Pro Baseball Coach", eyebrow:"Pro",
-    site:"Pro Baseball Coach: ianbott1.github.io/football-coach",
+    site:"Pro Baseball Coach: ianbott1.github.io/coach",
     tiers:[
       {max:5,  l:"Contender",  d:"Built to win now. Anything short of a deep October is a failure.",c:"flag"},
       {max:12, l:"Playoff team",d:"Make the postseason and win a series.",c:"sod"},

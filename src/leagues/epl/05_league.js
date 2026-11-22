@@ -112,7 +112,7 @@ const LEAGUE={
     pickIntro:"Every club is a different job with different expectations. Win at a giant and it's what they pay you for; win at a club nobody expects anything of and you'll have your pick of the jobs.",
     tagline:"Build a club. Win the league.",
     gameName:"Soccer Coach", eyebrow:"English",
-    site:"Soccer Coach: ianbott1.github.io/football-coach",
+    site:"Soccer Coach: ianbott1.github.io/coach",
     week:"weekend",
     tiers:[
       {max:4,   l:"Title challenger", d:"Win the league, or at least finish in the top four.",c:"flag"},

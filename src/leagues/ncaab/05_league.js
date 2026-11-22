@@ -55,7 +55,7 @@ const LEAGUE={
     orgNote:base=>`Program strength is the slow-moving baseline &mdash; recruiting,
       resources, coaching. Measured against where each program stood in ${base}.`,
     gameName:"College Basketball Coach", eyebrow:"College", earlyTag:"turned pro early",
-    site:"College Basketball Coach: ianbott1.github.io/football-coach",
+    site:"College Basketball Coach: ianbott1.github.io/coach",
     tiers:[
  {max:12, l:"Blue blood",    d:"A deep March run is the expectation. Miss the tournament twice and you're gone.",c:"flag"},
  {max:45, l:"Contender",     d:"Make the tournament and win a game or two.",c:"sod"},

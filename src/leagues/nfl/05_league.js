@@ -105,7 +105,7 @@ const LEAGUE={
     pickIntro:"Every franchise is a different job with different expectations. Win with a contender and it's what they pay you for; win with a rebuild and you'll have your pick of the jobs.",
     tagline:"Build a franchise. Win it all.",
     gameName:"Pro Football Coach", eyebrow:"Pro",
-    site:"Pro Football Coach: ianbott1.github.io/football-coach",
+    site:"Pro Football Coach: ianbott1.github.io/coach",
     tiers:[
       {max:5,  l:"Contender",  d:"The roster is built to win now. Anything short of a deep run is a failure.",c:"flag"},
       {max:12, l:"Playoff team",d:"Get in, win a game in January, and keep the owner happy.",c:"sod"},
