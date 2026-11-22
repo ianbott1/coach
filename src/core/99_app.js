@@ -206,6 +206,9 @@ function liveTick(){
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
+      // round 100 (Grokbot, soccer on a phone: "call screens land scrolled to the bottom, so the read is off-screen"): a
+      // new call opens at its top when the page was scrolled away from it
+      try{ const c=document.querySelector(".callbox"); if(c&&c.getBoundingClientRect){ const q=c.getBoundingClientRect(); if(q.top<0||q.top>window.innerHeight*0.55)c.scrollIntoView({block:"start",behavior:"auto"}) } }catch(e){}
       return;
     }
     // the score before this stretch (kept here: drives record it differently by sport,
@@ -3715,7 +3718,7 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=advance;
+  const a2=el("adv2"); if(a2)a2.onclick=()=>{ if(Date.now()-(liveEndedAt||0)<1200)return; advance() };   // round 100: the side column's Play waits too
   ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=()=>{simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
@@ -3725,7 +3728,7 @@ function render0(){
   }
   // a tap that was meant for the game screen's controls lands here when the game ends under the finger:
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
-  const settling=()=>Date.now()-(liveEndedAt||0)<700;
+  const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
   ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=()=>{ if(settling())return;
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
@@ -4223,7 +4226,7 @@ window.addEventListener("keydown",e=>{
     return;
   }
   if(e.key===" "||e.key==="Enter"){e.preventDefault();
-    const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
+    const b=el("adv2")||el("adv"); if(b&&!b.disabled&&Date.now()-(liveEndedAt||0)>=1200)b.click();}   // round 100: Enter is Skip in a game; a second press as it ends doesn't start the next
   const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
   if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;playerSel=null;render()}
 });
