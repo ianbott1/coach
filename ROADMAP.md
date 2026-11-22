@@ -126,6 +126,15 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 100 (done): Grokbot's round 12 interim (ships with round 99)
+- The game starts on the plan its card shows (a reloaded game played an old mid-game change). The coach name survives.
+- No injured player in a football touchdown line or clip: the live line names who's actually playing.
+- Desktop plan clicks keep your place. The Play button says which plan it starts on.
+- Full match: every player named in basketball and hockey; basketball plays the stretch before its big basket.
+- Basketball's read marks points in the paint.
+- Next: the plan as a real decision at even odds (the opponent's shape in the fit, so two plans are live for different
+  reasons: an engine round); soccer and baseball reports when Grokbot finishes them.
+
 ## Round 99 (done): Ian's notes, the November 22 reviews
 - Title page trimmed. Field goals with numbers; pick returns end in a tackle. The team card's figures open their pages.
 - Old seasons say the new features arrive next season (testers' veteran careers). A conference title loss isn't the end.

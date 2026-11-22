@@ -409,6 +409,38 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 100: Grokbot's round 12 interim report (five games; soccer and baseball still under test). Ships with round 99.
+- Plan card against plan played (pro basketball, Grokbot: the card showed Work it inside at 55%, the game played Shorten
+  the game at 32%). Reproduced (scratch r100 planreload.js): a plan change made mid-game is kept in S.planMid by game; a
+  game begun again after a reload or a quit replayed it, and a change at the first possession overrode the card. Now
+  startLive drops your own changes at possession 0 when a game starts (the card has the say); later ones still replay
+  where they were made. Before: card safe, game aggressive; after: both safe.
+- Coach name (Grokbot: "Ian Bott" kept as "Ian Bot", "Ian", "n"). Not reproduced by typing (stored right in all seven);
+  a redraw of the setup screen mid-typing lost everything typed (measured on the released build: "" after two redraws).
+  The setup screen now keeps what's typed, the focus and the caret through any redraw; Suggest one sets the box too.
+- Injured man on a touchdown (pro football, Grokbot: a receiver out 14 weeks caught a 64-yard touchdown). The live drive
+  has no d.by until the season credits the game at its end, so driveScript named the slot's man, hurt or not, and the
+  touchdown clip reads that line (hl-hurt only checked the clip's key). driveScript now builds the season's own rule for
+  a live drive (_creditV4/teamLines: a hurt man's backup plays his slot). test/fb-live-names.js: the live line against
+  the finished game's, 1,144 lines in both football games, 0 differ (released build: 21).
+- Desktop plan clicks (every game): the side column (#side) scrolls on its own and went back to the top on redraw; its
+  scroll is kept and the pressed button stays under the pointer (measured in all games with a plan card, 1280 and 390).
+- The Play button names the plan it starts on ("on Balanced"): the result card's Play week used to carry it silently.
+- Full match: basketball's and hockey's play between moments names every man by number and name (basketball onFloor, the
+  clip's own rotation; hockey's five by possession, the second unit about a third, a hurt man's line-mate in his place);
+  the score bug's clock is the header's when it holds one (it read 6', the rink 10'). Basketball now plays each stretch
+  before its big basket, the score held until the moment, as hockey and soccer do (HL_SPORT.leadIn); full-order covers both
+  basketball games.
+- Basketball's read panel marks points in the paint (bbPaintMark: pros 20+ high, 10 or under low; college 13+ and 7),
+  measured at 300 reads a league; a marked paint rate counts as shown when a read is graded.
+- Not reproduced, so not changed: a rested five-foul starter still on the floor (0 fouls to a rested side after a rest in
+  180 games on the released build or this one). Not done: the plan as a real decision at even odds (point 1; the best
+  plan depends only on your own roster, so one plan wins most nights: needs the opponent in the fit, an engine round);
+  football's 4th-and-1 graded wrong at 69% (graded by replays, by design).
+- Round 99's later items: rested football starters leave the clips (REST from L.restAt; test/fb-rest.js); football's Full
+  match plays each drive snap by snap (mkDrive, gains summing to the drive, down and distance, chains); Full match lengths
+  by sport (HL_SPORT.fullMs); in Full match the stretch plays before its moments (live.leadPend; test/full-order.js).
+
 Round 99: Ian's notes and the November 22 reviews (Muse, Instinct).
 - Title page: the "Seven games · five sports" line and the three-box section gone (Ian: they read as AI).
 - Field goals: the kicking unit wears numbers (football 72 stNums): the kicker the one kickerName names, the holder and the
