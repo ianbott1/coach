@@ -140,6 +140,32 @@ function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives
    showed an overtime result nobody watched: Muse, 3 of 10) */
 function liveH(){ return live&&live.tailShow?live.tailShow.h:live.eng.h }
 function liveA(){ return live&&live.tailShow?live.tailShow.a:live.eng.a }
+function presentAsk(r,floorCall){
+      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
+      live.ff=false;                            // skipping stops at your next call
+      // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
+      if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
+      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
+      render();
+      // round 100 (Grokbot, soccer on a phone: "call screens land scrolled to the bottom, so the read is off-screen"): a
+      // new call opens at its top when the page was scrolled away from it
+      try{ const c=document.querySelector(".callbox"); if(c&&c.getBoundingClientRect){ const q=c.getBoundingClientRect(); if(q.top<0||q.top>window.innerHeight*0.55)c.scrollIntoView({block:"start",behavior:"auto"}) } }catch(e){}
+}
+/* round 101: the full match plays back what the engine logged (HL_SPORT.playback gives its length on screen). A stretch
+   whose start was already shown (a call came inside it) plays on from where it stopped (live.pbSeen). */
+function pbOn(){ return typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan() }
+function pbFrom(d){ const S0=live.pbSeen; return S0&&S0.seg===d.seg?S0.n:0 }
+function pbScoreAt(d,i,h,a){ const q=i>0&&d.pl&&d.pl[i-1]; return q&&q.h!=null?[q.h,q.a]:[h,a] }
+function pbPartialStart(r,floorCall){
+  if(!pbOn()||live.paused||!live.eng||typeof live.eng.partial!=="function")return false;
+  const D=live.eng.partial(); if(!D||!Array.isArray(D.pl))return false;
+  const from=pbFrom(D), to=D.pl.length; if(to<=from)return false;
+  const d={seg:D.seg,pl:D.pl.slice(0,to),sh:D.sh,sa:D.sa,partial:true}, [h0,a0]=pbScoreAt(d,from,live.lastH||0,live.lastA||0);
+  const ms=HL_SPORT.playback(live,d,from,to); if(!ms)return false;
+  live.hold={n:live.drives.length,h:h0,a:a0,clock:null}; live.pb={d:d,at:Date.now(),ms:ms,h0:h0,a0:a0,from:from,to:to,frozen:null};
+  live.pbSeen={seg:D.seg,n:to}; live.askPend={r:r,floorCall:floorCall};
+  render(); live.timer=setTimeout(liveTick,ms); return true }
 function liveTick(){
   // the overtime tail, one stretch at a time, then the final whistle
   if(live&&live.tailQ&&!live.done){ if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -157,6 +183,7 @@ function liveTick(){
     if(P.frozen!=null&&!live.paused&&!live.ff){ if(live.timer)clearTimeout(live.timer); P.at=Date.now()-P.frozen; const left=Math.max(0,P.ms-P.frozen); P.frozen=null; live.timer=setTimeout(liveTick,left); return }   // play on from where it stopped
     live.pb=null }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
+  if(live&&live.askPend&&!live.done){ const A=live.askPend; live.askPend=null; if(live.timer){clearTimeout(live.timer);live.timer=null} presentAsk(A.r,A.floorCall); return }
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
@@ -203,16 +230,9 @@ function liveTick(){
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
           if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
-      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
-      live.ff=false;                            // skipping stops at your next call
-      // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
-      if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
-      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
-                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
-      render();
-      // round 100 (Grokbot, soccer on a phone: "call screens land scrolled to the bottom, so the read is off-screen"): a
-      // new call opens at its top when the page was scrolled away from it
-      try{ const c=document.querySelector(".callbox"); if(c&&c.getBoundingClientRect){ const q=c.getBoundingClientRect(); if(q.top<0||q.top>window.innerHeight*0.55)c.scrollIntoView({block:"start",behavior:"auto"}) } }catch(e){}
+      // round 101: a call inside a stretch (baseball's innings) waits while the full match plays the stretch up to it
+      if(!live.ff&&pbPartialStart(r,floorCall))return;
+      presentAsk(r,floorCall);
       return;
     }
     // the score before this stretch (kept here: drives record it differently by sport,
@@ -228,9 +248,10 @@ function liveTick(){
     // shows them.
     // round 101: a sport that plays the stretch back possession by possession (basketball's full match) holds the score
     // for the whole stretch and moves it as each basket drops (HL_SPORT.playback: its length on screen, or 0)
-    const pbMs=!live.ff&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan()?HL_SPORT.playback(live,r.drive):0;
-    if(pbMs){ live.hold={n:live.drives.length-1,h:pH,a:pA,clock:null}; live.pb={d:r.drive,at:Date.now(),ms:pbMs,h0:pH,a0:pA,frozen:null}; r.drive.pbShown=true }
+    const pbF=pbFrom(r.drive), pbMs=!live.ff&&!live.paused&&pbOn()?HL_SPORT.playback(live,r.drive,pbF):0;
+    if(pbMs){ const [h0,a0]=pbScoreAt(r.drive,pbF,pH,pA); live.hold={n:live.drives.length-1,h:h0,a:a0,clock:null}; live.pb={d:r.drive,at:Date.now(),ms:pbMs,h0:h0,a0:a0,from:pbF,frozen:null}; r.drive.pbShown=true }
     else if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
+    live.pbSeen=null;
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     // round 79: skipping stops for a close finish, so it's watched, not told (Ian: Skip jumped to the final of a one-score
     // game); once a game, at the sport's own late window

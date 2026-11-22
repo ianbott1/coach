@@ -285,9 +285,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const Xf=st.S[fs], pn=Xf.closer?"closer":Xf.pen?(bsV6()?relief(fs).n:"bullpen"):Xf.sp.n;
     H.ev.slice(ev0).forEach(e=>{ if(e.k!=="ph"){ e.r=[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null]; e.p=pn } });
     bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0));
+    // round 101: the full match's at-bat log (the game on screen only; read off what just happened, no draws)
+    if(D&&D.pl){ const E=H.ev.slice(ev0), ph=E.find(e=>e.k==="ph");
+      D.pl.push({t:"pa",s:bat==="home"?0:1,nm:nm,slot:slot,o:o,dp:dp,sf:E.some(e=>e.k==="rbi"&&e.hit===0),out0:out0,outs:H.outs,
+        pre:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],post:[b[0]?H.bn[0]:null,b[1]?H.bn[1]:null,b[2]?H.bn[2]:null],
+        runs:(bat==="home"?st.h:st.a)-run0,p:pn,ph:ph?ph.was:null,h:st.h,a:st.a}) }
     if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
   const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side)),atOf(side,onFirst[side]),atOf(other(side),catcherOf(other(side)))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
+    if(D&&D.pl)D.pl.push({t:ok?"sb":"cs",s:side==="home"?0:1,nm:onFirst[side],outs:H.outs,post:[H.b[0]?H.bn[0]:null,H.b[1]?H.bn[1]:null,H.b[2]?H.bn[2]:null],h:st.h,a:st.a});
     bsCountSteal(st,side,ok,onFirst[side]); if(!ok){ const Xf=st.S[other(side)]; bsCountOuts(st,other(side),Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n,1) } };
   st.log=[];
   const apply=(side,dp,v)=>{
@@ -365,7 +371,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(st.seg===3&&!st.r1&&!H){ st.r1=true; ["home","away"].forEach(sd=>{ if(!humans[sd]){ readIt(sd,0.45); return } const O=st.S[other(sd)]; O.tell.n=1; queueCall(sd,readCall(O.tell,st.S[sd].ans)) });
       if(st.queue.length)return st.next() }
     // the inning
-    if(!D){ D={seg:st.seg,h:0,a:0,sh:st.h,sa:st.a,ev:[]}; startHalf("away") }
+    if(!D){ D={seg:st.seg,h:0,a:0,sh:st.h,sa:st.a,ev:[]}; if(st.plog)D.pl=[]; startHalf("away") }
     let guard=0;
     while(guard++<200){
       if(callsDue())return st.next();
@@ -389,6 +395,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     return {drive:out,h:st.h,a:st.a};
   };
   st.reply=function(v){ st.answer=v; st.waiting=null };
+  st.partial=function(){ return D };   // round 101: the inning under way (its at-bats so far), for a call that comes inside it
   return st;
 }
 /* each club's usual approach at the plate this season, and the seed for its scouting report */
