@@ -141,6 +141,11 @@ function liveTick(){
     const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; if(h!==undefined&&a!==undefined)live.tailShow={h:h,a:a};
     render(); if(!live.paused)live.timer=setTimeout(liveTick,liveGap()); return }
   if(live&&live.finishing){ if(live.timer)clearTimeout(live.timer); live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive(); return }
+  // round 99: a stretch whose moments were still to come (Full match) plays them now: after a pause, or a step
+  if(live&&live.leadPend&&!live.done){ const d=live.leadPend; live.leadPend=null;
+    if(!live.ff&&live.drives[live.drives.length-1]===d){ if(live.timer){clearTimeout(live.timer);live.timer=null}
+      const hm=typeof hlPlay==="function"?hlPlay(live,d):0; if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();
+      if(!live.paused)live.timer=setTimeout(liveTick,Math.max(400,hm)); return } }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -211,6 +216,15 @@ function liveTick(){
     break;
   }
   render();
+  /* round 99 (Ian: "Full match is not showing the full match"): in Full match the stretch is played before its moments, as
+     a game is: the play runs with the score as it stood, then the stretch's goals and chances come at its end and the
+     score moves with them, then the next stretch. (Elsewhere the moments play first, as before.) */
+  if(fresh&&live.hold&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&!HL_SPORT.collapseIdle&&typeof hlCan==="function"&&hlCan()){
+    const gap=liveGap(), lead=Math.round(gap*0.6), mine=fresh; live.leadPend=mine;
+    live.timer=setTimeout(()=>{ if(!live||live.done||live.paused||live.ask||live.drives[live.drives.length-1]!==mine||live.leadPend!==mine)return; live.leadPend=null;
+      const hm2=typeof hlPlay==="function"?hlPlay(live,mine):0; if(!hm2&&live.hold&&typeof hlRelease==="function")hlRelease();
+      live.timer=setTimeout(liveTick, Math.max(gap-lead,hm2)) }, lead);
+    return }
   // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
   const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
   if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();   // nothing played after all: show it now
