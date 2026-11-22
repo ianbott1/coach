@@ -409,6 +409,20 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 98: watching (testers: "a sport they read rather than watch").
+- The play between moments (core hlAmbOn, hlAmbient; each sport's ambient): hockey and basketball join soccer. Hockey: the
+  puck moved about by the side with it (the stretch's mom), never into the slot or a shot, each five keeping its shape
+  round the puck, the man on it carrying it, the goalies square, a score bug with period and minute. Basketball:
+  possessions trade ends (the side that had it gets back, the other brings it up), the ball worked round the arc by
+  passes in the air, each defender between his man and the rim, a score bug with the quarter. Drawn from the clock,
+  never stored, nothing drawn from the game's dice.
+- Where the pitch stays on the live screen (soccer, hockey) the play runs in every mode, so the ice and the pitch are never
+  empty between clips; the pace is the mode's own (only Full match waits longer between stretches, as before). Basketball
+  shows its court between moments in Full match only (it collapses otherwise; core keeps the box up in Full match).
+- Fixed on the way: the man nearest the ball was meant to be on it in soccer's full match, but the search radius was 9
+  pixels, so the ball ran loose; hockey's copy had it too before it shipped. Now the carrier has it.
+- Seen in Chromium at 1280 in Full match and Key moments, five frames each sport (scratch r98 amb.js); no page errors.
+
 Round 97: trust fixes from Grokbot's round 11 checklist, each measured first; only what reproduced on round 96.
 - Baseball's call screens (core liveWPHTML): a stretch is an inning, and baseball asks inside one, so a call showed the
   last inning's reading ("8th inning, down 1" over the tied inning's 44%). On baseball's call screens the bar reads the
