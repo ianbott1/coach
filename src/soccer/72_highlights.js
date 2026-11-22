@@ -66,6 +66,7 @@ const HL_SPORT=(function(){
     const sideNums=(team,isAtt)=>{ const R=(SEA.roster&&SEA.roster[team])||[], nums=[1,2,5,6,3,7,4,8,11,9,10], used={}, list=[];
       Object.keys(SLOT).forEach(u=>{ let slot=SLOT[u], i=typeof SC_UNIT!=="undefined"?SC_UNIT[u]:-1;
         if(isAtt&&!red&&u===shooter.unit){ slot=sIdx; const j=R.findIndex(p=>p&&p.n===shooter.n); if(j>=0)i=j }
+        if(!(isAtt&&!red&&u===shooter.unit))i=hlFit(team,i);   // round 97: not a hurt man
         if(i<0||!R[i])return; const no=shirtNo(team,i); nums[slot]=no; used[no]=slot; list.push([no,String(R[i].n).split(" ").slice(-1)[0]]) });
       let f=2; nums.forEach((v,k)=>{ if(used[v]!==undefined&&used[v]!==k){ while(used[f]!==undefined||nums.indexOf(f)>=0)f++; nums[k]=f; used[f]=k } else used[v]=k });
       return {nums,list} };

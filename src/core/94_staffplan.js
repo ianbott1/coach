@@ -339,7 +339,10 @@ function seasonCallsHTML(){
    each league's, fitted to its own engine (LIVE_SIG, measured: test/live-wp.js), and the line is checked for honesty
    there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
    (a shoot-out, extra time) at the pre-game edge, halved. */
-const LIVE_WP_ON=true, LIVE_MU={}, LIVE_TAUP={mlb:1}, LIVE_MUP={mlb:1.5};   // LIVE_TAUP: how the spread shrinks with the game left (0.5, a random walk; baseball 1: round 56, a one-run lead after seven showed 69% and won 82%); LIVE_MUP: how the pre-game edge fades (1, linear; baseball 1.5: a tie after seven against a far stronger club showed 29% and won 38%)   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+const LIVE_WP_ON=true, LIVE_MU={}, LIVE_TAUP={mlb:0.7}, LIVE_MUP={mlb:1.5};   // LIVE_TAUP: how the spread shrinks with the game left (0.5, a random walk; baseball 1: round 56, a one-run lead after seven showed 69% and won 82%); LIVE_MUP: how the pre-game edge fades (1, linear; baseball 1.5: a tie after seven against a far stronger club showed 29% and won 38%)   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+/* round 97: baseball's spread shrinks as tau^0.7, not linearly (scratch r97 bscal.js, 1,500 engine games, each inning's
+   margin against who won): linear read two runs down after eight as 0% where 4% came back, and after seven 3% for 10%.
+   Even games alone fit a spread of 3.6; live-wp's games with their real edges fit 4.3, so the spread stays 4.2. */
 const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9,mlb:4.2}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
 function liveTau(d){
   if(!d)return 1;
@@ -372,13 +375,17 @@ function liveWPHTML(onCall){
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
   if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
-  if(liveTau(d)<=0&&sc[0]!==sc[1])return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
-  const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
+  if(liveTau(d)<=0&&sc[0]!==sc[1]&&!(onCall&&live.ask))return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
+  const meH=live.g.home===S.myTeam; let m=meH?sc[0]-sc[1]:sc[1]-sc[0], tau=liveTau(d);
+  /* round 97: baseball asks inside an inning (a stretch here is an inning), so on its call screens the last inning's
+     reading was stale: "8th inning, down 1" over the 44% of the 2-2 inning before it (Grokbot: 5% at 10-10 in the
+     9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */
+  if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; tau=Math.max(0,tau-0.5/(typeof SEGS!=="undefined"?SEGS:9)) }
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
-  const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
-  const early=liveTau(d)>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
+  const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,tau,live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  const early=tau>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
   // the three add to 100 (round 50: soccer's line read 101 twice: Muse): each rounded down, the leftover points to the largest remainders
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });

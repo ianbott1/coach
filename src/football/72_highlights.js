@@ -36,7 +36,7 @@ const HL_SPORT=(function(){
   const OFF_SL={0:0,1:1,2:2,3:3,8:4}, DEF_SL={0:5,1:6,5:7,7:8,9:9};
   const FILL_O=[null,null,null,null,85,11,72,64,null,61,77], FILL_D=[null,null,97,94,52,null,45,null,24,null,31];
   function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={};
-    Object.keys(SL).forEach(k=>{ const i=SL[k]; if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
+    Object.keys(SL).forEach(k=>{ const i=hlFit(team,SL[k]); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
     nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
   function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }

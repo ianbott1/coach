@@ -256,6 +256,11 @@ function hlBanner(x,W,H,text,kit,s){
 /* the key: each side's named players by number. L: [{team, kit:{fill}, list:[[no,name],...]}] */
 function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
 /* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
+/* round 97: a roster place as it plays tonight: a hurt starter's backup, a hurt backup's starter (Grokbot: an injured man
+   on the ice; measured in clips: hockey 144 of 900, soccer 65 of 237, football 80 of 343 named a hurt man) */
+function hlFit(team,i){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R||i==null||i<0||!SEA.talent||!SEA.talent.inj||!SEA.talent.inj[team])return i;
+  const H=new Set(SEA.talent.active(team).map(x=>x.idx)); if(!H.has(i))return i; const n=typeof POS!=="undefined"?POS.length:0, o=i<n?i+n:i-n;
+  return R[o]&&!H.has(o)?o:i }
 function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
 /* a stretch's clips cut to n: every goal stays (round 70: a two-goal stretch showed one, the cap took the later goal
    when saves came first); chances fill what's left, in minute order */

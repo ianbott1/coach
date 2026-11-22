@@ -61,15 +61,20 @@ const HL_SPORT=(function(){
     const pickLine=(team,grp,a,b,salt)=>{ const la=lineOf(a), lb=lineOf(b), want=x=>x>=0&&(grp==="f"?posOf(x)<3:posOf(x)>=3&&posOf(x)<5);
       return want(a)?la:want(b)?lb:shift(team,grp,salt) };
     const fL=GN&&GN.depth?1:pickLine(tm,"f",si,ai,3), dL=pickLine(tm,"d",si,ai,7);
-    const at=(i,l)=>{ const j=l?(typeof BK==="function"?BK(i):i+nP):i; return R0[j]?j:i };   // a man missing: the other line's
-    const slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
+    // round 97: a hurt man isn't on the ice (Grokbot: an injured player drawn in a clip; 144 of 900 clips in 33 games named
+    // one, most often a hurt starting goalie): his line-mate at the spot instead, the backup in net
+    const hurtOf=team=>new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]?SEA.talent.active(team).map(x=>x.idx):[]);
+    const H0=hurtOf(tm), bkOf=i=>typeof BK==="function"?BK(i):i+nP;
+    const pickAt=(R,H,i,l)=>{ const j=l?bkOf(i):i, o=l?i:bkOf(i); return R[j]&&!H.has(j)?j:R[o]&&!H.has(o)?o:R[j]?j:i };
+    const at=(i,l)=>pickAt(R0,H0,i,l);   // a man missing or hurt: the other line's
+    const slots=sd=>{ const team=sd==="home"?g.home:g.away, H=hurtOf(team); return [(gIn(sd)||H.has(5))&&typeof BK==="function"?BK(5):5,3,4,0,1,2] };
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home;
     const SL=[slots(attSide)[0],at(3,dL),at(4,dL),at(0,fL),at(1,fL),at(2,fL)];
     // the assist from the other line: he's out there too (a shift on the change), at his own place if the scorer isn't
     // in it, else beside him
     if(GN&&ai>=0&&!GN.depth&&SL.indexOf(ai)<0&&posOf(ai)<5){ const own=[3,4,5,1,2][posOf(ai)], grp=posOf(ai)<3?[3,4,5]:[1,2], shot=UNIT[unit]||3;
       const k=own!==shot?own:grp.find(x=>x!==shot); if(k!=null)SL[k]=ai }
-    const Ro=(SEA.roster&&SEA.roster[opp])||[], atO=(i,l)=>{ const j=l?(typeof BK==="function"?BK(i):i+nP):i; return Ro[j]?j:i }, oF=shift(opp,"f",13), oD=shift(opp,"d",19);
+    const Ro=(SEA.roster&&SEA.roster[opp])||[], HO=hurtOf(opp), atO=(i,l)=>pickAt(Ro,HO,i,l), oF=shift(opp,"f",13), oD=shift(opp,"d",19);
     const an=hlNamed(tm,SL), dn=hlNamed(opp,[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)]), kits=hlKits(g.home,g.away);
     if(GN&&GN.depth){ an[3]=an[4]=an[5]=null }   // the fourth line: the roster doesn't carry them
     // the assist is the pass before the shot, when he's out there
