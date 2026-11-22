@@ -126,6 +126,14 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 96 (done): Coach
+- The Coach title page: seven games, five sports, the seven owls as links; every game links back to it.
+- The address moves to ianbott1.github.io/coach (Ian renames the repo); the old address forwards, saves come along.
+- Attribute grids: the 1-20 against every player (no more columns of 1s; stars reach 18-20), each attribute's weight for
+  the position shown, and the line says which count most (Grokbot's point 4).
+- Next: Grokbot's minor-fixes checklist, checked on the current build; a one-line attribute "why" after the game
+  (point 3); replay odds after late calls (point 6).
+
 ## Round 95 (done): what the plan did, and late calls worth deciding (engine 18)
 - After every game, the result card says the plan you started on and what it was worth before the game, as the card
   showed it, and why ("You started on Take risks: -5 before the game (43% to win, against 48% on Balanced), as the

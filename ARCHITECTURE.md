@@ -1,10 +1,11 @@
-# Sports Sims — architecture
+# Coach — architecture
 
-Orientation for any new session. Code: github.com/ianbott1/football-coach
-(branch main). Each game is one self-contained HTML file, no dependencies, no
-server, published on GitHub Pages at ianbott1.github.io/football-coach.
+Orientation for any new session. Code: github.com/ianbott1/coach (renamed from football-coach in round 96;
+branch main). Each game is one self-contained HTML file, no dependencies, no server, published on GitHub Pages at
+ianbott1.github.io/coach. The old address (ianbott1.github.io/football-coach) is a separate repo of forwarding pages.
+Saves live with the origin (ianbott1.github.io), so they survive the move.
 
-## The six games
+## The seven games
 
     game                   build            output (dist/)              sport layer   league
     College Football Coach python3 build.py football-coach.html        football      cfb
@@ -13,11 +14,12 @@ server, published on GitHub Pages at ianbott1.github.io/football-coach.
     Pro Basketball Coach   build.py nba     basketball-coach-pro.html  basketball    nba
     Pro Hockey Coach       build.py nhl     hockey-coach-pro.html      hockey        nhl
     Soccer Coach           build.py epl     soccer-coach.html          soccer        epl
+    Pro Baseball Coach     build.py mlb     baseball-coach-pro.html    baseball      mlb
 
-Publishing: `python3 build.py site` builds all six into dist/site/ with the
-landing page (src/landing.html) as index.html; copy that folder's files to
-the repo root and push. College football lives at football-coach.html (the
-root was college football until November 2026).
+Publishing: `python3 build.py site` builds all seven into dist/site/ with the
+landing page (src/landing.html, the Coach title page) as index.html; copy that folder's files (and version.json) to
+the repo root and push. The landing page's owls come from src/owls/ (node tools/owls.js after changing the owl art).
+College football lives at football-coach.html (the root was college football until November 2026).
 
 ## Three layers
 
@@ -406,6 +408,30 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
   the largest gives the point back.
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
+
+Round 96: Coach (Ian: the set is "Coach", its title page, and an address without "football"); the attribute grids
+(Grokbot's point 4).
+- The title page (src/landing.html): COACH, seven games and five sports (it said six sports), the seven owls on their perches
+  as links (src/owls/<league>.svg from each game's own LOGO, tools/owls.js; build.py fills <!--OWL:id-->), a card per game
+  with its owl. No horizontal scroll at 390 or 1280. Every game's title screen links back ("Coach · all seven games");
+  the build stamp moved under the restore button.
+- The address: the share card, each league's site line and the landing footer name ianbott1.github.io/coach and
+  github.com/ianbott1/coach. Ian renames the repo on GitHub; GitHub doesn't redirect a project site's old URL (docs:
+  renaming a repository), so a new repo named football-coach holds forwarding pages (index, each game's file, 404,
+  version.json with "moved" so an old open copy offers a reload; scratch r96/forward, football-coach-forward.bundle).
+- The 1-20 (core attrShow, display only): against every rostered player, not the starters, with soft ends:
+  10.5 + 9.5 tanh((v - m)/(1.55 s)), m and s fixed per league (ATTR_SHOW, measured once on every opening roster).
+  Before, 7-10% of the pro games' shown attributes read 1 (a Denver backup safety 1, 1, 1, 1 as "Lockdown corner")
+  and hockey's best read 18. After, over four seasons in all seven: 1s 0.0-0.1%, 19-20 2.3-4.4%, the league's best
+  players average 18.6-19.3 (test/attrs.js checks under 2%, 0.2-6%, 16.5+). Shapes, roles and every engine read the
+  rating scale, unchanged: the fast goldens match.
+- The grid: one list by band with a bar per attribute, each attribute's weight for his position beside it (pips: counts
+  most / more / less), heaviest first in each band, and the line says which count most ("Weighted for his position:
+  Hands and Speed count most, then Vision. His rating (84) is that weighted mix, so the 1-20s won't average to it").
+  The grids stay 2-8 attributes a position: more would need the engines to read them.
+- Not done from Grokbot's round 11 list (most of it was against round 92's builds: fit, reads graded on the panel and
+  named scorers came in rounds 93-94): a one-line attribute "why" on the post-game card (point 3); the replay odds after
+  late calls (point 6); the minor-fixes checklist, unverified on this build.
 
 Round 95: what the plan did, and an 80th minute worth deciding (engine 18 for soccer's and hockey's late calls; ENGINE_NOW 18).
 - College football's sim time back (round 94 left it 1.25-1.6x slower): fbFitOf parses a fit table's keys once (FB_FITK),
