@@ -409,6 +409,44 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 101: Full match as a match to watch (Ian: "it should be super interesting to watch full matches and as realistic as
+possible - in football manager I would do this all the time"; then "add a play-by-play engine").
+- The rule throughout: the engine still decides everything, with the same dice. What the screen shows is logged or built
+  from the engine's own record for the game on screen only (live.eng.plog), never with new draws; logs are stripped from
+  the save; the box score credits what the screen showed (d.pn, roster slots) only for stretches it showed, so a game not
+  watched in Full match, and every computer game, is unchanged (goldens identical in basketball, baseball, soccer, hockey).
+- Basketball: each possession logged in playSeg (d.pl: turnover, free throws, twos, threes, offensive boards, late-foul
+  trips) and played back possession by possession on core live.pb (offensive sets by style, off-ball movement, the
+  score held and moved as each basket drops; pause freezes it). The box credits the shown scorers' makes first.
+  test/bb-full.js.
+- Baseball: every at-bat and steal logged (D.pl) and played pitch to outcome, runners base to base; a call inside an inning
+  plays the inning up to it first (pbPartialStart, live.askPend). test/bs-full.js.
+- Soccer and hockey: a running clock (core hlEvPlan): the play between moments, then every goal and every counted shot
+  (hockey every save) as its clip at its own minute; the box credits each shown shooter. test/ev-full.js.
+- Football (72_highlights playsFor/stretch/series): a constrained play model inside each drive. From the engine's start to
+  its end spot: series of downs that move the chains (each one's last play crosses the line to gain, the ones before
+  don't), then for a kick, punt or turnover on downs a series that fails on third down and leaves the engine's fourth and
+  N (d.togo) at its spot; a fourth down made is played where it was made (d.cv). Runs, catches, incompletions, sacks,
+  scrambles, a second back about one carry in four, defensive flags that move the chains (pros 5 yards, college 10, 15
+  for a personal foul), each with its man named. Seeded from the drive's numbers. A fourth-down or two-point call now
+  shows the drive up to it first (core hlLeadUpStart, HL_SPORT.leadUp); the drive pushed after the answer starts from
+  the same numbers and skips what was shown (live.leadShown). The box for a watched game is the plays: passer
+  completions, attempts and yards, the back's carries and yards, each receiver's catches and yards; drives not shown
+  keep their share of the draw (teamLines). test/fb-full.js (browser): box equals plays, a skipped drive keeps nothing,
+  each lead-up is how its drive begins.
+- Engine record (no draws, results identical): a turnover on downs keeps its spot (d.stall), a made fourth down where it was
+  made (d.cv), an answered call the distance it was asked at (d.togo). A touchdown's yards never exceed the field the
+  drive had (driveScript caps the same draw at 100-start; it showed a 64-yard TD from their 30 about one TD in ten):
+  football goldens re-recorded, games, standings, polls and champions identical, stat lines and awards move.
+- Measured (scratch r101 fbplays.js, 16 games a league): plays add to the engine's spot in every drive, downs and
+  distance consistent. A watched pro box ~23/32 for ~220 passing, lead back ~19 for ~88 (the stat model: ~19/33 for 204,
+  17 for 74); college ~28/38 for ~270, back ~20 for ~96 (model 22/38 for 242, 18 for 76). 3rd-down conversions 40-44%,
+  ~2 flags and ~3.5 sacks a side.
+- Broken in the engine, not fixed: rollDrive draws a stalled drive's fourth and N apart from how far it got, so ~8% of
+  drives end on an impossible state (4th and 1 after 2 yards from a fresh first down). The plays show the nearest real
+  distance, so about 1 fourth-down call in 12 reads one distance and the drive shows another. Fix: draw togo from the
+  gain (togo >= 10 - gain from the last first down); an engine change with a version bump and calibration.
+
 Round 100: Grokbot's round 12 interim report (five games; soccer and baseball still under test). Ships with round 99.
 - Plan card against plan played (pro basketball, Grokbot: the card showed Work it inside at 55%, the game played Shorten
   the game at 32%). Reproduced (scratch r100 planreload.js): a plan change made mid-game is kept in S.planMid by game; a
