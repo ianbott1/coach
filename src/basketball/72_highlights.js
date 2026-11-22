@@ -6,6 +6,16 @@ const HL_SPORT=(function(){
   const PADX=0.03, PADY=0.05, RIM=[0.945,0.5];
   // attack frame: 0 the side's own baseline, 1 the one it attacks. PG, SG, SF, PF, C
   const ATT=[[0.64,0.5],[0.76,0.12],[0.77,0.88],[0.86,0.3],[0.9,0.66]];
+  const BENCH_P=[0,0.45,0.3,0.05,0,0.45,0.3,0.05];
+  /* who's on the floor for a stretch (round 80: starters open each half and close, the bench in for parts of each
+     quarter); the shooter's slot (si) is the man the run of play names. Round 100: the full match's play between the
+     moments uses it too, so every man there has his number and name (Grokbot: "a court of unnamed dots") */
+  function onFloor(team,salt,seg,bn,si,nm){ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
+    let h=0; for(const ch of team+salt)h=(h*31+ch.charCodeAt(0))>>>0;
+    return [0,1,2,3,4].map(i=>{ const st=hurt.has(i)?-1:i, b=R[bk(i)]&&!hurt.has(bk(i))?bk(i):-1;
+      if(i===si){ if(b>=0&&R[b].n===nm)return b; if(st>=0)return st; return b>=0?b:i }
+      const x=(((h+i*97+(seg+1)*53)%100)+0.5)/100, benchIn=bn||(seg>=0&&x<(BENCH_P[seg%8]||0));
+      return st<0?(b>=0?b:i):benchIn&&b>=0?b:st }) }
   function clips(L,d,mode){
     const g=L.g, out=[];
     if(d.seg==="last"){ out.push(mk(L,{k:d.made?"last":"lastmiss",side:d.side,u:(d.sh*7+d.sa*13)%100,choice:d.choice,m:"0:04"},d)); return out }
@@ -44,13 +54,7 @@ const HL_SPORT=(function(){
     // in for the late first and third quarters and the start of the second and fourth (about the bench's fifth of the
     // minutes), each position on its own rhythm; the shooter's man is the one the run of play names, starter or backup
     const opp=e.side==="home"?g.away:g.home, seg=d&&typeof d.seg==="number"?d.seg:-1;
-    const BENCH_P=[0,0.45,0.3,0.05,0,0.45,0.3,0.05];
-    const floor=(team,salt,shooter,bn)=>{ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
-      let h=0; for(const ch of team+salt)h=(h*31+ch.charCodeAt(0))>>>0;
-      return [0,1,2,3,4].map(i=>{ const st=hurt.has(i)?-1:i, b=R[bk(i)]&&!hurt.has(bk(i))?bk(i):-1;
-        if(shooter&&i===idx){ const n=nm; if(b>=0&&R[b].n===n)return b; if(st>=0)return st; return b>=0?b:i }
-        const x=(((h+i*97+(seg+1)*53)%100)+0.5)/100, benchIn=bn||(seg>=0&&x<(BENCH_P[seg%8]||0));
-        return st<0?(b>=0?b:i):benchIn&&b>=0?b:st }) };
+    const floor=(team,salt,shooter,bn)=>onFloor(team,salt,seg,bn,shooter?idx:-1,nm);
     const an=hlNamed(tm,floor(tm,"a",true,bnA)), dn=hlNamed(opp,floor(opp,"d",false,bnD)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[e.side==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[e.side==="home"?1:0],list:dn.filter(Boolean)}];
     return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,an,dn,legend,
@@ -118,15 +122,20 @@ const HL_SPORT=(function(){
         att=set.map((p,i)=>[hlLerp(fromA[i][0],p[0],e),hlLerp(fromA[i][1],p[1],e)]); def=def.map((p,i)=>[hlLerp(fromD[i][0],p[0],e),hlLerp(fromD[i][1],p[1],e)]); ball=[att[0][0]-0.015,att[0][1]] }
       return {home,att,def,ball,air:j>0&&ph<0.32&&tIn>=TR,up:tIn<TR} };
     const b=at(now), c={home:b.home}, kits=hlKits(g.home,g.away), r=Math.max(5,W/80), ink=kits[b.home?0:1].fill, dink=kits[b.home?1:0].fill;
-    b.def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",null) });
-    b.att.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",null) });
+    // the men on the floor now: the stretch being played, the bench in when the last one ended with it on (d.bn)
+    const seg=live.drives.length, ld=live.drives[seg-1], aT=b.home?g.home:g.away, dT=b.home?g.away:g.home, aS=b.home?"home":"away", dS=b.home?"away":"home";
+    const key=seg+"|"+aT, CA=ambient._c=ambient._c&&ambient._c.k===key&&ambient._c.L===live?ambient._c:{k:key,L:live,
+      an:hlNamed(aT,onFloor(aT,"a",seg,!!(ld&&ld.bn&&ld.bn[aS]),-1,"")),dn:hlNamed(dT,onFloor(dT,"d",seg,!!(ld&&ld.bn&&ld.bn[dS]),-1,""))};
+    const scr=b.att.map(p=>P(W,H,c,p[0],p[1])), crowd=(px,py)=>scr.some(q=>Math.abs(q[0]-px)<r*5&&Math.abs(q[1]-py)<r*2.6);
+    b.def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=CA.dn[i]; hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:crowd(px,py)?"":q[1]}:null) });
+    b.att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=CA.an[i]; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:q[1]}:null) });
     // round 99 (Ian: "still not seeing dribbling"): a ball in a man's hands is dribbled: it bounces at his side, the
     // shadow on the floor, quicker on the move up the floor
     let [qx,qy]=P(W,H,c,b.ball[0],b.ball[1]); const held=!b.air, bo=held?Math.abs(Math.sin(now/(b.up?120:150)))*r*1.3:0;
     if(held){ qx+=(b.home?1:-1)*r*0.15; qy+=r*0.75 }
     hlBall(x,qx,qy,r*0.62,bo,null,{fill:"#E8702A",ring:"#2a1406"});
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, SG=typeof SEGS!=="undefined"?SEGS:8, q=Math.min(4,Math.floor(live.drives.length*4/SG)+1);
-    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:"Q"+q});
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||"Q"+q});
   }
   function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){

@@ -164,14 +164,23 @@ const HL_SPORT=(function(){
     const A5=lag(five), C5=lag(chk), ka=kits[home?0:1], kc=kits[home?1:0];
     // the goalies: on their lines, square to the puck
     [[GOAL,0],[1-GOAL,1]].forEach(([gx,ti],j)=>{ const [px,py]=RP(gx,0.5+(puckY-0.5)*0.12); hlPlayer(x,px,py,r,hlKit("",gks[ti]),{dir:Math.atan2(qy-py,qx-px)}) });
-    C5.forEach(p=>{ const [px,py]=RP(p[0],p[1]); hlPlayer(x,px,py,r,kc,{dir:Math.atan2(qy-py,qx-px)}) });
+    // round 100 (Grokbot: "some frames still show unnamed dots"): every skater by number and name. The five out there
+    // change by possession, the second unit about a third of them; a hurt man's line-mate takes his place
+    const nP=typeof POS!=="undefined"?POS.length:6, bkI=i=>typeof BK==="function"?BK(i):i+nP;
+    const fiveOf=(team,k,salt)=>{ const R=(SEA.roster&&SEA.roster[team])||[], H=new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]?SEA.talent.active(team).map(q=>q.idx):[]);
+      const l=((k*7+salt)%3)===2?1:0, pk=i=>{ const j=l?bkI(i):i, o=l?i:bkI(i); return R[j]&&!H.has(j)?j:R[o]&&!H.has(o)?o:j };
+      return hlNamed(team,[pk(3),pk(4),pk(0),pk(1),pk(2)]) };
+    const aT=home?g.home:g.away, cT=home?g.away:g.home, ck=(s.k||0)+"|"+aT;
+    const NM=ambient._n=ambient._n&&ambient._n.k===ck&&ambient._n.L===live?ambient._n:{k:ck,L:live,a:fiveOf(aT,s.k||0,1),c:fiveOf(cT,s.k||0,2)};
+    const lab=q=>q?{num:q[0],sub:q[1]}:{};
+    C5.forEach((p,i)=>{ const [px,py]=RP(p[0],p[1]); hlPlayer(x,px,py,r,kc,Object.assign({dir:Math.atan2(qy-py,qx-px)},lab(NM.c[i]))) });
     A5.forEach((p,i)=>{ let [px,py]=RP(p[0],p[1]); const on=s.who===i;
       if(on){ const back=home?1:-1; px=qx+back*r*1.2; py=qy+Math.sin(now/110)*r*0.25 }   // on his stick, worked side to side
-      hlPlayer(x,px,py,r,ka,{dir:on?(home?Math.PI:0):Math.atan2(qy-py,qx-px)}) });
+      hlPlayer(x,px,py,r,ka,Object.assign({dir:on?(home?Math.PI:0):Math.atan2(qy-py,qx-px)},lab(NM.a[i]))) });
     if(s.who>=0){ qy+=Math.sin(now/110)*r*0.45 }   // stickhandling: the puck moves on his blade
     hlBall(x,qx,qy,r*0.5,0,null,{kind:"puck"});
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, m=Math.min(60,live.drives.length*5);
-    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'"});
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||(m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'"});   // round 100: the header's clock when it holds one (it read 6', the rink 10')
   }
   function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){
