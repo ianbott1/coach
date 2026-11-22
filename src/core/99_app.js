@@ -106,7 +106,13 @@ function startLive(g,step,slot){
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):oj>=0?"balanced":cpuPlanOf(opponentOf(g),userIsHome?e.a-e.h:e.h-e.a);   // round 89: the computer's plan for its shape
   const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step):undefined;
-  const ckey0=callKey(step)+(slot?"#"+slot:""), pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
+  const ckey0=callKey(step)+(slot?"#"+slot:"");
+  let pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
+  // round 100: the game starts on the plan its card shows. A change of your own made before the first possession of
+  // a game begun again (a reload, a quit) is a pregame choice, and the card has the say now (Grokbot: the card
+  // showed Work it inside at 55%, the game played Shorten the game at 32%, and it was lost)
+  if(!h2h&&pm.length){ const side=userIsHome?"home":"away", kept=pm.filter(x=>!(x[0]===0&&x[1]===side));
+    if(kept.length!==pm.length){ pm=kept; S.planMid=S.planMid||{}; S.planMid[ckey0]=pm.map(x=>x.slice()) } }
   live={pm:pm,g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
@@ -3989,6 +3995,11 @@ function renderTitle(){
 
 function renderSetup(){
   const rng=new RNG(Date.now()&0xffff);
+  // round 100: whatever redraws this screen, what's typed so far stays, with the caret where it was (Grokbot typed
+  // "Ian Bott" and three games kept "Ian Bot", "Ian" and "n")
+  const was=document.activeElement, wasId=was&&was.id, wasCo=was&&was.dataset&&was.dataset.coname, caret=was&&was.selectionStart;
+  const old=el("cname"); if(old)S.setup.name=old.value;
+  document.querySelectorAll("[data-coname]").forEach(x=>{ S.setup.names=S.setup.names||[]; S.setup.names[+x.dataset.coname]=x.value });
   el("app").innerHTML=`<div class="setupwrap">
     ${LOGO}
     <div class="kicker">New career</div>
@@ -4015,8 +4026,12 @@ function renderSetup(){
     <div class="titlebtns"><button class="advance" id="cgo">Choose your ${ORG_WORD}</button>
       <button class="introskip" id="cback">Back</button></div>
   </div>`;
+  el("cname").oninput=e=>{ S.setup.name=e.target.value };
+  document.querySelectorAll("[data-coname]").forEach(x=>x.oninput=()=>{ S.setup.names=S.setup.names||[]; S.setup.names[+x.dataset.coname]=x.value });
+  { const back=wasId==="cname"?el("cname"):wasCo?document.querySelector(`[data-coname="${wasCo}"]`):null;
+    if(back){ back.focus(); try{ const c=caret==null?back.value.length:Math.min(caret,back.value.length); back.setSelectionRange(c,c) }catch(e){} } }
   el("cback").onclick=()=>toTitle();
-  el("crand").onclick=()=>{S.setup.name=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
+  el("crand").onclick=()=>{S.setup.name=el("cname").value=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
   const grab=()=>{
     S.setup.name=(el("cname").value||"").trim()||rng.pick(COACH_FIRST)+" "+rng.pick(LAST);
     S.setup.seed=parseInt(el("cseed").value,10)||123456;
