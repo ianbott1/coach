@@ -411,15 +411,16 @@ Round 95: what the plan did, and an 80th minute worth deciding (engine 18 for so
 - College football's sim time back (round 94 left it 1.25-1.6x slower): fbFitOf parses a fit table's keys once (FB_FITK),
   the same sum in the same order. A fast golden season 11.4-12.3s against 14.4-16.2 (round 93 10.8-11.0); both footballs'
   full goldens and hot seats identical.
-- After the game, the plan (Grokbot's point 3): the result card opens its audit with the plan you kicked off with, its
-  worth before kickoff as the card showed it and why ("You kicked off on Take risks: -5 before kickoff (43% to win,
+- After the game, the plan (Grokbot's point 3): the result card opens its audit with the plan you started on, its
+  worth before the game as the card showed it and why ("You started on Take risks: -5 before the game (43% to win,
   against 48% on Balanced), as the better side tonight. Play it safe would have been +4."). Kept when the game starts
   (doAdvance planPreKeep, S.planPre, this season only, checked against the card's opponent), so it never reads a later
   step's injuries; on Balanced it names what the best other plan would have added; a change during the game is said;
   simmed single games too, none for games simmed ahead on the assistant's plan or in a hot seat. No verdict on whether
   the plan "worked" tonight: a plan's extra is a fraction of a score a game, one box score is luck. test/plan-line.js
-  (quick tier): all seven, 58 games, the card's number before kickoff equals the line's, and it is in the save.
-  PLANLINE_ON=0 matches round 94's fast goldens.
+  (quick tier): all seven, 58 games, the card's number before the game equals the line's, and it is in the save.
+  PLANLINE_ON=0 matches round 94's fast goldens. First worded "kicked off ... before kickoff" in every sport: wrong-sport
+  caught it in the five non-football games (9 to 324 times a season); now "started on ... before the game".
 - Late calls, measured (Grokbot's point 6; scratch r95 lc.js: engine games at random gaps, each option played on from
   the call on fresh luck, 300 runs an option, hundreds of calls a kind). Most late calls were one of two kinds. Quizzes,
   one answer always best: soccer's 80' in every state (down one push 180 of 180, up one sit 180 of 182, level go for the
@@ -453,7 +454,7 @@ Round 95: what the plan did, and an 80th minute worth deciding (engine 18 for so
 - Checks: sim parity MATCH (hockey -1.3, soccer +0.4); hk-reads MATCH; sc-decisions MATCH; ENGINE_NOW=17 matches round
   94's fast goldens in all seven; at 18 the other five games differ by the universe's engine stamp only. engine-replay
   replays round 94 (796a941, engine 17). Soccer's evidence rows keep their label at phone width ("Now1st, level", since
-  round 44).
+  round 44). Full suite 129 of 129.
 
 Round 94: plans you can feel (engine 17, all seven; ENGINE_NOW 17). Ian, after Grokbot's point 1 ("make roster fit move the
 win chance in every game, and show why"): about 8 points of win chance at even for a roster one league spread off the

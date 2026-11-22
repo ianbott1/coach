@@ -1,6 +1,6 @@
-/* Round 95 (Grokbot's point 3): after the game, the plan you kicked off with and its worth as the card showed it before
-   kickoff. In all seven, nine games each on the three plans: the number on the result card equals the card's number
-   before kickoff (each plan's chance less Balanced's, as rounded on screen), and it is in the save.
+/* Round 95 (Grokbot's point 3): after the game, the plan you started on and its worth as the card showed it before
+   the game. In all seven, nine games each on the three plans: the number on the result card equals the card's number
+   before the game (each plan's chance less Balanced's, as rounded on screen), and it is in the save.
      node test/plan-line.js [game prefix]    last line: MATCH or MISMATCH */
 const path=require('path'); const {load}=require('./harness.js');
 const D=f=>path.join(process.env.DIST||path.join(__dirname,'..','dist'),f);

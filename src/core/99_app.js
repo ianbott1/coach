@@ -2115,8 +2115,8 @@ function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P
     return `<div class="pland planfit">${t}</div>` }
   if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
   return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
-/* round 95 (Grokbot's point 3: after the game, what the plan did): the plan you kicked off with, its worth as the card
-   showed it before kickoff, and why: kept with the game when it starts (doAdvance), so the line after the game reads the
+/* round 95 (Grokbot's point 3: after the game, what the plan did): the plan you started on, its worth as the card
+   showed it before the game, and why: kept with the game when it starts (doAdvance), so the line after the game reads the
    same number as the card did, not one worked out again from a later step's injuries and roster. One night's box score is
    mostly luck, so the line gives no verdict on whether the plan "worked" tonight; a sport's plain box fact sits beside it
    where it has one (sportPlanFact). PLANLINE_ON off: nothing is kept or shown. */

@@ -126,6 +126,18 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 95 (done): what the plan did, and late calls worth deciding (engine 18)
+- After every game, the result card says the plan you started on and what it was worth before the game, as the card
+  showed it, and why ("You started on Take risks: -5 before the game (43% to win, against 48% on Balanced), as the
+  better side tonight. Play it safe would have been +4."). All seven; no verdict on one night's luck.
+- Late calls measured: most were quizzes (one answer always best) or coin flips. Soccer's 80th minute rebuilt as a read
+  of their back line's legs (shown on the call, a little off): go at them, keep the ball, take the point or park the
+  bus. The options now differ (8.4 points apart when level); reading the legs adds under a point over the best answer.
+- Hockey's late decision is the ten-minute third-period read (18 of 18 close finishes asked it); the pull stays a quiz.
+- College football's sim speed back to about round 93's.
+- Not done: hockey graded in standings points; football's tied call (a 7-10 point quiz); the other small quizzes.
+- Next: the Coach rename, title page and the game page; the odd attribute grids.
+
 ## Round 94 (done): plans you can feel (engine 17, all seven)
 - A plan suited to the roster is worth about 8 points of win chance at even for a roster one league spread off average,
   held to 15; the wrong plan costs as much. The extra plays through each sport's own events, so box scores carry it.
