@@ -506,6 +506,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
   55%{transform:translateY(0) rotate(5deg)}
   80%{transform:translateY(-2px) rotate(-2deg)}
   100%{transform:translateY(0) rotate(0)}}
+.golink{cursor:pointer;color:inherit;text-decoration:none;border-radius:3px}.golink:hover,.golink:focus-visible{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;outline:none}
+.stats .golink{display:block}
 .family{align-self:flex-start;margin:18px 0 4px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-decoration:none}
 .family b{color:var(--sodium);font-weight:600}.family:hover,.family:focus-visible{color:var(--bone)}
 .owlstage{position:relative;display:inline-block}
@@ -863,7 +865,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .zkey{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
 /* the momentum bar (soccer) */
 .evid{margin:12px 16px 0;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}
-.evh{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:8px}
+.evh{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:8px;display:flow-root}   /* round 100: the float stays in the heading (soccer's table row wrapped round it, a word a line on a phone) */
 .evh span{color:var(--muted);float:right;letter-spacing:.06em}
 .evr{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid rgba(42,49,69,.55);font-size:13.5px}
 .evr .evv{font-family:var(--mono);color:var(--bone);text-align:right}.evr .evk{flex:none}
@@ -947,6 +949,8 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 .achstar{color:#E8C547;font-size:15px}.ach b{display:block;font-family:var(--cond);font-size:14.5px;text-transform:uppercase}
 .ach span{display:block;font-size:11px;color:var(--muted);line-height:1.35}
 .quickstart{display:block;width:100%;margin:22px 0 4px}
+.advance small.advplan{display:block;font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:none;opacity:.75;margin-top:2px}
+@media (max-height:520px){.advance small.advplan{display:none}}   /* a short window (a laptop zoomed to 300%): the bar stays under a fifth of it */
 .quickstart small{display:block;font-family:var(--sans,inherit);font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;opacity:.8;margin-top:4px}
 .firstjobs{display:flex;flex-direction:column;gap:7px;padding:0 16px 8px}
 .pick.firstjob{display:grid;grid-template-columns:14px 1fr;grid-template-rows:auto auto auto;column-gap:9px;text-align:left;padding:11px 12px}
@@ -1014,7 +1018,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="ac30027";
+<script>const BUILD_ID="72c439b";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -5613,7 +5617,8 @@ const HL_SPORT=(function(){
   const DEF=[[1,0.42],[1,0.47],[1,0.53],[1,0.58],[4.5,0.35],[4.5,0.5],[4.5,0.65],[6,0.1],[6,0.9],[12,0.32],[12,0.68]];
   /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
   // round 72: the header names the drive a clip shows (it named the drive before it until the clip was over)
-  function clips(L,d,mode){ const out=clips0(L,d,mode), n=(L.drives||[]).indexOf(d);
+  function clips(L,d,mode){ let out=clips0(L,d,mode); const n=(L.drives||[]).indexOf(d);
+    if(mode==="full"){ const dc=mkDrive(L,d,out); if(dc)out=[dc].concat(out) }   // round 99: the drive itself, play by play
     out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
@@ -5638,15 +5643,27 @@ const HL_SPORT=(function(){
   // linebacker, corner, safety); the rest of the eleven take free numbers in their position's range. Key below.
   const OFF_SL={0:0,1:1,2:2,3:3,8:4}, DEF_SL={0:5,1:6,5:7,7:8,9:9};
   const FILL_O=[null,null,null,null,85,11,72,64,null,61,77], FILL_D=[null,null,97,94,52,null,45,null,24,null,31];
+  /* round 99 (Muse: after "rest your starters" the clips still named the starters): from the drive after you rest them,
+     your side's tracked men are their backups */
+  let REST=false;
   function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={};
-    Object.keys(SL).forEach(k=>{ const i=hlFit(team,SL[k]); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
+    Object.keys(SL).forEach(k=>{ let i=hlFit(team,SL[k]); if(REST&&team===S.myTeam&&typeof BK==="function"&&R[BK(SL[k])])i=hlFit(team,BK(SL[k])); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
     nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
-  function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
+  /* round 99 (Ian: "still can't see players numbers on field goal kicks"): the kicking unit wears numbers. The roster
+     carries no kicker, holder or snapper, so they take numbers no one on the roster wears (the kicker the one named by
+     kickerName, a single digit or teens; the holder a backup's number in the teens; the line from the 50s-70s), the same
+     every time for a club; the rush is the defense's numbers. */
+  function stNums(team){ const R=(SEA.roster&&SEA.roster[team])||[], used={}; R.forEach((p,i)=>{ if(p){ const n=shirtNo(team,i); if(n!=null)used[n]=1 } });
+    const h=strHash("st|"+team), pick=(lo,hi,k)=>{ const span=hi-lo+1; for(let j=0;j<span;j++){ const v=lo+((h+k*31+j*7)%span); if(!used[v]){ used[v]=1; return v } } return lo };
+    return {k:pick(1,19,1), h:pick(10,19,2), line:[0,1,2,3,4,5,6,7,8].map(j=>pick(50,79,3+j))} }
+  function base(L,d){ REST=!!(L&&L.restAt!=null&&L.drives&&L.drives.indexOf(d)>=L.restAt); const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
   function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(97,d.stall||75));
     // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)
     const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
-    return Object.assign(base(L,d),{kind:good?"fg":"miss",los,kicker:typeof kickerName==="function"?kickerName(d.home?L.g.home:L.g.away):null,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
+    const B=base(L,d), team=d.home?L.g.home:L.g.away, st=stNums(team), kn=typeof kickerName==="function"?kickerName(team):null;
+    B.legend=[{team,kit:B.kits[d.home?0:1],list:[[st.k,kn?String(kn).split(" ").slice(-1)[0]:"K"],[st.h,"holder"]]},B.legend[1]];
+    return Object.assign(B,{st,kind:good?"fg":"miss",los,kicker:kn,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
       endY:good?0.5+wide*(0.005+r()*0.03):0.5+wide*(0.085+r()*0.05),startY:hook?(good?0.5+wide*0.09:0.5-wide*0.02):0.5,base:3400,reveal:0.82}) }
   function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.lost||d.stall||50)), len=Math.round(3+r()*8);
     const m=/recovered by (.*)$/.exec(rowText(L,d));
@@ -5761,9 +5778,10 @@ const HL_SPORT=(function(){
       bx=hlLerp(holder[0],111,s); const k=Math.min(1,s), path=c.hook?hlLerp(hlLerp(0.5,sy,Math.min(1,k*1.6)),ey,Math.pow(k,2.4)):hlLerp(0.5,ey,k); by=path; z=Math.max(0,Math.sin(Math.min(1,s)*Math.PI*0.95))*0.06 }   // low again by the posts, so where it crosses reads plainly
     if(t>=snap&&t<kick){ const s=(t-snap)/(kick-snap); if(s<0.4){ bx=hlLerp(c.los,holder[0],s/0.4) } }
     const line=[0.38,0.42,0.46,0.5,0.54,0.58,0.62,0.34,0.66];
-    line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
-    [holder,kicker].forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
-    line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
+    const st=c.st||{k:null,h:null,line:[]};
+    line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",st.line[i]!=null?{num:st.line[i]}:null) });
+    [[holder,st.h,"H"],[kicker,st.k,"K"]].forEach(([p,n,lab])=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",lab,n!=null?{num:n}:null) });
+    line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[i%c.defN.length]}:null) });
     // the uprights, drawn over everything so the ball is plainly inside them or not
     { const a=P(W,H,c,110,0.45), b=P(W,H,c,110,0.55), a0=P(W,H,c,96,0.45), b0=P(W,H,c,96,0.55); x.save();
       // the window between the uprights, marked back up the field so the ball's line through it (or not) is plain
@@ -5783,8 +5801,45 @@ const HL_SPORT=(function(){
     const end=t>=tEnd?(c.kind==="fg"?"IT'S GOOD!":"NO GOOD! Wide "+(c.wide*(c.home?-1:1)>0?"left":"right")):null;
     hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null);
   }
+  /* ---- round 99 (Ian: "they should look like I showed up to watch the match"): in Full match every drive is played on
+     the field, snap by snap, from where it started to where it ended (the spot its outcome clip starts from, or where it
+     stalled), with the down and distance on the caption and the chains moving. The engine plays a drive as one roll, so
+     the plays inside it are drawn (from the drive's own number, no game dice) to add up to the real start and end; how
+     the drive ended (a touchdown, a kick, a punt, a pick, a turnover on downs) still plays as its own clip after it. */
+  function mkDrive(L,d,next){ if(d.start==null)return null; const nx=next&&next[0], start=Math.max(1,Math.min(95,d.start));
+    let end=nx&&nx.los!=null?nx.los:d.kind==="TD"?100:(d.stall!=null?d.stall:d.lost!=null?d.lost:start+3); end=Math.max(start,Math.min(99,end));
+    if(nx&&nx.kind==="td"&&nx.len!=null)end=Math.max(start,Math.min(99,nx.los));
+    const r=mulberry32(((d.n||1)*104729+start*131+(d.home?7:13))>>>0), yds=end-start, np=Math.max(3,Math.min(9,Math.round(yds/7)+2+Math.floor(r()*2)));
+    // gains that add up to the drive's yards: some short, some long, the odd one for nothing
+    let w=[...Array(np)].map(()=>{ const u=r(); return u<0.18?0:u<0.6?1+r()*2:2+r()*5 }), sw=w.reduce((a,b)=>a+b,0)||1;
+    let gains=w.map(v=>Math.round(v/sw*yds)); let diff=yds-gains.reduce((a,b)=>a+b,0); gains[gains.length-1]+=diff;
+    // downs: first and ten, chains moving on every ten gained; a drive the engine ended on a fourth down shows its last snap as third
+    const plays=[]; let spot=start, down=1, mark=start+10;
+    gains.forEach((g,i)=>{ plays.push({from:spot,g,down,togo:Math.max(1,Math.min(mark,100)-spot),pass:r()<0.55}); spot+=g; if(spot>=mark){ down=1; mark=spot+10 } else down=Math.min(3,down+1) });
+    if(!plays.length)return null;
+    return Object.assign(base(L,d),{kind:"drive",plays,start,end,base:Math.min(7800,plays.length*820),reveal:0.999}) }
+  function driveFrame(x,W,H,c,t){
+    const n=c.plays.length, f=Math.min(0.9999,t)*n, i=Math.floor(f), u=f-i, pl=c.plays[i], r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const snap=0.2, done=0.85, s=Math.max(0,Math.min(1,(u-snap)/(done-snap))), e=hlEase(s), los=pl.from, gain=pl.g;
+    // the chains: the line to gain in yellow, the line of scrimmage in blue
+    { const a=P(W,H,c,los,0.02), b=P(W,H,c,los,0.98), g1=P(W,H,c,Math.min(100,los+pl.togo),0.02), g2=P(W,H,c,Math.min(100,los+pl.togo),0.98); x.save(); x.lineWidth=Math.max(2,W/260);
+      x.strokeStyle="rgba(80,150,255,.85)"; x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); if(los+pl.togo<100){ x.strokeStyle="rgba(242,210,75,.9)"; x.beginPath(); x.moveTo(g1[0],g1[1]); x.lineTo(g2[0],g2[1]); x.stroke() } x.restore() }
+    let bx=los, by=0.5, z=0; const tgt=los+gain, lane=0.5+((i*37)%5-2)*0.09;
+    const carrier=pl.pass?[hlLerp(los-0.5,tgt,e),hlLerp(i%2?0.12:0.88,lane,Math.min(1,e*1.3))]:[hlLerp(los-7,tgt,e),hlLerp(0.5,lane,Math.min(1,e*1.5))];
+    if(u<snap){ bx=los; by=0.5 } else if(pl.pass){ const th=0.35; if(s<th){ bx=los-5-s*4; by=0.5 } else { const k=(s-th)/(1-th); bx=hlLerp(los-6,carrier[0],Math.min(1,k*1.6)); by=hlLerp(0.5,carrier[1],Math.min(1,k*1.6)); z=k<0.6?Math.sin(k/0.6*Math.PI)*0.05:0 } }
+    else { bx=carrier[0]; by=carrier[1] }
+    const off=OFF.map((p,j)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ if(pl.pass&&j===(i%2?2:3))return carrier; if(!pl.pass&&j===1)return carrier; if(j>=6)yd+=s*1.2; else if(j>=2)yd+=s*Math.min(8,gain*0.6) } return [yd,y] });
+    const def=DEF.map((p,j)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ const k=j<4?0.2:0.5*s; yd=hlLerp(yd,bx,k*0.7); y=hlLerp(y,by,k) } return [yd,y] });
+    if(u>=done){ const q=carrier, j=pl.pass?7:5; def[j]=[q[0]+0.6,q[1]+0.02] }   // and he's brought down
+    def.forEach((p,j)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[j]}:null) });
+    off.forEach((p,j)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",c.offN?{num:c.offN[j]}:null) });
+    const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+    const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
+    const res=u>=done?(gain>0?`${pl.pass?"Pass":"Run"} for ${gain}`:gain<0?`Loss of ${-gain}`:"No gain"):null;
+    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} \u00b7 ${c.tm} \u00b7 ${ord} & ${togo} at ${spotTxt}`,res,null) }
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
+    if(c.kind==="drive")return driveFrame(x,W,H,c,t);
     if(c.kind==="fg"||c.kind==="miss")return kickFrame(x,W,H,c,t);
     if(c.kind==="punt")return puntFrame(x,W,H,c,t);
     const sf=(c.f||0.86)/0.86, snap=0.18*sf, throwT=0.5*sf, tEnd=0.86*sf;   // (round 80: a pick with a return catches earlier)
@@ -5819,9 +5874,15 @@ const HL_SPORT=(function(){
       if(t>tEnd){ const u=(t-tEnd)/(1-tEnd), run=c.ret!=null?c.ret:12, cy=tg[0]+0.8-hlEase(u)*run, cyl=hlLerp(tg[1],0.5,hlEase(u)*0.5); def[j]=[cy,cyl]; bx=cy; by=cyl; z=0;
         // round 80: the passing side gives chase, his own men run with him
         if(c.ret!=null){ off.forEach((p,i)=>{ const k=u*(i<2||i>=6?0.35:0.6); off[i]=[hlLerp(p[0],cy+2+(i%4)*1.2,k),hlLerp(p[1],cyl+((i%3)-1)*0.09,k)] });
-          def.forEach((p,i)=>{ if(i!==j){ const k=u*0.3; def[i]=[hlLerp(p[0],cy-2-(i%3)*1.5,k),hlLerp(p[1],cyl+((i%2)?0.14:-0.14),k)] } }) } } }
+          def.forEach((p,i)=>{ if(i!==j){ const k=u*0.3; def[i]=[hlLerp(p[0],cy-2-(i%3)*1.5,k),hlLerp(p[1],cyl+((i%2)?0.14:-0.14),k)] } })
+          /* round 99 (Ian: "not clear that a player gets tackled"): a man from the passing side cuts across, meets him where he
+             is downed and brings him down: the quarterback on a long return (he is the last man back), the intended receiver
+             on a short one. Not on a return to the end zone. */
+          if(c.retEnd>0&&c.retEnd<100){ const ti=run>12?0:c.rcv, endY=tg[0]+0.8-run, meet=0.82, from=off[ti], v=Math.min(1,u/meet);
+            off[ti]=u<meet?[hlLerp(from[0],endY-0.9,hlEase(v)),hlLerp(from[1],cyl,hlEase(v))]:[cy-0.55,cyl+0.01];
+            c._tk=u>=meet?ti:-1 } } } }
     const r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    const tag=i=>!(c.kind==="int"&&t>tEnd)&&t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
+    const tag=i=>c.kind==="int"&&t>tEnd&&c._tk===i?"TACKLE":!(c.kind==="int"&&t>tEnd)&&t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
     const dtag=i=>c.kind==="int"&&t>tEnd&&i===(c.rcv===2?7:8)?"INT":"";   // round 80: the man running it back
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)",dtag(i),c.defN?{num:c.defN[i]}:null) });
     off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i),c.offN?{num:c.offN[i]}:null) });
@@ -5833,7 +5894,8 @@ const HL_SPORT=(function(){
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink);
   }
   const headClock=c=>c&&c.hd||null;
-  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns"};
+  return {replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
+           clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns"};
 })();
 /* Football's big moments (round 73, core 96_moments): the drive that won it late, from behind or level. From the
    game's own drives; the words are the drive chart's, so the card and the chart name the same man. */
@@ -5917,7 +5979,18 @@ function driveScript(g,drives,rosters){
                 DOWNS:["turned over on downs"],MISS:["the field goal is no good"],   // a field goal: "the kick" read as a missed extra point (Grokbot)
                 INT:["threw an interception"],FUM:["fumble, recovered by the defense"]};
   const tot=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24;
-  return drives.map((d,di)=>{
+  // round 100: a game being played has no d.by yet (the season credits it at the end), so the line named an injured
+  // starter while the box score named his backup (Grokbot: a receiver out for 14 weeks caught a 64-yard touchdown).
+  // Until it's credited, the same rule the season uses (_creditV4, teamLines): a hurt man's backup plays his slot.
+  const liveBy=!rosters&&typeof SEA!=="undefined"&&SEA&&SEA.talent&&typeof BK==="function"&&!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4);
+  const byFor=d=>{ if(d.by||!liveBy)return d.by; const o={};
+    const side=(tm,R,keys,bks,pre)=>{ if(!R)return; const hurt=new Set(SEA.talent.active(tm).map(x=>x.idx)), act=new Set(POS.map((P,i)=>hurt.has(i)?R[BK(i)]:R[i]).filter(Boolean));
+      keys.forEach(i=>{ const p=hurt.has(i)?R[BK(i)]:R[i]; if(p)o[pre+i]=p.n }); bks.forEach(i=>{ const p=R[i]; if(p&&!act.has(p))o[pre+i]=p.n }) };
+    side(d.home?g.home:g.away,d.home?RH:RA,[0,1,2,3],[BK(2),BK(3)],"");
+    side(d.home?g.away:g.home,d.home?RA:RH,[7,8,9],[BK(8),BK(9)],"d");
+    return o };
+  return drives.map((d0,di)=>{
+    const d=d0.by||!liveBy?d0:Object.assign({},d0,{by:byFor(d0)});
     const off=d.home?RH:RA, def=d.home?RA:RH;
     // round 74: the names the season credited, if it has (d.by: whoever played that day, an injured starter's backup)
     const nm=i=>d.by&&d.by[i]?d.by[i]:off&&off[i]?off[i].n:"the offense";
@@ -7801,7 +7874,7 @@ function attrGridHTML(p){
   const how=`Weighted for his position: ${most.map(nm).join(" and ")} count${most.length>1?"":"s"} most${byW.length>most.length+1?`, ${nm(least)} least`:byW.length>most.length?`, then ${nm(least)}`:""}.`;
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
     <div class="attrgrid">${rows}</div>
-    <div class="fnote" style="margin:4px 0 10px">${how} His rating (${p.r}) is that weighted mix, so the 1-20s won't average to it: they show where he leans, against every player in the league${attrPlays()?", and each plays in the game as it says":"; in this game they don't change how he plays yet, only how he develops"}.${was?" Arrows: last summer.":""}</div>` }
+    <div class="fnote" style="margin:4px 0 10px">${how} His rating (${p.r}) is that weighted mix, so the 1-20s won't average to it: they show where he leans, against every player in the league${attrPlays()?", and each plays in the game as it says":"; this season began on an older version of the game, so they shape how he develops but not how he plays until next season"}.${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){
@@ -7815,7 +7888,7 @@ function attrTeamShape(t){
   return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }
 function attrShapeHTML(t){ const S0=attrTeamShape(t); if(!S0)return "";
   const nm=x=>`${esc(ATTRS.name[x.k])} ${ordinal(x.r)}`;
-  return `<div class="note"><b>Your shape:</b> ${S0.best.map(nm).join(", ")} of ${S0.n}${S0.worst&&S0.best.indexOf(S0.worst)<0?`; ${nm(S0.worst)}`:""}. ${attrPlays()?"Each plays in the game as its name says.":"For now they show who your players are and how they'll grow; this game's engine doesn't read them yet."}</div>` }
+  return `<div class="note"><b>Your shape:</b> ${S0.best.map(nm).join(", ")} of ${S0.n}${S0.worst&&S0.best.indexOf(S0.worst)<0?`; ${nm(S0.worst)}`:""}. ${attrPlays()?"Each plays in the game as its name says.":"This season began on an older version of the game: they shape how your players grow, and play in games from next season."}</div>` }
 /* training focus (the summer's development, your team only): one attribute for each training group, or balanced. The
    chosen one takes ATTR_FOCUS times its share of a gain (the rest a little less), so the rating moves as it would
    have: nothing is free, only where it lands. Offered where attributes play (ATTRS.plays). */
@@ -8631,12 +8704,16 @@ function liveWPHTML(onCall){
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
   if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
-  if(liveTau(d)<=0&&sc[0]!==sc[1]&&!(onCall&&live.ask))return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
+  if(liveTau(d)<=0&&sc[0]!==sc[1]&&!(onCall&&live.ask)&&!(live.hold&&!live.ask))return "";   // (not while the last moment is held: the bar going was the result)   // round 56: the game is over ("1% to win" after the last out: Muse)
   const meH=live.g.home===S.myTeam; let m=meH?sc[0]-sc[1]:sc[1]-sc[0], tau=liveTau(d);
+  // round 100: while the score is held for a moment still to play, so is the chance (it read 29%, after the run, over a
+  // held 2-2): the held score, at the stretch before; a call inside the stretch, half an inning on (baseball)
+  if(live.hold&&!live.ask&&live.hold.h!=null){ const d0=live.drives[live.hold.n-1], hm=meH?live.hold.h-live.hold.a:live.hold.a-live.hold.h;
+    m=hm; tau=d0?liveTau(d0):1; const q=live.askScore; if(SPORT.id==="baseball"&&q&&q.n===live.hold.n&&q.h===live.hold.h&&q.a===live.hold.a){ const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) } }
   /* round 97: baseball asks inside an inning (a stretch here is an inning), so on its call screens the last inning's
      reading was stale: "8th inning, down 1" over the 44% of the 2-2 inning before it (Grokbot: 5% at 10-10 in the
      9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */
-  if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; tau=Math.max(0,tau-0.5/(typeof SEGS!=="undefined"?SEGS:9)) }
+  if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) }   // round 99: never under half an inning: in extras liveTau is 0 and a one-run lead read 99% (Muse)
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
@@ -10881,7 +10958,13 @@ function startLive(g,step,slot){
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):oj>=0?"balanced":cpuPlanOf(opponentOf(g),userIsHome?e.a-e.h:e.h-e.a);   // round 89: the computer's plan for its shape
   const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step):undefined;
-  const ckey0=callKey(step)+(slot?"#"+slot:""), pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
+  const ckey0=callKey(step)+(slot?"#"+slot:"");
+  let pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
+  // round 100: the game starts on the plan its card shows. A change of your own made before the first possession of
+  // a game begun again (a reload, a quit) is a pregame choice, and the card has the say now (Grokbot: the card
+  // showed Work it inside at 55%, the game played Shorten the game at 32%, and it was lost)
+  if(!h2h&&pm.length){ const side=userIsHome?"home":"away", kept=pm.filter(x=>!(x[0]===0&&x[1]===side));
+    if(kept.length!==pm.length){ pm=kept; S.planMid=S.planMid||{}; S.planMid[ckey0]=pm.map(x=>x.slice()) } }
   live={pm:pm,g:g, step:step, slot:slot||0, ckey:callKey(step)+(slot?"#"+slot:""),
         eng:makeLiveGame(rng,e.h,e.a,
               userIsHome?plan:oppPlan, userIsHome?oppPlan:plan,
@@ -10916,6 +10999,11 @@ function liveTick(){
     const h=d.sh!==undefined?d.sh:d.h, a=d.sa!==undefined?d.sa:d.a; if(h!==undefined&&a!==undefined)live.tailShow={h:h,a:a};
     render(); if(!live.paused)live.timer=setTimeout(liveTick,liveGap()); return }
   if(live&&live.finishing){ if(live.timer)clearTimeout(live.timer); live.finishing=false; if(live.hold&&typeof hlRelease==="function")hlRelease(true); live.done=true; finishLive(); return }
+  // round 99: a stretch whose moments were still to come (Full match) plays them now: after a pause, or a step
+  if(live&&live.leadPend&&!live.done){ const d=live.leadPend; live.leadPend=null;
+    if(!live.ff&&live.drives[live.drives.length-1]===d){ if(live.timer){clearTimeout(live.timer);live.timer=null}
+      const hm=typeof hlPlay==="function"?hlPlay(live,d):0; if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();
+      if(!live.paused)live.timer=setTimeout(liveTick,Math.max(400,hm)); return } }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -10965,14 +11053,23 @@ function liveTick(){
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
       live.ff=false;                            // skipping stops at your next call
+      // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
+      if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
+      // round 100 (Grokbot, soccer on a phone: "call screens land scrolled to the bottom, so the read is off-screen"): a
+      // new call opens at its top when the page was scrolled away from it
+      try{ const c=document.querySelector(".callbox"); if(c&&c.getBoundingClientRect){ const q=c.getBoundingClientRect(); if(q.top<0||q.top>window.innerHeight*0.55)c.scrollIntoView({block:"start",behavior:"auto"}) } }catch(e){}
       return;
     }
     // the score before this stretch (kept here: drives record it differently by sport,
     // and football's don't carry sh/sa, which made every drive look like a score)
-    const pH=live.lastH||0, pA=live.lastA||0;
+    let pH=live.lastH||0, pA=live.lastA||0;
+    // round 100 (Muse: after a call in the middle of an inning the scoreboard stepped back to the inning's start, "6th
+    // inning, tied 2-2" then "Top of the 6th, 1-2"): a call inside this stretch already showed its score, so the held
+    // score starts there, never behind it
+    { const q=live.askScore; if(q&&q.n===live.drives.length&&q.h>=pH&&q.a>=pA&&q.h<=live.eng.h&&q.a<=live.eng.a){ pH=q.h; pA=q.a } }
     live.drives.push(r.drive); fresh=r.drive;
     // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
     // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
@@ -10986,6 +11083,15 @@ function liveTick(){
     break;
   }
   render();
+  /* round 99 (Ian: "Full match is not showing the full match"): in Full match the stretch is played before its moments, as
+     a game is: the play runs with the score as it stood, then the stretch's goals and chances come at its end and the
+     score moves with them, then the next stretch. (Elsewhere the moments play first, as before.) */
+  if(fresh&&live.hold&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&(!HL_SPORT.collapseIdle||HL_SPORT.leadIn)&&typeof hlCan==="function"&&hlCan()){   // round 100: basketball too (Grokbot: "a chunked text slideshow")
+    const gap=liveGap(), lead=Math.round(gap*0.6), mine=fresh; live.leadPend=mine;
+    live.timer=setTimeout(()=>{ if(!live||live.done||live.paused||live.ask||live.drives[live.drives.length-1]!==mine||live.leadPend!==mine)return; live.leadPend=null;
+      const hm2=typeof hlPlay==="function"?hlPlay(live,mine):0; if(!hm2&&live.hold&&typeof hlRelease==="function")hlRelease();
+      live.timer=setTimeout(liveTick, Math.max(gap-lead,hm2)) }, lead);
+    return }
   // the stretch's highlights play, and the next stretch waits for them (core 97_highlights; 0 where there are none)
   const hm=fresh&&typeof hlPlay==="function"?hlPlay(live,fresh):0;
   if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();   // nothing played after all: show it now
@@ -11010,7 +11116,7 @@ function livePlanBarHTML(){
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
   // a full match: the pitch keeps playing between the moments, so each stretch takes long enough to watch (round 68)
-  if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,4200/Math.sqrt(speedMult())));
+  if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,(HL_SPORT.fullMs||4200)/Math.sqrt(speedMult())));   // round 99: each sport its own length (Ian: "Full match is not showing the full match")
   if(typeof liveGapFor==="function")return liveGapFor(live,speedMult());   // the sport paces it (soccer: by what happened)
   const n=DRIVES_PER_TEAM*2;
   return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
@@ -11021,6 +11127,7 @@ function answerLive(v){
   const k=live.ckey||callKey(live.step);
   S.calls[k]=(S.calls[k]||[]).concat([v]);
   live.replay.push(v); live.ri=live.replay.length;
+  if(v==="rest"&&live.ask.dp&&live.ask.dp.k==="rest")live.restAt=(live.drives||[]).length;   // round 99: the clips put the backups on from here
   live.eng.reply(v);
   live.ask=null; sfx("tap");
   save(); liveTick();
@@ -12203,6 +12310,9 @@ function heroResult(){
       move=!(SEA.field&&SEA.field.length)?`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`
         :inF?`<div class="hmove flat">Out of the ${ctn}, and into the NCAA Tournament: a ${SEA.seeds[my]} seed${SEA.region&&SEA.region[my]?`, ${esc(SEA.region[my])}`:""}.</div>`
         :`<div class="hmove dn">Out of the ${ctn}, and left out of the NCAA field.</div>` }
+    // round 99 (Instinct: a 12-1 Miami told "Season over" after the ACC final, then seeded 2nd with a bye): a conference title
+    // game is played before the playoff field is picked, so losing it isn't the end
+    else if(!won&&g.winner&&g.conf&&!(SEA.field&&SEA.field.length))move=`<div class="hmove dn">Beaten in the ${esc(String(g.title||"conference championship").replace(/^(the )/i,""))}. The playoff field is picked next.</div>`;
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
@@ -12705,17 +12815,27 @@ function myTeamView(){
   return h;
 }
 
+/* round 99 (Ian: "in my card I can't click on my team name, my record, the poll, myself"): each figure on the team card and
+   the top bar opens its page: the club's page (its schedule and history), the standings at its group, the ranking, the
+   coach's page. Keyboard too (Enter or Space on the focused figure). */
+const GO=(k,inner,title)=>`<span class="golink" role="link" tabindex="0" data-go="${k}"${title?` title="${esc(title)}"`:""}>${inner}</span>`;
+function goTo(k){ const my=S.myTeam; flash=null; playerSel=null;
+  if(k==="team"||k==="record"){ openTeam(my); return }
+  if(k==="group"){ view="stand"; standTab="table"; if(LEAGUE.conf.order.length>4&&!LEAGUE.groupFilter)stConf=CONF[my] }
+  else if(k==="rank"){ view="poll" }
+  else if(k==="coach"){ view="dyn"; dynTab="coaches"; dynCoach=my }
+  save(); render(); window.scrollTo({top:0}) }
 function teamCardHTML(my,rk,co){
   let h=`<div class="idcard" style="--tc:${teamInk(my)};border-left:4px solid ${teamInk(my)}">
-    <div class="iname" style="color:${teamInk(my)}">${esc(my)}</div>
+    <div class="iname" style="color:${teamInk(my)}">${GO("team",esc(my),"Your club's page")}</div>
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
-      <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
-      ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
-        :`<div><b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
-      <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
+      <div>${GO("record",`<b>${recFmt(my,liveRec(my))}</b><span>Record</span>`,"Your schedule and results")}</div>
+      ${LEAGUE.position?`<div>${GO("group",`<b>${SEA.pts(my)}</b><span>Points</span>`,"The table")}</div>`
+        :`<div>${GO("group",`<b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span>`,"The standings")}</div>`}
+      <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}">${GO("rank",`<b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span>`)}</div>
     </div>${co?`<div class="coachbar">
-      <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
+      <div class="cleft"><div class="cname">${GO("coach",esc(co.n),"Your coaching record")}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${coachYear(co)<=1?"first season":"year "+coachYear(co)}
         &middot; coaching ${coachGrade(co.q)}</div></div>
       ${seatBadge()}</div>`:""}
@@ -12967,6 +13087,10 @@ function attentionHTML(my){
         <span class="saytext">${esc(s.line)}</span></div></div>`:""})()}`).join("");
 }
 
+/* round 99 (Muse played seasons begun before round 88: the plan moved nothing and the grids said the engine didn't read
+   them): a season plays on the engine it began on, so a save replays exactly; the hub says what arrives next season. */
+function oldEngineHTML(){ if(typeof ENGINE_V==="undefined"||ENGINE_V>=ENGINE_NOW||ENGINE_V>=17)return "";
+  return `<div class="note" style="margin:8px 0 0">This season began on an older version of the game, and it plays on that version to the end so your save replays exactly. From next season: plans priced by your roster, attributes that play in the game${SPORT.id==="soccer"?", and the 80th-minute read on their legs":""}.</div>` }
 function nextUpHTML(my,rk){
   let h="";
   if(SEA.phase!=="week"&&SEA.phase!=="done"){
@@ -12985,7 +13109,7 @@ function nextUpHTML(my,rk){
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${pctShown(wp)}%</span>
           <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,atH,neu)}`:""}
-        ${planPickerHTML(wp)}</div>`;
+        ${planPickerHTML(wp)}${oldEngineHTML()}</div>`;
     }
     return h;
   }
@@ -13978,6 +14102,11 @@ const SIM_STOPS=[["big","A big game is next (a rival, a top side"+(typeof LEAGUE
 /* off until you tick them (Ian: sim ahead should just sim). Saves that never touched them had them
    all on by default; they start off too. */
 function simStops(){ if(!S.simStops||!S.simStopsV){ S.simStops={big:false,slide:false,hurt:false,decide:false}; S.simStopsV=2 } return S.simStops }
+/* round 100: the plan the Play button will start on, under its label (Grokbot: the plan screens "silently carry the last
+   plan", and Play week on a result card started the next game on it without a word) */
+function advPlanTag(){ try{ if(typeof PLANS==="undefined"||!PLANS[plan]||S.off||(live&&!live.done)||!SEA||SEA.phase==="done")return "";
+  const has=SEA.phase==="week"?myGamesIn(SEA.step).length>0:!!(SEA.postNext&&SEA.postNext(S.myTeam));
+  return has?`<small class="advplan">on ${esc(PLANS[plan].l)}</small>`:"" }catch(e){ return "" } }
 function myGamesIn(w){ const my=S.myTeam; return SEA.gamesFor?SEA.gamesFor(my,w):SEA.sched.filter(g=>g.week===w&&(g.home===my||g.away===my)) }
 /* the step after your nth game from here */
 function afterGames(n){ let c=0; for(let w=SEA.step;w<LEAGUE.weeks;w++){ c+=myGamesIn(w).length; if(c>=n)return w+1 } return LEAGUE.weeks }
@@ -14339,9 +14468,9 @@ function render0(){
     <div class="stick">
       <div class="topbar">
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${esc(my)}</span></div>
-        <div class="tb-right">${recFmt(my,liveRec(my))}
-          ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
+          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${GO("team",esc(my))}</span></div>
+        <div class="tb-right">${GO("record",recFmt(my,liveRec(my)))}
+          ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${GO("rank",standTag(my,rk))}</span>`:"")}
           <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button><button class="reset ${musicOn()?'':'off'}" id="mus" title="Music ${musicOn()?'on':'off'}">&#9835;</button>
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
@@ -14354,7 +14483,7 @@ function render0(){
     <div class="cols">
     ${wide&&!inOff?`<aside id="side">${teamPanel()}
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
-        advLabel()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
+        advLabel()}${advPlanTag()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
@@ -14373,7 +14502,7 @@ function render0(){
               :LEAGUE.ui.offseasonBlock()!==null?LEAGUE.ui.offseasonBlock():
               S.off.move==="retire"?"Retire"
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
-              :"Begin "+(SEA.year+1)+" season"):advLabel()}</button>
+              :"Begin "+(SEA.year+1)+" season"):advLabel()+advPlanTag()}</button>
     </div>`;
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
   // round 69: players' pages, the leaders
@@ -14397,6 +14526,7 @@ function render0(){
   document.querySelectorAll("[data-cupview]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     view="poll"; LEAGUE.ui.subtab({dataset:{et:"CUP"}}); flash=null; window.scrollTo({top:0}); render() });
   const db=el("dback"); if(db)db.onclick=()=>{dynTeam=null;render()};
+  document.querySelectorAll("[data-go]").forEach(b=>{ b.onclick=e=>{ e.stopPropagation(); goTo(b.dataset.go) }; b.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); goTo(b.dataset.go) } } });
   document.querySelectorAll("[data-coach]").forEach(b=>b.onclick=()=>{
     dynCoach=b.dataset.coach; save(); render();});
   const cb=el("cback"); if(cb)cb.onclick=()=>{dynCoach=null;render()};
@@ -14413,7 +14543,9 @@ function render0(){
   const df=el("dfind"); if(df)df.oninput=()=>{dynQ=df.value;
     const p=df.selectionStart; render();
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
-  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; S.planStep=SEA?SEA.step:null; save()} const y=typeof window!=="undefined"&&window.scrollY||0; render(); if(y&&typeof window.scrollTo==="function")window.scrollTo(0,y)});   // round 94: stay where you were (Grokbot: the page went back to the top after every plan click)
+  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; S.planStep=SEA?SEA.step:null; save()} const y=typeof window!=="undefined"&&window.scrollY||0, sd=el("side"), sy=sd?sd.scrollTop:0, t0=b.getBoundingClientRect().top; render(); if(y&&typeof window.scrollTo==="function")window.scrollTo(0,y); const sd2=el("side"); if(sd2&&sy)sd2.scrollTop=sy;
+    // and the button you pressed stays under your finger, whatever changed above it (the plan's note is a line longer or shorter)
+    const nb=document.querySelector(`.planbtn[data-plan="${plan}"]`); if(nb){ const dy=nb.getBoundingClientRect().top-t0; if(Math.abs(dy)>1){ if(sd2&&sd2.contains(nb)&&sd2.scrollHeight>sd2.clientHeight)sd2.scrollTop+=dy; else if(typeof window.scrollBy==="function")window.scrollBy(0,dy) } } });   // round 94: stay where you were (Grokbot: the page went back to the top after every plan click); round 100: the desktop's side column scrolls on its own, and it went back to the top too
   // (the bottom bar's Sim ahead button is bound with skip2, above)
   // it asks, and says where the career is saved, or that it isn't (storage blocked: leaving loses it)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
@@ -14438,7 +14570,7 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=advance;
+  const a2=el("adv2"); if(a2)a2.onclick=()=>{ if(Date.now()-(liveEndedAt||0)<1200)return; advance() };   // round 100: the side column's Play waits too
   ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=()=>{simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
@@ -14448,7 +14580,7 @@ function render0(){
   }
   // a tap that was meant for the game screen's controls lands here when the game ends under the finger:
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
-  const settling=()=>Date.now()-(liveEndedAt||0)<700;
+  const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
   ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=()=>{ if(settling())return;
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
@@ -14731,6 +14863,11 @@ function renderTitle(){
 
 function renderSetup(){
   const rng=new RNG(Date.now()&0xffff);
+  // round 100: whatever redraws this screen, what's typed so far stays, with the caret where it was (Grokbot typed
+  // "Ian Bott" and three games kept "Ian Bot", "Ian" and "n")
+  const was=document.activeElement, wasId=was&&was.id, wasCo=was&&was.dataset&&was.dataset.coname, caret=was&&was.selectionStart;
+  const old=el("cname"); if(old)S.setup.name=old.value;
+  document.querySelectorAll("[data-coname]").forEach(x=>{ S.setup.names=S.setup.names||[]; S.setup.names[+x.dataset.coname]=x.value });
   el("app").innerHTML=`<div class="setupwrap">
     ${LOGO}
     <div class="kicker">New career</div>
@@ -14757,8 +14894,12 @@ function renderSetup(){
     <div class="titlebtns"><button class="advance" id="cgo">Choose your ${ORG_WORD}</button>
       <button class="introskip" id="cback">Back</button></div>
   </div>`;
+  el("cname").oninput=e=>{ S.setup.name=e.target.value };
+  document.querySelectorAll("[data-coname]").forEach(x=>x.oninput=()=>{ S.setup.names=S.setup.names||[]; S.setup.names[+x.dataset.coname]=x.value });
+  { const back=wasId==="cname"?el("cname"):wasCo?document.querySelector(`[data-coname="${wasCo}"]`):null;
+    if(back){ back.focus(); try{ const c=caret==null?back.value.length:Math.min(caret,back.value.length); back.setSelectionRange(c,c) }catch(e){} } }
   el("cback").onclick=()=>toTitle();
-  el("crand").onclick=()=>{S.setup.name=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
+  el("crand").onclick=()=>{S.setup.name=el("cname").value=rng.pick(COACH_FIRST)+" "+rng.pick(LAST);render()};
   const grab=()=>{
     S.setup.name=(el("cname").value||"").trim()||rng.pick(COACH_FIRST)+" "+rng.pick(LAST);
     S.setup.seed=parseInt(el("cseed").value,10)||123456;
@@ -14937,7 +15078,7 @@ window.addEventListener("keydown",e=>{
     return;
   }
   if(e.key===" "||e.key==="Enter"){e.preventDefault();
-    const b=el("adv2")||el("adv"); if(b&&!b.disabled)b.click();}
+    const b=el("adv2")||el("adv"); if(b&&!b.disabled&&Date.now()-(liveEndedAt||0)>=1200)b.click();}   // round 100: Enter is Skip in a game; a second press as it ends doesn't start the next
   const keys={"1":"team","2":"scores","3":"poll","4":"stand","5":"dyn"};
   if(keys[e.key]&&!S.off){view=keys[e.key];flash=null;playerSel=null;render()}
 });
