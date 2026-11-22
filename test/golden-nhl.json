@@ -1,5 +1,5 @@
 {
- "fp": "226a839a87aae6c5",
+ "fp": "825cfed25bdc4a97",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -555,6 +555,11 @@
    "fp": "226a839a87aae6c5",
    "from": "49869e874adee152",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "825cfed25bdc4a97",
+   "from": "226a839a87aae6c5",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -569,7 +574,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "6f17402b91f7593b",
-    "screens": "5d3d8e1680f9c4b7"
+    "screens": "d1793a239569e80d"
    },
    {
     "year": 2027,
@@ -581,7 +586,7 @@
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
     "universe": "64f492ea517ffc50",
-    "screens": "7d4b1b48cdd8ed81"
+    "screens": "ed0885452419ce29"
    }
   ],
   "Edmonton#777": [
@@ -595,7 +600,7 @@
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
     "universe": "bbb2c5f2b8368427",
-    "screens": "59c02104a0e7b248"
+    "screens": "732f39a43edec8b7"
    },
    {
     "year": 2027,
@@ -607,7 +612,7 @@
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
     "universe": "4a47d51d262fb6e2",
-    "screens": "4701ee7ccef047f6"
+    "screens": "3663459379bed678"
    }
   ],
   "schedules#60": [

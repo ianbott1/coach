@@ -1,5 +1,5 @@
 {
- "fp": "31585c74056a1f90",
+ "fp": "134454bd23125c94",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -579,6 +579,11 @@
    "fp": "31585c74056a1f90",
    "from": "deae49d8bdcda88a",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "134454bd23125c94",
+   "from": "31585c74056a1f90",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -593,7 +598,7 @@
     "heis": "18dfdd2f20eb3b97",
     "history": "8bc8417ba3331c9d",
     "universe": "8db0fc25cb77d57b",
-    "screens": "8a6b3e10436231e4"
+    "screens": "dcbcec6e32eb9fd7"
    },
    {
     "year": 2027,
@@ -605,7 +610,7 @@
     "heis": "8b7a474aedecef62",
     "history": "c25c61904c331af4",
     "universe": "71a21703d3d47567",
-    "screens": "f6de20d32dd6e3d9"
+    "screens": "26a9c1efc8721290"
    },
    {
     "year": 2028,
@@ -617,7 +622,7 @@
     "heis": "86a1f37110996796",
     "history": "b596a8b16b9de67a",
     "universe": "184a10726e16eb98",
-    "screens": "1fae692400a00be4"
+    "screens": "70edd0e07cb3dbe7"
    },
    {
     "year": 2029,
@@ -629,7 +634,7 @@
     "heis": "c012d4792aa2ab0f",
     "history": "768b23524da2739c",
     "universe": "9b67da971ca40068",
-    "screens": "faf38d69af9bfee2"
+    "screens": "e71bf7cc52dd182e"
    }
   ],
   "Rice#2024": [
@@ -643,7 +648,7 @@
     "heis": "22cd28654166ce01",
     "history": "da8be9bae788ea8d",
     "universe": "20f420a8d18619ec",
-    "screens": "0adf36cd02fa114b"
+    "screens": "e009944b1ac1e8e9"
    },
    {
     "year": 2027,
@@ -655,7 +660,7 @@
     "heis": "0b42dc554bd2406c",
     "history": "257528694eade36f",
     "universe": "7d7599d0efced663",
-    "screens": "e6986d6ed0eaa058"
+    "screens": "c56d4cb759a69b84"
    },
    {
     "year": 2028,
@@ -667,7 +672,7 @@
     "heis": "a16aace2f4251f32",
     "history": "937d62a7bdd4aae0",
     "universe": "552ab382eda6ead7",
-    "screens": "f377f4801f8b4f99"
+    "screens": "51a2a01bc4f862bf"
    },
    {
     "year": 2029,
@@ -679,7 +684,7 @@
     "heis": "b1582f00351852f6",
     "history": "d5f037037294e287",
     "universe": "bd021f47d9f895f0",
-    "screens": "7cc235ff4f2066bb"
+    "screens": "4f28005e1a263de9"
    }
   ],
   "Oregon#777": [
@@ -693,7 +698,7 @@
     "heis": "ae0fd0e488d8a51e",
     "history": "f7432cb1648a6e38",
     "universe": "0c1cb95c504df742",
-    "screens": "1a33d819ffab8e41"
+    "screens": "867b98a4e77ba7f9"
    },
    {
     "year": 2027,
@@ -705,7 +710,7 @@
     "heis": "a3c9215e04a9c949",
     "history": "d40899eb96c8d95b",
     "universe": "141f2163ffbb6993",
-    "screens": "b153cfa8bf074c40"
+    "screens": "96687e2455b43450"
    },
    {
     "year": 2028,
@@ -717,7 +722,7 @@
     "heis": "8838c480ac698135",
     "history": "aff0daaf3258a7e9",
     "universe": "b77792318d481901",
-    "screens": "a3487401278f2585"
+    "screens": "5dd04477419bc5fc"
    }
   ],
   "Kent State#31337": [
@@ -731,7 +736,7 @@
     "heis": "73505a430b8ca78b",
     "history": "bb81558b048688c1",
     "universe": "9ef9c64f49d492fb",
-    "screens": "ac91732ad9197416"
+    "screens": "703240ab76098df9"
    },
    {
     "year": 2027,
@@ -743,7 +748,7 @@
     "heis": "d10b36dd5b6aed2e",
     "history": "7819caf2688199ed",
     "universe": "d683b5882351fef1",
-    "screens": "d0d7118e409c9e21"
+    "screens": "3d749d686e13c016"
    },
    {
     "year": 2028,
@@ -755,7 +760,7 @@
     "heis": "b1ee17ec61f1d8f1",
     "history": "9e27f61b17d43f7a",
     "universe": "fc5a22d6cf5c056b",
-    "screens": "75492af46308cd9c"
+    "screens": "38b8eef680aefc34"
    }
   ],
   "schedules#60": [

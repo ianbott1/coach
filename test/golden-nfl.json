@@ -1,5 +1,5 @@
 {
- "fp": "e73d1220551f7d71",
+ "fp": "32ff32b592fe123b",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -605,6 +605,11 @@
    "fp": "e73d1220551f7d71",
    "from": "756aa394c31a74a5",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "32ff32b592fe123b",
+   "from": "e73d1220551f7d71",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -619,7 +624,7 @@
     "heis": "7c80c4b6be17173f",
     "history": "c11c72a9148450dc",
     "universe": "63e42ac77ce55e18",
-    "screens": "8544859ec52fba25"
+    "screens": "1c504e8fc166a474"
    },
    {
     "year": 2027,
@@ -631,7 +636,7 @@
     "heis": "e325c071b7f95605",
     "history": "ba96a66c22df472f",
     "universe": "e378547abdec4068",
-    "screens": "1cb1e8b544a05b08"
+    "screens": "f646c6e616c9d322"
    },
    {
     "year": 2028,
@@ -643,7 +648,7 @@
     "heis": "d657a390aebab7d5",
     "history": "7ae3bb48a04b56c2",
     "universe": "b4ef285d5c34e7c7",
-    "screens": "f4394f6d3105403f"
+    "screens": "24583fca37d076b1"
    },
    {
     "year": 2029,
@@ -655,7 +660,7 @@
     "heis": "107812a835389d14",
     "history": "3a977c12920d5fd3",
     "universe": "cb672daf01d4c9db",
-    "screens": "10b83faca19706b4"
+    "screens": "4ceb06ba72e18f3e"
    }
   ],
   "Tennessee#2024": [
@@ -669,7 +674,7 @@
     "heis": "9ee138b08a6c93a6",
     "history": "644a135e22347820",
     "universe": "e073a7223dd4ea4a",
-    "screens": "7fc5011ea3720069"
+    "screens": "a8d5586300d62145"
    },
    {
     "year": 2027,
@@ -681,7 +686,7 @@
     "heis": "ad11d43c811d6ecf",
     "history": "926cba788c4631fe",
     "universe": "3a46278e1015da36",
-    "screens": "cef2f22037e4ea5a"
+    "screens": "e1eab7bb01223f61"
    },
    {
     "year": 2028,
@@ -693,7 +698,7 @@
     "heis": "205a7c45b38c0d45",
     "history": "2692fc8510596ac3",
     "universe": "31eff8145e19ed76",
-    "screens": "4f1119c36922e030"
+    "screens": "2450de4303b92786"
    },
    {
     "year": 2029,
@@ -705,7 +710,7 @@
     "heis": "2f2855b7414f1368",
     "history": "92ebb3b1335a649d",
     "universe": "e14dbdcf6a425413",
-    "screens": "67de3304e1686907"
+    "screens": "92b458f529e9bf4a"
    }
   ],
   "Detroit#777": [
@@ -719,7 +724,7 @@
     "heis": "61c46ffe45c2e277",
     "history": "807180dc6580390f",
     "universe": "dd1466b24b2f98a1",
-    "screens": "02ff30e79b809f4f"
+    "screens": "156dbcdb42ec41c7"
    },
    {
     "year": 2027,
@@ -731,7 +736,7 @@
     "heis": "8f011c2ed3c47c1e",
     "history": "60375ea9b01c54e8",
     "universe": "777b761e4bc9858c",
-    "screens": "24bf6096ac5d6298"
+    "screens": "42c4db15e559b976"
    },
    {
     "year": 2028,
@@ -743,7 +748,7 @@
     "heis": "40fba4e84e915fa8",
     "history": "9ef989beaaeddf97",
     "universe": "26696b1b8594b69a",
-    "screens": "58fbff01693fcf52"
+    "screens": "1667e2dbaefe76a6"
    }
   ],
   "NY Giants#31337": [
@@ -757,7 +762,7 @@
     "heis": "654c742bd04993b2",
     "history": "2d97e943fb616478",
     "universe": "df150ec4dcba9dd0",
-    "screens": "313d0241f36ab72d"
+    "screens": "587925741e5ee70d"
    },
    {
     "year": 2027,
@@ -769,7 +774,7 @@
     "heis": "704dc09525b01515",
     "history": "789f2028806968a6",
     "universe": "34d5df391455d8b5",
-    "screens": "dc0cbafe1dd86e60"
+    "screens": "d9dc77f7738171fe"
    },
    {
     "year": 2028,
@@ -781,7 +786,7 @@
     "heis": "5503b5d0218740ba",
     "history": "d9d409cc46ade104",
     "universe": "ce095088b4187943",
-    "screens": "0ac38e47d16788e8"
+    "screens": "5aa9d9a6c1874603"
    }
   ],
   "schedules#60": [

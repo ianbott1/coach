@@ -1,5 +1,5 @@
 {
- "fp": "ded0f7bbc8a2bf16",
+ "fp": "c2f871665d89f8f0",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -525,6 +525,11 @@
    "fp": "ded0f7bbc8a2bf16",
    "from": "213495ab250d313f",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "c2f871665d89f8f0",
+   "from": "ded0f7bbc8a2bf16",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -539,7 +544,7 @@
     "heis": "01dd37bc7325f176",
     "history": "6384997958515063",
     "universe": "a9f0de7aa1110492",
-    "screens": "9f27dc88fd3e99d8"
+    "screens": "06468c223b865fb7"
    },
    {
     "year": 2027,
@@ -551,7 +556,7 @@
     "heis": "eb3ac9729b9218e4",
     "history": "90dec017a25fa243",
     "universe": "084c0c4109e35ad9",
-    "screens": "ce2787014a18ab3d"
+    "screens": "95bd2432f3a0d118"
    }
   ],
   "Wrexham#777": [
@@ -565,7 +570,7 @@
     "heis": "c3ba80646ca3f1fd",
     "history": "4c6b5a840a49e7ee",
     "universe": "c3d9d34d7e0a690b",
-    "screens": "24f88f919ffd3932"
+    "screens": "f9ed7ce29199e966"
    },
    {
     "year": 2027,
@@ -577,7 +582,7 @@
     "heis": "6a9f17a496fb041d",
     "history": "6412fe9f0c0ffec9",
     "universe": "b493a8c2e62291eb",
-    "screens": "56c181993db53ca6"
+    "screens": "e93ec52a342a81b8"
    }
   ],
   "schedules#60": [

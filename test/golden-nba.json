@@ -1,5 +1,5 @@
 {
- "fp": "373ab5556d4e3566",
+ "fp": "67cc3aea7c2fe872",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -530,6 +530,11 @@
    "fp": "373ab5556d4e3566",
    "from": "3b755f8a25445df9",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "67cc3aea7c2fe872",
+   "from": "373ab5556d4e3566",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -544,7 +549,7 @@
     "heis": "65e742e6ca5bcee2",
     "history": "8d67ccb9859a8a92",
     "universe": "58b1575f75ffa226",
-    "screens": "27db94b12e6113a9"
+    "screens": "6be0c774ff27bb8a"
    },
    {
     "year": 2027,
@@ -556,7 +561,7 @@
     "heis": "3c35d2cd6df6f75d",
     "history": "eab5b7c7bee2a93a",
     "universe": "d969e336f03f1d6a",
-    "screens": "a6e4522593e644d3"
+    "screens": "008a14fa0e5dd8f7"
    }
   ],
   "Detroit#777": [
@@ -570,7 +575,7 @@
     "heis": "635d996bb8c406fc",
     "history": "814c3f190e949f80",
     "universe": "4f81f1c829741ab9",
-    "screens": "5881391c2225ec1c"
+    "screens": "1608c6bad11af913"
    },
    {
     "year": 2027,
@@ -582,7 +587,7 @@
     "heis": "785a75d5474ca8ef",
     "history": "1ae15d058a38da0f",
     "universe": "6fb5b1686173798f",
-    "screens": "eec1f4012f969e0b"
+    "screens": "4102da9ddce07321"
    }
   ],
   "schedules#60": [

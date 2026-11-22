@@ -1,5 +1,5 @@
 {
- "fp": "4e12b98948ed03d9",
+ "fp": "5de88b7d317efa4c",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -210,6 +210,11 @@
    "fp": "4e12b98948ed03d9",
    "from": "0a68effae55e2a7d",
    "note": "round 97: baseball's live chance shrinks as tau^0.7, so the season story's lowest and highest moments move; a control with the old shrink matched the old golden (0a68effa)"
+  },
+  {
+   "fp": "5de88b7d317efa4c",
+   "from": "4e12b98948ed03d9",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -224,7 +229,7 @@
     "heis": "7d5b897b0d9b6c32",
     "history": "fd64034a4fd3d2ad",
     "universe": "269b8d5687372309",
-    "screens": "2fe23f302cad11ba"
+    "screens": "32515bba629664ab"
    },
    {
     "year": 2027,
@@ -236,7 +241,7 @@
     "heis": "773ec581dad87a9c",
     "history": "6eb635fcda3a4496",
     "universe": "263c5a75f4b14352",
-    "screens": "6e2e052471436942"
+    "screens": "efb89eb801fa58cb"
    }
   ],
   "Colorado#777": [
@@ -250,7 +255,7 @@
     "heis": "c538f6ec29f1dea8",
     "history": "7fc71e187a31d02c",
     "universe": "be6cba51ca7b517f",
-    "screens": "67c8858f76a5c89b"
+    "screens": "cef01f61aa5ff0a8"
    },
    {
     "year": 2027,
@@ -262,7 +267,7 @@
     "heis": "eac2183831bc1117",
     "history": "12462c1fdf09ce32",
     "universe": "6c8a5dfad205dc44",
-    "screens": "e6099a4c97b85ad6"
+    "screens": "d7f384e6ae89debe"
    }
   ],
   "schedules#60": [
