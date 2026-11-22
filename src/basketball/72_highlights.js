@@ -270,6 +270,10 @@ const HL_SPORT=(function(){
     hlTicker(x,W,H,top,8.01);   // top right: the score bug has the left
     if(end){ const key=pi+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
     pbPatch(hs,as,clk);
+    // the crowd, once a basket: your side's three, or a basket that takes the lead
+    { const L0=pbDraw._sc; pbDraw._sc={d:d,h:hs,a:as};
+      if(L0&&L0.d===d&&(hs!==L0.h||as!==L0.a)&&typeof sfx==="function"){ const meH=live.userIsHome, mineUp=meH?hs-L0.h:as-L0.a, my=meH?hs:as, th=meH?as:hs, was=meH?L0.h-L0.a:L0.a-L0.h;
+        if(mineUp>=3||(mineUp>0&&my>th&&was<=0))sfx("run") } }
   }
   function idle(x,W,H){ if(typeof live!=="undefined"&&live&&live.pb&&live.pb.d&&!live.done){ pbDraw(x,W,H); return } if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){
