@@ -126,6 +126,18 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 101 (done): Full match as a match to watch
+- Every sport's Full match plays the game's own events, not decoration: basketball every possession, baseball every
+  at-bat and steal, soccer and hockey on a running clock with every goal and counted shot at its minute.
+- Football play-by-play: each drive snap by snap (series of downs, runs, catches, incompletions, sacks, scrambles, flags,
+  every man named), built to come exactly to where the drive engine put the ball and the fourth and N it left. A
+  fourth-down or two-point call shows the drive up to it first.
+- A watched game's box score credits the plays shown; an unwatched game is unchanged. Goldens identical except
+  football's, where a touchdown can no longer be longer than the field the drive had (stats only; results identical).
+- Next: football's engine draws a stalled drive's fourth and N apart from how far it got (about 8% of drives impossible;
+  1 fourth-down call in 12 reads one distance while the drive shows another): draw it from the gain, an engine round
+  with calibration. Then the plan as a real decision at even odds.
+
 ## Round 100 (done): Grokbot's round 12 interim (ships with round 99)
 - The game starts on the plan its card shows (a reloaded game played an old mid-game change). The coach name survives.
 - No injured player in a football touchdown line or clip: the live line names who's actually playing.
