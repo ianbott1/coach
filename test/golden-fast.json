@@ -1,5 +1,5 @@
 {
- "fp": "f86d5024fcc7702b",
+ "fp": "85cc9703828c5b55",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -70,6 +70,11 @@
    "fp": "f86d5024fcc7702b",
    "from": "0488beddbace103c",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "85cc9703828c5b55",
+   "from": "f86d5024fcc7702b",
+   "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
   }
  ],
  "result": {
@@ -84,7 +89,7 @@
     "heis": "18dfdd2f20eb3b97",
     "history": "8bc8417ba3331c9d",
     "universe": "8db0fc25cb77d57b",
-    "screens": "8a6b3e10436231e4"
+    "screens": "dcbcec6e32eb9fd7"
    }
   ]
  }
