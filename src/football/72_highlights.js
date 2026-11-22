@@ -35,8 +35,11 @@ const HL_SPORT=(function(){
   // linebacker, corner, safety); the rest of the eleven take free numbers in their position's range. Key below.
   const OFF_SL={0:0,1:1,2:2,3:3,8:4}, DEF_SL={0:5,1:6,5:7,7:8,9:9};
   const FILL_O=[null,null,null,null,85,11,72,64,null,61,77], FILL_D=[null,null,97,94,52,null,45,null,24,null,31];
+  /* round 99 (Muse: after "rest your starters" the clips still named the starters): from the drive after you rest them,
+     your side's tracked men are their backups */
+  let REST=false;
   function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={};
-    Object.keys(SL).forEach(k=>{ const i=hlFit(team,SL[k]); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
+    Object.keys(SL).forEach(k=>{ let i=hlFit(team,SL[k]); if(REST&&team===S.myTeam&&typeof BK==="function"&&R[BK(SL[k])])i=hlFit(team,BK(SL[k])); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
     nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
   /* round 99 (Ian: "still can't see players numbers on field goal kicks"): the kicking unit wears numbers. The roster
      carries no kicker, holder or snapper, so they take numbers no one on the roster wears (the kicker the one named by
@@ -45,7 +48,7 @@ const HL_SPORT=(function(){
   function stNums(team){ const R=(SEA.roster&&SEA.roster[team])||[], used={}; R.forEach((p,i)=>{ if(p){ const n=shirtNo(team,i); if(n!=null)used[n]=1 } });
     const h=strHash("st|"+team), pick=(lo,hi,k)=>{ const span=hi-lo+1; for(let j=0;j<span;j++){ const v=lo+((h+k*31+j*7)%span); if(!used[v]){ used[v]=1; return v } } return lo };
     return {k:pick(1,19,1), h:pick(10,19,2), line:[0,1,2,3,4,5,6,7,8].map(j=>pick(50,79,3+j))} }
-  function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
+  function base(L,d){ REST=!!(L&&L.restAt!=null&&L.drives&&L.drives.indexOf(d)>=L.restAt); const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
   function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(97,d.stall||75));
     // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)

@@ -246,6 +246,7 @@ function answerLive(v){
   const k=live.ckey||callKey(live.step);
   S.calls[k]=(S.calls[k]||[]).concat([v]);
   live.replay.push(v); live.ri=live.replay.length;
+  if(v==="rest"&&live.ask.dp&&live.ask.dp.k==="rest")live.restAt=(live.drives||[]).length;   // round 99: the clips put the backups on from here
   live.eng.reply(v);
   live.ask=null; sfx("tap");
   save(); liveTick();
