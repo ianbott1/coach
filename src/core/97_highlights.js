@@ -146,7 +146,7 @@ function hlDraw(c,t){
    share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
    goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
    HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
-function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,"all")||[] }catch(e){}
+function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,S.mode||"all")||[] }catch(e){}
   const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
   clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
   clips.sort((a,b)=>a.f-b.f);
@@ -154,6 +154,11 @@ function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=
   clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
   const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
   return d._ev={seg:seg,tot:at,clips:clips} }
+/* the shots the full match showed (not the goals: those are credited by name already): [side 0/1, "s", roster slot] */
+function hlEvNames(L,d){ if(!d||!d._ev)return null; const g=L.g, out=[];
+  d._ev.clips.forEach(c=>{ if(c.kind==="goal"||c.kind==="red"||!c.who||!c.tm)return; const tm=c.tm, R=(SEA.roster&&SEA.roster[tm])||[];   // c.tm: the side that shot
+    const i=R.findIndex(p=>p&&p.n===c.who); if(i>=0)out.push([tm===g.home?0:1,"s",i]) });
+  return out }
 function hlEvPlayback(L,d){ if(!HL_SPORT.evPB||!d||d.seg==null||typeof d.seg!=="number"||d.so||(HL_SPORT.evPB.skip&&HL_SPORT.evPB.skip(d)))return 0; return Math.round(hlEvPlan(L,d).tot) }
 let hlEvKey="", hlEvLab=0;
 function hlEvDraw(x,W,H){

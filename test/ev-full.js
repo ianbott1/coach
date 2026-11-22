@@ -1,7 +1,7 @@
 /* Soccer's and hockey's full match (round 101), in a browser, a whole game each at Very fast: every stretch is played
    back on a running clock; the page's score never goes down while it plays; each stretch starts where the last ended;
-   every goal shows at its own minute (the header's clock when the score moves is the goal's minute); the final is the
-   engine's; no page errors.   node test/ev-full.js    last line: MATCH or MISMATCH */
+   every goal shows at its own minute (the header's clock when the score moves is the goal's minute); every shot shown is
+   its shooter's in the box score; no page errors.   node test/ev-full.js    last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'); const path=require('path');
 const DIST=process.env.DIST||path.join(__dirname,'..','dist');
 (async()=>{ const b=await chromium.launch(); let bad=0;
@@ -23,8 +23,18 @@ const DIST=process.env.DIST||path.join(__dirname,'..','dist');
           if(mins.includes(m))o.atMinute++; else o.offMinute.push([H.clock,mins]) } }
       prev={sc:sc};
     }catch(e){ clearInterval(t); o.ex.push('error '+e.message); res(o) } },30) }));
-  const ok=r.played>=12&&r.down===0&&r.jump===0&&r.goals>=2&&r.offMinute.length===0&&!errs.length&&!r.ex.some(x=>/^error/.test(x));
+  await pg.waitForTimeout(800);
+  // the box score: each shot the screen showed is its shooter's (the shots kept with the game, d.pn)
+  const cr=await pg.evaluate(()=>{ const arr=Object.values(S.played||{}).pop()||[], P=arr[arr.length-1], drives=(P&&P.drives)||[], g=live.g, shown={}; let n=0;
+    drives.forEach(d=>(d.pn||[]).forEach(q=>{ const tm=q[0]===0?g.home:g.away, p=SEA.roster[tm][q[2]]; if(!p)return; n++; shown[tm+'|'+p.n]=(shown[tm+'|'+p.n]||0)+1 }));
+    let short=0, players=0; const ex=[], key=LEAGUE.id==="nhl"?"sog":"shots";
+    Object.keys(shown).forEach(k=>{ const [tm,nm]=k.split('|'), p=SEA.roster[tm].find(x=>x&&x.n===nm); if(!p)return; players++;
+      const gl=p.gl||[], w=glStride(), st={}; if(gl.length>=w){ const o=gl.length-w; (STAT_KEYS[POS[gl[o+5]].p]||[]).forEach((kk,i)=>st[kk]=gl[o+6+i]) }
+      if((st[key]||0)<shown[k]){ short++; if(ex.length<2)ex.push(`${nm}: shown ${shown[k]}, box ${st[key]||0}`) } });
+    return {n:n,players:players,short:short,ex:ex,kept:drives.filter(d=>Array.isArray(d.pn)).length} });
+  r.cr=cr;
+  const ok=r.played>=12&&r.down===0&&r.jump===0&&r.goals>=2&&r.offMinute.length===0&&!errs.length&&!r.ex.some(x=>/^error/.test(x))&&cr.n>=20&&cr.short===0;
   if(!ok)bad++;
-  console.log(`${ok?'  ok  ':'  FAIL'} ${f}: ${r.played} stretches played back, ${r.goals} goals seen, ${r.atMinute} at their minute${r.offMinute.length?', off: '+JSON.stringify(r.offMinute.slice(0,3)):''}, score went down ${r.down}, jumps ${r.jump}, final ${JSON.stringify(r.final)}${r.ex.length?' | '+r.ex.join('; '):''}${errs.length?' | '+errs[0]:''}`);
+  console.log(`${ok?'  ok  ':'  FAIL'} ${f}: ${r.played} stretches played back, ${r.goals} goals seen, ${r.atMinute} at their minute${r.offMinute.length?', off: '+JSON.stringify(r.offMinute.slice(0,3)):''}, score went down ${r.down}, jumps ${r.jump}, final ${JSON.stringify(r.final)}; box score: ${r.cr.n} shots shown (${r.cr.players} shooters), ${r.cr.short} short ${r.cr.ex.join('; ')}${r.ex.length?' | '+r.ex.join('; '):''}${errs.length?' | '+errs[0]:''}`);
   await pg.close() }
  console.log(bad?'MISMATCH':'MATCH'); await b.close() })();

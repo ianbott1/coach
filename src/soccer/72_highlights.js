@@ -10,6 +10,7 @@ const HL_SPORT=(function(){
   const goalW=0.108, post=[0.5-goalW/2,0.5+goalW/2];
   const HL_CM=(typeof window!=="undefined"&&window.HLCM)||1;
   function clips(L,d,mode){
+    if(mode==="pb")return pbClips(L,d);
     const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save"||e.k==="miss"||e.k==="red").sort((a,b)=>a.m-b.m);
     const out=[]; let chance=null;
     const sh0=d.sh-(d.h||0), sa0=d.sa-(d.a||0); let sh=sh0, sa=sa0;
@@ -21,6 +22,21 @@ const HL_SPORT=(function(){
       else if((mode==="all"||mode==="full")&&out.filter(c=>c.kind!=="goal").length<3)out.push(mk(L,e,e.k,sh,sa)) });   // round 68: every chance
     return hlTrim(out,mode==="all"||mode==="full"?5:3);
   }
+  /* round 101: the full match shows every shot the engine counted. Goals and the big chance keep their minutes; the
+     other shots (the stretch's count, on target and off) get a minute from their own hash, saved or off target as the
+     count has them. Short clips for those. */
+  function pbClips(L,d){
+    const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save"||e.k==="miss"||e.k==="red").map(e=>Object.assign({},e));
+    const di=(L.drives||[]).indexOf(d), pv=di>0?L.drives[di-1]:null, t0=d.seg*5;
+    ["home","away"].forEach(sd=>{ const c1=d.st&&d.st[sd], c0=pv&&pv.st&&pv.st[sd]||[0,0]; if(!c1)return;
+      const shots=c1[0]-c0[0], sot=c1[1]-c0[1], g=ev.filter(e=>e.k==="goal"&&e.side===sd).length, sv=ev.filter(e=>e.k==="save"&&e.side===sd).length, ms=ev.filter(e=>e.k==="miss"&&e.side===sd).length;
+      const xs=Math.max(0,sot-g-sv), xm=Math.max(0,shots-sot-ms);
+      for(let j=0;j<xs+xm;j++){ const h=strHash((L.step||0)+"|"+d.seg+"|"+sd+"|"+j); ev.push({m:t0+1+h%5,side:sd,k:j<xs?"save":"miss",u:(h>>>8)%100,pbx:1}) } });
+    ev.sort((a,b)=>a.m-b.m||(a.u||0)-(b.u||0));
+    const out=[]; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
+    ev.forEach(e=>{ if(e.k==="goal"){ const c=mk(L,e,"goal",sh,sa); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
+      const c=mk(L,e,e.k,sh,sa); if(e.pbx||e.k!=="red")c.base=Math.min(c.base,e.pbx?2300:c.base); out.push(c) });
+    return out }
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
     const r=mulberry32(((e.m||0)*7919+u*131+(e.side==="home"?17:29))>>>0);
@@ -77,6 +93,7 @@ const HL_SPORT=(function(){
     const gno=kind==="goal"?hlGoalNo(L,e,x=>scGoalBy(x.side==="home"?g.home:g.away,x).n):0;
     const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
+    cl.who=shooter&&typeof shooter==="object"?shooter.n:shooter;   // round 101: the box score credits a shot the full match showed
     return cl;
   }
   // pitch coordinates (attack frame -> screen)
@@ -139,7 +156,7 @@ const HL_SPORT=(function(){
   function idle(x,W,H){ if(typeof live!=="undefined"&&live&&live.pb&&live.pb.d&&!live.done&&typeof hlEvDraw==="function"){ hlEvDraw(x,W,H); return }
     if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
-  const evPB={t0:d=>d.seg*5, span:d=>5, ms:d=>12000, clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
+  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>12000, clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);

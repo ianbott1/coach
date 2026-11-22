@@ -13,6 +13,15 @@ const HL_SPORT=(function(){
   function clips(L,d,mode){
     // round 70: the shots stopped (d.sv, every one the engine played) give the saves; the commentary's big saves first.
     // Key moments: about one save for each goal over a game (Ian: "too high a share of goals")
+    if(mode==="pb"){ // round 101: the full match: every goal and every shot stopped (d.sv is every one the engine played)
+      const logged=(d.ev||[]).filter(e=>e.k==="save"), svAll=(d.sv||[]).filter(e=>!logged.some(x=>Math.abs(x.m-e.m)<1&&x.side===e.side));
+      const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").concat(svAll.map(e=>Object.assign({},e,{k:"save"}))).sort((a,b)=>a.m-b.m);
+      let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
+      const out=[]; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
+      if(d.so)return clips(L,d,"all");
+      ev.forEach(e=>{ if(e.k==="goal"){ const c=mk(L,e,"goal",rows,d); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
+        const c=mk(L,e,"save",rows,d); c.base=2200; out.push(c) });
+      return out }
     const all=mode==="all"||mode==="full", logged=(d.ev||[]).filter(e=>e.k==="save");
     const svPick=(d.sv||[]).filter(e=>all?e.u%3===0:e.u%5===0||(e.pp&&e.u%2===0)).filter(e=>!logged.some(x=>Math.abs(x.m-e.m)<1&&x.side===e.side));
     const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").concat(svPick.map(e=>Object.assign({},e,{k:"save"}))).sort((a,b)=>a.m-b.m);
@@ -81,7 +90,7 @@ const HL_SPORT=(function(){
     if(GN&&ai>=0&&rec.length>=2&&plan!=="so"){ const aSlot=[3,4,5,1,2][posOf(ai)]; if(aSlot!=null&&aSlot!==sIdx)rec[rec.length-2]=aSlot }
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
     const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>{ const N=hkGoalNames(x.side==="home"?g.home:g.away,x); return N.depth?null:N.n }):0;
-    return {gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
+    return {who:shooter,gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
   const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
@@ -185,7 +194,7 @@ const HL_SPORT=(function(){
   function idle(x,W,H){ if(typeof live!=="undefined"&&live&&live.pb&&live.pb.d&&!live.done&&typeof hlEvDraw==="function"){ hlEvDraw(x,W,H); return }
     if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
-  const evPB={t0:d=>d.seg*5, span:d=>5, ms:d=>12000, clock:(d,f)=>{ const m=Math.min(60,Math.max(1,Math.floor(d.seg*5+f*5)+1)); return (m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'" }, skip:d=>d.seg>=SEGS};
+  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>12000, clock:(d,f)=>{ const m=Math.min(60,Math.max(1,Math.floor(d.seg*5+f*5)+1)); return (m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'" }, skip:d=>d.seg>=SEGS};
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.72, ts=0.86;
     let bx,by;

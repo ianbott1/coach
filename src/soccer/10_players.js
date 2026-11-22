@@ -82,9 +82,12 @@ function teamLines(rng,c){
   ev.filter(e=>e.side===c.side).forEach(e=>{ const S=scGoalBy(tm,e), l=L.get(S.n); e.nm=S.n; e.un=S.unit; if(!l)return; l.goals++;
     if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)*scLean(x.p,"pas")), k=splitDraw(rng,1,w).indexOf(1); if(k>=0)L.get(on[k].p.n).ast++ } });
   const sts=c.drives.filter(d=>d.st), st=sts.length?sts[sts.length-1].st:null;
+  // round 101: a shot the full match showed is its shooter's (d.pn, roster slots); the rest shared as before
+  const sd=c.side==="home"?0:1, shown={}; let nShown=0;
+  c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]!==sd||q[1]!=="s")return; const p=c.R[q[2]]; if(p&&L.has(p.n)){ shown[p.n]=(shown[p.n]||0)+1; nShown++ } }));
   const shots=st?st[c.side][0]:0, given=on.reduce((t,x)=>t+L.get(x.p.n).goals,0);
-  const n=splitDraw(rng,Math.max(0,shots-given),on.map(x=>ROLE[x.P].shots*x.m*star(x.p)));
-  on.forEach((x,j)=>{ const l=L.get(x.p.n); l.shots=l.goals+n[j] });
+  const n=splitDraw(rng,Math.max(0,shots-given-nShown),on.map(x=>ROLE[x.P].shots*x.m*star(x.p)));
+  on.forEach((x,j)=>{ const l=L.get(x.p.n); l.shots=l.goals+n[j]+(shown[x.p.n]||0) });
   const ga=ev.filter(e=>e.side===o).length, reg=ev.filter(e=>e.side===o&&e.m<=90).length, cs=ga===0?1:0;
   const out=on.map(x=>{ const l=L.get(x.p.n); if(x.P==="CB"||x.P==="FB")l.cs=cs; return {pl:x.p,pos:POS[x.i%POS.length].p,line:l} });
   const gk=c.act.find(x=>x.P==="GK"); if(gk)out.push({pl:gk.pl,pos:"GK",line:{sv:st?Math.max(0,st[o][1]-reg):0,ga:ga,cs:cs}});

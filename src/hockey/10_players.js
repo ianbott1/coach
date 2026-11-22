@@ -66,9 +66,12 @@ function teamLines(rng,c){
     if(N.a&&L[N.a])L[N.a].ast++ });
   const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
   const sog=ev.filter(e=>e.side===c.side&&!e.en&&!e.extra).length+sv(o);
-  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited);
+  // round 101: a shot the full match showed is its shooter's (d.pn, roster slots); the rest shared as before
+  const sd=c.side==="home"?0:1, shown={}; let nShown=0;
+  c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]!==sd||q[1]!=="s")return; const p=c.R[q[2]]; if(p&&L[p.n]){ shown[p.n]=(shown[p.n]||0)+1; nShown++ } }));
+  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited-nShown);
   const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
-  dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]; l.pts=l.goals+l.ast });
+  dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]+(shown[d.n]||0); l.pts=l.goals+l.ast });
   const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
   // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
   // against; an empty-net goal is nobody's

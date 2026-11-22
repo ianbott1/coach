@@ -330,10 +330,11 @@ function finishLive(){ liveEndedAt=Date.now();
   const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives.map(d=>{ if(!d||!d.pl)return d; const {pl,_pb,pbShown,...r}=d;
+              drives:live.drives.map(d=>{ if(!d||!(d.pl||d.pbShown||d._ev))return d; const {pl,_pb,pbShown,_ev,...r}=d;
                 // round 101: the full match's possession log stays with the live game, not the save; a stretch it played
                 // back keeps the men it showed scoring (roster slots), and the box score credits them
                 if(pbShown&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.namesOf==="function"){ try{ const pn=HL_SPORT.namesOf(live,d); if(pn&&pn.length)r.pn=pn }catch(e){} }
+                if(pbShown&&typeof HL_SPORT!=="undefined"&&HL_SPORT.evPB&&typeof hlEvNames==="function"){ try{ const pn=hlEvNames(live,d); if(pn&&pn.length)r.pn=pn }catch(e){} }
                 return r })};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
   if(live.eng.rest&&live.eng.rest[meHome?"home":"away"])played.rested=true;   // starters rested: fewer knocks this week (Season._resolve)
