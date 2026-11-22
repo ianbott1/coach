@@ -1,5 +1,5 @@
 {
- "fp": "c2f871665d89f8f0",
+ "fp": "abd292e8ab00cf4c",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -530,6 +530,11 @@
    "fp": "c2f871665d89f8f0",
    "from": "ded0f7bbc8a2bf16",
    "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
+  },
+  {
+   "fp": "abd292e8ab00cf4c",
+   "from": "c2f871665d89f8f0",
+   "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
   }
  ],
  "result": {
@@ -544,7 +549,7 @@
     "heis": "01dd37bc7325f176",
     "history": "6384997958515063",
     "universe": "a9f0de7aa1110492",
-    "screens": "06468c223b865fb7"
+    "screens": "fdff4f07bf4b2df7"
    },
    {
     "year": 2027,
@@ -556,7 +561,7 @@
     "heis": "eb3ac9729b9218e4",
     "history": "90dec017a25fa243",
     "universe": "084c0c4109e35ad9",
-    "screens": "95bd2432f3a0d118"
+    "screens": "7e8f370311625b21"
    }
   ],
   "Wrexham#777": [
@@ -570,7 +575,7 @@
     "heis": "c3ba80646ca3f1fd",
     "history": "4c6b5a840a49e7ee",
     "universe": "c3d9d34d7e0a690b",
-    "screens": "f9ed7ce29199e966"
+    "screens": "6c49c31dac5dbee0"
    },
    {
     "year": 2027,
@@ -582,7 +587,7 @@
     "heis": "6a9f17a496fb041d",
     "history": "6412fe9f0c0ffec9",
     "universe": "b493a8c2e62291eb",
-    "screens": "e93ec52a342a81b8"
+    "screens": "cb230138d874851d"
    }
   ],
   "schedules#60": [

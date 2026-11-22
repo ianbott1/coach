@@ -1,5 +1,5 @@
 {
- "fp": "b793c8ea2a62a730",
+ "fp": "5a447a9edc9eb95f",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -95,6 +95,11 @@
    "fp": "b793c8ea2a62a730",
    "from": "d0ca31f14dfe2989",
    "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
+  },
+  {
+   "fp": "5a447a9edc9eb95f",
+   "from": "b793c8ea2a62a730",
+   "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
   }
  ],
  "result": {
@@ -109,7 +114,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "6f17402b91f7593b",
-    "screens": "d1793a239569e80d"
+    "screens": "ca525c0f1e790135"
    }
   ]
  }

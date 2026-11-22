@@ -1,5 +1,5 @@
 {
- "fp": "134454bd23125c94",
+ "fp": "03eac32c1e90f3d2",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -584,6 +584,11 @@
    "fp": "134454bd23125c94",
    "from": "31585c74056a1f90",
    "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
+  },
+  {
+   "fp": "03eac32c1e90f3d2",
+   "from": "134454bd23125c94",
+   "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
   }
  ],
  "result": {
@@ -598,7 +603,7 @@
     "heis": "18dfdd2f20eb3b97",
     "history": "8bc8417ba3331c9d",
     "universe": "8db0fc25cb77d57b",
-    "screens": "dcbcec6e32eb9fd7"
+    "screens": "fa756689323f024d"
    },
    {
     "year": 2027,
@@ -610,7 +615,7 @@
     "heis": "8b7a474aedecef62",
     "history": "c25c61904c331af4",
     "universe": "71a21703d3d47567",
-    "screens": "26a9c1efc8721290"
+    "screens": "551da3ef9465bc7b"
    },
    {
     "year": 2028,
@@ -622,7 +627,7 @@
     "heis": "86a1f37110996796",
     "history": "b596a8b16b9de67a",
     "universe": "184a10726e16eb98",
-    "screens": "70edd0e07cb3dbe7"
+    "screens": "ab72b89a2dec0197"
    },
    {
     "year": 2029,
@@ -634,7 +639,7 @@
     "heis": "c012d4792aa2ab0f",
     "history": "768b23524da2739c",
     "universe": "9b67da971ca40068",
-    "screens": "e71bf7cc52dd182e"
+    "screens": "449b35e22b93c60c"
    }
   ],
   "Rice#2024": [
@@ -648,7 +653,7 @@
     "heis": "22cd28654166ce01",
     "history": "da8be9bae788ea8d",
     "universe": "20f420a8d18619ec",
-    "screens": "e009944b1ac1e8e9"
+    "screens": "c9085b22f349affb"
    },
    {
     "year": 2027,
@@ -660,7 +665,7 @@
     "heis": "0b42dc554bd2406c",
     "history": "257528694eade36f",
     "universe": "7d7599d0efced663",
-    "screens": "c56d4cb759a69b84"
+    "screens": "3c373de579216fd2"
    },
    {
     "year": 2028,
@@ -672,7 +677,7 @@
     "heis": "a16aace2f4251f32",
     "history": "937d62a7bdd4aae0",
     "universe": "552ab382eda6ead7",
-    "screens": "51a2a01bc4f862bf"
+    "screens": "b62ea09c11e54383"
    },
    {
     "year": 2029,
@@ -684,7 +689,7 @@
     "heis": "b1582f00351852f6",
     "history": "d5f037037294e287",
     "universe": "bd021f47d9f895f0",
-    "screens": "4f28005e1a263de9"
+    "screens": "fe1236f6dc31a101"
    }
   ],
   "Oregon#777": [
@@ -698,7 +703,7 @@
     "heis": "ae0fd0e488d8a51e",
     "history": "f7432cb1648a6e38",
     "universe": "0c1cb95c504df742",
-    "screens": "867b98a4e77ba7f9"
+    "screens": "1a3b3c90c6752d59"
    },
    {
     "year": 2027,
@@ -710,7 +715,7 @@
     "heis": "a3c9215e04a9c949",
     "history": "d40899eb96c8d95b",
     "universe": "141f2163ffbb6993",
-    "screens": "96687e2455b43450"
+    "screens": "5cffe6c94ad46787"
    },
    {
     "year": 2028,
@@ -722,7 +727,7 @@
     "heis": "8838c480ac698135",
     "history": "aff0daaf3258a7e9",
     "universe": "b77792318d481901",
-    "screens": "5dd04477419bc5fc"
+    "screens": "df267e75acb9092d"
    }
   ],
   "Kent State#31337": [
@@ -736,7 +741,7 @@
     "heis": "73505a430b8ca78b",
     "history": "bb81558b048688c1",
     "universe": "9ef9c64f49d492fb",
-    "screens": "703240ab76098df9"
+    "screens": "93757510bef1fbee"
    },
    {
     "year": 2027,
@@ -748,7 +753,7 @@
     "heis": "d10b36dd5b6aed2e",
     "history": "7819caf2688199ed",
     "universe": "d683b5882351fef1",
-    "screens": "3d749d686e13c016"
+    "screens": "045efbee09d6118f"
    },
    {
     "year": 2028,
@@ -760,7 +765,7 @@
     "heis": "b1ee17ec61f1d8f1",
     "history": "9e27f61b17d43f7a",
     "universe": "fc5a22d6cf5c056b",
-    "screens": "38b8eef680aefc34"
+    "screens": "4a3726c63a930ca2"
    }
   ],
   "schedules#60": [

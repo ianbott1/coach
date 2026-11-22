@@ -1,5 +1,5 @@
 {
- "fp": "5de88b7d317efa4c",
+ "fp": "bd70c2aff6ba6737",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -215,6 +215,11 @@
    "fp": "5de88b7d317efa4c",
    "from": "4e12b98948ed03d9",
    "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
+  },
+  {
+   "fp": "bd70c2aff6ba6737",
+   "from": "5de88b7d317efa4c",
+   "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
   }
  ],
  "result": {
@@ -229,7 +234,7 @@
     "heis": "7d5b897b0d9b6c32",
     "history": "fd64034a4fd3d2ad",
     "universe": "269b8d5687372309",
-    "screens": "32515bba629664ab"
+    "screens": "2e1a2b141a9b0bbd"
    },
    {
     "year": 2027,
@@ -241,7 +246,7 @@
     "heis": "773ec581dad87a9c",
     "history": "6eb635fcda3a4496",
     "universe": "263c5a75f4b14352",
-    "screens": "efb89eb801fa58cb"
+    "screens": "6b620bcd77c2ebbf"
    }
   ],
   "Colorado#777": [
@@ -255,7 +260,7 @@
     "heis": "c538f6ec29f1dea8",
     "history": "7fc71e187a31d02c",
     "universe": "be6cba51ca7b517f",
-    "screens": "cef01f61aa5ff0a8"
+    "screens": "dcb23abca29fac79"
    },
    {
     "year": 2027,
@@ -267,7 +272,7 @@
     "heis": "eac2183831bc1117",
     "history": "12462c1fdf09ce32",
     "universe": "6c8a5dfad205dc44",
-    "screens": "d7f384e6ae89debe"
+    "screens": "56c80b0e07479a05"
    }
   ],
   "schedules#60": [

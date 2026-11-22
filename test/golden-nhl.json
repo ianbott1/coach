@@ -1,5 +1,5 @@
 {
- "fp": "825cfed25bdc4a97",
+ "fp": "91e7db2343594987",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -560,6 +560,11 @@
    "fp": "825cfed25bdc4a97",
    "from": "226a839a87aae6c5",
    "note": "round 99: screens only (the team card's links, the grid wording); every other field equal"
+  },
+  {
+   "fp": "91e7db2343594987",
+   "from": "825cfed25bdc4a97",
+   "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
   }
  ],
  "result": {
@@ -574,7 +579,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "6f17402b91f7593b",
-    "screens": "d1793a239569e80d"
+    "screens": "ca525c0f1e790135"
    },
    {
     "year": 2027,
@@ -586,7 +591,7 @@
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
     "universe": "64f492ea517ffc50",
-    "screens": "ed0885452419ce29"
+    "screens": "d70a8f9bd2dfb54d"
    }
   ],
   "Edmonton#777": [
@@ -600,7 +605,7 @@
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
     "universe": "bbb2c5f2b8368427",
-    "screens": "732f39a43edec8b7"
+    "screens": "f49daa15a25856f2"
    },
    {
     "year": 2027,
@@ -612,7 +617,7 @@
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
     "universe": "4a47d51d262fb6e2",
-    "screens": "3663459379bed678"
+    "screens": "6d5d05968c3c5b40"
    }
   ],
   "schedules#60": [
