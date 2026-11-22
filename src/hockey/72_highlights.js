@@ -127,24 +127,48 @@ const HL_SPORT=(function(){
      shape around the puck, the goalies square to it. Every real moment still plays as its own clip. Drawn from the clock,
      not stored. */
   function ambient(x,W,H){
+    /* round 99 (Ian: "never seeing any skating down the ice or passing; everything in the final third"): whole-rink
+       possessions. Each one: a breakout from behind its own net (the D up the boards to a winger), the carry up the ice
+       with the puck on his stick and his line skating with him, the entry over the blue line, a cycle of passes low and
+       to the points, then the puck is lost (a stick check, a dump, a clear) and the other five break out the other way.
+       Which side has it follows the stretch's balance of play (mom). The checkers back-check between the puck and their
+       net, the goalies square to it. Never a shot: every shot is a real one, played as its own clip. */
     if(typeof live==="undefined"||!live||live.done||!live.g)return;
     const g=live.g, last=live.drives[live.drives.length-1], mom=last&&typeof last.mom==="number"?last.mom:0.5;
-    const DT=900, now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131+3)>>>0;
-    const spot=k=>{ const h=strHash(seedB+"|"+k), r1=(h%1000)/1000, r2=((h>>>10)%1000)/1000, r3=((h>>>20)%1000)/1000, home=r1<mom;
-      return {home,a:0.3+r2*0.5,y:0.12+r3*0.76} };   // in the attacking side's frame: never past the tops of the circles
-    const at=T=>{ const k=Math.floor(T/DT), f=(T-k*DT)/DT, A=spot(k), B=spot(k+1), e=hlEase(Math.min(1,f/0.6));
-      return {a:hlLerp(A.home===B.home?A.a:1-A.a,B.a,e),y:hlLerp(A.home===B.home?A.y:1-A.y,B.y,e),home:B.home,ra:A,rb:B,e} };
-    // the five around the puck, in the frame of the side with it (a: 0 its own end, 1 the end it attacks)
-    const shape=(T,att)=>{ const b=at(T), sh=(b.a-0.72)*0.85;
-      return (att?ATT:DEF).map((p,i)=>{ if(i===0)return att?[0.08,0.5+(b.y-0.5)*0.1]:[GOAL-0.015,0.5+(b.y-0.5)*0.12];
-        return [Math.max(0.12,Math.min(0.9,p[0]+sh*(att?1:0.8))),0.5+(p[1]-0.5)*0.92+(b.y-0.5)*(att?0.22:0.3)] }) };
-    const lagged=att=>{ const S0=[0,100,200,300], o=ATT.map(()=>[0,0]); S0.forEach((dt,q)=>{ const w=4-q; shape(now-dt,att).forEach((p,i)=>{ o[i][0]+=p[0]*w; o[i][1]+=p[1]*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };
-    const b=at(now), side={home:b.home}, kits=hlKits(g.home,g.away), r=Math.max(5,W/80);
-    const [qx,qy]=P(W,H,side,b.a,b.y), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],kits.map(k=>k.fill));
-    [false,true].forEach(att=>{ const home=att?b.home:!b.home, k=kits[home?0:1], Pt=lagged(att);
-      let ni=-1,nd=1e9; if(att)Pt.forEach((p,i)=>{ if(!i)return; const [sx,sy]=P(W,H,side,p[0],p[1]), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
-      Pt.forEach((p,i)=>{ let [sx,sy]=P(W,H,side,p[0],p[1]); if(i===ni){ const back=side.home?1:-1; sx=qx+back*r*1.25; sy=qy }   // the man on the puck carries it
-        hlPlayer(x,sx,sy,r,i?k:hlKit("",gks[home?0:1]),{dir:i===ni?(side.home?Math.PI:0):Math.atan2(qy-sy,qx-sx)}) }) });
+    const now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131+3)>>>0, PD=11000;
+    const rnd=(k,j)=>((strHash(seedB+"|"+k+"|"+j)>>>0)%10000)/10000;
+    // one possession's puck path in the frame of the side with it (a: 0 its own goal line end, 1 the end it attacks)
+    const plan=k=>{ const home=rnd(k,0)<mom, sd=rnd(k,1)<0.5?0.14:0.86, os=1-sd, ent=rnd(k,2)<0.35;   // ent: dump it in
+      // [time 0-1, a, y, who has it (index in the five: 0 D, 1 D, 2 C, 3 W strong side, 4 W weak side), pass?]
+      const P0=[[0,0.07,0.5,0,0],[0.08,0.1,sd*0.6+0.2,0,0],[0.14,0.27,sd,3,1],[0.22,0.34,sd*0.85+0.075,3,0],[0.3,0.44,0.5+(sd-0.5)*0.4,2,1],
+        [0.42,0.62,0.5+(os-0.5)*0.3,2,0],[0.5,ent?0.9:0.72,ent?sd:0.5+(os-0.5)*0.55,ent?3:4,ent?1:0],[0.6,0.86,os*0.9+0.05,4,ent?0:1],
+        [0.68,0.68,os*0.7+0.15,1,1],[0.76,0.68,sd*0.7+0.15,0,1],[0.84,0.85,sd*0.9+0.05,3,1],[0.92,0.8,0.5+(sd-0.5)*0.3,2,1],[1,0.92,0.5+(sd-0.5)*0.2,2,0]];   // lost deep in their end, where the other five break out from
+      return {home,sd,os,P:P0} };
+    const at=T=>{ const k=Math.floor(T/PD), f=(T-k*PD)/PD, pl=plan(k); let i=0; while(i<pl.P.length-2&&pl.P[i+1][0]<=f)i++;
+      const A=pl.P[i], B=pl.P[i+1], u=(f-A[0])/Math.max(1e-6,B[0]-A[0]), pass=B[4]===1, e=pass?Math.min(1,u*1.6):hlEase(u);
+      return {k,f,pl,a:hlLerp(A[1],B[1],e),y:hlLerp(A[2],B[2],e),who:pass&&u<0.62?-1:(pass?B[3]:A[3]),toWho:B[3],pass,u} };
+    // the five with the puck, around it: the man with it on it, the rest in lanes ahead or trailing
+    const five=s=>{ const a=s.a, y=s.y, sd=s.pl.sd, os=s.pl.os, lane=v=>0.5+(v-0.5)*0.92;
+      const P=[[Math.max(0.06,a-0.22),lane(0.32)],[Math.max(0.06,a-0.2),lane(0.68)],[Math.min(0.9,a+0.04),0.5+(y-0.5)*0.4],[Math.min(0.92,a+0.07),lane(sd*0.9+0.05)],[Math.min(0.92,a+0.1),lane(os*0.85+0.075)]];
+      if(a>0.66){ P[0]=[0.66,lane(0.3)]; P[1]=[0.66,lane(0.7)]; P[2]=[0.8,0.5+(y-0.5)*0.3]; P[3]=[0.86,lane(sd*0.85+0.075)]; P[4]=[0.84,lane(os*0.75+0.125)] }   // set up in their end: the D at the points
+      if(s.who>=0)P[s.who]=[a-0.012,y]; else { const t=s.pl.P, nx=t.find(q=>q[0]>s.f); if(nx)P[nx[3]]=[hlLerp(P[nx[3]][0],nx[1],0.7),hlLerp(P[nx[3]][1],nx[2],0.7)] }   // a pass: the man it's going to moves to meet it
+      return P };
+    // their five: between the puck and their own net (at 1 in this frame), tighter as it comes in
+    const chk=s=>{ const a=s.a, y=s.y, d=Math.min(1,Math.max(0,(a-0.3)/0.5)), back=hlLerp(0.5,0.9,d);
+      return [[Math.min(0.97,back+0.03),0.5+(y-0.5)*0.35-0.1],[Math.min(0.97,back+0.03),0.5+(y-0.5)*0.35+0.1],[Math.min(0.95,a+0.05),hlLerp(0.5,y,0.6)],[Math.min(0.93,back-0.07),0.24+(y-0.5)*0.2],[Math.min(0.93,back-0.07),0.76+(y-0.5)*0.2]] };
+    const lag=fn=>{ const o=[[0,0],[0,0],[0,0],[0,0],[0,0]]; [0,90,180,270].forEach((dt,q)=>{ const w=4-q, s=at(now-dt), side=s.pl.home, P=fn(s);
+        P.forEach((p,i)=>{ const X=side?1-p[0]:p[0], Y=side?1-p[1]:p[1]; o[i][0]+=X*w; o[i][1]+=Y*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };   // rink frame, smoothed
+    const s=at(now), home=s.pl.home, kits=hlKits(g.home,g.away), r=Math.max(5,W/80), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],kits.map(k=>k.fill));
+    const RP=(X,Y)=>{ const sideF={home:false}; return P(W,H,sideF,X,Y) };   // rink frame straight to the screen (home attacks left: X is already in rink terms)
+    const puckX=home?1-s.a:s.a, puckY=home?1-s.y:s.y; let [qx,qy]=RP(puckX,puckY);
+    const A5=lag(five), C5=lag(chk), ka=kits[home?0:1], kc=kits[home?1:0];
+    // the goalies: on their lines, square to the puck
+    [[GOAL,0],[1-GOAL,1]].forEach(([gx,ti],j)=>{ const [px,py]=RP(gx,0.5+(puckY-0.5)*0.12); hlPlayer(x,px,py,r,hlKit("",gks[ti]),{dir:Math.atan2(qy-py,qx-px)}) });
+    C5.forEach(p=>{ const [px,py]=RP(p[0],p[1]); hlPlayer(x,px,py,r,kc,{dir:Math.atan2(qy-py,qx-px)}) });
+    A5.forEach((p,i)=>{ let [px,py]=RP(p[0],p[1]); const on=s.who===i;
+      if(on){ const back=home?1:-1; px=qx+back*r*1.2; py=qy+Math.sin(now/110)*r*0.25 }   // on his stick, worked side to side
+      hlPlayer(x,px,py,r,ka,{dir:on?(home?Math.PI:0):Math.atan2(qy-py,qx-px)}) });
+    if(s.who>=0){ qy+=Math.sin(now/110)*r*0.45 }   // stickhandling: the puck moves on his blade
     hlBall(x,qx,qy,r*0.5,0,null,{kind:"puck"});
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, m=Math.min(60,live.drives.length*5);
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'"});

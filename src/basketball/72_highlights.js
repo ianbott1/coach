@@ -100,7 +100,7 @@ const HL_SPORT=(function(){
      defender between his man and the rim, never a shot (the shots are the clips). Drawn from the clock, not stored. */
   function ambient(x,W,H){
     if(typeof live==="undefined"||!live||live.done||!live.g)return;
-    const g=live.g, PD=5200, DT=950, TR=1300, now=Date.now(), seed=((live.step||0)*7919+(live.g.home||"").length*131)>>>0;
+    const g=live.g, PD=9000, DT=1250, TR=2600, now=Date.now(), seed=((live.step||0)*7919+(live.g.home||"").length*131)>>>0;
     const hz=(a,b)=>strHash(seed+"|"+a+"|"+b);
     const sway=(i,T)=>[Math.sin(T/700+i*1.7)*0.012,Math.cos(T/830+i*2.3)*0.02];
     const holder=(k,j)=>{ if(j<=0)return 0; const p=holder(k,j-1), h=1+hz(k,j)%4; return (p+h)%5 };   // never to himself
@@ -108,17 +108,23 @@ const HL_SPORT=(function(){
     const mir=p=>[1-p[0],1-p[1]];
     const at=T=>{ const k=Math.floor(T/PD), tIn=T-k*PD, home=k%2===0, j=Math.floor(tIn/DT), hj=holder(k,j);
       const set=ATT.map((p,i)=>{ const s=sway(i,T); return [p[0]+s[0],p[1]+s[1]] });
+      // round 99: the man with it puts it on the floor and drives at the rim once a trip, then kicks it out
+      { const dj=2+hz(k,99)%3; if(j===dj){ const ph0=(tIn-j*DT)/DT, d=Math.sin(Math.min(1,ph0)*Math.PI)*0.55; set[hj]=[hlLerp(set[hj][0],RIM[0]-0.05,d),hlLerp(set[hj][1],RIM[1],d)] } }
       // the ball between two men while a pass is in the air, else with the man who has it
       let ball; const ph=(tIn-j*DT)/DT; if(j>0&&ph<0.32){ const a=set[holder(k,j-1)], b=set[hj], e=hlEase(ph/0.32); ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)] } else ball=[set[hj][0]-0.012,set[hj][1]];
       let att=set, def=defOf(set,j>0&&ph<0.32?-1:hj);
       if(tIn<TR){ // bringing it up: last trip's defenders run up, last trip's attackers get back
         const e=hlEase(tIn/TR), pAtt=ATT, pDef=defOf(ATT,0), fromA=pDef.map(mir), fromD=pAtt.map(mir);
         att=set.map((p,i)=>[hlLerp(fromA[i][0],p[0],e),hlLerp(fromA[i][1],p[1],e)]); def=def.map((p,i)=>[hlLerp(fromD[i][0],p[0],e),hlLerp(fromD[i][1],p[1],e)]); ball=[att[0][0]-0.015,att[0][1]] }
-      return {home,att,def,ball} };
+      return {home,att,def,ball,air:j>0&&ph<0.32&&tIn>=TR,up:tIn<TR} };
     const b=at(now), c={home:b.home}, kits=hlKits(g.home,g.away), r=Math.max(5,W/80), ink=kits[b.home?0:1].fill, dink=kits[b.home?1:0].fill;
     b.def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",null) });
     b.att.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",null) });
-    const [qx,qy]=P(W,H,c,b.ball[0],b.ball[1]); hlBall(x,qx,qy,r*0.62,0,null,{fill:"#E8702A",ring:"#2a1406"});
+    // round 99 (Ian: "still not seeing dribbling"): a ball in a man's hands is dribbled: it bounces at his side, the
+    // shadow on the floor, quicker on the move up the floor
+    let [qx,qy]=P(W,H,c,b.ball[0],b.ball[1]); const held=!b.air, bo=held?Math.abs(Math.sin(now/(b.up?120:150)))*r*1.3:0;
+    if(held){ qx+=(b.home?1:-1)*r*0.15; qy+=r*0.75 }
+    hlBall(x,qx,qy,r*0.62,bo,null,{fill:"#E8702A",ring:"#2a1406"});
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, SG=typeof SEGS!=="undefined"?SEGS:8, q=Math.min(4,Math.floor(live.drives.length*4/SG)+1);
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:"Q"+q});
   }
