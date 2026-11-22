@@ -409,6 +409,36 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 99: Ian's notes and the November 22 reviews (Muse, Instinct).
+- Title page: the "Seven games · five sports" line and the three-box section gone (Ian: they read as AI).
+- Field goals: the kicking unit wears numbers (football 72 stNums): the kicker the one kickerName names, the holder and the
+  line on numbers no one on the roster wears, the same each time for a club; the rush the defense's numbers; the key names
+  the kicker. Picks: a man from the passing side cuts across and brings the returner down where he's downed (the
+  quarterback on a long return, the intended receiver on a short one), tagged TACKLE; not on a return to the end zone.
+- The team card and the top bar link (core GO, goTo): the club's name and record to its page (schedule and history), the
+  group record to the standings at its conference, the ranking to the ranking tab, the coach to his page; keyboard too.
+  test/golinks.js (quick tier, browser): every figure in all seven at 390 and 1280 opens its page; fails on 6473dcb.
+- Old seasons (Muse's veteran careers began before round 88: plans moved nothing, the grids said the engine didn't read
+  them): a season plays to its end on the engine it began on, so saves replay; the hub now says what arrives next
+  season (oldEngineHTML, seasons before engine 17) and the grids say "this season", not "this game". Measured: a season
+  begun on engine 9 reads 68/68/68 for hockey's three plans and the old line; engine 18 moves them.
+- College football: losing a conference title game no longer says "Season over" before the playoff field is picked
+  ("Beaten in the ACC Championship. The playoff field is picked next."). test/cfb-conf.js: Ohio State and Miami lose
+  their title games; 6473dcb said "Season over" for both.
+- Baseball's call screen: the clock under a call never reads under half an inning (in extra innings it was 0, so a one-run
+  lead read 99%: Muse). Up one with half an inning left now reads 91%. Not fixed: a call comes mid-inning and the live view
+  shows the inning from its start after it, so the scoreboard steps back behind the call's headline.
+- Watching (Ian: hockey "never skating down the ice or passing", basketball "not seeing dribbling"): hockey's play between
+  moments is whole-rink possessions (a breakout from behind the net, the carry up the ice with the puck worked on the
+  stick, the entry or a dump, a cycle of passes low and to the points, the puck lost deep where the other five break out),
+  the checkers back between the puck and their net, the goalies square. Basketball brings it up the floor dribbling, the
+  ball bouncing at the handler's side, a drive at the rim once a trip, then kicked out. Both drawn from the clock; still
+  never a shot (shots are the clips). Not yet: the clips placed inside the continuous play, so what you watch is the
+  game's own possessions; football and baseball between moments (their engines have no plays inside a drive or inning).
+- Not done from the reviews: rested football starters still named in clips and backups' games uncredited; hockey's backup
+  goalie's start; baseball's injured probable starter; football's canvas and caption naming different sides (not
+  reproduced yet).
+
 Round 98: watching (testers: "a sport they read rather than watch").
 - The play between moments (core hlAmbOn, hlAmbient; each sport's ambient): hockey and basketball join soccer. Hockey: the
   puck moved about by the side with it (the stretch's mom), never into the slot or a shot, each five keeping its shape

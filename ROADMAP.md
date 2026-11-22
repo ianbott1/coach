@@ -126,6 +126,14 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 99 (done): Ian's notes, the November 22 reviews
+- Title page trimmed. Field goals with numbers; pick returns end in a tackle. The team card's figures open their pages.
+- Old seasons say the new features arrive next season (testers' veteran careers). A conference title loss isn't the end.
+- Hockey plays the whole rink between moments: breakouts, skating up the ice, passing, stickhandling. Basketball dribbles,
+  drives and brings it up the floor.
+- Next: the clips inside the continuous play (watch the game's own possessions, not decoration between them); football and
+  baseball between moments; who-played (rested starters in football clips, backup goalie starts, injured probable starter).
+
 ## Round 98 (done): watching
 - Hockey and basketball play on between the highlights, as soccer's full match did: the puck and ball moving, both sides
   in shape, possessions trading ends. Soccer and hockey's pitch is never empty between clips now, in any mode.
