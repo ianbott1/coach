@@ -127,6 +127,11 @@ const STYLE={
   paint: {l:"pounding the paint",   mod:{share:-0.15,p2:-0.005,p3:0,      to:0,     f2:1.2}, answer:"pack"},
   pnr:   {l:"running pick-and-roll",mod:{share:0,    p2:0.006, p3:0,      to:0.008, f2:1},   answer:"trap"}
 };
+/* round 100: the read panel's marks on points in the paint (Grokbot: never marked, even at 24 in a quarter), a rate a
+   quarter (pros) or ten minutes (college). Measured at the read (scratch r100 paint.js, 300 reads a league): pros 20+
+   is 69% of paint-pounding sides and 29% of the rest, 10 or under 6% and 40%; college 13+ 33% and 15%, 7 or under 23%
+   and 51% */
+function bbPaintMark(){ return BB.quarters?[20,10]:[13,7] }
 const STYLE_KEYS=["threes","paint","pnr"];
 const DEFENSES={
   chase:{beats:"threes",l:"Run them off the line",  d:"Close out hard, switch everything, live with drives"},
@@ -388,7 +393,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   // 45%+ or 31%- , pick-and-rolls 3.4+ a stretch). If not, a miss isn't held against you (Instinct: 38%
   // threes against a 39% average, nothing marked, and "wrong: they were bombing threes")
   const shownOf=(dp,t)=>{ const T=dp.tell; if(!T)return true; const sh=100*T.tpa/Math.max(1,T.fga), n=Math.max(1,T.n);
-    return t==="threes"?sh>=45:t==="paint"?sh<=31:t==="pnr"?T.pnr/n>=3.4:true };
+    return t==="threes"?sh>=45:t==="paint"?sh<=31||T.paint/n*2>=bbPaintMark()[0]:t==="pnr"?T.pnr/n>=3.4:true };
   const apply=(side,dp,v)=>{
     const X=st.S[side];
     if(dp.k==="prep"){ if(DEFENSES[v]){ const t=st.S[other(side)].off; X.def=v; X.prepd=true;

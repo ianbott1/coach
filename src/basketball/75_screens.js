@@ -127,7 +127,7 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
   const per=BB.quarters?"a quarter":"every ten minutes";
   return `<div class="evid"><div class="evh">How ${esc(g[opp])} are scoring</div>
     <div class="evr ${share>=45?'hi':share<=31?'lo':''}"><span class="evk">Their shots from three, so far</span><span class="evv">${share}%</span></div>
-    <div class="evr"><span class="evk">Points in the paint, ${per}</span><span class="evv">${paint}</span></div>
+    <div class="evr ${+paint>=bbPaintMark()[0]?'hi':+paint<=bbPaintMark()[1]?'lo':''}"><span class="evk">Points in the paint, ${per}</span><span class="evv">${paint}</span></div>
     <div class="evr ${T.pnr/n>=3.4?'hi':''}"><span class="evk">Pick-and-rolls run, ${per}</span><span class="evv">${scr}</span></div>
     ${firstReadTip()}<div class="evn">League average: ${AV.three}% of shots from three, ${AV.paint} points in the paint, ${AV.pnr} pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
 }
