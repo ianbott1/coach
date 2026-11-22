@@ -38,12 +38,21 @@ const HL_SPORT=(function(){
   function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={};
     Object.keys(SL).forEach(k=>{ const i=hlFit(team,SL[k]); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
     nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
+  /* round 99 (Ian: "still can't see players numbers on field goal kicks"): the kicking unit wears numbers. The roster
+     carries no kicker, holder or snapper, so they take numbers no one on the roster wears (the kicker the one named by
+     kickerName, a single digit or teens; the holder a backup's number in the teens; the line from the 50s-70s), the same
+     every time for a club; the rush is the defense's numbers. */
+  function stNums(team){ const R=(SEA.roster&&SEA.roster[team])||[], used={}; R.forEach((p,i)=>{ if(p){ const n=shirtNo(team,i); if(n!=null)used[n]=1 } });
+    const h=strHash("st|"+team), pick=(lo,hi,k)=>{ const span=hi-lo+1; for(let j=0;j<span;j++){ const v=lo+((h+k*31+j*7)%span); if(!used[v]){ used[v]=1; return v } } return lo };
+    return {k:pick(1,19,1), h:pick(10,19,2), line:[0,1,2,3,4,5,6,7,8].map(j=>pick(50,79,3+j))} }
   function base(L,d){ const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
   function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(97,d.stall||75));
     // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)
     const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
-    return Object.assign(base(L,d),{kind:good?"fg":"miss",los,kicker:typeof kickerName==="function"?kickerName(d.home?L.g.home:L.g.away):null,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
+    const B=base(L,d), team=d.home?L.g.home:L.g.away, st=stNums(team), kn=typeof kickerName==="function"?kickerName(team):null;
+    B.legend=[{team,kit:B.kits[d.home?0:1],list:[[st.k,kn?String(kn).split(" ").slice(-1)[0]:"K"],[st.h,"holder"]]},B.legend[1]];
+    return Object.assign(B,{st,kind:good?"fg":"miss",los,kicker:kn,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
       endY:good?0.5+wide*(0.005+r()*0.03):0.5+wide*(0.085+r()*0.05),startY:hook?(good?0.5+wide*0.09:0.5-wide*0.02):0.5,base:3400,reveal:0.82}) }
   function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.lost||d.stall||50)), len=Math.round(3+r()*8);
     const m=/recovered by (.*)$/.exec(rowText(L,d));
@@ -158,9 +167,10 @@ const HL_SPORT=(function(){
       bx=hlLerp(holder[0],111,s); const k=Math.min(1,s), path=c.hook?hlLerp(hlLerp(0.5,sy,Math.min(1,k*1.6)),ey,Math.pow(k,2.4)):hlLerp(0.5,ey,k); by=path; z=Math.max(0,Math.sin(Math.min(1,s)*Math.PI*0.95))*0.06 }   // low again by the posts, so where it crosses reads plainly
     if(t>=snap&&t<kick){ const s=(t-snap)/(kick-snap); if(s<0.4){ bx=hlLerp(c.los,holder[0],s/0.4) } }
     const line=[0.38,0.42,0.46,0.5,0.54,0.58,0.62,0.34,0.66];
-    line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
-    [holder,kicker].forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)") });
-    line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)") });
+    const st=c.st||{k:null,h:null,line:[]};
+    line.forEach((y,i)=>{ const [px,py]=P(W,H,c,c.los-1.2,y); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",st.line[i]!=null?{num:st.line[i]}:null) });
+    [[holder,st.h,"H"],[kicker,st.k,"K"]].forEach(([p,n,lab])=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",lab,n!=null?{num:n}:null) });
+    line.concat([0.3,0.7]).forEach((y,i)=>{ const rush=t>snap?Math.min(1,(t-snap)/0.25)*2.5:0; const [px,py]=P(W,H,c,c.los+1.8-rush*0.6,y+(y-0.5)*-0.1*rush/2.5); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[i%c.defN.length]}:null) });
     // the uprights, drawn over everything so the ball is plainly inside them or not
     { const a=P(W,H,c,110,0.45), b=P(W,H,c,110,0.55), a0=P(W,H,c,96,0.45), b0=P(W,H,c,96,0.55); x.save();
       // the window between the uprights, marked back up the field so the ball's line through it (or not) is plain
@@ -216,9 +226,15 @@ const HL_SPORT=(function(){
       if(t>tEnd){ const u=(t-tEnd)/(1-tEnd), run=c.ret!=null?c.ret:12, cy=tg[0]+0.8-hlEase(u)*run, cyl=hlLerp(tg[1],0.5,hlEase(u)*0.5); def[j]=[cy,cyl]; bx=cy; by=cyl; z=0;
         // round 80: the passing side gives chase, his own men run with him
         if(c.ret!=null){ off.forEach((p,i)=>{ const k=u*(i<2||i>=6?0.35:0.6); off[i]=[hlLerp(p[0],cy+2+(i%4)*1.2,k),hlLerp(p[1],cyl+((i%3)-1)*0.09,k)] });
-          def.forEach((p,i)=>{ if(i!==j){ const k=u*0.3; def[i]=[hlLerp(p[0],cy-2-(i%3)*1.5,k),hlLerp(p[1],cyl+((i%2)?0.14:-0.14),k)] } }) } } }
+          def.forEach((p,i)=>{ if(i!==j){ const k=u*0.3; def[i]=[hlLerp(p[0],cy-2-(i%3)*1.5,k),hlLerp(p[1],cyl+((i%2)?0.14:-0.14),k)] } })
+          /* round 99 (Ian: "not clear that a player gets tackled"): a man from the passing side cuts across, meets him where he
+             is downed and brings him down: the quarterback on a long return (he is the last man back), the intended receiver
+             on a short one. Not on a return to the end zone. */
+          if(c.retEnd>0&&c.retEnd<100){ const ti=run>12?0:c.rcv, endY=tg[0]+0.8-run, meet=0.82, from=off[ti], v=Math.min(1,u/meet);
+            off[ti]=u<meet?[hlLerp(from[0],endY-0.9,hlEase(v)),hlLerp(from[1],cyl,hlEase(v))]:[cy-0.55,cyl+0.01];
+            c._tk=u>=meet?ti:-1 } } } }
     const r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    const tag=i=>!(c.kind==="int"&&t>tEnd)&&t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
+    const tag=i=>c.kind==="int"&&t>tEnd&&c._tk===i?"TACKLE":!(c.kind==="int"&&t>tEnd)&&t>snap&&((c.pass&&i===c.rcv)||(!c.pass&&i===1)||(c.pass&&i===0&&t<throwT))?["QB","RB","WR","WR"][i]:"";
     const dtag=i=>c.kind==="int"&&t>tEnd&&i===(c.rcv===2?7:8)?"INT":"";   // round 80: the man running it back
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)",dtag(i),c.defN?{num:c.defN[i]}:null) });
     off.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)",tag(i),c.offN?{num:c.offN[i]}:null) });

@@ -380,7 +380,7 @@ function liveWPHTML(onCall){
   /* round 97: baseball asks inside an inning (a stretch here is an inning), so on its call screens the last inning's
      reading was stale: "8th inning, down 1" over the 44% of the 2-2 inning before it (Grokbot: 5% at 10-10 in the
      9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */
-  if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; tau=Math.max(0,tau-0.5/(typeof SEGS!=="undefined"?SEGS:9)) }
+  if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) }   // round 99: never under half an inning: in extras liveTau is 0 and a one-run lead read 99% (Muse)
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next

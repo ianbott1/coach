@@ -1930,17 +1930,27 @@ function myTeamView(){
   return h;
 }
 
+/* round 99 (Ian: "in my card I can't click on my team name, my record, the poll, myself"): each figure on the team card and
+   the top bar opens its page: the club's page (its schedule and history), the standings at its group, the ranking, the
+   coach's page. Keyboard too (Enter or Space on the focused figure). */
+const GO=(k,inner,title)=>`<span class="golink" role="link" tabindex="0" data-go="${k}"${title?` title="${esc(title)}"`:""}>${inner}</span>`;
+function goTo(k){ const my=S.myTeam; flash=null; playerSel=null;
+  if(k==="team"||k==="record"){ openTeam(my); return }
+  if(k==="group"){ view="stand"; standTab="table"; if(LEAGUE.conf.order.length>4&&!LEAGUE.groupFilter)stConf=CONF[my] }
+  else if(k==="rank"){ view="poll" }
+  else if(k==="coach"){ view="dyn"; dynTab="coaches"; dynCoach=my }
+  save(); render(); window.scrollTo({top:0}) }
 function teamCardHTML(my,rk,co){
   let h=`<div class="idcard" style="--tc:${teamInk(my)};border-left:4px solid ${teamInk(my)}">
-    <div class="iname" style="color:${teamInk(my)}">${esc(my)}</div>
+    <div class="iname" style="color:${teamInk(my)}">${GO("team",esc(my),"Your club's page")}</div>
     <div class="imeta">${esc(LEAGUE.conf.names[CONF[my]])} &middot; ${SEA.year} season</div>
     <div class="stats">
-      <div><b>${recFmt(my,liveRec(my))}</b><span>Record</span></div>
-      ${LEAGUE.position?`<div><b>${SEA.pts(my)}</b><span>Points</span></div>`
-        :`<div><b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span></div>`}
-      <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}"><b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span></div>
+      <div>${GO("record",`<b>${recFmt(my,liveRec(my))}</b><span>Record</span>`,"Your schedule and results")}</div>
+      ${LEAGUE.position?`<div>${GO("group",`<b>${SEA.pts(my)}</b><span>Points</span>`,"The table")}</div>`
+        :`<div>${GO("group",`<b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span>`,"The standings")}</div>`}
+      <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}">${GO("rank",`<b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span>`)}</div>
     </div>${co?`<div class="coachbar">
-      <div class="cleft"><div class="cname">${esc(co.n)}${co.you?' <span class="youtag">YOU</span>':""}</div>
+      <div class="cleft"><div class="cname">${GO("coach",esc(co.n),"Your coaching record")}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${coachYear(co)<=1?"first season":"year "+coachYear(co)}
         &middot; coaching ${coachGrade(co.q)}</div></div>
       ${seatBadge()}</div>`:""}
@@ -3564,9 +3574,9 @@ function render0(){
     <div class="stick">
       <div class="topbar">
         <div class="tb-left"><span class="tb-yr">${SEA.year}</span>
-          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${esc(my)}</span></div>
-        <div class="tb-right">${recFmt(my,liveRec(my))}
-          ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${standTag(my,rk)}</span>`:"")}
+          <span class="tb-team${my.length>13?" tb-long tb-xl":my.length>9?" tb-long":""}" style="color:${teamInk(my)}">${GO("team",esc(my))}</span></div>
+        <div class="tb-right">${GO("record",recFmt(my,liveRec(my)))}
+          ${reveal==="half"?"":(LEAGUE.position||LEAGUE.rankAll||rk[my]<=RANK_TOP?`<span class="tb-rk">${GO("rank",standTag(my,rk))}</span>`:"")}
           <button class="reset ${soundOn()?'':'off'}" id="snd" title="Sound ${soundOn()?'on':'off'}">&#9834;</button><button class="reset ${musicOn()?'':'off'}" id="mus" title="Music ${musicOn()?'on':'off'}">&#9835;</button>
           <button class="reset" id="ttl" title="Title screen">&#9632;</button>
           <button class="reset" id="hlp" title="How it works">?</button>
@@ -3622,6 +3632,7 @@ function render0(){
   document.querySelectorAll("[data-cupview]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation();
     view="poll"; LEAGUE.ui.subtab({dataset:{et:"CUP"}}); flash=null; window.scrollTo({top:0}); render() });
   const db=el("dback"); if(db)db.onclick=()=>{dynTeam=null;render()};
+  document.querySelectorAll("[data-go]").forEach(b=>{ b.onclick=e=>{ e.stopPropagation(); goTo(b.dataset.go) }; b.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); goTo(b.dataset.go) } } });
   document.querySelectorAll("[data-coach]").forEach(b=>b.onclick=()=>{
     dynCoach=b.dataset.coach; save(); render();});
   const cb=el("cback"); if(cb)cb.onclick=()=>{dynCoach=null;render()};
