@@ -141,6 +141,40 @@ function hlDraw(c,t){
   HLK.t=t; HLK.now=Date.now();
   try{ hlPitch(x,W,H,dpr); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H); hlFinish(x,W,H) }catch(e){}
 }
+/* ---- round 101: the full match as events in time (soccer, hockey) ----
+   Their engines play a stretch of minutes at once, with its goals and chances at their own minutes and the home side's
+   share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
+   goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
+   HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
+function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,"all")||[] }catch(e){}
+  const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
+  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
+  clips.sort((a,b)=>a.f-b.f);
+  const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
+  clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
+  const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
+  return d._ev={seg:seg,tot:at,clips:clips} }
+function hlEvPlayback(L,d){ if(!HL_SPORT.evPB||!d||d.seg==null||typeof d.seg!=="number"||d.so||(HL_SPORT.evPB.skip&&HL_SPORT.evPB.skip(d)))return 0; return Math.round(hlEvPlan(L,d).tot) }
+let hlEvKey="", hlEvLab=0;
+function hlEvDraw(x,W,H){
+  const PB=live.pb, d=PB.d, P=hlEvPlan(live,d), S=HL_SPORT.evPB, el=PB.frozen!=null?PB.frozen:Date.now()-PB.at;
+  let i=P.seg.findIndex(q=>el<q.at+q.ms+(q.k==="clip"?250:0)); if(i<0)i=P.seg.length-1; const q=P.seg[i];
+  // the score: the goals of the clips already past, and this one's once it has gone in
+  let h=PB.h0, a=PB.a0; const goal=c=>{ if(c.after){ h=c.after[0]; a=c.after[1] } };
+  P.seg.slice(0,i).forEach(z=>{ if(z.k==="clip")goal(z.c) });
+  let clock;
+  if(q.k==="clip"){ const t=Math.min(1,(el-q.at)/Math.max(1,q.ms)), rv=q.c.reveal!=null?q.c.reveal:HL_SPORT.reveal;
+    if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
+    clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
+    if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    HL_SPORT.frame(x,W,H,q.c,t) }
+  else { const f=q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)); clock=S.clock(d,f);
+    if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    if(HL_SPORT.amb)HL_SPORT.amb(x,W,H) }
+  // the page follows: a redraw when the score moves, the clock in the header otherwise
+  const k=h+"|"+a; if(k!==hlEvKey){ const first=!hlEvKey; hlEvKey=k; if(!first)setTimeout(()=>{ if(live&&live.pb&&typeof render==="function")render() },0) }
+  if(Date.now()-hlEvLab>500){ hlEvLab=Date.now(); try{ const lb=document.querySelector(".wtop .wlabel"); if(lb){ const t=lb.textContent||"", j=t.indexOf("·"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${j>=0?" "+esc(t.slice(j).replace(/\s+/g," ")):""}` } if(typeof miniBar==="function")miniBar() }catch(e){} }
+}
 /* ---- the drawing kit (round 64: the pitches and players drawn to Football Manager's standard) ----
    The surface (grass, wood, ice, dirt, lines, nets) is painted once per size into an offscreen canvas and copied
    each frame; textures come from a seeded generator, never Math.random, so a frame is the same every time. */
