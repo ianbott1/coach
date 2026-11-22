@@ -225,16 +225,17 @@ const FB_END=true;
 function endgameDrive(rng,res,d,left,offE,defE,sm){
   if(!FB_END||left>2||d>=0)return res;
   const goFor=tg=>{                                     // fourth down, and it has to be a touchdown or at least points that matter
-    if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,
+    if(rng.r()>=goOdds(tg,offE,defE))return {pts:0,kind:"DOWNS",stall:res.stall,togo:tg,converted:false,
       note:`needed ${d<=-4?"a touchdown":"points"}: went for it on fourth and ${tg} and came up short`};
     const r=rollDrive(rng,offE,defE,Math.min(90,(res.stall||60)+Math.max(2,tg)),"urgent",null,sm);
-    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,note:`went for it on fourth and ${tg}, then scored`}
-      :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,note:"needed a touchdown: turned it over on downs in the red zone"};
-    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,converted:true,note:`converted on fourth and ${tg}, then turned it over on downs`};
-    return Object.assign(r,{converted:true,note:r.pts>0?`went for it on fourth and ${tg}, then scored`:`converted on fourth and ${tg}, drive stalled later`}) };
+    const cv=res.stall!=null?[res.stall,tg]:null;   // round 101: where the fourth down was made, for the full match's plays (no draw)
+    if(r.kind==="FG"&&d<=-4)return rng.r()<0.42?{pts:7,kind:"TD",stall:100,converted:true,cv:cv,note:`went for it on fourth and ${tg}, then scored`}
+      :{pts:0,kind:"DOWNS",stall:Math.min(96,(res.stall||60)+15),converted:true,cv:cv,note:"needed a touchdown: turned it over on downs in the red zone"};
+    if(r.kind==="PUNT"||r.kind==="MISS")return {pts:0,kind:"DOWNS",stall:r.stall,togo:r.togo,converted:true,cv:cv,note:`converted on fourth and ${tg}, then turned it over on downs`};
+    return Object.assign(r,{converted:true,cv:cv,note:r.pts>0?`went for it on fourth and ${tg}, then scored`:`converted on fourth and ${tg}, drive stalled later`}) };
   if(res.kind==="FG"&&d<=-4){                            // three points don't help: from the red zone, go for the end zone
     if(rng.r()<0.40)return {pts:7,kind:"TD",stall:100,note:"passed up the field goal and scored"};
-    return {pts:0,kind:"DOWNS",stall:res.stall,converted:false,note:"needed a touchdown: passed up the field goal and came up short"} }
+    return {pts:0,kind:"DOWNS",stall:res.stall,togo:res.togo,converted:false,note:"needed a touchdown: passed up the field goal and came up short"} }
   if(res.kind==="PUNT"||(res.kind==="MISS"&&(res.stall||0)<72&&d<=-4))return goFor(res.togo||4);   // nobody punts it away behind with the game ending
   return res;
 }
@@ -498,6 +499,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
                  converted:(res.converted===undefined?null:res.converted),
                  togo:res.togo||null};
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
+    // round 101: where a turnover on downs happened and where a fourth down was made, for the full match's plays
+    if(res.kind==="DOWNS"&&res.stall!=null)drive.stall=res.stall; if(res.cv)drive.cv=res.cv;
     /* round 80: a turnover's return is drawn with the next drive's start (nextStart, its first draw); for the clip, the
        same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
        the ball was lost (stall) and where they took over (retTo, from their own goal). */
@@ -562,11 +565,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
             // converted: the drive carries on from there
             const r2=rollDrive(rng,offE,defE,Math.min(90,P.res.stall+Math.max(2,tg)),"urgent",null,smOf(home));
             res=r2;
-            res.converted=true;
+            res.converted=true; res.cv=[P.res.stall,tg];   // round 101: where it was made (no draw)
             res.note = r2.pts>0 ? `converted on fourth and ${tg}, then scored`
                                 : `converted on fourth and ${tg}, drive stalled later`;
           } else {
-            res={pts:0,kind:"DOWNS",stall:P.res.stall,
+            res={pts:0,kind:"DOWNS",stall:P.res.stall,togo:tg,
                  converted:false,
                  note:`went for it on fourth and ${tg} and came up short`};
           }
@@ -575,6 +578,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
             ? {pts:3,kind:"FG",stall:P.res.stall,note:"kicked a "+fgDistance(P.res.stall)+"-yard field goal"}
             : {pts:0,kind:"MISS",stall:P.res.stall,note:"missed a "+fgDistance(P.res.stall)+"-yard field goal"};
         } else res={pts:0,kind:"PUNT",stall:P.res.stall,note:"punted it away"};
+        if(res.togo==null&&!res.cv&&res.kind!=="TD")res.togo=P.res.togo||3;   // round 101: the fourth and N it was asked at (the full match's plays end on it; no draw)
         return {drive:push(home,P.q,P.start,res,P.aggr),h:st.h,a:st.a};
       } else if(stage==="fbread"){
         st.stage=null; const D=st.D[side], dp=P.dp;

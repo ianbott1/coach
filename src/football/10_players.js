@@ -173,6 +173,22 @@ function teamLines(rng,c){
     const wy=rc.map((i,j)=>L[i].rec*Math.max(6,ypc[j])), T=wy.reduce((t,x)=>t+x,0)+rest*9.5;
     rc.forEach((i,j)=>{ L[i].cyd=T>0?Math.floor((Q.pyd-bkYd)*wy[j]/T):0 }) }
   else [2,3].forEach(i=>{ if(has(i)){ L[i].rec=L[i].ctd; L[i].cyd=0 } });
+  /* round 101: the drives the full match showed snap by snap (d.pn: [kind, roster index, yards]) credit the plays the
+     screen showed: the passer's completions, attempts and yards, the back's carries and yards, each receiver's catches
+     and yards. The drives it didn't show keep their share of the draw above (all of it in a game not watched that way,
+     so nothing drawn moves). */
+  const own=c.drives.filter(d=>d.home===home&&d.start!=null), seen=own.filter(d=>Array.isArray(d.pn));
+  if(seen.length){ const sh=(own.length-seen.length)/own.length, sc=v=>Math.round((v||0)*sh);
+    const actOf=ri=>{ if(ri==null||ri<0)return -1; const p=c.R[ri], x=p&&c.act.find(a=>a.pl===p); return x?x.i:-1 };
+    const T={cmp:0,att:0,pyd:0,car:0,ryd:0}, rec={}, cyd={};
+    seen.forEach(d=>{ const k=c.drives.indexOf(d), w=rows[k]&&rows[k].who; d.pn.forEach(q=>{ const t=q[0], td=t===5||t===6, g=td&&w&&w.y!=null?w.y:(q[2]||0), ri=td?(w?w.i:-1):q[1];
+      if(t===1||t===5){ T.cmp++; T.att++; T.pyd+=g; const si=actOf(ri); if(si===2||si===3){ rec[si]=(rec[si]||0)+1; cyd[si]=(cyd[si]||0)+g } }
+      else if(t===2||t===7)T.att++;
+      else if(t===0||t===6){ if(actOf(ri)===1){ T.car++; T.ryd+=g } } }) });
+    if(has(1)){ L[1].car=sc(L[1].car)+T.car; L[1].ryd=sc(L[1].ryd)+T.ryd }
+    [2,3].forEach(i=>{ if(has(i)){ L[i].rec=Math.max(sc(L[i].rec)+(rec[i]||0),L[i].ctd); L[i].cyd=sc(L[i].cyd)+(cyd[i]||0) } });
+    if(has(0)){ const Q=L[0]; Q.cmp=sc(Q.cmp)+T.cmp; Q.pyd=sc(Q.pyd)+T.pyd; Q.att=sc(Q.att)+T.att;
+      const got=[2,3].reduce((t,i)=>t+(has(i)?L[i].rec:0),0)+bkRec; if(got>Q.cmp)Q.cmp=got; Q.att=Math.max(Q.att,Q.cmp) } }
   return c.act.map(x=>({pl:x.pl,pos:x.P,line:L[x.i]})).concat(Object.values(X));
 }
 function addStats(dst,src){

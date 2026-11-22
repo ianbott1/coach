@@ -166,6 +166,17 @@ function pbPartialStart(r,floorCall){
   live.hold={n:live.drives.length,h:h0,a:a0,clock:null}; live.pb={d:d,at:Date.now(),ms:ms,h0:h0,a0:a0,from:from,to:to,frozen:null};
   live.pbSeen={seg:D.seg,n:to}; live.askPend={r:r,floorCall:floorCall};
   render(); live.timer=setTimeout(liveTick,ms); return true }
+/* round 101: a sport whose full match plays a stretch as clips (football's drives) shows the stretch up to a call before
+   asking it: the drive to its fourth down, or the drive and its touchdown before the two-point call (HL_SPORT.leadUp).
+   The stretch, pushed after the answer, plays on from there. */
+function hlLeadUpStart(r,floorCall){
+  if(live.paused||typeof hlMode!=="function"||hlMode()!=="full"||typeof HL_SPORT==="undefined"||typeof HL_SPORT.leadUp!=="function"||typeof hlCan!=="function"||!hlCan()||typeof hlPlay!=="function")return false;
+  let U=null; try{ U=HL_SPORT.leadUp(live,r) }catch(e){ U=null } if(!U||!U.clips||!U.clips.length)return false;
+  if(U.hold)live.hold={n:live.drives.length,h:live.lastH||0,a:live.lastA||0,clock:null};
+  render();
+  const tok={leadUp:true}; HL.pending={drive:tok,clips:U.clips}; const ms=hlPlay(live,tok);
+  if(!ms){ HL.pending=null; if(U.hold)live.hold=null; return false }
+  live.leadShown=U.key; live.askPend={r:r,floorCall:floorCall}; live.timer=setTimeout(liveTick,ms); return true }
 function liveTick(){
   // the overtime tail, one stretch at a time, then the final whistle
   if(live&&live.tailQ&&!live.done){ if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -232,6 +243,7 @@ function liveTick(){
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       // round 101: a call inside a stretch (baseball's innings) waits while the full match plays the stretch up to it
       if(!live.ff&&pbPartialStart(r,floorCall))return;
+      if(!live.ff&&hlLeadUpStart(r,floorCall))return;
       presentAsk(r,floorCall);
       return;
     }

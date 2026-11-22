@@ -58,7 +58,9 @@ function driveScript(g,drives,rosters){
     const dn=i=>d.by&&d.by["d"+i]?d.by["d"+i]:def&&def[i]?def[i].n:"the defense";
     let text, who=null;
     if(d.kind==="TD"){
-      const y=Math.round(rng.range(2,64));
+      // round 101: never longer than the field the drive had (a 64-yard touchdown from their 30 read in the full match
+      // as a play that began behind where the drive did); the same draw
+      const yr=Math.round(rng.range(2,64)), y=d.start!=null&&d.start<100?Math.max(1,Math.min(yr,100-d.start)):yr;
       // round 91 (engine 14): who scores leans with the attributes (Arm against the back's Speed and Strength for pass or
       // run; a receiver's Hands and Speed for which one), the same draws as before
       const v14=typeof ENGINE_V!=="undefined"&&ENGINE_V>=14, pl=i=>v14?pOf(off,d,i):null;
@@ -68,7 +70,7 @@ function driveScript(g,drives,rosters){
         else { const I=[2,3,BK(2),BK(3)], W=[0.42,0.26,0.18,0.14].map((w,j)=>w*fbLean(pl(I[j]),["hnd","spd"])), T=W.reduce((a,b)=>a+b,0); let x=u*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } ri=I[j] }
         who={k:"pass",i:ri,y:y}; text=`${nm(0)} ${y}-yd TD pass to ${nm(ri)}` }   // round 74: the backups catch some (a tight end, the slot): one receiver caught 30 in a season
       else if(rng.r()<0.8){ who={k:"run",i:1}; text=`${nm(1)} ${y}-yd TD run` }
-      else { who={k:"run",i:0}; text=`${nm(0)} ${Math.round(rng.range(1,12))}-yd TD run` }
+      else { const yq=Math.round(rng.range(1,12)); who={k:"run",i:0}; text=`${nm(0)} ${d.start!=null&&d.start<100?Math.max(1,Math.min(yq,100-d.start)):yq}-yd TD run` }
     } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${kickerName(d.home?g.home:g.away)} ${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
     else if(d.kind==="INT"){ let di=typeof ENGINE_V!=="undefined"&&ENGINE_V<4?8:FB_PICKER[(d.n||0)%FB_PICKER.length];
       if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=14){ const I=[8,9,18,19], W=[2,3,2,1].map((w,j)=>w*fbLean(pOf(def,d,I[j],true),"cov")), T=W.reduce((a,b)=>a+b,0); let x=(((d.n||0)*0.6180339887)%1)*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } di=I[j] }   // round 91: Coverage, by the drive's number (no draw)

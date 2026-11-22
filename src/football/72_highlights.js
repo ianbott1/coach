@@ -11,7 +11,15 @@ const HL_SPORT=(function(){
   /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
   // round 72: the header names the drive a clip shows (it named the drive before it until the clip was over)
   function clips(L,d,mode){ let out=clips0(L,d,mode); const n=(L.drives||[]).indexOf(d);
-    if(mode==="full"){ const dc=mkDrive(L,d,out); if(dc)out=[dc].concat(out) }   // round 99: the drive itself, play by play
+    if(mode==="full"){ const dc=mkDrive(L,d,out);   // round 99: the drive itself, play by play
+      if(dc){ if(dc.conv)out=out.filter(c=>c.kind!=="conv");
+        // round 101: what the lead-up to a call already showed (leadUp) isn't shown again: the plays to the fourth down,
+        // or the whole drive and its touchdown before the two-point call
+        const LS=typeof live!=="undefined"&&live&&L===live&&live.leadShown, sk=LS&&LS.n===d.n&&LS.start===d.start&&LS.home===!!d.home?LS:null;
+        if(sk){ dc.plays=dc.plays.slice(sk.k); dc.base=Math.max(1,dc.plays.length)*1100; if(sk.all)out=[] }
+        if(!sk||(!sk.all&&dc.plays.length))out=[dc].concat(out);
+        // round 101: the live game keeps what the screen showed of this drive, from its first clip, for the box score
+        if(typeof live!=="undefined"&&live&&L===live){ const rec=dc.rec; if(sk){ d.pbShown=true; d._pb=rec } else if(out.length)out[0].onStart=()=>{ d.pbShown=true; d._pb=rec } } } }
     out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
@@ -39,9 +47,9 @@ const HL_SPORT=(function(){
   /* round 99 (Muse: after "rest your starters" the clips still named the starters): from the drive after you rest them,
      your side's tracked men are their backups */
   let REST=false;
-  function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={};
-    Object.keys(SL).forEach(k=>{ let i=hlFit(team,SL[k]); if(REST&&team===S.myTeam&&typeof BK==="function"&&R[BK(SL[k])])i=hlFit(team,BK(SL[k])); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; list.push([n,String(R[i].n).split(" ").slice(-1)[0]]) } });
-    nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list} }
+  function numbers(team,SL,fill){ const R=(SEA.roster&&SEA.roster[team])||[], nums=fill.slice(), list=[], used={}, nm=[], ri=[];
+    Object.keys(SL).forEach(k=>{ let i=hlFit(team,SL[k]); if(REST&&team===S.myTeam&&typeof BK==="function"&&R[BK(SL[k])])i=hlFit(team,BK(SL[k])); if(R[i]){ const n=shirtNo(team,i); nums[k]=n; used[n]=1; nm[k]=String(R[i].n).split(" ").slice(-1)[0]; ri[k]=i; list.push([n,nm[k]]) } });
+    nums.forEach((v,k)=>{ if(SL[k]===undefined&&v!=null){ let w=v; while(used[w])w++; nums[k]=w; used[w]=1 } }); return {nums,list,nm,ri} }
   /* round 99 (Ian: "still can't see players numbers on field goal kicks"): the kicking unit wears numbers. The roster
      carries no kicker, holder or snapper, so they take numbers no one on the roster wears (the kicker the one named by
      kickerName, a single digit or teens; the holder a backup's number in the teens; the line from the 50s-70s), the same
@@ -50,18 +58,18 @@ const HL_SPORT=(function(){
     const h=strHash("st|"+team), pick=(lo,hi,k)=>{ const span=hi-lo+1; for(let j=0;j<span;j++){ const v=lo+((h+k*31+j*7)%span); if(!used[v]){ used[v]=1; return v } } return lo };
     return {k:pick(1,19,1), h:pick(10,19,2), line:[0,1,2,3,4,5,6,7,8].map(j=>pick(50,79,3+j))} }
   function base(L,d){ REST=!!(L&&L.restAt!=null&&L.drives&&L.drives.indexOf(d)>=L.restAt); const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
-    return {offN:O.nums,defN:D.nums,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
-  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(97,d.stall||75));
+    return {offN:O.nums,defN:D.nums,onm:O.nm,ori:O.ri,dnm:D.nm,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
+  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(99,d.stall||75));
     // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)
     const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
     const B=base(L,d), team=d.home?L.g.home:L.g.away, st=stNums(team), kn=typeof kickerName==="function"?kickerName(team):null;
     B.legend=[{team,kit:B.kits[d.home?0:1],list:[[st.k,kn?String(kn).split(" ").slice(-1)[0]:"K"],[st.h,"holder"]]},B.legend[1]];
     return Object.assign(B,{st,kind:good?"fg":"miss",los,kicker:kn,dist:typeof fgDistance==="function"?fgDistance(d.stall||los):Math.round(100-los+17),wide,hook,
       endY:good?0.5+wide*(0.005+r()*0.03):0.5+wide*(0.085+r()*0.05),startY:hook?(good?0.5+wide*0.09:0.5-wide*0.02):0.5,base:3400,reveal:0.82}) }
-  function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(25,Math.min(90,d.lost||d.stall||50)), len=Math.round(3+r()*8);
+  function mkFum(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?19:31))>>>0), los=Math.max(3,Math.min(97,d.lost||d.stall||50)), len=Math.round(3+r()*Math.min(8,99-Math.max(3,Math.min(97,d.lost||d.stall||50))));
     const m=/recovered by (.*)$/.exec(rowText(L,d));
     return Object.assign(base(L,d),{kind:"fum",pass:false,los,rcv:1,len,catchY:Math.min(99,los+len),lane:0.38+r()*0.24,who:m?surname(m[1]):"",base:3200,reveal:0.66}) }
-  function mkDowns(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?23:37))>>>0), los=Math.max(20,Math.min(97,d.stall||(d.start||30)+20+Math.round(r()*20))), tg0=d.togo||+((/fourth and (\d+)/.exec(d.note||"")||[])[1])||2, tg=Math.max(1,Math.min(9,tg0)), len=Math.max(0,tg-1-Math.floor(r()*Math.min(3,tg)));
+  function mkDowns(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?23:37))>>>0), los=Math.max(1,Math.min(99,d.stall||(d.start||30)+20+Math.round(r()*20))), tg0=d.togo||+((/fourth and (\d+)/.exec(d.note||"")||[])[1])||2, tg=Math.max(1,Math.min(30,tg0)), len=Math.max(0,tg-1-Math.floor(r()*Math.min(3,tg)));
     return Object.assign(base(L,d),{kind:"downs",pass:false,los,rcv:1,len,togo:tg,catchY:Math.min(99,los+len),lane:0.4+r()*0.2,who:"",base:3000,reveal:0.86}) }
   function mkConv(L,d){ const r=mulberry32(((d.n||1)*7919+(d.start||0)*131+(d.home?41:43))>>>0), tg=Math.max(1,Math.min(9,+(/converted on fourth and (\d+)/.exec(d.note||"")||[0,2])[1])),
       los=Math.max(25,Math.min(90,(d.start||25)+12+Math.round(r()*30))), len=tg+Math.round(r()*Math.min(6,95-los-tg));
@@ -70,13 +78,13 @@ const HL_SPORT=(function(){
   // start, read ahead in the engine), with the passing side chasing him; the catch comes earlier to leave the run room
   // where they took over: read ahead in the engine, or (a game played before round 80, or simmed) the next drive's start
   function retTo(L,d){ if(d.retTo!=null)return d.retTo; const i=(L.drives||[]).indexOf(d), nx=i>=0?L.drives[i+1]:null; return nx&&nx.start!=null&&(d.lost!=null||d.stall!=null)?nx.start:null }
-  function mkPunt(L,d){ const rt=retTo(L,d), lost=d.lost!=null?d.lost:d.stall, r=mulberry32(((d.n||1)*7919+(lost||0)*131+(d.home?47:53))>>>0), los=Math.max(5,Math.min(70,lost)), end=100-rt;
+  function mkPunt(L,d){ const rt=retTo(L,d), lost=d.lost!=null?d.lost:d.stall, r=mulberry32(((d.n||1)*7919+(lost||0)*131+(d.home?47:53))>>>0), los=Math.max(5,Math.min(85,lost)), end=100-rt;
     const tb=rt===20&&los+40>=95, fair=!tb&&r()<0.25;
     let land=tb?104:fair?end:Math.min(99,end+Math.round(2+r()*Math.min(14,99-end)));
     if(land<=los+15)land=Math.min(99,los+30);
     const ret=tb||fair?0:Math.max(0,land-end);
     return Object.assign(base(L,d),{kind:"punt",los,land,end,ret,tb,fair,lane:0.35+r()*0.3,who:"",base:3600+ret*35,reveal:0.95}) }
-  function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(30,Math.min(90,d.lost||d.stall||70));
+  function mkPick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(3,Math.min(97,d.lost||d.stall||70));
     const rcv=r()<0.6?2:3; let len=Math.round(8+r()*Math.min(25,100-los-2));
     let ret=null; const rtp=retTo(L,d); if(rtp!=null){ const end=100-rtp; len=Math.max(3,Math.min(len,Math.round(4+r()*10))); if(end>los+len)len=Math.min(99-los,end-los+1); ret=Math.max(0,Math.min(99,los+len)-end) }   // round 94: from where he catches it (a pick past 99 is caught at 99: the return ran 4 yards long)
     if(ret!=null){ const m=/intercepted by (.*)$/.exec(rowText(L,d)), f=ret>3?0.6:0.86;
@@ -199,37 +207,132 @@ const HL_SPORT=(function(){
      stalled), with the down and distance on the caption and the chains moving. The engine plays a drive as one roll, so
      the plays inside it are drawn (from the drive's own number, no game dice) to add up to the real start and end; how
      the drive ended (a touchdown, a kick, a punt, a pick, a turnover on downs) still plays as its own clip after it. */
-  function mkDrive(L,d,next){ if(d.start==null)return null; const nx=next&&next[0], start=Math.max(1,Math.min(95,d.start));
-    let end=nx&&nx.los!=null?nx.los:d.kind==="TD"?100:(d.stall!=null?d.stall:d.lost!=null?d.lost:start+3); end=Math.max(start,Math.min(99,end));
-    if(nx&&nx.kind==="td"&&nx.len!=null)end=Math.max(start,Math.min(99,nx.los));
-    const r=mulberry32(((d.n||1)*104729+start*131+(d.home?7:13))>>>0), yds=end-start, np=Math.max(3,Math.min(9,Math.round(yds/7)+2+Math.floor(r()*2)));
-    // gains that add up to the drive's yards: some short, some long, the odd one for nothing
-    let w=[...Array(np)].map(()=>{ const u=r(); return u<0.18?0:u<0.6?1+r()*2:2+r()*5 }), sw=w.reduce((a,b)=>a+b,0)||1;
-    let gains=w.map(v=>Math.round(v/sw*yds)); let diff=yds-gains.reduce((a,b)=>a+b,0); gains[gains.length-1]+=diff;
-    // downs: first and ten, chains moving on every ten gained; a drive the engine ended on a fourth down shows its last snap as third
-    const plays=[]; let spot=start, down=1, mark=start+10;
-    gains.forEach((g,i)=>{ plays.push({from:spot,g,down,togo:Math.max(1,Math.min(mark,100)-spot),pass:r()<0.55}); spot+=g; if(spot>=mark){ down=1; mark=spot+10 } else down=Math.min(3,down+1) });
-    if(!plays.length)return null;
-    return Object.assign(base(L,d),{kind:"drive",plays,start,end,base:Math.min(7800,plays.length*820),reveal:0.999}) }
+  /* ---- round 101 (Ian: "add a play-by-play engine if you think it would improve the game a lot"): the drive engine
+     still decides every drive (where it starts, where it ends, how), and the plays inside it are built to come to
+     exactly that: series of downs that move the chains (each one's last play crosses the line to gain, the ones before
+     it don't), and for a drive that ends in a kick, a punt or a turnover on downs, a last series that fails on third
+     down and leaves the fourth and N the engine had (the one a fourth-down call asked about), at the spot it had. A
+     fourth down they went for and made is played where it was made (d.cv). Runs, catches, throws that fall
+     incomplete, sacks and scrambles, each with the man who carried or caught it. All from the drive's own numbers,
+     never the game's dice, and the box score credits the plays a drive the screen showed (namesOf, d.pn). */
+  const RC=[2,3,4,5,1], RCW=[0.27,0.22,0.2,0.15,0.16];
+  function wpick(r,w){ let x=r()*w.reduce((a,b)=>a+b,0), i=0; while(i<w.length-1&&x>=w[i]){ x-=w[i]; i++ } return i }
+  function gRun(r){ const u=r(); return u<0.09?-1-Math.floor(r()*3):u<0.19?0:u<0.55?1+Math.floor(r()*3):u<0.83?4+Math.floor(r()*4):u<0.95?8+Math.floor(r()*7):15+Math.floor(r()*30) }
+  function gCmp(r){ const u=r(); return u<0.08?-2+Math.floor(r()*3):u<0.35?2+Math.floor(r()*5):u<0.7?7+Math.floor(r()*7):u<0.92?14+Math.floor(r()*11):25+Math.floor(r()*35) }
+  const PASS_P=(down,dist)=>down>=3&&dist>=5?0.85:down>=3?0.5:down===2&&dist>=8?0.62:0.52;
+  function kindFor(r,down,dist){ if(r()>=PASS_P(down,dist))return "run"; const u=r(); return u<0.045?"sack":u<0.075?"scr":u<0.41?"inc":"pass" }
+  function gainOf(r,t){ return t==="run"?gRun(r):t==="pass"?gCmp(r):t==="inc"?0:t==="sack"?-(3+Math.floor(r()*7)):1+Math.floor(r()*9) }
+  // a play that must not move the chains (cum+g short of the line), and must not go back past his own goal line
+  function freePlay(r,down,tg,cum,spot){ for(let k=0;k<8;k++){ const t=kindFor(r,down,tg-cum); let g=gainOf(r,t); if(spot+g<1)g=1-spot; if(cum+g<tg)return {t,g} }
+    return {t:"inc",g:0} }
+  // a play of exactly g yards: what kind it was follows from the yards
+  function fitPlay(r,down,dist,g){ if(g===0)return {t:r()<0.75?"inc":"run",g}; if(g<0)return {t:g<-4||r()<0.4?"sack":"run",g};
+    return r()<(g>=18?0.72:PASS_P(down,dist))?{t:r()<0.06?"scr":"pass",g}:{t:"run",g} }
+  // n downs from a first down at spot (tg to go) coming to exactly T yards; conv: the last one moves the chains
+  function series(r,spot,tg,n,T,conv){ let P=[];
+    for(let tries=0;tries<12;tries++){ P=[]; let cum=0;
+      for(let k=0;k<n-1;k++){ const p=freePlay(r,k+1,tg,cum,spot+cum); P.push(Object.assign(p,{down:k+1,togo:tg-cum,from:spot+cum})); cum+=p.g }
+      const last=T-cum; if(last<-12&&tries<11)continue;
+      P.push(Object.assign(fitPlay(r,n,tg-cum,last),{down:n,togo:tg-cum,from:spot+cum,fd:!!conv})); return P }
+    return P }
+  // series that move the chains, R yards from a first down at a (each 10 or more)
+  /* a flag on the defense that moves the chains by itself (holding, illegal contact, a personal foul): the pros' holding
+     is 5 yards and a first down, college's 10; 15 for a personal foul. One of these in a series of downs lets a drive
+     reach a first down 5-9 yards on, as real ones do. */
+  let PENS=[5,15];
+  function penSeries(r,s,G){ const tg=Math.min(10,100-s), ps=PENS.filter(p=>G-p>=-3&&G-p<tg); if(!ps.length)return null; const p=ps[Math.floor(r()*ps.length)], c=G-p;
+    const n=c===0?(r()<0.5?0:1):r()<0.6?1:2, P=n?series(r,s,tg,n,c,false):[]; const cum=P.reduce((t,q)=>t+q.g,0);
+    P.push({t:"pen",g:p,down:Math.min(4,n+1),togo:tg-cum,from:s+cum,fd:true,flag:p===15?"Personal foul":r()<0.7?"Defensive holding":"Illegal contact"}); return P }
+  function moving(r,a,R){ const out=[]; if(R<5)return out; if(R<10){ const P=penSeries(r,a,R); return P||out }
+    const k=Math.max(1,Math.min(Math.floor(R/10),Math.round(R/(12+r()*6)))), E=R-10*k;
+    const w=[...Array(k)].map(()=>-Math.log(1-r()*0.999)), sw=w.reduce((x,y)=>x+y,0), G=w.map(v=>10+Math.floor(E*v/sw)); G[k-1]+=R-G.reduce((x,y)=>x+y,0);
+    let s=a; G.forEach(g=>{ const u=r(), n=g>=25?(u<0.45?1:u<0.85?2:3):(u<0.32?1:u<0.78?2:3), P=r()<0.025?penSeries(r,s,g):null; out.push(...(P||series(r,s,10,n,g,true))); s+=g }); return out }
+  /* a stretch from a first down at a to b: series that move the chains, then the last one. fail: three downs short,
+     leaving fourth and T4 (null: any; past the goal line: fourth and goal); else 0-2 downs before the play that ends it.
+     Returns the plays and the fourth-down distance it left (fail). */
+  function stretch(r,a,b,fail,T4){ const Y=b-a, C=[];
+    for(let F=-12;F<=9;F++){ const R=Y-F; if(!(R===0||R>=10||R>=5&&PENS.some(p=>R-p>=-3&&R-p<Math.min(10,100-a))))continue; const fd=b-F; if(fd<1||fd>99)continue; const tg=Math.min(10,100-fd); if(F>=tg)continue;
+      if(fail){ const left=tg-F; let ok=T4==null||(b+T4>=100?fd>=90:left===T4&&fd<=90); C.push({F,R,tg,left,ok,w:ok?(F>=0&&F<=6?3:F<0?0.6:1.5)*(F===Y?2:1):0}) }
+      else C.push({F,R,tg,ok:true,w:F===0?3:F>0?1.5:0.4}) }
+    if(!C.length)C.push({F:Y,R:0,tg:Math.min(10,100-a),left:Math.min(10,100-a)-Y,ok:false,w:1});
+    let pool=C.filter(c=>c.ok); const forced=!pool.length;
+    // the engine drew the fourth and N apart from how far the drive went: when no series of downs from this start can
+    // leave it, the nearest one that can
+    if(forced){ const dist=c=>T4==null?0:Math.abs((b+T4>=100?100-b:T4)-c.left), m=Math.min(...C.map(dist)); pool=C.filter(c=>dist(c)===m).map(c=>Object.assign({},c,{w:1})) }
+    const c=pool[wpick(r,pool.map(c=>c.w))], plays=moving(r,a,c.R), fd=a+c.R;
+    if(fail)plays.push(...series(r,fd,c.tg,3,c.F,false));
+    else { const m=c.F===0?(r()<0.4?0:r()<0.6?1:2):(r()<0.55?1:2); if(m)plays.push(...series(r,fd,c.tg,m,c.F,false)) }
+    return {plays,left:fail?c.left:null,forced} }
+  function sideOf(r,pl,B){ if(pl.t==="pen")return pl; if(pl.t==="run"){ pl.rc=r()<(B.cfb?0.17:0.1)?0:1; if(pl.rc===1&&B.rb2&&r()<(B.cfb?0.33:0.25))pl.alt=1 } else if(pl.t==="sack"||pl.t==="scr")pl.rc=0; else pl.rc=RC[wpick(r,RCW)];
+    if(pl.t==="sack")pl.by=r()<0.6?0:3; return pl }
+  function playsFor(L,d,next,B){ if(d.start==null)return null; const nx=next&&next[0], start=Math.max(1,Math.min(99,d.start)), k=d.kind;
+    let end=nx&&nx.los!=null&&nx.kind!=="conv"?nx.los:k==="TD"?100:(d.stall!=null?d.stall:d.lost!=null?d.lost:start); end=Math.max(1,Math.min(99,end));
+    const fail=k==="PUNT"||k==="FG"||k==="MISS"||k==="DOWNS", r=mulberry32(((d.n||1)*104729+start*131+(d.home?7:13))>>>0);
+    let plays=[], left=null, forced=false, conv=false;
+    const cv=d.cv&&d.cv[0]>=start&&d.cv[0]<=Math.max(start,end)+6&&d.cv[0]+d.cv[1]<100?d.cv:null;
+    const A0=cv?stretch(r,start,cv[0],true,cv[1]):null;
+    if(A0&&cv[0]+A0.left<100){ const A=A0, tg4=A.left, g4=Math.min(99-cv[0],Math.max(tg4,Math.min(90,cv[0]+Math.max(2,cv[1]))-cv[0])), bs=cv[0]+g4;
+      const p4=Object.assign(fitPlay(r,4,tg4,g4),{down:4,togo:tg4,from:cv[0],fd:true,fourth:true}); if(p4.g<=0)p4.t="run";
+      const Bz=stretch(r,bs,Math.max(bs,end),fail,fail?d.togo:null); plays=A.plays.concat([p4],Bz.plays); left=Bz.left; forced=A.forced||Bz.forced; conv=true; end=Math.max(bs,end) }
+    else { const A=stretch(r,start,end,fail,fail?d.togo:null); plays=A.plays; left=A.left; forced=A.forced }   // (a fourth down made inside the 10 the plays can't reach: drawn as a drive without it)
+    plays.forEach(p=>sideOf(r,p,B));
+    return {plays,start,end,left,forced,conv} }
+  // what the box score credits: [kind, roster index, yards] (0 run, 1 catch, 2 incomplete, 3 sack, 4 scramble, 5 the
+  // touchdown pass and 6 the touchdown run as the run of play names them, 7 a pick)
+  function record(B,P,out){ const K={run:0,pass:1,inc:2,sack:3,scr:4}, rec=P.plays.filter(p=>p.t!=="pen").map(p=>[K[p.t],p.alt?B.rb2:(B.ori&&B.ori[p.rc]!=null?B.ori[p.rc]:-1),p.g]);
+    out.forEach(c=>{ if(c.kind==="td")rec.push([c.pass?5:6,-1,c.len]); else if(c.kind==="int")rec.push([7,-1,0]); else if(c.kind==="fum"||c.kind==="downs")rec.push([0,B.ori?B.ori[1]:-1,c.len||0]) });
+    return rec }
+  function mkDrive(L,d,next){ const B=base(L,d), tm=B.tm, R=(SEA.roster&&SEA.roster[tm])||[]; B.cfb=typeof LEAGUE!=="undefined"&&LEAGUE.id==="cfb"; PENS=B.cfb?[10,15]:[5,15];
+    // the second back: a carry in five or so (the starter's number swapped for his); not when he's already the starter
+    if(typeof BK==="function"&&B.ori&&B.ori[1]!==BK(1)&&R[BK(1)]){ B.rb2=BK(1); B.rb2n=shirtNo(tm,BK(1)); B.rb2nm=String(R[BK(1)].n).split(" ").slice(-1)[0] }
+    const P=playsFor(L,d,next,B); if(!P)return null;
+    const nx=next&&next[0]; if(nx&&nx.kind==="downs"&&P.left!=null&&P.left!==nx.togo){ nx.togo=P.left; nx.len=Math.min(nx.len,P.left-1) }   // (the engine's own fourth and N is what it left, unless the data can't get there)
+    const c=Object.assign(B,{kind:"drive",plays:P.plays,start:P.start,end:P.end,left:P.left,forced:P.forced,conv:P.conv,base:Math.min(16500,Math.max(1,P.plays.length)*1100),reveal:0.999});
+    c.rec=record(B,P,next||[]); return c }
+  const who=(c,pl)=>pl.alt?c.rb2nm||"#"+c.rb2n:c.onm&&c.onm[pl.rc]?c.onm[pl.rc]:"#"+(c.offN?c.offN[pl.rc]:"");
+  function playText(c,pl){ const g=pl.g, y=Math.abs(g)+" yard"+(Math.abs(g)===1?"":"s"), qb=c.onm&&c.onm[0]||"the quarterback";
+    if(pl.t==="pen")return `${pl.flag} on ${c.opp}, ${y}, automatic first down`;
+    let s=pl.t==="inc"?`Incomplete, intended for ${who(c,pl)}`:pl.t==="sack"?`${qb} sacked, loss of ${y}`:pl.t==="scr"?(g>0?`${qb} scrambles for ${y}`:`${qb} scrambles, no gain`)
+      :pl.t==="pass"?(g>0?`${qb} to ${who(c,pl)}, ${y}`:g<0?`${qb} to ${who(c,pl)}, loss of ${y}`:`${qb} to ${who(c,pl)}, no gain`)
+      :(g>0?`${who(c,pl)} runs for ${y}`:g<0?`${who(c,pl)} stopped for a loss of ${y}`:`${who(c,pl)}, no gain`);
+    if(pl.fourth)s=`FOURTH DOWN, MADE! ${s}`; else if(pl.fd)s+=" · FIRST DOWN"; return s }
   function driveFrame(x,W,H,c,t){
+    if(!c.plays.length)return;
     const n=c.plays.length, f=Math.min(0.9999,t)*n, i=Math.floor(f), u=f-i, pl=c.plays[i], r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    const snap=0.2, done=0.85, s=Math.max(0,Math.min(1,(u-snap)/(done-snap))), e=hlEase(s), los=pl.from, gain=pl.g;
-    // the chains: the line to gain in yellow, the line of scrimmage in blue
+    const snap=0.18, done=0.84, s=Math.max(0,Math.min(1,(u-snap)/(done-snap))), e=hlEase(s), los=pl.from, gain=pl.g, tgt=los+gain, j=pl.rc==null?1:pl.rc, th=0.4;
     { const a=P(W,H,c,los,0.02), b=P(W,H,c,los,0.98), g1=P(W,H,c,Math.min(100,los+pl.togo),0.02), g2=P(W,H,c,Math.min(100,los+pl.togo),0.98); x.save(); x.lineWidth=Math.max(2,W/260);
       x.strokeStyle="rgba(80,150,255,.85)"; x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); if(los+pl.togo<100){ x.strokeStyle="rgba(242,210,75,.9)"; x.beginPath(); x.moveTo(g1[0],g1[1]); x.lineTo(g2[0],g2[1]); x.stroke() } x.restore() }
-    let bx=los, by=0.5, z=0; const tgt=los+gain, lane=0.5+((i*37)%5-2)*0.09;
-    const carrier=pl.pass?[hlLerp(los-0.5,tgt,e),hlLerp(i%2?0.12:0.88,lane,Math.min(1,e*1.3))]:[hlLerp(los-7,tgt,e),hlLerp(0.5,lane,Math.min(1,e*1.5))];
-    if(u<snap){ bx=los; by=0.5 } else if(pl.pass){ const th=0.35; if(s<th){ bx=los-5-s*4; by=0.5 } else { const k=(s-th)/(1-th); bx=hlLerp(los-6,carrier[0],Math.min(1,k*1.6)); by=hlLerp(0.5,carrier[1],Math.min(1,k*1.6)); z=k<0.6?Math.sin(k/0.6*Math.PI)*0.05:0 } }
+    if(pl.t==="pen"){   // the snap, a whistle, a yellow flag at the line; the ball moves on and the chains with it
+      const m=Math.min(1,s*3)*(1-Math.max(0,(s-0.5)*2)), bxp=los+(u>=done?gain:0);
+      DEF.forEach((p,k)=>{ const [px,py]=P(W,H,c,bxp+p[0]+m*(k<4?-0.6:0.8),p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[k]}:null) });
+      OFF.forEach((p,k)=>{ const [px,py]=P(W,H,c,bxp+p[0]+m*(k>=6?0.6:k>=2?1.5:0),p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",c.offN?{num:c.offN[k]}:null) });
+      const [qx,qy]=P(W,H,c,bxp,0.5); hlBall(x,qx,qy,r*0.55,0,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
+      if(u>=snap+0.08){ const k=Math.min(1,(u-snap-0.08)/0.25), [fx,fy]=P(W,H,c,los+1.5,hlLerp(0.15,0.42,k)); x.save(); x.fillStyle="#F2D24B"; x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=1;
+        const sz=Math.max(5,W/90); x.translate(fx,fy-Math.sin(k*Math.PI)*H*0.08); x.rotate(k*6); x.fillRect(-sz/2,-sz/2,sz,sz); x.strokeRect(-sz/2,-sz/2,sz,sz); x.restore() }
+      const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
+      hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} \u00b7 ${c.tm} \u00b7 ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):u>=snap+0.08?"FLAG ON THE PLAY":null,null); return }
+    const st=OFF[j]||OFF[1], lane=0.5+((i*37)%5-2)*0.09, qbAt=[los-5-Math.min(1,s/th)*2,0.5];
+    const deep=pl.t==="inc"?Math.min(99-los,8+((i*7)%11)):0;
+    let carrier=null, bx=los, by=0.5, z=0;
+    if(pl.t==="run")carrier=[hlLerp(los+st[0],tgt,e),hlLerp(st[1],lane,Math.min(1,e*1.5))];
+    else if(pl.t==="scr")carrier=s<th?qbAt:[hlLerp(qbAt[0],tgt,hlEase((s-th)/(1-th))),hlLerp(0.5,lane,hlEase((s-th)/(1-th)))];
+    else if(pl.t==="sack")carrier=[hlLerp(los-5,Math.min(los-1,tgt),Math.min(1,s/0.7)),0.5];
+    else if(pl.t==="pass")carrier=[hlLerp(los+st[0],tgt,e),hlLerp(st[1],lane,Math.min(1,e*1.3))];
+    else carrier=[hlLerp(los+st[0],los+deep,e),hlLerp(st[1],st[1]<0.5?0.22:0.78,Math.min(1,e*1.2))];
+    if(u<snap){ bx=los; by=0.5 }
+    else if(pl.t==="pass"||pl.t==="inc"){ if(s<th){ bx=qbAt[0]; by=0.5 } else { const k=Math.min(1,(s-th)/(0.78-th)); const aim=pl.t==="inc"?[los+deep+1.5,carrier[1]+(carrier[1]<0.5?-0.03:0.03)]:carrier;
+        bx=hlLerp(qbAt[0],aim[0],k); by=hlLerp(0.5,aim[1],k); z=k<1?Math.sin(k*Math.PI)*0.05:0; if(pl.t==="inc"&&k>=1){ bx=aim[0]+Math.min(1.5,(s-0.78)*8); by=aim[1] } } }
     else { bx=carrier[0]; by=carrier[1] }
-    const off=OFF.map((p,j)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ if(pl.pass&&j===(i%2?2:3))return carrier; if(!pl.pass&&j===1)return carrier; if(j>=6)yd+=s*1.2; else if(j>=2)yd+=s*Math.min(8,gain*0.6) } return [yd,y] });
-    const def=DEF.map((p,j)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ const k=j<4?0.2:0.5*s; yd=hlLerp(yd,bx,k*0.7); y=hlLerp(y,by,k) } return [yd,y] });
-    if(u>=done){ const q=carrier, j=pl.pass?7:5; def[j]=[q[0]+0.6,q[1]+0.02] }   // and he's brought down
-    def.forEach((p,j)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[j]}:null) });
-    off.forEach((p,j)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",c.offN?{num:c.offN[j]}:null) });
+    const off=OFF.map((p,k)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ if(k===j)return carrier; if(k===0&&(pl.t==="pass"||pl.t==="inc"))return qbAt; if(k>=6)yd+=s*1.2; else if(k>=1)yd+=s*Math.min(8,Math.max(2,gain)*0.6) } return [yd,y] });
+    const def=DEF.map((p,k)=>{ let yd=los+p[0], y=p[1]; if(u>=snap){ const w=k<4?0.2:0.5*s; yd=hlLerp(yd,bx,w*0.7); y=hlLerp(y,by,w) } return [yd,y] });
+    if(pl.t==="sack"){ const k=pl.by||0, w=Math.min(1,s/0.7); def[k]=[hlLerp(los+DEF[k][0],carrier[0]+0.6,w),hlLerp(DEF[k][1],0.5+0.02,w)] }
+    else if(pl.t==="inc"&&u>=snap){ const k=carrier[1]<0.5?7:8; def[k]=[carrier[0]+0.9,carrier[1]+(carrier[1]<0.5?0.03:-0.03)] }   // the man on him, there when it arrives
+    else if(u>=done){ const k=pl.t==="pass"?(carrier[1]<0.5?7:8):5; def[k]=[carrier[0]+0.6,carrier[1]+0.02] }   // and he's brought down
+    def.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[k]}:null) });
+    off.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const num=k===j&&pl.alt?c.rb2n:c.offN?c.offN[k]:null; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",num!=null?{num}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
-    const res=u>=done?(gain>0?`${pl.pass?"Pass":"Run"} for ${gain}`:gain<0?`Loss of ${-gain}`:"No gain"):null;
-    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} \u00b7 ${c.tm} \u00b7 ${ord} & ${togo} at ${spotTxt}`,res,null) }
+    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} · ${c.tm} · ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):null,null) }
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
     if(c.kind==="drive")return driveFrame(x,W,H,c,t);
@@ -286,7 +389,19 @@ const HL_SPORT=(function(){
     if(c.kind==="downs"||c.kind==="conv"){ const [mx,my]=P(W,H,c,Math.min(99.5,c.los+c.togo),0), [mx2,my2]=P(W,H,c,Math.min(99.5,c.los+c.togo),1); x.save(); x.strokeStyle="#F2D24B"; x.lineWidth=2; x.beginPath(); x.moveTo(mx,my); x.lineTo(mx2,my2); x.stroke(); x.restore() }   // the line to gain
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink);
   }
+  /* round 101: the drive up to a call, before it's asked (core hlLeadUpStart): a fourth down's drive to the fourth down
+     (the drive pushed after the answer starts from the same numbers, so its plays begin with these), or a touchdown's
+     drive and the touchdown before the two-point call. The drive isn't in the record yet: it's drawn as it will be. */
+  function leadUp(L,r){ const st=L&&L.eng, P=st&&st.pend, stg=st&&st.stage; if(!P||!r||!r.ask||(stg!=="fourth"&&stg!=="two")||P.start==null)return null;
+    const two=stg==="two", d={home:r.side==="home",q:P.q,start:P.start,n:st.i+1,kind:two?"TD":P.res.kind,pts:two?6:0,h:st.h,a:st.a,stall:two?100:P.res.stall,togo:two?null:(P.res.togo||3),aggr:P.aggr};
+    if(!two&&P.res.kind!=="PUNT"&&P.res.kind!=="DOWNS"&&P.res.kind!=="FG"&&P.res.kind!=="MISS")return null;
+    const L2={g:L.g,drives:(L.drives||[]).concat([d]),restAt:L.restAt}, out=clips0(L2,d,"full"), dc=mkDrive(L2,d,out); if(!dc)return null;
+    const n=L2.drives.length; [dc].concat(out).forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+n; c.scores=two });
+    const clips=two?[dc].concat(out.filter(c=>c.kind==="td")):[dc];
+    if(!dc.plays.length&&!two)return null;
+    return {clips:clips.filter(c=>c.kind!=="drive"||c.plays.length),hold:two,key:{n:d.n,start:d.start,home:d.home,k:dc.plays.length,all:two}} }
   const headClock=c=>c&&c.hd||null;
   return {replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
-           clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns"};
+           clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns",
+           namesOf:(L,d)=>d&&Array.isArray(d._pb)?d._pb:null, playText, leadUp, playsFor:(L,d)=>{ const out=clips0(L,d,"full"); const c=mkDrive(L,d,out); return c?{plays:c.plays,start:c.start,end:c.end,left:c.left,forced:c.forced,conv:c.conv,rec:c.rec,next:out.map(o=>({kind:o.kind,los:o.los,togo:o.togo,len:o.len}))}:null }};
 })();
