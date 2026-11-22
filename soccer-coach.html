@@ -573,6 +573,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .stkeyin{font-size:11px;color:var(--muted)}
 .readnone{font-size:12.5px;color:var(--muted);line-height:1.45;padding:4px 0}
 .impact.quiet{border-left-color:var(--line);background:none}
+.legs{margin:12px 16px 0;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}.legh{font-family:var(--cond);font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:4px}.legrow{display:flex;gap:10px;align-items:baseline;font-size:13px}.legrow span{width:56px;color:var(--muted)}.legrow b{width:28px;font-family:var(--mono)}.legrow i{font-style:normal;color:var(--muted)}.legn{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+.planpost{margin-top:10px;font-size:12.5px;color:var(--muted);line-height:1.45;text-align:left}.planpost b{color:var(--bone)}
 .impact{margin-top:10px;padding:10px 12px;border-left:3px solid var(--sodium);background:rgba(244,166,58,.07);border-radius:4px}.imphead{font-family:var(--cond);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.02em}.impbody{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:3px}
 .introskip{background:none;border:1px solid var(--line);color:var(--muted);
  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
@@ -854,8 +856,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .evid{margin:12px 16px 0;padding:12px 14px;border:1px solid var(--line);background:var(--panel2)}
 .evh{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:8px}
 .evh span{color:var(--muted);float:right;letter-spacing:.06em}
-.evr{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(42,49,69,.55);font-size:13.5px}
-.evr .evv{font-family:var(--mono);color:var(--bone)}
+.evr{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid rgba(42,49,69,.55);font-size:13.5px}
+.evr .evv{font-family:var(--mono);color:var(--bone);text-align:right}.evr .evk{flex:none}
 .evr.hi .evv,.evr.lo .evv{color:var(--sodium);font-weight:700}
 .evr.hi .evk::after{content:" \25B2";color:var(--sodium);font-size:10px}
 .evr.lo .evk::after{content:" \25BC";color:var(--sodium);font-size:10px}
@@ -1003,7 +1005,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="235b703";
+<script>const BUILD_ID="6298aa5";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -1508,7 +1510,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||17);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||18);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -3032,6 +3034,9 @@ function sportPlanFitLine(t,pl){ return scV12()?planFitWords(t,pl,{safe:"passers
 const LATE_SEG=(typeof process!=="undefined"&&process.env&&+process.env.SC_LSEG)||13;   // the late call at 65' (round 33: 8.7 points a call, 4% close either way; at 70' 5.9, 29%; at 60' 7.2, but it halved the reading edge over Pearl, 1.2 -> 0.5)
 const LATE_K=(()=>{ const e=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?v.split(",").map(Number):null };
   return {push:e("SC_LPUSH")||[1.9,1.6], sit:e("SC_LSIT")||[0.38,0.62], win:e("SC_LWIN")||[1.55,1.35], point:e("SC_LPOINT")||[0.6,0.58]} })();
+const SC18_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
+function scV18(){ return (typeof ENGINE_V!=="undefined"&&ENGINE_V>=18)||SC18_ENV("SC18")===1 }
+const SC18={a0:SC18_ENV("SC18_A0")??1.8, a1:SC18_ENV("SC18_A1")??2.0, ao:SC18_ENV("SC18_AO")??1.6, ao1:SC18_ENV("SC18_AO1")??0.8, k0:SC18_ENV("SC18_K0")??1.25, k1:SC18_ENV("SC18_K1")??0.5, ko:SC18_ENV("SC18_KO")??0.75, ko1:SC18_ENV("SC18_KO1")??0.7, kd:SC18_ENV("SC18_KD")??1.35, noise:SC18_ENV("SC18_N")??8};
 const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
@@ -3047,7 +3052,9 @@ const AGGR = {
   upush:     {own:LATE_K.push[0], opp:LATE_K.push[1]},
   usit:      {own:LATE_K.sit[0],  opp:LATE_K.sit[1]},
   uwin:      {own:LATE_K.win[0],  opp:LATE_K.win[1]},
-  upoint:    {own:LATE_K.point[0],opp:LATE_K.point[1]}
+  upoint:    {own:LATE_K.point[0],opp:LATE_K.point[1]},
+  upress:    {own:1, opp:1},          // round 95: both from their legs (rateOf)
+  uprobe:    {own:1, opp:1}
 };
 /* approaches: what a side does with and without the ball. own and opp scale
    its chances and the chances it allows; legs is how hard it runs each unit
@@ -3088,6 +3095,20 @@ function lateLeft(){ return ["","","","","","","","","","","forty","thirty-five"
 /* ten minutes left, within a goal: the second late call (round 40: nothing was asked after 65' in 29 of 29 close
    matches; Grokbot: an attacking change or parking the bus at 80') */
 const SC_FINAL=true;
+/* round 95 (engine 18; Grokbot's point 6, Ian: rebuild the 80' call): every answer at 80' had one right answer (down one,
+   push 180 of 180; up one, sit 180 of 182; level, go for the win 172 of 201: scratch r95 lc.js). Now the question is how,
+   and the answer is in their legs: going at them pays against a back line that's gone (their defence and midfield's
+   energy, the stamina model's own), and against fresh legs it opens you up; keeping the ball is the steady option. The
+   call shows each side's legs as the staff read them (a little off: SC18.noise). Your answers only: the computer's late
+   modes and every other game are as before. */
+const scLegsZ=X=>Math.max(-1,Math.min(1,((X.F[0]*0.7+X.F[1]*0.3)-1.05)/0.4));   // how hard the day has been on a back line (the defence's and the midfield's drain this game, SC.fit): +1 gone, -1 fresh
+function finalCall18(lead,ko,legs){
+  const A=["normal","Leave it to your assistant"], P=["press","Go at them: fresh legs on, press high"], Q=["probe","Keep the ball: make them chase it"];
+  if(lead<0)return {k:"final",legs:legs,h:`Down ${-lead}, ten minutes left`,q:"How do you chase it?",opts:[P,Q,A]};
+  if(lead>0)return {k:"final",legs:legs,h:`Up ${lead}, ten minutes left`,q:"How do you see it out?",opts:[Q,["sit","Park the bus: a defender on"],A]};
+  if(ko)return {k:"final",ko:true,legs:legs,h:"Level, ten minutes left",q:"Go for it, keep the ball, or keep it tight for extra time?",opts:[P,Q,["point","Keep it tight: extra time if it comes"],A]};
+  return {k:"final",legs:legs,h:"Level, ten minutes left",q:"Go for the win, keep the ball, or take the point?",opts:[P,Q,["point","Take the point"],A]};
+}
 function finalCall(lead,ko){
   const A=["normal","Leave it to your assistant"];
   // round 44, graded in league points: down one, everyone forward was the best answer in 128 of 144 matches; up one,
@@ -3242,6 +3263,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       const myLegs=(X.E[2]*0.6+X.E[1]*0.4), theirLegs=(O.E[0]*0.6+O.E[1]*0.4);
       own*=(1-SC.tiredOwn*(1-myLegs))*(1+SC.tiredOpp*(1-theirLegs));
       if(X.red)own*=SC.red.own; if(O.red)own*=SC.red.opp;
+      // round 95: going at them pays against a back line that's gone and opens you up against fresh legs; keeping the ball
+      // is the steady way, a little better against tired legs too (they can't get it back)
+      { const zo=scLegsZ(O), zx=scLegsZ(X); if(m[side]==="upress")own*=SC18.a0+SC18.a1*zo; else if(m[side]==="uprobe")own*=(SC18.k0+SC18.k1*zo)*(lead(side)<0?SC18.kd:1);   // behind, keeping it is still a chase: bodies forward, patiently
+        const mo=m[other(side)]; if(mo==="upress")own*=SC18.ao-SC18.ao1*zx; else if(mo==="uprobe")own*=SC18.ko-SC18.ko1*zx }
       return own*makeF(side,m[side],m[other(side)])*lateF(side,s)*ampF(side);
     };
     const fH=finF("home"), fA=finF("away");
@@ -3376,7 +3401,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
     if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,finalCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}
+    if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))>1)return;
+      if(scV18()&&humans[sd]){ const rd=X=>Math.round(Math.max(5,Math.min(95,65-25*scLegsZ(X)+rng.gauss(0,SC18.noise))));   // the staff's read of each back line's legs, 0-100; drawn only for a person's side
+        queueCall(sd,finalCall18(lead(sd),st.playoff,{mine:rd(st.S[sd]),theirs:rd(st.S[other(sd)])})) }
+      else queueCall(sd,finalCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}
     if(s===LATE_SEG&&!st.lt){st.lt=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))<=1)queueCall(sd,lateCall(lead(sd),st.playoff)) }); if(st.queue.length)return st.next()}   // at 75', within one goal: 2.4 points a call (test/call-weight.js); at 70' with the modes below sharpened: 5.5. Two up or down, nothing either way
     if(s>=SEGS){ if(st.h===st.a){ if(st.playoff)extraTime(); else st.draw=true } st.done=true; return fin() }
     const d=segment(s); st.seg++;
@@ -3573,6 +3601,13 @@ function staffTake(dp, ctx){
     R.push({who:"capy", pick:"normal", line:"I would leave the shape alone. A count of attacks is, I believe, a small and noisy thing."});
     return R;
   }
+  if(dp.k==="final"&&dp.legs){   // round 95: the read is their legs; Pearl reads them, the Bears always go, the capybara never does
+    const t=dp.legs.theirs, gone=t<=55, fresh=t>=74;
+    const pp=gone?"press":fresh?(ahead&&o.indexOf("sit")>=0?"sit":"probe"):(o.indexOf("probe")>=0?"probe":"normal");
+    R.push({who:"bears", pick:o.indexOf("press")>=0?"press":"probe", line:bearYell(behind?"push":ahead?"lock":"level",seed)});
+    R.push({who:"pearl", pick:pp, line:pearlSay(gone?`Look at their back line! They've got nothing left. Go at them!`:fresh?`They've still got legs at the back. Don't run into them: ${pp==="sit"?"let's see it out":"keep the ball and make them chase"}!`:`Their legs are in between. Keep the ball and make them work for it!`,seed)});
+    R.push({who:"capy", pick:o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":"probe", line:behind?"Chasing a game, one finds, mostly concedes on the break.":ahead?"I would suggest keeping what we have.":(dp.ko?"Extra time, I do believe, is no disgrace.":"A point, I do believe, is a point.")});
+    return R }
   const bold=o.indexOf("push")>=0?"push":o.indexOf("win")>=0?"win":"normal";
   const safe=o.indexOf("sit")>=0?"sit":o.indexOf("point")>=0?"point":o.indexOf("keep")>=0?"keep":"normal";
   R.push({who:"bears", pick:bold, line:bearYell(behind?"push":ahead?"lock":"level",seed)});
@@ -4196,9 +4231,13 @@ function evidenceHTML(g,my,d,kind){
 function finalSub(my,o){
   const R=SEA&&SEA.roster&&SEA.roster[my]; if(!R)return "";
   const nm=i=>R[i]&&R[i].n?surname(R[i].n):null, P=p=>POS.findIndex(x=>x.p===p);
-  const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")]}[o]; if(!sw)return "";
+  const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")], press:[BK(P("W")),P("CM")], probe:[BK(P("CM")),P("W")]}[o]; if(!sw)return "";
   const on=nm(sw[0]), off=nm(sw[1]); return on&&off?`${on} on, ${off} off`:"";
 }
+/* round 95: the 80' call's evidence, each back line's legs as the staff read them (a little off) */
+function legsHTML(dp){ const L=dp&&dp.legs; if(!L)return "";
+  const w=v=>v<=50?"gone":v<=60?"going":v<=72?"holding":"fresh", bar=(n,v)=>`<div class="legrow"><span>${n}</span><b>${v}</b><i>${w(v)}</i></div>`;
+  return `<div class="legs"><div class="legh">Legs at the back, as the staff read them</div>${bar("Theirs",L.theirs)}${bar("Yours",L.mine)}<div class="legn">Going at them pays against tired legs, and opens you up against fresh ones. The read is a few points off either way.</div></div>` }
 /* the table, beside the late calls (round 44): a point against three, in places. A league game in the season only. */
 function tableStakesHTML(g,my){
   if(!SEA||SEA.phase!=="week"||g.cup||typeof LEAGUE.points!=="function"||!CONF[my])return "";
@@ -4266,7 +4305,7 @@ function liveCallView(){
       <div class="callscore">${esc(my)} ${mine} &middot; ${esc(g.home===my?g.away:g.home)} ${theirs}</div>
       <div class="callsub">${esc(dp.q||"")}</div>
     </div>
-    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?tableStakesHTML(g,my):""}
+    ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?legsHTML(dp)+tableStakesHTML(g,my):""}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length,g:g,my:my}).map(s=>
       `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
@@ -9660,6 +9699,7 @@ function doAdvance(){
   const ug=(SEA.phase==="week")?(mineNow?mineNow[doneN]||null:SEA.nextGame(S.myTeam))
           :(SEA.phase!=="done"?SEA.postMatchup(S.myTeam):null);
   if(spectating()){ simPostOn(ph); return }
+  if(ug)planPreKeep(before,SEA.half,ug);   // round 95: the plan you kick off with and its worth, as the card showed it
   const wantLive = ug && SEA.roster && !prefersReduced() && (S.watchMode||"all")!=="never" && !simOnce;
   // meeting a coach who comes later this turn: they play it, with both of you calling
   const laterRival = isHotSeat() && ug && coachIndexOf(opponentOf(ug)) > (S.turn||0);
@@ -10147,8 +10187,9 @@ function heroResult(){
   // the big nights in order (Instinct, round 15): what happened, what it means, and then, a tap away, the audit
   const banner=(won&&SEA.champion===my&&/Champions/.test(move||"")&&typeof titleNightHTML==="function"?titleNightHTML(my):"")+(typeof clinchHTML==="function"&&!(won&&SEA.champion===my)?clinchHTML(my):"");
   const moment=!!banner||/Season over|Out of the|out of the|beaten in the|Champions|WINNERS|winners/.test(move||"");
-  const audit=(()=>{ const st=flash&&flash.step; if(st===undefined||st===null||!S.played)return "";
-      return impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()+readsHTML(flash&&flash.step);
+  const audit=(()=>{ const st=flash&&flash.step; if(st===undefined||st===null)return "";
+      const pl=planLineHTML(st,!!(LEAGUE.splitCup&&flash&&flash.cup)); if(!S.played)return pl;   // round 95: a simmed game has its plan line too
+      return pl+impactHTML((S.played[callKey(st)]||[]).filter(p=>p.team===S.myTeam&&(!LEAGUE.splitCup||!!p.cup===!!(flash&&flash.cup)))) })()+readsHTML(flash&&flash.step);
   return `<div class="hero ${won?'win':g.draw?'draw':'loss'}${moment?" moment":""}" style="--tc:${teamInk(my)}">${moment?banner:""}
     <div class="hlabel">FINAL${g.pens?" (PENALTIES)":g.so?" (SHOOTOUT)":g.ot&&!LEAGUE.draws?" (OT)":g.ot?" (EXTRA TIME)":""} &middot; ${won?"WIN":g.draw?"DRAW":"LOSS"}${label?" &middot; "+esc(label):""}</div>
     <div class="hscore">${ms}<span>&ndash;</span>${os}</div>
@@ -10804,18 +10845,47 @@ function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
   else { const pn=SEA&&SEA.postNext?SEA.postNext(my):null; if(!pn||!pn.opp)return null; opp=pn.opp; atH=pn.home===my||pn.home===true; neu=!!pn.neutral||pn.home===undefined }   // the postseason card, as it places the game
   if(!opp)return null;
   const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
-  let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap} }   // your edge before your plan
+  let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap, opp:opp} }   // your edge before your plan
 /* in the units shown: each chance as the screen rounds it (round 71's lesson: the card's 41 and 54 with a line saying 14) */
+function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
+  const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
+  return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) }
 function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
-  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>{ const f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
-    const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
-    return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) };
+  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>planWhy(C,k);
   const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), keptS=kept?"Kept from your last game. ":"";
   if(plan!=="balanced"){ const v=d(plan); let t=`${keptS}<b>${sg(v)}</b> from <b>${esc(PLANS[plan].l)}</b>: ${why(plan)}.`;
     if(v<0&&best!==plan&&d(best)>0)t+=` <b>${esc(PLANS[best].l)}</b> would be ${sg(d(best))} (${why(best)}).`; else if(v<=0&&d(best)<=0)t+=` <b>${esc(PLANS.balanced.l)}</b> is the better plan tonight.`;
     return `<div class="pland planfit">${t}</div>` }
   if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
   return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
+/* round 95 (Grokbot's point 3: after the game, what the plan did): the plan you started on, its worth as the card
+   showed it before the game, and why: kept with the game when it starts (doAdvance), so the line after the game reads the
+   same number as the card did, not one worked out again from a later step's injuries and roster. One night's box score is
+   mostly luck, so the line gives no verdict on whether the plan "worked" tonight; a sport's plain box fact sits beside it
+   where it has one (sportPlanFact). PLANLINE_ON off: nothing is kept or shown. */
+const PLANLINE_ON=!(typeof process!=="undefined"&&process.env&&process.env.PLANLINE_ON==="0");
+function planPreKey(step,half,year){ return (year||SEA.year)+":"+planKey(step,half) }
+function planPreNow(ug){ if(!PLANS[plan])return null; const C=planChances(); if(!C)return null;
+  if(ug&&ug.home!==undefined&&C.opp!==(ug.home===S.myTeam?ug.away:ug.home))return null;   // the card's game, or no line
+  const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced);
+  const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe");
+  return {p:plan, c:R(P[plan]), v:d(plan), w:plan==="balanced"?"":planWhy(C,plan), b:best, vb:d(best), wb:planWhy(C,best)} }
+function planPreKeep(step,half,ug){ if(!PLANLINE_ON||!planAmpV()||typeof PLAN_LEAN==="undefined"||isHotSeat()||!SEA||!SEA.roster)return;
+  let q=null; try{ q=planPreNow(ug) }catch(e){ q=null } if(!q)return;
+  const K=S.planPre=S.planPre||{}, y=SEA.year+":"; Object.keys(K).forEach(k=>{ if(k.indexOf(y)!==0)delete K[k] });   // this season only
+  K[planPreKey(step,half)]=q }
+function planLineHTML(step,half){ if(!PLANLINE_ON||step===undefined||step===null||!S.planPre)return "";
+  const q=S.planPre[planPreKey(step,half)]; if(!q||!PLANS[q.p]||planFor(step,half)!==q.p)return "";   // simmed ahead on your assistant's plan: no line
+  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), nm=k=>esc(PLANS[k].l), jw=w=>/^as /.test(w)?" "+w:": "+w;
+  let t;
+  if(q.p==="balanced")t=q.vb>=2?`You started on <b>${nm("balanced")}</b>. <b>${nm(q.b)}</b> would have added <b>${q.vb}</b> before the game${jw(q.wb)}.`
+    :`You started on <b>${nm("balanced")}</b>, and neither other plan added anything tonight.`;
+  else if(q.v===0)t=`You started on <b>${nm(q.p)}</b>: no better than <b>${nm("balanced")}</b> before the game.`+(q.b!==q.p&&q.vb>0?` <b>${nm(q.b)}</b> would have added ${q.vb}${jw(q.wb)}.`:"");
+  else { t=`You started on <b>${nm(q.p)}</b>: <b>${sg(q.v)}</b> before the game (${q.c}% to win, against ${q.c-q.v}% on ${nm("balanced")}), ${q.w}.`;
+    if(q.v<0&&q.b!==q.p&&q.vb>0)t+=` <b>${nm(q.b)}</b> would have been ${sg(q.vb)}.`; else if(q.v<0)t+=` <b>${nm("balanced")}</b> was the better plan.` }
+  const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&PLANS[x[2]]);
+  if(mine.length)t+=` You changed to <b>${nm(mine[mine.length-1][2])}</b> during the game.`;
+  return `<div class="planpost">${t}</div>` }
 function planFitOld(wp,kept){
   if(plan==="safe"&&wp<0.42)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan suits the better team, and tonight that's them: <b>${esc(PLANS.aggressive.l)}</b> is the underdog's plan.</div>`;
   if(plan==="aggressive"&&wp>0.58)return `<div class="pland planfit">${kept?"Kept from your last game. ":""}This plan is for the side that's outgunned, and tonight that isn't you: <b>${esc(PLANS.safe.l)}</b> lets the better team win.</div>`;
