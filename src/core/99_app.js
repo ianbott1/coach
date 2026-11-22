@@ -125,6 +125,7 @@ function startLive(g,step,slot){
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
+  if(live.eng)live.eng.plog=true;   // round 101: the game on screen keeps its possession log for the full match (no replay does)
   // replay any answers already recorded for this week
   live.replay=((S.calls&&S.calls[live.ckey])||[]).slice();
   live.ri=0;
@@ -152,6 +153,9 @@ function liveTick(){
     if(!live.ff&&live.drives[live.drives.length-1]===d){ if(live.timer){clearTimeout(live.timer);live.timer=null}
       const hm=typeof hlPlay==="function"?hlPlay(live,d):0; if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();
       if(!live.paused)live.timer=setTimeout(liveTick,Math.max(400,hm)); return } }
+  if(live&&live.pb&&!live.done){ const P=live.pb;
+    if(P.frozen!=null&&!live.paused&&!live.ff){ if(live.timer)clearTimeout(live.timer); P.at=Date.now()-P.frozen; const left=Math.max(0,P.ms-P.frozen); P.frozen=null; live.timer=setTimeout(liveTick,left); return }   // play on from where it stopped
+    live.pb=null }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -222,7 +226,11 @@ function liveTick(){
     // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
     // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
     // shows them.
-    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
+    // round 101: a sport that plays the stretch back possession by possession (basketball's full match) holds the score
+    // for the whole stretch and moves it as each basket drops (HL_SPORT.playback: its length on screen, or 0)
+    const pbMs=!live.ff&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan()?HL_SPORT.playback(live,r.drive):0;
+    if(pbMs){ live.hold={n:live.drives.length-1,h:pH,a:pA,clock:null}; live.pb={d:r.drive,at:Date.now(),ms:pbMs,h0:pH,a0:pA,frozen:null} }
+    else if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     // round 79: skipping stops for a close finish, so it's watched, not told (Ian: Skip jumped to the final of a one-score
     // game); once a game, at the sport's own late window
@@ -231,10 +239,11 @@ function liveTick(){
     break;
   }
   render();
+  if(fresh&&live.pb&&live.pb.d===fresh&&!live.done&&!live.ask){ if(!live.paused)live.timer=setTimeout(liveTick,live.pb.ms); return }
   /* round 99 (Ian: "Full match is not showing the full match"): in Full match the stretch is played before its moments, as
      a game is: the play runs with the score as it stood, then the stretch's goals and chances come at its end and the
      score moves with them, then the next stretch. (Elsewhere the moments play first, as before.) */
-  if(fresh&&live.hold&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&(!HL_SPORT.collapseIdle||HL_SPORT.leadIn)&&typeof hlCan==="function"&&hlCan()){   // round 100: basketball too (Grokbot: "a chunked text slideshow")
+  if(fresh&&live.hold&&!live.pb&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&(!HL_SPORT.collapseIdle||HL_SPORT.leadIn)&&typeof hlCan==="function"&&hlCan()){   // round 100: basketball too (Grokbot: "a chunked text slideshow")
     const gap=liveGap(), lead=Math.round(gap*0.6), mine=fresh; live.leadPend=mine;
     live.timer=setTimeout(()=>{ if(!live||live.done||live.paused||live.ask||live.drives[live.drives.length-1]!==mine||live.leadPend!==mine)return; live.leadPend=null;
       const hm2=typeof hlPlay==="function"?hlPlay(live,mine):0; if(!hm2&&live.hold&&typeof hlRelease==="function")hlRelease();
@@ -300,7 +309,7 @@ function finishLive(){ liveEndedAt=Date.now();
   const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives};
+              drives:live.drives.map(d=>d&&d.pl?(({pl,...r})=>r)(d):d)};   // round 101: the full match's possession log stays with the live game, not the save
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
   if(live.eng.rest&&live.eng.rest[meHome?"home":"away"])played.rested=true;   // starters rested: fewer knocks this week (Season._resolve)
   if(g.cup)played.cup=true;
@@ -3526,7 +3535,7 @@ function render0(){
       const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
         b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
       onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
-        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
+        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb&&live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>setPlanMidGame(x.dataset.midplan)));
@@ -4207,7 +4216,9 @@ window.addEventListener("keydown",e=>{
   if((e.key===" "||e.key==="Enter")&&(tag==="SUMMARY"||tag==="BUTTON"||tag==="A"||tag==="SELECT"||(e.target&&e.target.getAttribute&&e.target.getAttribute("role")==="button")))return;
   if(live&&!live.done){
     if(live.ask)return;
-    if(e.key===" "){e.preventDefault();live.paused=!live.paused;S.watchStep=live.paused;liveTick();return}
+    if(e.key===" "){e.preventDefault();live.paused=!live.paused;S.watchStep=live.paused;
+      if(live.paused&&live.pb){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render(); return }   // round 101: a full match pauses where it is
+      liveTick();return}
     if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();live.paused=true;liveTick();return}
     if(e.key==="Enter"){e.preventDefault();skipLive();return}
     if(["1","2","3","4"].indexOf(e.key)>=0){e.preventDefault();

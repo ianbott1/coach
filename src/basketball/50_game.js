@@ -244,7 +244,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   let cx=rng.r(), crew=1; for(const [w,f] of BB.crews){ if(cx<w){crew=f;break} cx-=w }
   const side0=()=>({off:null, def:null, f:0, sitTo:-1, out:false, asked1:false, asked2:false,
     tell:{tpa:0,fga:0,paint:0,pnr:0,n:0}, lastCue:null});
-  const st={h:0,a:0,drives:[],seg:0,poss:poss,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
+  const st={plog:false,h:0,a:0,drives:[],seg:0,poss:poss,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null, answer:null,
     ot:0, done:false, last:null, crew:crew, S:{home:side0(),away:side0()}, fouls:{home:0,away:0}, lastSeg:{home:0,away:0}};
   const other=sd=>sd==="home"?"away":"home";
@@ -327,8 +327,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const L0h=Object.assign({},st.lines.h), L0a=Object.assign({},st.lines.a);
     const ev=(st.pendEv||[]).splice(0), t0=s;
     const pStar=BB.starFouls/Math.max(40,poss)*crew;
+    // round 101: the full match's possession log (live games only): what each possession did, read off the box-score
+    // lines before and after it (no draws, so no game moves): [side 0 home / 1 away, turnovers, free throws tried, made,
+    // threes tried, made, twos tried, made, offensive boards, late foul (1)]
+    const pl=st.plog?[]:null, snapL=L=>[L.to,L.fta,L.ftm,L.tpa,L.tpm,L.fga2,L.fgm2,L.oreb];
+    const plRec=(sd,L,b,f)=>{ const a=snapL(L); pl.push([sd].concat(a.map((v,i)=>v-b[i]),[f?1:0])) };
     for(let i=0;i<Math.max(nn,nA);i++){
-      dh+=possession(rng,ehH,mH,st.lines.h,pressA,modH); da+=possession(rng,ehA,mA,st.lines.a,pressH,modA);
+      let b0=pl?snapL(st.lines.h):null;
+      dh+=possession(rng,ehH,mH,st.lines.h,pressA,modH); if(pl){ plRec(0,st.lines.h,b0); b0=snapL(st.lines.a) }
+      da+=possession(rng,ehA,mA,st.lines.a,pressH,modA); if(pl)plRec(1,st.lines.a,b0);
       // the stars' fouls: on defense, while on the floor
       // a star who fouls out mid-stretch is gone at once (Muse: an "8th foul" in a six-foul league); the
       // dice are drawn as before, so nothing else in the game moves
@@ -346,8 +353,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       for(let k=0;k<4;k++){
         const behindH=foulH&&st.h+dh<st.a+da, behindA=foulA&&st.a+da<st.h+dh;
         if(!behindH&&!behindA)break;
-        if(behindA){ dh+=foulTrip(rng,st.lines.h); da+=possession(rng,ehA,"push",st.lines.a) }
-        else { da+=foulTrip(rng,st.lines.a); dh+=possession(rng,ehH,"push",st.lines.h) }
+        if(behindA){ let b0=pl?snapL(st.lines.h):null; dh+=foulTrip(rng,st.lines.h); if(pl){ plRec(0,st.lines.h,b0,1); b0=snapL(st.lines.a) } da+=possession(rng,ehA,"push",st.lines.a); if(pl)plRec(1,st.lines.a,b0) }
+        else { let b0=pl?snapL(st.lines.a):null; da+=foulTrip(rng,st.lines.a); if(pl){ plRec(1,st.lines.a,b0,1); b0=snapL(st.lines.h) } dh+=possession(rng,ehH,"push",st.lines.h); if(pl)plRec(0,st.lines.h,b0) }
       }
     }
     // the shot chart: attempts, points in the paint, ball screens; fouls called
@@ -370,6 +377,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       T:{home:Object.assign({},H.tell),away:Object.assign({},A.tell)}, star:{home:[H.f,onH,H.out],away:[A.f,onA,A.out]},
       fouls:Object.assign({},st.fouls), ln:{home:Object.assign({},st.lines.h),away:Object.assign({},st.lines.a)}};   // round 73: the box score's team lines, as they stand (no draws)
     if(bn)d.bn=bn;
+    if(pl)d.pl=pl;
     st.drives.push(d); return d;
   };
   // the last possession, when a side trails by two: a three to win or a two to tie

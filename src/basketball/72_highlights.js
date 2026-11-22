@@ -19,6 +19,7 @@ const HL_SPORT=(function(){
   function clips(L,d,mode){
     const g=L.g, out=[];
     if(d.seg==="last"){ out.push(mk(L,{k:d.made?"last":"lastmiss",side:d.side,u:(d.sh*7+d.sa*13)%100,choice:d.choice,m:"0:04"},d)); return out }
+    if(mode==="full"&&Array.isArray(d.pl)&&d.pl.length)return out;   // round 101: the full match plays every possession instead
     const SG=typeof SEGS!=="undefined"?SEGS:8, late=d.seg>=SG-1, close=Math.abs(d.sh-d.sa)<=(late?5:10);
     if(mode==="goals"&&!(late&&close))return out;
     const all=mode==="all"||mode==="full";   // round 68: every big basket, whatever the score
@@ -137,7 +138,132 @@ const HL_SPORT=(function(){
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, SG=typeof SEGS!=="undefined"?SEGS:8, q=Math.min(4,Math.floor(live.drives.length*4/SG)+1);
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||"Q"+q});
   }
-  function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
+  /* ---- round 101: the full match, possession by possession (Ian: "as realistic as possible ... in Football Manager I
+     would do this all the time") ----
+     The engine keeps each possession of the game on screen (d.pl, read off the box-score lines, no draws). The court
+     plays them back in order: the clock runs through the stretch, the ball is brought up and worked round, and each
+     possession ends as it did: a basket (the score moves as it drops), a miss and the rebound (an offensive board goes
+     again), a turnover, free throws. The page holds the score until the stretch is over and moves it basket by basket.
+     Who: the stretch's five on each side (onFloor, one five a side for the stretch), the shooter by position from the
+     possession's own hash: the team totals are the engine's, the names are the screen's (the box score credits its own). */
+  const PB_W={to:0.8, att:1, ft:0.9, base:0.55};
+  const pbSeed=(d,i,k)=>strHash((live&&live.step||0)+"|"+d.seg+"|"+i+"|"+k);
+  const pickBy=(w,u)=>{ let t=w.reduce((a,b)=>a+b,0), x=(u%1000)/1000*t; for(let i=0;i<w.length;i++){ x-=w[i]; if(x<0)return i } return w.length-1 };
+  const W3=[25,30,25,12,8], W2=[14,14,20,26,26], WTO=[40,25,15,12,8], WRB=[6,8,14,32,40], WST=[30,26,20,14,10];
+  function pbActs(d,i,p){   // [side, to, fta, ftm, tpa, tpm, fga2, fgm2, oreb, late]
+    const sd=p[0], to=p[1], fta=p[2], ftm=p[3], tpa=p[4], tpm=p[5], fga2=p[6], fgm2=p[7], ob=p[8], late=p[9];
+    const A=[], u=k=>pbSeed(d,i,k);
+    let x3=tpa-tpm, x2=fga2-fgm2, k=0;
+    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; A.push({t:"miss",three:three,who:pickBy(three?W3:W2,u("s"+k)),reb:off?"off":"def",rb:pickBy(WRB,u("r"+k))}); k++ };
+    if(to&&!tpa&&!fga2&&!fta){ A.push({t:"to",who:pickBy(WTO,u("t")),st:pickBy(WST,u("st"))}); return A }
+    for(let j=0;j<ob;j++)miss(true);
+    if(tpm||fgm2){ const three=!!tpm; A.push({t:"make",three:three,who:pickBy(three?W3:W2,u("s"+k)),pts:three?3:2,and1:!three&&fta===1,ftm:ftm}); return A }
+    if(fta>=2){ A.push({t:"ft",n:fta,m:ftm,late:!!late,who:late?pickBy(WTO,u("f")):pickBy(fta===3?W3:W2,u("f"))}); return A }
+    if(x3>0||x2>0)miss(false);
+    if(to)A.push({t:"to",who:pickBy(WTO,u("t")),st:pickBy(WST,u("st"))});
+    return A }
+  function pbPlan(d){
+    if(d._pb)return d._pb; const out=[]; let tot=0;
+    (d.pl||[]).forEach((p,i)=>{ const acts=pbActs(d,i,p); let w=PB_W.base; acts.forEach(a=>{ w+=a.t==="to"?PB_W.to:a.t==="ft"?PB_W.ft:PB_W.att });
+      out.push({side:p[0],acts:acts,w:w,at:tot,pts:2*p[7]+3*p[5]+p[3]}); tot+=w });
+    return d._pb={P:out,tot:tot} }
+  /* how long the stretch takes on screen (ms), or 0 where there's nothing to play back */
+  function playback(L,d){ if(!d||!Array.isArray(d.pl)||!d.pl.length)return 0;
+    const sp=typeof speedMult==="function"?speedMult():1; return Math.round(pbPlan(d).tot*700/Math.pow(Math.max(0.25,sp),0.75)) }
+  // the clock at a fraction of a stretch (the full stretch, unclamped)
+  const clockAt=(s,f)=>{ f=Math.max(0,Math.min(1,f)); const mm=x=>{ const t=Math.max(0,Math.round(x*60)), m=Math.floor(t/60), sec=t%60; return m+":"+(sec<10?"0":"")+sec };
+    if(s>=8)return "OT"+(s-7>1?(s-7):"")+" "+mm(5*(1-f));
+    if(BB.quarters){ const q=Math.floor(s/2)+1, start=s%2?6:12; return "Q"+q+" "+mm(start-6*f) }
+    return (s<4?"1st":"2nd")+" "+mm(20-5*(s%4)-5*f) };
+  // the page's own scoreboard follows the basket that just dropped (it is held while the stretch plays)
+  let pbShown="";
+  function pbPatch(h,a,clock){ const k=h+"|"+a+"|"+clock; if(k===pbShown)return; pbShown=k;
+    if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    try{ const top=document.querySelector(".wtop"); if(!top)return; const sd=top.querySelectorAll(".wside"), wn=top.querySelectorAll(".wn");
+      if(wn.length===2){ wn[0].textContent=a; wn[1].textContent=h; sd[0].classList.toggle("lead",a>h); sd[1].classList.toggle("lead",h>a) }
+      const lb=top.querySelector(".wlabel"); if(lb){ const t=lb.textContent||"", i=t.indexOf("\u00b7"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${i>=0?" "+esc(t.slice(i).replace(/\s+/g," ")):""}` }
+      if(typeof miniBar==="function")miniBar() }catch(e){} }
+  function pbDraw(x,W,H){
+    const PB=live.pb, d=PB.d, plan=pbPlan(d), el=PB.frozen!=null?PB.frozen:Date.now()-PB.at, f=Math.max(0,Math.min(0.9999,el/Math.max(1,PB.ms))), T=f*plan.tot;
+    const g=live.g, kits=hlKits(g.home,g.away), r=Math.max(5,W/80);
+    let pi=plan.P.findIndex(q=>T<q.at+q.w); if(pi<0)pi=plan.P.length-1;
+    const cur=plan.P[pi], u=(T-cur.at)/cur.w;   // 0..1 through this possession
+    // the score: every basket of the possessions before this one, and this one's once it has dropped
+    let hs=PB.h0, as=PB.a0; for(let j=0;j<pi;j++){ if(plan.P[j].side===0)hs+=plan.P[j].pts; else as+=plan.P[j].pts }
+    const home=cur.side===0, aT=home?g.home:g.away, dT=home?g.away:g.home, c={home:home};
+    const bnA=!!(d.bn&&d.bn[home?"home":"away"]), bnD=!!(d.bn&&d.bn[home?"away":"home"]);
+    const NM=pbDraw._n=pbDraw._n&&pbDraw._n.d===d?pbDraw._n:{d:d,home:hlNamed(g.home,onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"")),away:hlNamed(g.away,onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,""))};
+    const an=home?NM.home:NM.away, dn=home?NM.away:NM.home;
+    // phases: bring it up (to tb), work it round (to tw), then the possession's acts share the rest
+    const tb=0.22, tw=0.42, acts=cur.acts, na=acts.length;
+    const seed=pbSeed(d,pi,"p"), rr=mulberry32(seed>>>0);
+    const passes=[]; { let h=0; const n=1+Math.floor(rr()*3); for(let k=0;k<n;k++){ let q=Math.floor(rr()*5); if(q===h)q=(q+1)%5; passes.push(q); h=q } }
+    const sway=(i)=>[Math.sin(Date.now()/700+i*1.7)*0.01,Math.cos(Date.now()/830+i*2.3)*0.016];
+    // the set they run: five out, four out and one in, horns, a post-up (from the possession's own hash; a side that
+    // lives on threes spreads the floor more often)
+    const SETS=[ATT,[[0.66,0.5],[0.8,0.06],[0.8,0.94],[0.72,0.2],[0.72,0.8]],[[0.64,0.5],[0.79,0.1],[0.79,0.9],[0.8,0.39],[0.8,0.61]],[[0.66,0.5],[0.78,0.12],[0.76,0.86],[0.84,0.7],[0.9,0.38]]];
+    const offK=(()=>{ try{ return live.eng&&live.eng.S&&live.eng.S[home?"home":"away"].off }catch(e){ return null } })();
+    const setW=offK==="threes"?[20,45,15,20]:offK==="paint"?[25,10,25,40]:offK==="pnr"?[30,15,40,15]:[34,22,22,22];
+    const SET=SETS[pickBy(setW,seed)];
+    // off the ball: men cut and relocate through the half-court (a slow figure of eight round their spot)
+    const cutT=Date.now()/1000;
+    let att=SET.map((p,i)=>{ const s=sway(i), cx=Math.sin(cutT*0.9+i*2.1+seed%7)*0.035, cy=Math.sin(cutT*1.8+i*1.3)*0.05; return [Math.min(0.95,p[0]+s[0]+cx),Math.max(0.03,Math.min(0.97,p[1]+s[1]+cy))] }), ball, held=true, lift=0, top="", end="", endInk=null;
+    const defOf=(A,bi)=>A.map(([a,y],i)=>{ const dd=i===bi?0.3:0.22; return [hlLerp(a,RIM[0],dd),hlLerp(y,RIM[1],dd)] });
+    const SH3=[[0.92,0.035],[0.77,0.14],[0.69,0.5],[0.77,0.86],[0.92,0.965]];
+    const spotOf=(a,k)=>{ const z=pbSeed(d,pi,"sp"+k); return a.three?SH3[z%5]:z%5<3?[0.925,0.5+((z>>3)%7-3)*0.02]:[0.84,0.36+((z>>4)%5)*0.07] };
+    const surname=q=>q&&q[1]?String(q[1]):"";
+    let holder=0, def;
+    const clk=clockAt(d.seg,f);
+    if(u<tb){ // bring it up: from the other end, the defence getting back
+      const e=hlEase(u/tb), mir=p=>[1-p[0],1-p[1]];
+      att=att.map((p,i)=>{ const m=mir(defOf(ATT,-1)[i]); return [hlLerp(m[0],p[0],e),hlLerp(m[1],p[1],e)] });
+      def=defOf(att,0).map((p,i)=>{ const m=mir(ATT[i]); return [hlLerp(m[0],p[0],e),hlLerp(m[1],p[1],e)] });
+      ball=[att[0][0]-0.015,att[0][1]]; top=`${clk} · ${aT} bring it up`;
+    }else if(u<tw){ // the ball round the floor
+      const v=(u-tb)/(tw-tb)*passes.length, k=Math.min(passes.length-1,Math.floor(v)), ph=v-k, from=k?passes[k-1]:0, to=passes[k];
+      if(ph<0.35){ const e=hlEase(ph/0.35), a=att[from], b=att[to]; ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)]; held=false; holder=-1 }
+      else { holder=to; ball=[att[to][0]-0.012,att[to][1]] }
+      def=defOf(att,holder); top=`${clk} · ${aT} ball`;
+    }else{ // the acts: shots, boards, the turnover, free throws
+      const v=(u-tw)/(1-tw)*na, k=Math.min(na-1,Math.floor(v)), ph=v-k, a=acts[k], q=an[a.who], nm=surname(q);
+      if(a.t==="to"){ const sq=dn[a.st], st=surname(sq), e=hlEase(Math.min(1,ph/0.5));
+        const at=att[a.who]; holder=a.who; ball=[hlLerp(at[0],0.5,ph>0.4?hlEase((ph-0.4)/0.6):0),hlLerp(at[1],0.5,ph>0.4?hlEase((ph-0.4)/0.6):0)]; held=ph>0.4;
+        def=defOf(att,a.who); def[a.st]=[hlLerp(def[a.st][0],at[0],e),hlLerp(def[a.st][1],at[1],e)];
+        top=`${clk} · ${nm||aT}`; end=ph>0.35?`Turnover: ${st?st+" takes it":"they take it away"}`:""; endInk=kits[home?1:0].fill }
+      else if(a.t==="ft"){ const sp=[0.81,0.5]; att=att.map((p,i)=>i===a.who?sp:[[0.86,0.33],[0.92,0.33],[0.86,0.67],[0.92,0.67],[0.7,0.5]][i]); def=att.map((p,i)=>i===a.who?[0.72,0.5]:[p[0]+0.03,p[1]+(p[1]<0.5?-0.04:0.04)]);
+        const n=a.n, j=Math.min(n-1,Math.floor(ph*n)), pj=ph*n-j;   // made ones first: the order isn't kept, the count is
+        const fly=Math.min(1,pj/0.6); ball=[hlLerp(sp[0],RIM[0],hlEase(fly)),hlLerp(sp[1],RIM[1],hlEase(fly))]; lift=Math.sin(fly*Math.PI)*0.05*W; held=false;
+        const ok=j<a.m; top=`${clk} · ${a.late?"Fouled to stop the clock: ":"Fouled: "}${nm||aT} at the line, ${n} shots`; end=pj>0.6?`${j+1} of ${n}: ${ok?"good":"no good"}`:"";
+        if(ok&&pj>0.6){ if(home)hs+=1; else as+=1 } for(let z=0;z<j;z++)if(z<a.m){ if(home)hs+=1; else as+=1 } endInk=ok?kits[home?0:1].fill:null }
+      else { // a shot: made, or missed and rebounded
+        const sp=spotOf(a,k); att=att.slice(); const me=a.who, e1=hlEase(Math.min(1,ph/0.4));
+        att[me]=[hlLerp(att[me][0],sp[0],e1),hlLerp(att[me][1],sp[1],e1)];
+        def=defOf(att,me);
+        if(ph<0.45){ holder=me; ball=[att[me][0]-0.012,att[me][1]] }
+        else if(ph<0.75){ const fl=(ph-0.45)/0.3; held=false; const to=a.t==="make"?RIM:[RIM[0]-0.01,RIM[1]+0.03]; ball=[hlLerp(sp[0],to[0],hlEase(fl)),hlLerp(sp[1],to[1],hlEase(fl))]; lift=Math.sin(fl*Math.PI)*(a.three?0.09:0.06)*W }
+        else if(a.t==="make"){ held=false; ball=RIM.slice(); if(home)hs+=a.pts; else as+=a.pts; if(a.and1&&ph>0.9){ if(a.ftm){ if(home)hs+=1; else as+=1 } } }
+        else { const rbSide=a.reb==="off", rb=rbSide?att[a.rb]:def[a.rb], e2=hlEase((ph-0.75)/0.25);
+          if(rbSide)att[a.rb]=[hlLerp(att[a.rb][0],RIM[0]-0.04,e2),hlLerp(att[a.rb][1],RIM[1],e2)]; else def[a.rb]=[hlLerp(def[a.rb][0],RIM[0]-0.04,e2),hlLerp(def[a.rb][1],RIM[1],e2)];
+          held=false; ball=[hlLerp(RIM[0],RIM[0]-0.04,e2),hlLerp(RIM[1]+0.03,RIM[1],e2)] }
+        top=`${clk} · ${nm||aT}${a.three?" for three":ph>=0.45?" shoots":""}`;
+        if(ph>=0.75){ if(a.t==="make"){ end=`${nm||aT}${a.three?" from three!":a.and1?", and one!":": two"}`; endInk=kits[home?0:1].fill }
+          else { const rq=a.reb==="off"?an[a.rb]:dn[a.rb]; end=a.reb==="off"?`Offensive board: ${surname(rq)||aT}`:`No good. ${surname(rq)||dT} rebounds`; endInk=a.reb==="off"?kits[home?0:1].fill:kits[home?1:0].fill } }
+      }
+    }
+    if(!def)def=defOf(att,holder);
+    const ink=kits[home?0:1].fill, dink=kits[home?1:0].fill;
+    const scr=att.map(p=>P(W,H,c,p[0],p[1])), crowd=(px,py)=>scr.some(q=>Math.abs(q[0]-px)<r*5&&Math.abs(q[1]-py)<r*2.6);
+    def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=dn[i]; hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:crowd(px,py)?"":q[1]}:null) });
+    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=an[i]; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:q[1]}:null) });
+    let [qx,qy]=P(W,H,c,ball[0],ball[1]); const bo=held?Math.abs(Math.sin(Date.now()/140))*r*1.3:lift;
+    if(held){ qx+=(home?1:-1)*r*0.15; qy+=r*0.75 }
+    hlBall(x,qx,qy,r*0.62,bo,null,{fill:"#E8702A",ring:"#2a1406"});
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:clk});
+    hlTicker(x,W,H,top,8.01);   // top right: the score bug has the left
+    if(end){ const key=pi+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
+    pbPatch(hs,as,clk);
+  }
+  function idle(x,W,H){ if(typeof live!=="undefined"&&live&&live.pb&&live.pb.d&&!live.done){ pbDraw(x,W,H); return } if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.7, ts=0.86;
     let bx,by,z=0;
@@ -161,5 +287,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  return {reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();
