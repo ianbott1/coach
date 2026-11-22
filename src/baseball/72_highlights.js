@@ -23,7 +23,10 @@ const HL_SPORT=(function(){
     // the score after each run-scoring play, so the page ticks up clip by clip (round 70)
     const di=(L.drives||[]).indexOf(d), pv=di>0?L.drives[di-1]:null; let sh=pv?pv.sh||0:0, sa=pv?pv.sa||0:0; const after=new Map();   // the inning keeps only its end score
     (d.ev||[]).forEach(e=>{ if((e.k==="hr"||e.k==="rbi")&&e.n){ if(e.side==="home")sh+=e.n; else sa+=e.n } after.set(e,[sh,sa]) });
-    const out=(d.ev||[]).filter(e=>pick.indexOf(e)>=0).map(e=>{ const c=mk(L,e,d); if((e.k==="hr"||e.k==="rbi")&&e.n)c.after=after.get(e); return c });
+    // round 100: a call inside this inning already showed its score: the plays up to the one that made it aren't shown
+    // again (the 6th's leadoff run played after "6th inning, tied 2-2", which already counted it)
+    let from=0; { const q=L.askScore; if(q&&q.n===di&&(q.h>(pv?pv.sh||0:0)||q.a>(pv?pv.sa||0:0))){ const E=d.ev||[]; for(let i=0;i<E.length;i++){ const a=after.get(E[i]); if(a&&a[0]>=q.h&&a[1]>=q.a&&(E[i].k==="hr"||E[i].k==="rbi")&&E[i].n){ from=i+1; break } } } }
+    const out=(d.ev||[]).filter((e,i)=>i>=from&&pick.indexOf(e)>=0).map(e=>{ const c=mk(L,e,d); if((e.k==="hr"||e.k==="rbi")&&e.n)c.after=after.get(e); return c });
     // round 70: the out that ends a close game, the tying run at the plate or on base (Ian: "down 1 in the 9th, the game
     // just ended")
     const E=d.last; if(E&&mode!=="goals"){ const gap=Math.abs(d.sh-d.sa), on=(E.r||[]).filter(Boolean).length; if(all||gap<=1||on+1>=gap)out.push(mk(L,E,d)) }

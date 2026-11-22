@@ -375,8 +375,12 @@ function liveWPHTML(onCall){
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
   if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
-  if(liveTau(d)<=0&&sc[0]!==sc[1]&&!(onCall&&live.ask))return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
+  if(liveTau(d)<=0&&sc[0]!==sc[1]&&!(onCall&&live.ask)&&!(live.hold&&!live.ask))return "";   // (not while the last moment is held: the bar going was the result)   // round 56: the game is over ("1% to win" after the last out: Muse)
   const meH=live.g.home===S.myTeam; let m=meH?sc[0]-sc[1]:sc[1]-sc[0], tau=liveTau(d);
+  // round 100: while the score is held for a moment still to play, so is the chance (it read 29%, after the run, over a
+  // held 2-2): the held score, at the stretch before; a call inside the stretch, half an inning on (baseball)
+  if(live.hold&&!live.ask&&live.hold.h!=null){ const d0=live.drives[live.hold.n-1], hm=meH?live.hold.h-live.hold.a:live.hold.a-live.hold.h;
+    m=hm; tau=d0?liveTau(d0):1; const q=live.askScore; if(SPORT.id==="baseball"&&q&&q.n===live.hold.n&&q.h===live.hold.h&&q.a===live.hold.a){ const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) } }
   /* round 97: baseball asks inside an inning (a stretch here is an inning), so on its call screens the last inning's
      reading was stale: "8th inning, down 1" over the 44% of the 2-2 inning before it (Grokbot: 5% at 10-10 in the
      9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */

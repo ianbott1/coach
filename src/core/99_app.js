@@ -201,6 +201,8 @@ function liveTick(){
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
       if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
       live.ff=false;                            // skipping stops at your next call
+      // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
+      if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
@@ -208,7 +210,11 @@ function liveTick(){
     }
     // the score before this stretch (kept here: drives record it differently by sport,
     // and football's don't carry sh/sa, which made every drive look like a score)
-    const pH=live.lastH||0, pA=live.lastA||0;
+    let pH=live.lastH||0, pA=live.lastA||0;
+    // round 100 (Muse: after a call in the middle of an inning the scoreboard stepped back to the inning's start, "6th
+    // inning, tied 2-2" then "Top of the 6th, 1-2"): a call inside this stretch already showed its score, so the held
+    // score starts there, never behind it
+    { const q=live.askScore; if(q&&q.n===live.drives.length&&q.h>=pH&&q.a>=pA&&q.h<=live.eng.h&&q.a<=live.eng.a){ pH=q.h; pA=q.a } }
     live.drives.push(r.drive); fresh=r.drive;
     // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
     // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
