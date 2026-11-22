@@ -24,16 +24,21 @@ function hlMount(){
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
   // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
   if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
-  if(HL_SPORT.collapseIdle){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }
+  if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
+  else if(HL_SPORT.collapseIdle)box.style.display=""
   const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
   if(!HL.cur)hlDraw(null,0);
   hlAmbient();
 }
 /* the full match: while no clip plays and the game runs, the sport's idle picture is redrawn every frame (round 68) */
+/* round 98: where the pitch stays on the live screen (soccer, hockey) the play between moments runs in every mode, so the
+   ice is never empty; a sport that shows its court only for a clip (basketball) keeps it up in the full match alone. The
+   pace is the mode's own: only the full match waits longer between stretches. */
+function hlAmbOn(){ return !!(HL_SPORT.ambient&&(hlMode()==="full"||(!HL_SPORT.collapseIdle&&hlMode()!=="off"))) }
 function hlAmbient(){
-  if(HL.amb||!HL_SPORT.ambient||hlMode()!=="full"||HL.cur)return;
-  const loop=()=>{ HL.amb=0; if(HL.cur||hlMode()!=="full"||typeof live==="undefined"||!live||live.done||!HL.cv||!HL.cv.isConnected)return;
+  if(HL.amb||!hlAmbOn()||HL.cur)return;
+  const loop=()=>{ HL.amb=0; if(HL.cur||!hlAmbOn()||typeof live==="undefined"||!live||live.done||!HL.cv||!HL.cv.isConnected)return;
     hlDraw(null,0); HL.amb=requestAnimationFrame(loop) };
   HL.amb=requestAnimationFrame(loop) }
 /* will this stretch play clips? Asked before the page is drawn, so it can keep the result back (round 66); the clips

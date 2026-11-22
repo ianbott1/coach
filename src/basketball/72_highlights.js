@@ -95,7 +95,34 @@ const HL_SPORT=(function(){
       x.strokeStyle="rgba(255,255,255,.6)"; x.lineWidth=0.6; for(let a=0;a<6;a++){ x.beginPath(); x.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr); x.lineTo(cx+Math.cos(a+1.2)*rr*0.4,cy+Math.sin(a+1.2)*rr*0.4); x.stroke() }
       x.beginPath(); x.arc(cx,cy,rr,0,Math.PI*2); x.strokeStyle="#E8553D"; x.lineWidth=2; x.stroke() });
   }
-  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
+  /* ---- the full match (round 98: "watch it, not read it") ----
+     Between the moments the floor keeps playing: possessions trade ends, the ball worked round the arc by passes, each
+     defender between his man and the rim, never a shot (the shots are the clips). Drawn from the clock, not stored. */
+  function ambient(x,W,H){
+    if(typeof live==="undefined"||!live||live.done||!live.g)return;
+    const g=live.g, PD=5200, DT=950, TR=1300, now=Date.now(), seed=((live.step||0)*7919+(live.g.home||"").length*131)>>>0;
+    const hz=(a,b)=>strHash(seed+"|"+a+"|"+b);
+    const sway=(i,T)=>[Math.sin(T/700+i*1.7)*0.012,Math.cos(T/830+i*2.3)*0.02];
+    const holder=(k,j)=>{ if(j<=0)return 0; const p=holder(k,j-1), h=1+hz(k,j)%4; return (p+h)%5 };   // never to himself
+    const defOf=(A,bi)=>A.map(([a,y],i)=>{ const d=i===bi?0.3:0.22; return [hlLerp(a,RIM[0],d),hlLerp(y,RIM[1],d)] });
+    const mir=p=>[1-p[0],1-p[1]];
+    const at=T=>{ const k=Math.floor(T/PD), tIn=T-k*PD, home=k%2===0, j=Math.floor(tIn/DT), hj=holder(k,j);
+      const set=ATT.map((p,i)=>{ const s=sway(i,T); return [p[0]+s[0],p[1]+s[1]] });
+      // the ball between two men while a pass is in the air, else with the man who has it
+      let ball; const ph=(tIn-j*DT)/DT; if(j>0&&ph<0.32){ const a=set[holder(k,j-1)], b=set[hj], e=hlEase(ph/0.32); ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)] } else ball=[set[hj][0]-0.012,set[hj][1]];
+      let att=set, def=defOf(set,j>0&&ph<0.32?-1:hj);
+      if(tIn<TR){ // bringing it up: last trip's defenders run up, last trip's attackers get back
+        const e=hlEase(tIn/TR), pAtt=ATT, pDef=defOf(ATT,0), fromA=pDef.map(mir), fromD=pAtt.map(mir);
+        att=set.map((p,i)=>[hlLerp(fromA[i][0],p[0],e),hlLerp(fromA[i][1],p[1],e)]); def=def.map((p,i)=>[hlLerp(fromD[i][0],p[0],e),hlLerp(fromD[i][1],p[1],e)]); ball=[att[0][0]-0.015,att[0][1]] }
+      return {home,att,def,ball} };
+    const b=at(now), c={home:b.home}, kits=hlKits(g.home,g.away), r=Math.max(5,W/80), ink=kits[b.home?0:1].fill, dink=kits[b.home?1:0].fill;
+    b.def.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",null) });
+    b.att.forEach(p=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",null) });
+    const [qx,qy]=P(W,H,c,b.ball[0],b.ball[1]); hlBall(x,qx,qy,r*0.62,0,null,{fill:"#E8702A",ring:"#2a1406"});
+    const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, SG=typeof SEGS!=="undefined"?SEGS:8, q=Math.min(4,Math.floor(live.drives.length*4/SG)+1);
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:"Q"+q});
+  }
+  function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.7, ts=0.86;
     let bx,by,z=0;
@@ -119,5 +146,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {reveal:0.86, collapseIdle:true, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  return {reveal:0.86, collapseIdle:true, ambient:true, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();

@@ -130,13 +130,13 @@ const HL_SPORT=(function(){
     const b=at(now), [qx,qy]=toS(true,[b.x,b.y]);   // the ball in the home side's frame
     [false,true].forEach(home=>{ const k=kits[home?0:1], gk=hlKit("",home?"#E8F56B":"#C9A0FF"), P2=lagged(home);
       // the man nearest the ball, on the side that has it, is on it
-      let ni=-1,nd=9; if(b.home===home)P2.forEach((p,i)=>{ if(!i)return; const [sx,sy]=toS(home,p), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
+      let ni=-1,nd=1e9; if(b.home===home)P2.forEach((p,i)=>{ if(!i)return; const [sx,sy]=toS(home,p), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
       P2.forEach((p,i)=>{ let [sx,sy]=toS(home,p); if(i===ni){ sx=hlLerp(sx,qx,0.8); sy=hlLerp(sy,qy,0.8) } hlPlayer(x,sx,sy,r,i?k:gk,{num:NUM[i],dir:Math.atan2(qy-sy,qx-sx)}) }) });
     hlBall(x,qx,qy,r*0.55,0,null);
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a;
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:Math.min(90,live.drives.length*5)+"'"});
   }
-  function idle(x,W,H){ if(typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }
+  function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);

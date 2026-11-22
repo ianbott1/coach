@@ -121,7 +121,35 @@ const HL_SPORT=(function(){
     x.restore();
     rink(0); x.strokeStyle="#F5C342"; x.lineWidth=Math.max(1.5,W/400); x.stroke();   // the kick plate
   }
-  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
+  /* ---- the full match (round 98: "watch it, not read it"; soccer's since round 68) ----
+     Between the moments the ice keeps playing: the puck moved about by the side that has it, shared as the engine's balance
+     of play for the stretch has it (its drive's mom), never into the slot and never a shot; each side's five keeps its
+     shape around the puck, the goalies square to it. Every real moment still plays as its own clip. Drawn from the clock,
+     not stored. */
+  function ambient(x,W,H){
+    if(typeof live==="undefined"||!live||live.done||!live.g)return;
+    const g=live.g, last=live.drives[live.drives.length-1], mom=last&&typeof last.mom==="number"?last.mom:0.5;
+    const DT=900, now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131+3)>>>0;
+    const spot=k=>{ const h=strHash(seedB+"|"+k), r1=(h%1000)/1000, r2=((h>>>10)%1000)/1000, r3=((h>>>20)%1000)/1000, home=r1<mom;
+      return {home,a:0.3+r2*0.5,y:0.12+r3*0.76} };   // in the attacking side's frame: never past the tops of the circles
+    const at=T=>{ const k=Math.floor(T/DT), f=(T-k*DT)/DT, A=spot(k), B=spot(k+1), e=hlEase(Math.min(1,f/0.6));
+      return {a:hlLerp(A.home===B.home?A.a:1-A.a,B.a,e),y:hlLerp(A.home===B.home?A.y:1-A.y,B.y,e),home:B.home,ra:A,rb:B,e} };
+    // the five around the puck, in the frame of the side with it (a: 0 its own end, 1 the end it attacks)
+    const shape=(T,att)=>{ const b=at(T), sh=(b.a-0.72)*0.85;
+      return (att?ATT:DEF).map((p,i)=>{ if(i===0)return att?[0.08,0.5+(b.y-0.5)*0.1]:[GOAL-0.015,0.5+(b.y-0.5)*0.12];
+        return [Math.max(0.12,Math.min(0.9,p[0]+sh*(att?1:0.8))),0.5+(p[1]-0.5)*0.92+(b.y-0.5)*(att?0.22:0.3)] }) };
+    const lagged=att=>{ const S0=[0,100,200,300], o=ATT.map(()=>[0,0]); S0.forEach((dt,q)=>{ const w=4-q; shape(now-dt,att).forEach((p,i)=>{ o[i][0]+=p[0]*w; o[i][1]+=p[1]*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };
+    const b=at(now), side={home:b.home}, kits=hlKits(g.home,g.away), r=Math.max(5,W/80);
+    const [qx,qy]=P(W,H,side,b.a,b.y), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],kits.map(k=>k.fill));
+    [false,true].forEach(att=>{ const home=att?b.home:!b.home, k=kits[home?0:1], Pt=lagged(att);
+      let ni=-1,nd=1e9; if(att)Pt.forEach((p,i)=>{ if(!i)return; const [sx,sy]=P(W,H,side,p[0],p[1]), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
+      Pt.forEach((p,i)=>{ let [sx,sy]=P(W,H,side,p[0],p[1]); if(i===ni){ const back=side.home?1:-1; sx=qx+back*r*1.25; sy=qy }   // the man on the puck carries it
+        hlPlayer(x,sx,sy,r,i?k:hlKit("",gks[home?0:1]),{dir:i===ni?(side.home?Math.PI:0):Math.atan2(qy-sy,qx-sx)}) }) });
+    hlBall(x,qx,qy,r*0.5,0,null,{kind:"puck"});
+    const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, m=Math.min(60,live.drives.length*5);
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'"});
+  }
+  function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.72, ts=0.86;
     let bx,by;
@@ -153,5 +181,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, aspect:0.5, clips, pitch, idle, frame, headClock};
+  return {reveal:0.86, ambient:true, aspect:0.5, clips, pitch, idle, frame, headClock};
 })();
