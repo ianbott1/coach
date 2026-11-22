@@ -100,7 +100,7 @@ const HL_SPORT=(function(){
      defender between his man and the rim, never a shot (the shots are the clips). Drawn from the clock, not stored. */
   function ambient(x,W,H){
     if(typeof live==="undefined"||!live||live.done||!live.g)return;
-    const g=live.g, PD=9000, DT=1250, TR=2600, now=Date.now(), seed=((live.step||0)*7919+(live.g.home||"").length*131)>>>0;
+    const g=live.g, PD=6500, DT=1100, TR=2100, now=Date.now(), seed=((live.step||0)*7919+(live.g.home||"").length*131)>>>0;
     const hz=(a,b)=>strHash(seed+"|"+a+"|"+b);
     const sway=(i,T)=>[Math.sin(T/700+i*1.7)*0.012,Math.cos(T/830+i*2.3)*0.02];
     const holder=(k,j)=>{ if(j<=0)return 0; const p=holder(k,j-1), h=1+hz(k,j)%4; return (p+h)%5 };   // never to himself
@@ -152,5 +152,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {reveal:0.86, collapseIdle:true, ambient:true, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  return {reveal:0.86, collapseIdle:true, ambient:true, fullMs:13000, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();

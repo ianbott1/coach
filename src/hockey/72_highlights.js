@@ -135,7 +135,7 @@ const HL_SPORT=(function(){
        net, the goalies square to it. Never a shot: every shot is a real one, played as its own clip. */
     if(typeof live==="undefined"||!live||live.done||!live.g)return;
     const g=live.g, last=live.drives[live.drives.length-1], mom=last&&typeof last.mom==="number"?last.mom:0.5;
-    const now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131+3)>>>0, PD=11000;
+    const now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131+3)>>>0, PD=9000;
     const rnd=(k,j)=>((strHash(seedB+"|"+k+"|"+j)>>>0)%10000)/10000;
     // one possession's puck path in the frame of the side with it (a: 0 its own goal line end, 1 the end it attacks)
     const plan=k=>{ const home=rnd(k,0)<mom, sd=rnd(k,1)<0.5?0.14:0.86, os=1-sd, ent=rnd(k,2)<0.35;   // ent: dump it in
@@ -205,5 +205,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, ambient:true, aspect:0.5, clips, pitch, idle, frame, headClock};
+  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock};
 })();

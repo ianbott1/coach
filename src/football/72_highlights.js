@@ -287,5 +287,6 @@ const HL_SPORT=(function(){
     hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink);
   }
   const headClock=c=>c&&c.hd||null;
-  return {replaces:".field", collapseIdle:true, aspect:0.46, clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns"};
+  return {replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
+           clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns"};
 })();
