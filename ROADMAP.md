@@ -132,6 +132,9 @@ on numbers they can't trust and a sport they read rather than watch.
 - Desktop plan clicks keep your place. The Play button says which plan it starts on.
 - Full match: every player named in basketball and hockey; basketball plays the stretch before its big basket.
 - Basketball's read marks points in the paint.
+- Baseball: after a call inside an inning the scoreboard no longer steps back; one Skip can't play two games.
+- Phones: a new call opens at its top; soccer's table no longer wraps a word a line.
+- Tell testers: start a new career. A season begun before engine 17 keeps its old plans (baseball's "every plan 0").
 - Next: the plan as a real decision at even odds (the opponent's shape in the fit, so two plans are live for different
   reasons: an engine round); soccer and baseball reports when Grokbot finishes them.
 

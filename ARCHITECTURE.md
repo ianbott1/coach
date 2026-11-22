@@ -433,6 +433,22 @@ Round 100: Grokbot's round 12 interim report (five games; soccer and baseball st
   basketball games.
 - Basketball's read panel marks points in the paint (bbPaintMark: pros 20+ high, 10 or under low; college 13+ and 7),
   measured at 300 reads a league; a marked paint rate counts as shown when a read is graded.
+- From the full report (soccer and baseball added):
+  Baseball's call inside an inning (Muse; Grokbot: "10th inning, tied 3-3" then play at 2-2): the held score started at
+  the end of the last inning, so the scoreboard and line score stepped back behind the call. live.askScore keeps the
+  score a call showed; the hold starts there, baseball's clips skip the plays up to the one that made it, and the chance
+  bar holds with the score in every sport (it read the result of the clip still to play). test/bs-call-hold.js (browser):
+  57 calls, 0 step back (released build: 4).
+  One Skip played two baseball games: the bar's Sim game sits where Skip was. Play (side column), Sim game and Enter now
+  wait 1.2s after a game ends (Sim had 0.7s; Play and Enter had none).
+  A new call scrolls to its top when the page was scrolled away (soccer on a phone: the read off-screen).
+  Evidence headings contain their right-hand label (display:flow-root): soccer's table row wrapped round it, a word a line.
+  Baseball's plans "all worth 0": not so on a new career (Cincinnati 35/46/57, Seattle 47/41/35); the tester's Seattle
+  career (64-98 both rounds) began before engine 17, where plans did nothing, as the hub now says. Soccer's roster barely
+  moving the plan is likely the same. Not reproduced: soccer's Highlights row under the speed buttons (clear at five
+  sizes, paused or running, scrolled to the end), taps not registering, the Burnley read graded wrong (reads that follow
+  the report aren't graded). Not changed: a catcher's grid says power counts most because his rating uses the hitters'
+  weights (true, but a design question for Ian).
 - Not reproduced, so not changed: a rested five-foul starter still on the floor (0 fouls to a rested side after a rest in
   180 games on the released build or this one). Not done: the plan as a real decision at even odds (point 1; the best
   plan depends only on your own roster, so one plan wins most nights: needs the opponent in the fit, an engine round);
