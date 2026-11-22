@@ -1,5 +1,5 @@
 {
- "fp": "e658821d9a2021cd",
+ "fp": "cfa8e788dfda5a6f",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -85,6 +85,11 @@
    "fp": "e658821d9a2021cd",
    "from": "daef088cbe194ce0",
    "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
+  },
+  {
+   "fp": "cfa8e788dfda5a6f",
+   "from": "e658821d9a2021cd",
+   "note": "round 101: a touchdown's yards never exceed the field the drive had (driveScript caps the same draw at 100-start); stat lines and awards move, games, standings, polls and champions identical"
   }
  ],
  "result": {
@@ -96,10 +101,10 @@
     "champion": "Chicago",
     "rec": "208bc5e00c58f150",
     "poll": "4536227ce4d3a1d2",
-    "heis": "7c80c4b6be17173f",
-    "history": "c11c72a9148450dc",
-    "universe": "63e42ac77ce55e18",
-    "screens": "3159ef9e60f95f14"
+    "heis": "0ab2f5a98ced127c",
+    "history": "d86e4584fd624ebe",
+    "universe": "dbfdacf4289126bc",
+    "screens": "98d4651bb0079980"
    }
   ]
  }

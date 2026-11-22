@@ -1,5 +1,5 @@
 {
- "fp": "03eac32c1e90f3d2",
+ "fp": "61ac6e7d46e7aad2",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -589,6 +589,11 @@
    "fp": "03eac32c1e90f3d2",
    "from": "134454bd23125c94",
    "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
+  },
+  {
+   "fp": "61ac6e7d46e7aad2",
+   "from": "03eac32c1e90f3d2",
+   "note": "round 101: a touchdown's yards never exceed the field the drive had (driveScript caps the same draw at 100-start); stat lines and awards move, games, standings, polls and champions identical"
   }
  ],
  "result": {
@@ -601,9 +606,9 @@
     "rec": "04058f0bd13c33a0",
     "poll": "417ab7a88d36ae1f",
     "heis": "18dfdd2f20eb3b97",
-    "history": "8bc8417ba3331c9d",
-    "universe": "8db0fc25cb77d57b",
-    "screens": "fa756689323f024d"
+    "history": "25e7fa6fd4e99b82",
+    "universe": "c030671bb41586ea",
+    "screens": "b116058ad2f915e9"
    },
    {
     "year": 2027,
@@ -613,9 +618,9 @@
     "rec": "976f98a87933118f",
     "poll": "69979798e0d65c13",
     "heis": "8b7a474aedecef62",
-    "history": "c25c61904c331af4",
-    "universe": "71a21703d3d47567",
-    "screens": "551da3ef9465bc7b"
+    "history": "fff3a6bf7f757ac4",
+    "universe": "8acb8410c3aba0cf",
+    "screens": "f07937922956c4ee"
    },
    {
     "year": 2028,
@@ -625,9 +630,9 @@
     "rec": "5f6616189b9752af",
     "poll": "47a57fa40cf57aa4",
     "heis": "86a1f37110996796",
-    "history": "b596a8b16b9de67a",
-    "universe": "184a10726e16eb98",
-    "screens": "ab72b89a2dec0197"
+    "history": "6bd6df403bc2aba5",
+    "universe": "d24d0fe87864b86f",
+    "screens": "76e40a95603d8e38"
    },
    {
     "year": 2029,
@@ -637,9 +642,9 @@
     "rec": "878fb27677f18b89",
     "poll": "59ae3e277fbbdfef",
     "heis": "c012d4792aa2ab0f",
-    "history": "768b23524da2739c",
-    "universe": "9b67da971ca40068",
-    "screens": "449b35e22b93c60c"
+    "history": "6c5057836e94fa5b",
+    "universe": "1feb89d6ce3da278",
+    "screens": "5f99cd873f8e3c37"
    }
   ],
   "Rice#2024": [
@@ -651,8 +656,8 @@
     "rec": "f81c158c6d215a9b",
     "poll": "3ee5921cf08b5e83",
     "heis": "22cd28654166ce01",
-    "history": "da8be9bae788ea8d",
-    "universe": "20f420a8d18619ec",
+    "history": "f2713966858f5430",
+    "universe": "e31dea144436b9a1",
     "screens": "c9085b22f349affb"
    },
    {
@@ -663,9 +668,9 @@
     "rec": "82d9cc9274ed5ebb",
     "poll": "c9431f99fa9d8989",
     "heis": "0b42dc554bd2406c",
-    "history": "257528694eade36f",
-    "universe": "7d7599d0efced663",
-    "screens": "3c373de579216fd2"
+    "history": "f62e96e8253f2fed",
+    "universe": "98387ef3b832957b",
+    "screens": "689aed4e92d0d5f5"
    },
    {
     "year": 2028,
@@ -675,9 +680,9 @@
     "rec": "cb2e3500f6504c2b",
     "poll": "1492bde93a6580ab",
     "heis": "a16aace2f4251f32",
-    "history": "937d62a7bdd4aae0",
-    "universe": "552ab382eda6ead7",
-    "screens": "b62ea09c11e54383"
+    "history": "1f39dca970666411",
+    "universe": "8429d1fbf7f4b063",
+    "screens": "138550ba8831f041"
    },
    {
     "year": 2029,
@@ -687,9 +692,9 @@
     "rec": "bff683064d63b555",
     "poll": "54c8a5e1b042dcc9",
     "heis": "b1582f00351852f6",
-    "history": "d5f037037294e287",
-    "universe": "bd021f47d9f895f0",
-    "screens": "fe1236f6dc31a101"
+    "history": "d0216834f90092e0",
+    "universe": "14a5e68cc0c82329",
+    "screens": "673b31a02ce21eaf"
    }
   ],
   "Oregon#777": [
@@ -700,9 +705,9 @@
     "champion": "Georgia",
     "rec": "5b416f95a7703a76",
     "poll": "b4a085250e192165",
-    "heis": "ae0fd0e488d8a51e",
-    "history": "f7432cb1648a6e38",
-    "universe": "0c1cb95c504df742",
+    "heis": "66407f3f67f39674",
+    "history": "a7870012908838a3",
+    "universe": "d64425bb967ddda3",
     "screens": "1a3b3c90c6752d59"
    },
    {
@@ -712,10 +717,10 @@
     "champion": "Texas A&M",
     "rec": "d7db5d1a736bd749",
     "poll": "5f54ff98374fcaf8",
-    "heis": "a3c9215e04a9c949",
-    "history": "d40899eb96c8d95b",
-    "universe": "141f2163ffbb6993",
-    "screens": "5cffe6c94ad46787"
+    "heis": "87d2de6f0270a30f",
+    "history": "ad18f312858b4f81",
+    "universe": "208af284999281d9",
+    "screens": "d65a5366917e4c78"
    },
    {
     "year": 2028,
@@ -725,9 +730,9 @@
     "rec": "440f81dce7d33a54",
     "poll": "bf6fd7503eb879bf",
     "heis": "8838c480ac698135",
-    "history": "aff0daaf3258a7e9",
-    "universe": "b77792318d481901",
-    "screens": "df267e75acb9092d"
+    "history": "222507bc4551e5a7",
+    "universe": "9572236981fb635c",
+    "screens": "7da88878696611c7"
    }
   ],
   "Kent State#31337": [
@@ -739,8 +744,8 @@
     "rec": "62fdc4a38169ed41",
     "poll": "54856ffcb3626aca",
     "heis": "73505a430b8ca78b",
-    "history": "bb81558b048688c1",
-    "universe": "9ef9c64f49d492fb",
+    "history": "de4cc0160e2b6650",
+    "universe": "d18f338e9fe6e095",
     "screens": "93757510bef1fbee"
    },
    {
@@ -750,10 +755,10 @@
     "champion": "Indiana",
     "rec": "5a65948a4a3ffbf6",
     "poll": "b6535693d835a89c",
-    "heis": "d10b36dd5b6aed2e",
-    "history": "7819caf2688199ed",
-    "universe": "d683b5882351fef1",
-    "screens": "045efbee09d6118f"
+    "heis": "930d68f26d9a5e15",
+    "history": "83a63a76b9c84264",
+    "universe": "2486db90abbaaa05",
+    "screens": "949793f44a89f1c3"
    },
    {
     "year": 2028,
@@ -763,9 +768,9 @@
     "rec": "b261a08b48f581e5",
     "poll": "dbf8ca88b2ca29eb",
     "heis": "b1ee17ec61f1d8f1",
-    "history": "9e27f61b17d43f7a",
-    "universe": "fc5a22d6cf5c056b",
-    "screens": "4a3726c63a930ca2"
+    "history": "aaf1b0e1d83b9af5",
+    "universe": "cb85fe7a1ac2b60d",
+    "screens": "3575de2cbce540c1"
    }
   ],
   "schedules#60": [

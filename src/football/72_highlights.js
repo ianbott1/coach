@@ -284,7 +284,9 @@ const HL_SPORT=(function(){
     return rec }
   function mkDrive(L,d,next){ const B=base(L,d), tm=B.tm, R=(SEA.roster&&SEA.roster[tm])||[]; B.cfb=typeof LEAGUE!=="undefined"&&LEAGUE.id==="cfb"; PENS=B.cfb?[10,15]:[5,15];
     // the second back: a carry in five or so (the starter's number swapped for his); not when he's already the starter
-    if(typeof BK==="function"&&B.ori&&B.ori[1]!==BK(1)&&R[BK(1)]){ B.rb2=BK(1); B.rb2n=shirtNo(tm,BK(1)); B.rb2nm=String(R[BK(1)].n).split(" ").slice(-1)[0] }
+    // (never a hurt man: hlFit gives the starter back when the backup is out, and then there's no second back)
+    const r2=typeof BK==="function"?hlFit(tm,BK(1)):null;
+    if(r2!=null&&B.ori&&B.ori[1]!==r2&&R[r2]){ B.rb2=r2; B.rb2n=shirtNo(tm,r2); B.rb2nm=String(R[r2].n).split(" ").slice(-1)[0] }
     const P=playsFor(L,d,next,B); if(!P)return null;
     const nx=next&&next[0]; if(nx&&nx.kind==="downs"&&P.left!=null&&P.left!==nx.togo){ nx.togo=P.left; nx.len=Math.min(nx.len,P.left-1) }   // (the engine's own fourth and N is what it left, unless the data can't get there)
     const c=Object.assign(B,{kind:"drive",plays:P.plays,start:P.start,end:P.end,left:P.left,forced:P.forced,conv:P.conv,base:Math.min(16500,Math.max(1,P.plays.length)*1100),reveal:0.999});

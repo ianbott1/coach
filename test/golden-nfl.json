@@ -1,5 +1,5 @@
 {
- "fp": "883a5a15df088dd3",
+ "fp": "bbfefc4342d641a7",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -615,6 +615,11 @@
    "fp": "883a5a15df088dd3",
    "from": "32ff32b592fe123b",
    "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
+  },
+  {
+   "fp": "bbfefc4342d641a7",
+   "from": "883a5a15df088dd3",
+   "note": "round 101: a touchdown's yards never exceed the field the drive had (driveScript caps the same draw at 100-start); stat lines and awards move, games, standings, polls and champions identical"
   }
  ],
  "result": {
@@ -626,10 +631,10 @@
     "champion": "Chicago",
     "rec": "208bc5e00c58f150",
     "poll": "4536227ce4d3a1d2",
-    "heis": "7c80c4b6be17173f",
-    "history": "c11c72a9148450dc",
-    "universe": "63e42ac77ce55e18",
-    "screens": "3159ef9e60f95f14"
+    "heis": "0ab2f5a98ced127c",
+    "history": "d86e4584fd624ebe",
+    "universe": "dbfdacf4289126bc",
+    "screens": "98d4651bb0079980"
    },
    {
     "year": 2027,
@@ -640,8 +645,8 @@
     "poll": "7005fe3b89739143",
     "heis": "e325c071b7f95605",
     "history": "ba96a66c22df472f",
-    "universe": "e378547abdec4068",
-    "screens": "da6f3f4d651c0507"
+    "universe": "ce5c9caaa42f627d",
+    "screens": "66e5231959d21d2d"
    },
    {
     "year": 2028,
@@ -651,9 +656,9 @@
     "rec": "8e955d046fc3a5e6",
     "poll": "6d3d17899be313ae",
     "heis": "d657a390aebab7d5",
-    "history": "7ae3bb48a04b56c2",
-    "universe": "b4ef285d5c34e7c7",
-    "screens": "740097e19b8e8e80"
+    "history": "b4987420e707f404",
+    "universe": "3d6b8d34a7764d9f",
+    "screens": "6fa3da704f8de40b"
    },
    {
     "year": 2029,
@@ -663,9 +668,9 @@
     "rec": "fb8e11e4b6ae309c",
     "poll": "a706eb9765189f1e",
     "heis": "107812a835389d14",
-    "history": "3a977c12920d5fd3",
-    "universe": "cb672daf01d4c9db",
-    "screens": "cb67e2bc8b1619c3"
+    "history": "725224a1b87c15bc",
+    "universe": "97dbaedbb6c479a1",
+    "screens": "0920c5ebfeaa144b"
    }
   ],
   "Tennessee#2024": [
@@ -676,9 +681,9 @@
     "champion": "LA Rams",
     "rec": "b73b63d6dd2146b3",
     "poll": "6ea1cb10f883b51d",
-    "heis": "9ee138b08a6c93a6",
+    "heis": "5f66a6f54439b9e4",
     "history": "644a135e22347820",
-    "universe": "e073a7223dd4ea4a",
+    "universe": "470c0a5c965fc19f",
     "screens": "09c6d71cbf0612d0"
    },
    {
@@ -688,10 +693,10 @@
     "champion": "Jacksonville",
     "rec": "a4686082d9721020",
     "poll": "204a8f3868f9821b",
-    "heis": "ad11d43c811d6ecf",
+    "heis": "ae5f53a1101be4b4",
     "history": "926cba788c4631fe",
-    "universe": "3a46278e1015da36",
-    "screens": "5ad1979a5aef1338"
+    "universe": "531407d9b574c5f4",
+    "screens": "51da1d702cb60471"
    },
    {
     "year": 2028,
@@ -702,8 +707,8 @@
     "poll": "a758a466228eb0c3",
     "heis": "205a7c45b38c0d45",
     "history": "2692fc8510596ac3",
-    "universe": "31eff8145e19ed76",
-    "screens": "7b63d8521b7b3a86"
+    "universe": "c9dab8a8d0f6ac05",
+    "screens": "aa9c32e039396f40"
    },
    {
     "year": 2029,
@@ -714,8 +719,8 @@
     "poll": "5169cafe18f1897a",
     "heis": "2f2855b7414f1368",
     "history": "92ebb3b1335a649d",
-    "universe": "e14dbdcf6a425413",
-    "screens": "cd80e5451fd48853"
+    "universe": "33a7bbc063221354",
+    "screens": "1ffef24e2088527f"
    }
   ],
   "Detroit#777": [
@@ -728,7 +733,7 @@
     "poll": "9c2878c1075f1fb7",
     "heis": "61c46ffe45c2e277",
     "history": "807180dc6580390f",
-    "universe": "dd1466b24b2f98a1",
+    "universe": "3da725a09ba43c9f",
     "screens": "ec1f4898cbb96a4c"
    },
    {
@@ -738,10 +743,10 @@
     "champion": "Buffalo",
     "rec": "948d7ac36638d393",
     "poll": "5c5ecbd135d9b01e",
-    "heis": "8f011c2ed3c47c1e",
+    "heis": "94ef84025bc72d45",
     "history": "60375ea9b01c54e8",
-    "universe": "777b761e4bc9858c",
-    "screens": "e52c85715cd3b2dd"
+    "universe": "74b8464d6a1e0e0b",
+    "screens": "36f5651e817e6d0e"
    },
    {
     "year": 2028,
@@ -751,9 +756,9 @@
     "rec": "59e0072d91549416",
     "poll": "f4fb7d2384c8cbca",
     "heis": "40fba4e84e915fa8",
-    "history": "9ef989beaaeddf97",
-    "universe": "26696b1b8594b69a",
-    "screens": "46bc497bd8ca375d"
+    "history": "16c59b6374eb3ebe",
+    "universe": "50518b26df93c8e1",
+    "screens": "2a7f07296025faf9"
    }
   ],
   "NY Giants#31337": [
@@ -766,7 +771,7 @@
     "poll": "2ec0be627f353dac",
     "heis": "654c742bd04993b2",
     "history": "2d97e943fb616478",
-    "universe": "df150ec4dcba9dd0",
+    "universe": "e5a1d3b19a2c7a7e",
     "screens": "1815bcd7e6293c45"
    },
    {
@@ -777,9 +782,9 @@
     "rec": "ff570adbd66755b4",
     "poll": "6faac6ddf0a2126c",
     "heis": "704dc09525b01515",
-    "history": "789f2028806968a6",
-    "universe": "34d5df391455d8b5",
-    "screens": "8146d57f7f73f61d"
+    "history": "dbdf43252c81bdd1",
+    "universe": "99e44de2aae432e3",
+    "screens": "3ce0cb75e270a49a"
    },
    {
     "year": 2028,
@@ -790,8 +795,8 @@
     "poll": "16ca8b68b7bfbc8e",
     "heis": "5503b5d0218740ba",
     "history": "d9d409cc46ade104",
-    "universe": "ce095088b4187943",
-    "screens": "b5a6951ffb73a98b"
+    "universe": "b6569308ba8a8aa0",
+    "screens": "099db9ff1d940251"
    }
   ],
   "schedules#60": [
