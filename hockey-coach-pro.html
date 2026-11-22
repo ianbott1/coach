@@ -69,6 +69,13 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .wkbtn{flex:none;width:40px;height:36px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--bone);font-size:17px;cursor:pointer}
 .wkbtn:disabled{opacity:.3;cursor:default}
 .game.fixture .sc{min-width:0}
+.attrgrid{display:grid;grid-template-columns:1fr;max-width:640px;gap:0 22px;font-size:13px;margin-top:2px}
+.attrband{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:8px 0 2px}
+.attr{display:grid;grid-template-columns:minmax(0,1fr) 64px 46px;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.attrw{display:inline-flex;gap:2px;margin-right:7px;vertical-align:middle}.attrw i{width:4px;height:9px;border-radius:1px;background:rgba(255,255,255,.12)}.attrw i.on{background:var(--sodium)}
+.attrn small{display:block;color:var(--muted);font-size:11px;line-height:1.3}
+.attrbar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}.attrbar i{display:block;height:100%;border-radius:3px}
+.attrv{text-align:right;font-family:var(--mono);white-space:nowrap}.attrv span{font-size:11px;margin-right:4px}.attrv b{font-size:15px}
 .grouphead{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
  color:var(--muted);padding:18px 16px 7px;border-top:1px solid var(--line);margin-top:8px}
 .note{color:var(--muted);font-size:12.5px;padding:18px 16px;line-height:1.5}
@@ -499,6 +506,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
   55%{transform:translateY(0) rotate(5deg)}
   80%{transform:translateY(-2px) rotate(-2deg)}
   100%{transform:translateY(0) rotate(0)}}
+.family{align-self:flex-start;margin:18px 0 4px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.family b{color:var(--sodium);font-weight:600}.family:hover,.family:focus-visible{color:var(--bone)}
 .owlstage{position:relative;display:inline-block}
 .bubble{position:absolute;left:56%;bottom:calc(100% - 6px);
  background:var(--bone);color:var(--ink);border-radius:15px;
@@ -1005,7 +1014,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="4a2abc6";
+<script>const BUILD_ID="04b0327";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1102,7 +1111,7 @@ const LEAGUE={
     pickIntro:"Every franchise is a different job with different expectations. Win with a contender and it's what they pay you for; win with a rebuild and you'll have your pick of the jobs.",
     tagline:"Build a franchise. Win it all.",
     gameName:"Pro Hockey Coach", eyebrow:"Pro",
-    site:"Pro Hockey Coach: ianbott1.github.io/football-coach",
+    site:"Pro Hockey Coach: ianbott1.github.io/coach",
     tiers:[
       {max:5,  l:"Contender",  d:"Built to win now. Anything short of a long playoff run is a failure.",c:"flag"},
       {max:12, l:"Playoff team",d:"Make the playoffs and win a round.",c:"sod"},
@@ -3735,15 +3744,20 @@ const HL_SPORT=(function(){
     const pickLine=(team,grp,a,b,salt)=>{ const la=lineOf(a), lb=lineOf(b), want=x=>x>=0&&(grp==="f"?posOf(x)<3:posOf(x)>=3&&posOf(x)<5);
       return want(a)?la:want(b)?lb:shift(team,grp,salt) };
     const fL=GN&&GN.depth?1:pickLine(tm,"f",si,ai,3), dL=pickLine(tm,"d",si,ai,7);
-    const at=(i,l)=>{ const j=l?(typeof BK==="function"?BK(i):i+nP):i; return R0[j]?j:i };   // a man missing: the other line's
-    const slots=sd=>[gIn(sd)&&typeof BK==="function"?BK(5):5,3,4,0,1,2];
+    // round 97: a hurt man isn't on the ice (Grokbot: an injured player drawn in a clip; 144 of 900 clips in 33 games named
+    // one, most often a hurt starting goalie): his line-mate at the spot instead, the backup in net
+    const hurtOf=team=>new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]?SEA.talent.active(team).map(x=>x.idx):[]);
+    const H0=hurtOf(tm), bkOf=i=>typeof BK==="function"?BK(i):i+nP;
+    const pickAt=(R,H,i,l)=>{ const j=l?bkOf(i):i, o=l?i:bkOf(i); return R[j]&&!H.has(j)?j:R[o]&&!H.has(o)?o:R[j]?j:i };
+    const at=(i,l)=>pickAt(R0,H0,i,l);   // a man missing or hurt: the other line's
+    const slots=sd=>{ const team=sd==="home"?g.home:g.away, H=hurtOf(team); return [(gIn(sd)||H.has(5))&&typeof BK==="function"?BK(5):5,3,4,0,1,2] };
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home;
     const SL=[slots(attSide)[0],at(3,dL),at(4,dL),at(0,fL),at(1,fL),at(2,fL)];
     // the assist from the other line: he's out there too (a shift on the change), at his own place if the scorer isn't
     // in it, else beside him
     if(GN&&ai>=0&&!GN.depth&&SL.indexOf(ai)<0&&posOf(ai)<5){ const own=[3,4,5,1,2][posOf(ai)], grp=posOf(ai)<3?[3,4,5]:[1,2], shot=UNIT[unit]||3;
       const k=own!==shot?own:grp.find(x=>x!==shot); if(k!=null)SL[k]=ai }
-    const Ro=(SEA.roster&&SEA.roster[opp])||[], atO=(i,l)=>{ const j=l?(typeof BK==="function"?BK(i):i+nP):i; return Ro[j]?j:i }, oF=shift(opp,"f",13), oD=shift(opp,"d",19);
+    const Ro=(SEA.roster&&SEA.roster[opp])||[], HO=hurtOf(opp), atO=(i,l)=>pickAt(Ro,HO,i,l), oF=shift(opp,"f",13), oD=shift(opp,"d",19);
     const an=hlNamed(tm,SL), dn=hlNamed(opp,[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)]), kits=hlKits(g.home,g.away);
     if(GN&&GN.depth){ an[3]=an[4]=an[5]=null }   // the fourth line: the roster doesn't carry them
     // the assist is the pass before the shot, when he's out there
@@ -3790,7 +3804,35 @@ const HL_SPORT=(function(){
     x.restore();
     rink(0); x.strokeStyle="#F5C342"; x.lineWidth=Math.max(1.5,W/400); x.stroke();   // the kick plate
   }
-  function idle(x,W,H){}   // round 67: nothing to say until something happens (Ian)
+  /* ---- the full match (round 98: "watch it, not read it"; soccer's since round 68) ----
+     Between the moments the ice keeps playing: the puck moved about by the side that has it, shared as the engine's balance
+     of play for the stretch has it (its drive's mom), never into the slot and never a shot; each side's five keeps its
+     shape around the puck, the goalies square to it. Every real moment still plays as its own clip. Drawn from the clock,
+     not stored. */
+  function ambient(x,W,H){
+    if(typeof live==="undefined"||!live||live.done||!live.g)return;
+    const g=live.g, last=live.drives[live.drives.length-1], mom=last&&typeof last.mom==="number"?last.mom:0.5;
+    const DT=900, now=Date.now(), seedB=((live.step||0)*7919+live.drives.length*131+3)>>>0;
+    const spot=k=>{ const h=strHash(seedB+"|"+k), r1=(h%1000)/1000, r2=((h>>>10)%1000)/1000, r3=((h>>>20)%1000)/1000, home=r1<mom;
+      return {home,a:0.3+r2*0.5,y:0.12+r3*0.76} };   // in the attacking side's frame: never past the tops of the circles
+    const at=T=>{ const k=Math.floor(T/DT), f=(T-k*DT)/DT, A=spot(k), B=spot(k+1), e=hlEase(Math.min(1,f/0.6));
+      return {a:hlLerp(A.home===B.home?A.a:1-A.a,B.a,e),y:hlLerp(A.home===B.home?A.y:1-A.y,B.y,e),home:B.home,ra:A,rb:B,e} };
+    // the five around the puck, in the frame of the side with it (a: 0 its own end, 1 the end it attacks)
+    const shape=(T,att)=>{ const b=at(T), sh=(b.a-0.72)*0.85;
+      return (att?ATT:DEF).map((p,i)=>{ if(i===0)return att?[0.08,0.5+(b.y-0.5)*0.1]:[GOAL-0.015,0.5+(b.y-0.5)*0.12];
+        return [Math.max(0.12,Math.min(0.9,p[0]+sh*(att?1:0.8))),0.5+(p[1]-0.5)*0.92+(b.y-0.5)*(att?0.22:0.3)] }) };
+    const lagged=att=>{ const S0=[0,100,200,300], o=ATT.map(()=>[0,0]); S0.forEach((dt,q)=>{ const w=4-q; shape(now-dt,att).forEach((p,i)=>{ o[i][0]+=p[0]*w; o[i][1]+=p[1]*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };
+    const b=at(now), side={home:b.home}, kits=hlKits(g.home,g.away), r=Math.max(5,W/80);
+    const [qx,qy]=P(W,H,side,b.a,b.y), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],kits.map(k=>k.fill));
+    [false,true].forEach(att=>{ const home=att?b.home:!b.home, k=kits[home?0:1], Pt=lagged(att);
+      let ni=-1,nd=1e9; if(att)Pt.forEach((p,i)=>{ if(!i)return; const [sx,sy]=P(W,H,side,p[0],p[1]), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
+      Pt.forEach((p,i)=>{ let [sx,sy]=P(W,H,side,p[0],p[1]); if(i===ni){ const back=side.home?1:-1; sx=qx+back*r*1.25; sy=qy }   // the man on the puck carries it
+        hlPlayer(x,sx,sy,r,i?k:hlKit("",gks[home?0:1]),{dir:i===ni?(side.home?Math.PI:0):Math.atan2(qy-sy,qx-sx)}) }) });
+    hlBall(x,qx,qy,r*0.5,0,null,{kind:"puck"});
+    const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, m=Math.min(60,live.drives.length*5);
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'"});
+  }
+  function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.72, ts=0.86;
     let bx,by;
@@ -3822,7 +3864,7 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, aspect:0.5, clips, pitch, idle, frame, headClock};
+  return {reveal:0.86, ambient:true, aspect:0.5, clips, pitch, idle, frame, headClock};
 })();
 /* Hockey's big moments (round 73, core 96_moments): a hat-trick (the hats come down), the overtime winner, a shootout
    won. From the game's own events: the scorers the run of play and the box score name. */
@@ -5458,7 +5500,7 @@ function rbBannerHTML(B){
   const got=B.filter(x=>x.got), lost=B.filter(x=>!x.got);
   return `<div class="bnews small"><b>Your board:</b> ${got.length?"signed "+got.map(x=>`${esc(x.n)} (${esc(x.p)}, ${x.stars}\u2605)`).join(", "):"nobody signed"}${lost.length?`; lost ${lost.map(x=>`${esc(x.n)} (${esc(x.p)}) to ${esc(x.to||"another program")}`).join(", ")}`:""}.</div>`;
 }
-/* round 87 (Ian, the player attributes design): a player is a shape, not one number. Each sport names 8-10
+/* round 87 (Ian, the player attributes design): a player is a shape, not one number. Each sport names 7-10
    attributes (ATTRS, in its 10_players.js); each player carries the ones of his group (ATTRS.group: a stable group
    from his position, so a job change mid-season never changes which he has or how they weigh). They are kept on the
    rating's own scale and his rating is their weighted sum (ATTRS.w[group]), rounded, exactly: a 65 is a 65 however
@@ -5523,7 +5565,15 @@ function attrSync(u,focus,summer){
 function attrOf(p){ if(!attrOn()||!p)return null; const g=attrGrp(p), K=attrKeys(g); if(!K.length)return null;
   const v=Array.isArray(p.at)&&p.at.length===K.length&&p.ar===p.r?p.at:attrGen(typeof U!=="undefined"?U:null,p); if(!v)return null;
   const o={}; K.forEach((k,j)=>o[k]=v[j]); return o }
-function attrShow(v){ const S=attrScale(); return Math.max(1,Math.min(20,Math.round(11+(v-S.m)/S.s*3))) }
+/* round 96 (the odd grids): shown 1-20 against every rostered player in the league, not the starters alone, with soft
+   tails, so a backup isn't a column of 1s and a star reaches 18-20 (on the starters' scale 7-10% of the pro games'
+   attributes read 1, hockey's best read 18). Constants fixed: measured once, every club's roster as a career opens. Display
+   only: shapes, roles and every engine read the rating scale (ATTR_SCALE above). */
+const ATTR_SHOW={cfb:{m:54.2,s:15.1}, nfl:{m:61.4,s:9.2}, ncaab:{m:54.8,s:15.5}, nba:{m:54.4,s:9.4}, nhl:{m:53.8,s:8.9},
+  epl:{m:43.6,s:16.9}, mlb:{m:53.5,s:8.9}}, ATTR_TAIL=1.55, ATTR_SHOW_ON=true;
+function attrShow(v){ const A=ATTR_SHOW[LEAGUE.id];
+  if(!ATTR_SHOW_ON||!A){ const S=attrScale(); return Math.max(1,Math.min(20,Math.round(11+(v-S.m)/S.s*3))) }
+  return Math.max(1,Math.min(20,Math.round(10.5+9.5*Math.tanh((v-A.m)/(A.s*ATTR_TAIL))))) }
 /* the role: the attribute he leans on most against his own rating (a label of his shape, not a mechanic) */
 function attrRole(p){ return attrRoleOf(p,attrOf(p)) }
 function attrRoleOf(p,A){ if(!A)return ""; const g=attrGrp(p), K=attrKeys(g);
@@ -5541,18 +5591,25 @@ function attrRoleRead(p,x,team){ const A=attrOf(p); if(!A)return ""; x=x||{};
 const ATTR_BANDS=[["t","Technical"],["m","Mental"],["p","Physical"]];
 function attrColor(v){ return v>=16?"var(--turf)":v>=12?"var(--bone)":v>=8?"var(--muted)":"var(--flag)" }
 function attrPlays(){ return typeof ATTRS!=="undefined"&&typeof ATTRS.plays==="function"&&ATTRS.plays() }
+/* round 96 (Grokbot's point 4, "explain how the attributes make the rating"): each attribute's weight for his position
+   beside it (pips: counts most, more, less), heaviest first in each band, and the line says which count most */
+function attrPips(w,mx){ const n=w>=mx*0.75?3:w>=mx*0.4?2:1; return n }
 function attrGridHTML(p){
-  const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g), was=Array.isArray(p.ap)&&p.ap.length===K.length?p.ap:null;
-  const cell=(k,j)=>{ const v=attrShow(A[k]), d=was?v-attrShow(was[j]):0;
-    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)" title="${esc(ATTRS.desc[k]||"")}">
-      <span>${esc(ATTRS.name[k])}<span style="color:var(--muted);font-size:11px"> &middot; ${esc(ATTRS.desc[k]||"")}</span></span>
-      <span style="font-family:var(--mono);white-space:nowrap">${d>0?`<span style="color:var(--turf);font-size:11px">&#9650;${d} </span>`:d<0?`<span style="color:var(--flag);font-size:11px">&#9660;${-d} </span>`:""}<b style="color:${attrColor(v)}">${v}</b></span></div>` };
-  const cols=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b); if(!ks.length)return "";
-    return `<div style="flex:1 1 180px;min-width:0"><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:4px 0">${l}</div>${ks.map(([k,j])=>cell(k,j)).join("")}</div>` }).join("");
-  const role=attrRole(p);
+  const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g), W=ATTRS.w[g], was=Array.isArray(p.ap)&&p.ap.length===K.length?p.ap:null;
+  const mx=Math.max(...K.map(k=>W[k])), byW=K.slice().sort((x,y)=>W[y]-W[x]);
+  const pipWord=["","counts less toward his rating","counts more toward his rating","counts most toward his rating"];
+  const cell=(k,j)=>{ const v=attrShow(A[k]), d=was?v-attrShow(was[j]):0, n=attrPips(W[k],mx);
+    return `<div class="attr" title="${esc(ATTRS.desc[k]||"")}"><div class="attrn"><span class="attrw" title="${pipWord[n]}" aria-label="${pipWord[n]}">${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(3-n)}</span>${n===3?`<b>${esc(ATTRS.name[k])}</b>`:esc(ATTRS.name[k])}<small>${esc(ATTRS.desc[k]||"")}</small></div>
+      <div class="attrbar" aria-hidden="true"><i style="width:${v*5}%;background:${attrColor(v)}"></i></div>
+      <div class="attrv">${d>0?`<span style="color:var(--turf)">&#9650;${d}</span>`:d<0?`<span style="color:var(--flag)">&#9660;${-d}</span>`:""}<b style="color:${attrColor(v)}">${v}</b></div></div>` };
+  const rows=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b).sort((x,y)=>W[y[0]]-W[x[0]]); if(!ks.length)return "";
+    return `<div class="attrband">${l}</div>${ks.map(([k,j])=>cell(k,j)).join("")}` }).join("");
+  const role=attrRole(p), nm=k=>esc(ATTRS.name[k]);
+  const most=byW.filter(k=>attrPips(W[k],mx)===3), least=byW[byW.length-1];
+  const how=`Weighted for his position: ${most.map(nm).join(" and ")} count${most.length>1?"":"s"} most${byW.length>most.length+1?`, ${nm(least)} least`:byW.length>most.length?`, then ${nm(least)}`:""}.`;
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
-    <div class="attrgrid" style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px">${cols}</div>
-    <div class="fnote" style="margin:4px 0 10px">1-20 against the league's players. His rating (${p.r}) is a weighted mix of these on the rating's own scale, so the 1-20s won't average to it by eye: they show where he leans; ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
+    <div class="attrgrid">${rows}</div>
+    <div class="fnote" style="margin:4px 0 10px">${how} His rating (${p.r}) is that weighted mix, so the 1-20s won't average to it: they show where he leans, against every player in the league${attrPlays()?", and each plays in the game as it says":"; in this game they don't change how he plays yet, only how he develops"}.${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){
@@ -6346,7 +6403,10 @@ function seasonCallsHTML(){
    each league's, fitted to its own engine (LIVE_SIG, measured: test/live-wp.js), and the line is checked for honesty
    there: when it says 70%, that side wins about 70% of the time. A level score after regulation goes to overtime
    (a shoot-out, extra time) at the pre-game edge, halved. */
-const LIVE_WP_ON=true, LIVE_MU={}, LIVE_TAUP={mlb:1}, LIVE_MUP={mlb:1.5};   // LIVE_TAUP: how the spread shrinks with the game left (0.5, a random walk; baseball 1: round 56, a one-run lead after seven showed 69% and won 82%); LIVE_MUP: how the pre-game edge fades (1, linear; baseball 1.5: a tie after seven against a far stronger club showed 29% and won 38%)   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+const LIVE_WP_ON=true, LIVE_MU={}, LIVE_TAUP={mlb:0.7}, LIVE_MUP={mlb:1.5};   // LIVE_TAUP: how the spread shrinks with the game left (0.5, a random walk; baseball 1: round 56, a one-run lead after seven showed 69% and won 82%); LIVE_MUP: how the pre-game edge fades (1, linear; baseball 1.5: a tie after seven against a far stronger club showed 29% and won 38%)   // a league whose pre-game edge plays out smaller live (fitted, test/live-wp.js)
+/* round 97: baseball's spread shrinks as tau^0.7, not linearly (scratch r97 bscal.js, 1,500 engine games, each inning's
+   margin against who won): linear read two runs down after eight as 0% where 4% came back, and after seven 3% for 10%.
+   Even games alone fit a spread of 3.6; live-wp's games with their real edges fit 4.3, so the spread stays 4.2. */
 const LIVE_SIG={cfb:18,nfl:14,ncaab:16,nba:18,nhl:2.75,epl:1.9,mlb:4.2}, LIVE_POSS=1.5;   // fitted, 400 live games a league (test/live-wp.js); football: the ball next is worth about a point and a half
 function liveTau(d){
   if(!d)return 1;
@@ -6379,13 +6439,17 @@ function liveWPHTML(onCall){
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
   if(S&&S.liveWP===false)return `<div class="livewp off"><button class="lwtog" data-livewp="true">Show win chance</button></div>`;   // S.liveWP: off in the ? panel (round 50: Instinct)
   const d=live.drives[live.drives.length-1], sc=liveScore(d); if(sc[0]===undefined)return "";
-  if(liveTau(d)<=0&&sc[0]!==sc[1])return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
-  const meH=live.g.home===S.myTeam, m=meH?sc[0]-sc[1]:sc[1]-sc[0];
+  if(liveTau(d)<=0&&sc[0]!==sc[1]&&!(onCall&&live.ask))return "";   // round 56: the game is over ("1% to win" after the last out: Muse)
+  const meH=live.g.home===S.myTeam; let m=meH?sc[0]-sc[1]:sc[1]-sc[0], tau=liveTau(d);
+  /* round 97: baseball asks inside an inning (a stretch here is an inning), so on its call screens the last inning's
+     reading was stale: "8th inning, down 1" over the 44% of the 2-2 inning before it (Grokbot: 5% at 10-10 in the
+     9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */
+  if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; tau=Math.max(0,tau-0.5/(typeof SEGS!=="undefined"?SEGS:9)) }
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
     try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
-  const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,liveTau(d),live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
-  const early=liveTau(d)>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
+  const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,tau,live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
+  const early=tau>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
   // the three add to 100 (round 50: soccer's line read 101 twice: Muse): each rounded down, the leftover points to the largest remainders
   if(LEAGUE.draws&&dr>0.005){ const v=[w,dr,l].map(x=>x*100), f=v.map(Math.floor); let r=100-f.reduce((a,b)=>a+b,0);
     v.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([_,i])=>{ if(r>0){ f[i]++; r-- } });
@@ -6489,7 +6553,7 @@ function seasonCardSVG(h, team){
       letter-spacing="2">${esc((LEAGUE.text.gameName||"Football Coach").toUpperCase())}</text>
     <text x="166" y="1020" fill="#7C879C" font-size="23"
       font-family="ui-monospace,Menlo,Consolas,monospace"
-      letter-spacing="2">ianbott1.github.io/football-coach</text>
+      letter-spacing="2">ianbott1.github.io/coach</text>
   </svg>`;
 }
 
@@ -7416,16 +7480,21 @@ function hlMount(){
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
   // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
   if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
-  if(HL_SPORT.collapseIdle){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }
+  if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
+  else if(HL_SPORT.collapseIdle)box.style.display=""
   const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
   if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
   if(!HL.cur)hlDraw(null,0);
   hlAmbient();
 }
 /* the full match: while no clip plays and the game runs, the sport's idle picture is redrawn every frame (round 68) */
+/* round 98: where the pitch stays on the live screen (soccer, hockey) the play between moments runs in every mode, so the
+   ice is never empty; a sport that shows its court only for a clip (basketball) keeps it up in the full match alone. The
+   pace is the mode's own: only the full match waits longer between stretches. */
+function hlAmbOn(){ return !!(HL_SPORT.ambient&&(hlMode()==="full"||(!HL_SPORT.collapseIdle&&hlMode()!=="off"))) }
 function hlAmbient(){
-  if(HL.amb||!HL_SPORT.ambient||hlMode()!=="full"||HL.cur)return;
-  const loop=()=>{ HL.amb=0; if(HL.cur||hlMode()!=="full"||typeof live==="undefined"||!live||live.done||!HL.cv||!HL.cv.isConnected)return;
+  if(HL.amb||!hlAmbOn()||HL.cur)return;
+  const loop=()=>{ HL.amb=0; if(HL.cur||!hlAmbOn()||typeof live==="undefined"||!live||live.done||!HL.cv||!HL.cv.isConnected)return;
     hlDraw(null,0); HL.amb=requestAnimationFrame(loop) };
   HL.amb=requestAnimationFrame(loop) }
 /* will this stretch play clips? Asked before the page is drawn, so it can keep the result back (round 66); the clips
@@ -7648,6 +7717,11 @@ function hlBanner(x,W,H,text,kit,s){
 /* the key: each side's named players by number. L: [{team, kit:{fill}, list:[[no,name],...]}] */
 function hlLegendHTML(L){ return L.filter(x=>x&&x.list&&x.list.length).map(x=>`<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${x.kit.fill};margin-right:5px;vertical-align:0"></span><b style="color:#fff">${esc(x.team)}</b> ${x.list.map(([n,nm])=>`<span style="white-space:nowrap;margin-left:4px"><b style="font-family:'IBM Plex Mono',monospace;color:#F4C95D">${n}</b> ${esc(nm)}</span>`).join(" ")}</div>`).join("") }
 /* a side's players by roster slots: [[shirt no, surname]] for the given roster indices */
+/* round 97: a roster place as it plays tonight: a hurt starter's backup, a hurt backup's starter (Grokbot: an injured man
+   on the ice; measured in clips: hockey 144 of 900, soccer 65 of 237, football 80 of 343 named a hurt man) */
+function hlFit(team,i){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R||i==null||i<0||!SEA.talent||!SEA.talent.inj||!SEA.talent.inj[team])return i;
+  const H=new Set(SEA.talent.active(team).map(x=>x.idx)); if(!H.has(i))return i; const n=typeof POS!=="undefined"?POS.length:0, o=i<n?i+n:i-n;
+  return R[o]&&!H.has(o)?o:i }
 function hlNamed(team,idxs){ const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R)return []; return idxs.map(i=>R[i]?[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]]:null) }
 /* a stretch's clips cut to n: every goal stays (round 70: a two-goal stretch showed one, the cap took the later goal
    when saves came first); chances fill what's left, in minute order */
@@ -12338,6 +12412,7 @@ function copyHTML(s){
 function renderTitle(){
   const slots=S._slots||[];
   el("app").innerHTML=`${newerHTML()}<div class="titlewrap">
+    <a class="family" href="index.html">&larr; <b>Coach</b> &middot; all seven games</a>
     <div class="owlstage">
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
@@ -12371,8 +12446,8 @@ function renderTitle(){
            <button class="introskip wide" id="tnewx">Cancel</button>`
         : `<button class="introskip wide" id="tnew">Start a new career</button>` })()}
     <button class="introskip wide" id="thow">How to play</button>
-    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
+    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
   </div>`;
   // Erase is its own button beside the slot (it was text inside the slot's button: anything that
   // pressed "Erase" as a control, a keyboard, a screen reader, a test agent, pressed the slot and loaded the career)
