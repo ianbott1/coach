@@ -3878,6 +3878,7 @@ function copyHTML(s){
 function renderTitle(){
   const slots=S._slots||[];
   el("app").innerHTML=`${newerHTML()}<div class="titlewrap">
+    <a class="family" href="index.html">&larr; <b>Coach</b> &middot; all seven games</a>
     <div class="owlstage">
       <div class="logowrap" id="owltap">${LOGO}</div>
       ${owlTaps>=5?`<div class="bubble"><span>${esc(OWL_LINE)}</span></div>`:""}
@@ -3911,8 +3912,8 @@ function renderTitle(){
            <button class="introskip wide" id="tnewx">Cancel</button>`
         : `<button class="introskip wide" id="tnew">Start a new career</button>` })()}
     <button class="introskip wide" id="thow">How to play</button>
-    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
+    <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
   </div>`;
   // Erase is its own button beside the slot (it was text inside the slot's button: anything that
   // pressed "Erase" as a control, a keyboard, a screen reader, a test agent, pressed the slot and loaded the career)

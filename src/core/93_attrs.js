@@ -63,7 +63,15 @@ function attrSync(u,focus,summer){
 function attrOf(p){ if(!attrOn()||!p)return null; const g=attrGrp(p), K=attrKeys(g); if(!K.length)return null;
   const v=Array.isArray(p.at)&&p.at.length===K.length&&p.ar===p.r?p.at:attrGen(typeof U!=="undefined"?U:null,p); if(!v)return null;
   const o={}; K.forEach((k,j)=>o[k]=v[j]); return o }
-function attrShow(v){ const S=attrScale(); return Math.max(1,Math.min(20,Math.round(11+(v-S.m)/S.s*3))) }
+/* round 96 (the odd grids): shown 1-20 against every rostered player in the league, not the starters alone, with soft
+   tails, so a backup isn't a column of 1s and a star reaches 18-20 (on the starters' scale 7-10% of the pro games'
+   attributes read 1, hockey's best read 18). Constants fixed: measured once, every club's roster as a career opens. Display
+   only: shapes, roles and every engine read the rating scale (ATTR_SCALE above). */
+const ATTR_SHOW={cfb:{m:54.2,s:15.1}, nfl:{m:61.4,s:9.2}, ncaab:{m:54.8,s:15.5}, nba:{m:54.4,s:9.4}, nhl:{m:53.8,s:8.9},
+  epl:{m:43.6,s:16.9}, mlb:{m:53.5,s:8.9}}, ATTR_TAIL=1.55, ATTR_SHOW_ON=true;
+function attrShow(v){ const A=ATTR_SHOW[LEAGUE.id];
+  if(!ATTR_SHOW_ON||!A){ const S=attrScale(); return Math.max(1,Math.min(20,Math.round(11+(v-S.m)/S.s*3))) }
+  return Math.max(1,Math.min(20,Math.round(10.5+9.5*Math.tanh((v-A.m)/(A.s*ATTR_TAIL))))) }
 /* the role: the attribute he leans on most against his own rating (a label of his shape, not a mechanic) */
 function attrRole(p){ return attrRoleOf(p,attrOf(p)) }
 function attrRoleOf(p,A){ if(!A)return ""; const g=attrGrp(p), K=attrKeys(g);
@@ -84,15 +92,15 @@ function attrPlays(){ return typeof ATTRS!=="undefined"&&typeof ATTRS.plays==="f
 function attrGridHTML(p){
   const A=attrOf(p); if(!A)return ""; const g=attrGrp(p), K=attrKeys(g), was=Array.isArray(p.ap)&&p.ap.length===K.length?p.ap:null;
   const cell=(k,j)=>{ const v=attrShow(A[k]), d=was?v-attrShow(was[j]):0;
-    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)" title="${esc(ATTRS.desc[k]||"")}">
-      <span>${esc(ATTRS.name[k])}<span style="color:var(--muted);font-size:11px"> &middot; ${esc(ATTRS.desc[k]||"")}</span></span>
-      <span style="font-family:var(--mono);white-space:nowrap">${d>0?`<span style="color:var(--turf);font-size:11px">&#9650;${d} </span>`:d<0?`<span style="color:var(--flag);font-size:11px">&#9660;${-d} </span>`:""}<b style="color:${attrColor(v)}">${v}</b></span></div>` };
-  const cols=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b); if(!ks.length)return "";
-    return `<div style="flex:1 1 180px;min-width:0"><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin:4px 0">${l}</div>${ks.map(([k,j])=>cell(k,j)).join("")}</div>` }).join("");
+    return `<div class="attr" title="${esc(ATTRS.desc[k]||"")}"><div class="attrn">${esc(ATTRS.name[k])}<small>${esc(ATTRS.desc[k]||"")}</small></div>
+      <div class="attrbar" aria-hidden="true"><i style="width:${v*5}%;background:${attrColor(v)}"></i></div>
+      <div class="attrv">${d>0?`<span style="color:var(--turf)">&#9650;${d}</span>`:d<0?`<span style="color:var(--flag)">&#9660;${-d}</span>`:""}<b style="color:${attrColor(v)}">${v}</b></div></div>` };
+  const rows=ATTR_BANDS.map(([b,l])=>{ const ks=K.map((k,j)=>[k,j]).filter(([k])=>(ATTRS.band[k]||"t")===b); if(!ks.length)return "";
+    return `<div class="attrband">${l}</div>${ks.map(([k,j])=>cell(k,j)).join("")}` }).join("");
   const role=attrRole(p);
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
-    <div class="attrgrid" style="display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px">${cols}</div>
-    <div class="fnote" style="margin:4px 0 10px">1-20 against the league's players. His rating (${p.r}) is a weighted mix of these on the rating's own scale, so the 1-20s won't average to it by eye: they show where he leans; ${attrPlays()?"each one also plays in the game as it says.":"in this game they don't yet change how he plays, only how he develops."}${was?" Arrows: last summer.":""}</div>` }
+    <div class="attrgrid">${rows}</div>
+    <div class="fnote" style="margin:4px 0 10px">1-20 against every player in the league. They show where he leans; his rating (${p.r}) is what they add up to${attrPlays()?", and each plays in the game as it says":", though in this game they don't change how he plays yet, only how he develops"}.${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){

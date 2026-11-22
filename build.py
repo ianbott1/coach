@@ -16,7 +16,7 @@ layers may not use the same filename.
 
     python3 build.py              -> dist/football-coach.html   (league: cfb)
     python3 build.py <league>     -> dist/<league>.html
-    python3 build.py site         -> all six, plus the landing page, in dist/site/
+    python3 build.py site         -> all seven, plus the landing page, in dist/site/
                                      (what the GitHub Pages root holds)
 """
 import os, glob, sys
@@ -82,6 +82,8 @@ def site():
         m = re.search(r'const BUILD_ID="([0-9a-f]+)"', g)
         stamps.append(m.group(1) if m else "?")
     page = page.replace("<!--BUILDS-->", "Builds: " + " &middot; ".join(stamps))
+    # round 96: each game's owl on its perch (src/owls, written by tools/owls.js from the games' own art)
+    page = re.sub(r"<!--OWL:(\w+)-->", lambda m: open(os.path.join(SRC, "owls", m.group(1) + ".svg"), encoding="utf-8").read(), page)
     # round 48: every game checks this on load and says when the browser served it an older copy (Muse, round 21: a
     # pro football page two builds old for a whole review, and a college page with the last build's stamp on first load)
     import json
