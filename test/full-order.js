@@ -1,8 +1,8 @@
 /* Round 99: in Full match the stretch plays before its moments; none is lost to the lead-in, a pause or a step, and the
-   game finishes (soccer and hockey, in a browser).   node test/full-order.js    last line: MATCH or MISMATCH */
+   game finishes (soccer, hockey and, from round 100, both basketball games, in a browser).   node test/full-order.js    last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'); const path=require('path');
 (async()=>{ const b=await chromium.launch(); let bad=0;
- for(const [f,t] of [['soccer-coach.html','Arsenal'],['hockey-coach-pro.html','Vegas']]) for(const pauses of [false,true]){
+ for(const [f,t] of [['soccer-coach.html','Arsenal'],['hockey-coach-pro.html','Vegas'],['basketball-coach-pro.html','Orlando'],['basketball-coach.html','Duke']]) for(const pauses of [false,true]){
   const pg=await b.newPage({viewport:{width:1280,height:900}}); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
   await pg.goto('file://'+path.join(process.env.DIST||path.join(__dirname,'..','dist'),f)); await pg.waitForTimeout(200);
   const r=await pg.evaluate(async([t,pauses])=>{ try{localStorage.setItem('coach-guide-seen','1')}catch(e){} newDynasty(t,5,'T'); S.guide=false; S.highlights='full'; S.watchSpeed='rapid'; render();

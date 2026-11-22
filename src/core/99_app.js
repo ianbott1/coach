@@ -225,7 +225,7 @@ function liveTick(){
   /* round 99 (Ian: "Full match is not showing the full match"): in Full match the stretch is played before its moments, as
      a game is: the play runs with the score as it stood, then the stretch's goals and chances come at its end and the
      score moves with them, then the next stretch. (Elsewhere the moments play first, as before.) */
-  if(fresh&&live.hold&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&!HL_SPORT.collapseIdle&&typeof hlCan==="function"&&hlCan()){
+  if(fresh&&live.hold&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&(!HL_SPORT.collapseIdle||HL_SPORT.leadIn)&&typeof hlCan==="function"&&hlCan()){   // round 100: basketball too (Grokbot: "a chunked text slideshow")
     const gap=liveGap(), lead=Math.round(gap*0.6), mine=fresh; live.leadPend=mine;
     live.timer=setTimeout(()=>{ if(!live||live.done||live.paused||live.ask||live.drives[live.drives.length-1]!==mine||live.leadPend!==mine)return; live.leadPend=null;
       const hm2=typeof hlPlay==="function"?hlPlay(live,mine):0; if(!hm2&&live.hold&&typeof hlRelease==="function")hlRelease();
