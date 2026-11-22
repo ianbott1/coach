@@ -3677,7 +3677,9 @@ function render0(){
   const df=el("dfind"); if(df)df.oninput=()=>{dynQ=df.value;
     const p=df.selectionStart; render();
     const n=el("dfind"); if(n){n.focus();n.setSelectionRange(p,p)}};
-  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; S.planStep=SEA?SEA.step:null; save()} const y=typeof window!=="undefined"&&window.scrollY||0; render(); if(y&&typeof window.scrollTo==="function")window.scrollTo(0,y)});   // round 94: stay where you were (Grokbot: the page went back to the top after every plan click)
+  document.querySelectorAll(".planbtn").forEach(b=>b.onclick=()=>{plan=b.dataset.plan; if(!isHotSeat()){S.planNow=plan; S.planStep=SEA?SEA.step:null; save()} const y=typeof window!=="undefined"&&window.scrollY||0, sd=el("side"), sy=sd?sd.scrollTop:0, t0=b.getBoundingClientRect().top; render(); if(y&&typeof window.scrollTo==="function")window.scrollTo(0,y); const sd2=el("side"); if(sd2&&sy)sd2.scrollTop=sy;
+    // and the button you pressed stays under your finger, whatever changed above it (the plan's note is a line longer or shorter)
+    const nb=document.querySelector(`.planbtn[data-plan="${plan}"]`); if(nb){ const dy=nb.getBoundingClientRect().top-t0; if(Math.abs(dy)>1){ if(sd2&&sd2.contains(nb)&&sd2.scrollHeight>sd2.clientHeight)sd2.scrollTop+=dy; else if(typeof window.scrollBy==="function")window.scrollBy(0,dy) } } });   // round 94: stay where you were (Grokbot: the page went back to the top after every plan click); round 100: the desktop's side column scrolls on its own, and it went back to the top too
   // (the bottom bar's Sim ahead button is bound with skip2, above)
   // it asks, and says where the career is saved, or that it isn't (storage blocked: leaving loses it)
   const tb2=el("ttl"); if(tb2)tb2.onclick=async()=>{await save();quitAsk=true;render()};
