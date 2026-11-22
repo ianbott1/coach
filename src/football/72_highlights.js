@@ -289,7 +289,7 @@ const HL_SPORT=(function(){
     const nx=next&&next[0]; if(nx&&nx.kind==="downs"&&P.left!=null&&P.left!==nx.togo){ nx.togo=P.left; nx.len=Math.min(nx.len,P.left-1) }   // (the engine's own fourth and N is what it left, unless the data can't get there)
     const c=Object.assign(B,{kind:"drive",plays:P.plays,start:P.start,end:P.end,left:P.left,forced:P.forced,conv:P.conv,base:Math.min(16500,Math.max(1,P.plays.length)*1100),reveal:0.999});
     c.rec=record(B,P,next||[]); return c }
-  const who=(c,pl)=>pl.alt?c.rb2nm||"#"+c.rb2n:c.onm&&c.onm[pl.rc]?c.onm[pl.rc]:"#"+(c.offN?c.offN[pl.rc]:"");
+  const who=(c,pl)=>pl.alt?c.rb2nm||"#"+c.rb2n:c.onm&&c.onm[pl.rc]?c.onm[pl.rc]:(pl.rc===4?"tight end #":pl.rc===5?"slot receiver #":"#")+(c.offN?c.offN[pl.rc]:"");
   function playText(c,pl){ const g=pl.g, y=Math.abs(g)+" yard"+(Math.abs(g)===1?"":"s"), qb=c.onm&&c.onm[0]||"the quarterback";
     if(pl.t==="pen")return `${pl.flag} on ${c.opp}, ${y}, automatic first down`;
     let s=pl.t==="inc"?`Incomplete, intended for ${who(c,pl)}`:pl.t==="sack"?`${qb} sacked, loss of ${y}`:pl.t==="scr"?(g>0?`${qb} scrambles for ${y}`:`${qb} scrambles, no gain`)
