@@ -1428,6 +1428,9 @@ function heroResult(){
       move=!(SEA.field&&SEA.field.length)?`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`
         :inF?`<div class="hmove flat">Out of the ${ctn}, and into the NCAA Tournament: a ${SEA.seeds[my]} seed${SEA.region&&SEA.region[my]?`, ${esc(SEA.region[my])}`:""}.</div>`
         :`<div class="hmove dn">Out of the ${ctn}, and left out of the NCAA field.</div>` }
+    // round 99 (Instinct: a 12-1 Miami told "Season over" after the ACC final, then seeded 2nd with a bye): a conference title
+    // game is played before the playoff field is picked, so losing it isn't the end
+    else if(!won&&g.winner&&g.conf&&!(SEA.field&&SEA.field.length))move=`<div class="hmove dn">Beaten in the ${esc(String(g.title||"conference championship").replace(/^(the )/i,""))}. The playoff field is picked next.</div>`;
     else if(!won&&g.winner&&(typeof SEA._nextFor==="function"?!SEA._nextFor(my):true))move=`<div class="hmove dn">Season over${g.title?`: beaten in the ${esc(String(g.title).replace(/^(the )/i,""))}`:""}</div>`;
     else if(won&&SEA.champion===my)move=`<div class="hmove up">Champions</div>` }
   const cupRes=LEAGUE.cup&&LEAGUE.cup.result?LEAGUE.cup.result(Object.assign({week:flash&&flash.step},g),my):null;   // a league's own line (the NBA Cup's group games, league games too)
@@ -2202,6 +2205,10 @@ function attentionHTML(my){
         <span class="saytext">${esc(s.line)}</span></div></div>`:""})()}`).join("");
 }
 
+/* round 99 (Muse played seasons begun before round 88: the plan moved nothing and the grids said the engine didn't read
+   them): a season plays on the engine it began on, so a save replays exactly; the hub says what arrives next season. */
+function oldEngineHTML(){ if(typeof ENGINE_V==="undefined"||ENGINE_V>=ENGINE_NOW||ENGINE_V>=17)return "";
+  return `<div class="note" style="margin:8px 0 0">This season began on an older version of the game, and it plays on that version to the end so your save replays exactly. From next season: plans priced by your roster, attributes that play in the game${SPORT.id==="soccer"?", and the 80th-minute read on their legs":""}.</div>` }
 function nextUpHTML(my,rk){
   let h="";
   if(SEA.phase!=="week"&&SEA.phase!=="done"){
@@ -2220,7 +2227,7 @@ function nextUpHTML(my,rk){
         ${wp!==null?`<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
           <span class="opct">${pctShown(wp)}%</span>
           <span class="olab">to win, before the game</span></div>${injuredLine(pn.opp,atH,neu)}`:""}
-        ${planPickerHTML(wp)}</div>`;
+        ${planPickerHTML(wp)}${oldEngineHTML()}</div>`;
     }
     return h;
   }

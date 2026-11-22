@@ -107,7 +107,7 @@ function attrGridHTML(p){
   const how=`Weighted for his position: ${most.map(nm).join(" and ")} count${most.length>1?"":"s"} most${byW.length>most.length+1?`, ${nm(least)} least`:byW.length>most.length?`, then ${nm(least)}`:""}.`;
   return `<div class="grouphead">Attributes${role?` &middot; <span style="text-transform:none;letter-spacing:0">${esc(role)}</span>`:""}</div>
     <div class="attrgrid">${rows}</div>
-    <div class="fnote" style="margin:4px 0 10px">${how} His rating (${p.r}) is that weighted mix, so the 1-20s won't average to it: they show where he leans, against every player in the league${attrPlays()?", and each plays in the game as it says":"; in this game they don't change how he plays yet, only how he develops"}.${was?" Arrows: last summer.":""}</div>` }
+    <div class="fnote" style="margin:4px 0 10px">${how} His rating (${p.r}) is that weighted mix, so the 1-20s won't average to it: they show where he leans, against every player in the league${attrPlays()?", and each plays in the game as it says":"; this season began on an older version of the game, so they shape how he develops but not how he plays until next season"}.${was?" Arrows: last summer.":""}</div>` }
 /* the roster's shape: each attribute's average among your starters who have it, ranked in the league (soccer: your
    division), the two best and the worst (Ian's design: "you can see what your team is and what it lacks") */
 function attrTeamShape(t){
@@ -121,7 +121,7 @@ function attrTeamShape(t){
   return {best:rk.slice(0,2), worst:rk[rk.length-1], n:teams.length} }
 function attrShapeHTML(t){ const S0=attrTeamShape(t); if(!S0)return "";
   const nm=x=>`${esc(ATTRS.name[x.k])} ${ordinal(x.r)}`;
-  return `<div class="note"><b>Your shape:</b> ${S0.best.map(nm).join(", ")} of ${S0.n}${S0.worst&&S0.best.indexOf(S0.worst)<0?`; ${nm(S0.worst)}`:""}. ${attrPlays()?"Each plays in the game as its name says.":"For now they show who your players are and how they'll grow; this game's engine doesn't read them yet."}</div>` }
+  return `<div class="note"><b>Your shape:</b> ${S0.best.map(nm).join(", ")} of ${S0.n}${S0.worst&&S0.best.indexOf(S0.worst)<0?`; ${nm(S0.worst)}`:""}. ${attrPlays()?"Each plays in the game as its name says.":"This season began on an older version of the game: they shape how your players grow, and play in games from next season."}</div>` }
 /* training focus (the summer's development, your team only): one attribute for each training group, or balanced. The
    chosen one takes ATTR_FOCUS times its share of a gain (the rest a little less), so the rating moves as it would
    have: nothing is free, only where it lands. Offered where attributes play (ATTRS.plays). */
