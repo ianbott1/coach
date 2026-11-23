@@ -1,5 +1,5 @@
 {
- "fp": "3a41dfba37277920",
+ "fp": "20fdc83048262826",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -540,6 +540,11 @@
    "fp": "3a41dfba37277920",
    "from": "abd292e8ab00cf4c",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
+  },
+  {
+   "fp": "20fdc83048262826",
+   "from": "3a41dfba37277920",
+   "note": "Rounds 103-104: screens only (the live scoreboard's match numbers); field-by-field only screens differ, results identical"
   }
  ],
  "result": {
@@ -554,7 +559,7 @@
     "heis": "01dd37bc7325f176",
     "history": "6384997958515063",
     "universe": "cc00140abb0d8f58",
-    "screens": "fdff4f07bf4b2df7"
+    "screens": "bbb0724a51a47c5b"
    },
    {
     "year": 2027,
@@ -566,7 +571,7 @@
     "heis": "eb3ac9729b9218e4",
     "history": "90dec017a25fa243",
     "universe": "82f498a9e5b77142",
-    "screens": "7e8f370311625b21"
+    "screens": "e0af65c9cca83837"
    }
   ],
   "Wrexham#777": [
@@ -580,7 +585,7 @@
     "heis": "c3ba80646ca3f1fd",
     "history": "4c6b5a840a49e7ee",
     "universe": "7ab444233b9e12d5",
-    "screens": "6c49c31dac5dbee0"
+    "screens": "92d7466b6ca8ca64"
    },
    {
     "year": 2027,
@@ -592,7 +597,7 @@
     "heis": "6a9f17a496fb041d",
     "history": "6412fe9f0c0ffec9",
     "universe": "44c0f2788acc325a",
-    "screens": "cb230138d874851d"
+    "screens": "719a1e71f2017139"
    }
   ],
   "schedules#60": [

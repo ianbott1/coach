@@ -1,5 +1,5 @@
 {
- "fp": "0d1602574b18ad8e",
+ "fp": "c6c5736a79e45314",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -570,6 +570,11 @@
    "fp": "0d1602574b18ad8e",
    "from": "91e7db2343594987",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
+  },
+  {
+   "fp": "c6c5736a79e45314",
+   "from": "0d1602574b18ad8e",
+   "note": "Rounds 102-104: screens only (the header clock's span, the live scoreboard's numbers); field-by-field only screens differ, results identical"
   }
  ],
  "result": {
@@ -584,7 +589,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "fd5baea0fb4bbd78",
-    "screens": "ca525c0f1e790135"
+    "screens": "a2b3ca456e58e9b8"
    },
    {
     "year": 2027,
@@ -596,7 +601,7 @@
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
     "universe": "f45180777c79ac31",
-    "screens": "d70a8f9bd2dfb54d"
+    "screens": "5dfb6db235976255"
    }
   ],
   "Edmonton#777": [
@@ -610,7 +615,7 @@
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
     "universe": "cc609536ee9e0bfb",
-    "screens": "f49daa15a25856f2"
+    "screens": "9ed989157e2742b6"
    },
    {
     "year": 2027,
@@ -622,7 +627,7 @@
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
     "universe": "c2e3411ac8328d78",
-    "screens": "6d5d05968c3c5b40"
+    "screens": "b8fb712ba785b72a"
    }
   ],
   "schedules#60": [
