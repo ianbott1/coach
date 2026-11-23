@@ -136,7 +136,8 @@ on numbers they can't trust and a sport they read rather than watch.
   football's, where a touchdown can no longer be longer than the field the drive had (stats only; results identical).
 - Next: football's engine draws a stalled drive's fourth and N apart from how far it got (about 8% of drives impossible;
   1 fourth-down call in 12 reads one distance while the drive shows another): draw it from the gain, an engine round
-  with calibration. Then the plan as a real decision at even odds.
+  with calibration (Ian agreed: its own round); with it, punts from inside their 15. Then the plan as a real decision
+  at even odds.
 
 ## Round 100 (done): Grokbot's round 12 interim (ships with round 99)
 - The game starts on the plan its card shows (a reloaded game played an old mid-game change). The coach name survives.
