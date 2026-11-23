@@ -172,7 +172,7 @@ const HL_SPORT=(function(){
     [false,true].forEach(home=>{ const k=kits[home?0:1], gk=hlKit("",home?"#E8F56B":"#C9A0FF"), P2=lagged(home), X=XIs[home?1:0];
       // the man nearest the ball, on the side that has it, is on it
       let ni=-1,nd=1e9; if(b.home===home)P2.forEach((p,i)=>{ if(!i)return; const [sx,sy]=toS(home,p), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
-      P2.forEach((p,i)=>{ let [sx,sy]=toS(home,p); if(i===ni){ sx=hlLerp(sx,qx,0.8); sy=hlLerp(sy,qy,0.8) } hlPlayer(x,sx,sy,r,i?k:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-sy,qx-sx)},X.nm[i]?{sub:X.nm[i]}:{})) }) });
+      P2.forEach((p,i)=>{ let [sx,sy]=toS(home,p); if(i===ni){ sx=hlLerp(sx,qx,0.8); sy=hlLerp(sy,qy,0.8) } hlPlayer(x,sx,sy,r,i?k:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-sy,qx-sx)},X.nm[i]&&(W>=520||i===ni)?{sub:X.nm[i]}:{})) }) });
     hlBall(x,qx,qy,r*0.55,0,null);
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a;
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||Math.min(90,live.drives.length*5)+"'"});
@@ -365,7 +365,7 @@ const HL_SPORT=(function(){
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const X=P.XI[si], kt=kits[si], gk=hlKit("",gks[si]);
       pos[si].forEach((p,i)=>{ if(i===P.offSlot[si]&&P.offAt(si,f))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
-        hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]?{sub:X.nm[i]}:{},on?{hot:true}:{})) }) });
+        hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]&&(W>=520||on)?{sub:X.nm[i]}:{},on?{hot:true}:{})) }) });   // a phone's pitch names the man on the ball (twenty-two names piled up)
     // the ball's last moments
     const trail=[]; if(a.k!=="pass"||tr<1)for(let q=6;q>=1;q--){ const tq=Math.max(0,tr-q*0.04), eq=lf?tq:hlEase(tq), zq=lf&&tq<1?Math.sin(Math.PI*tq)*lf:0, pp=toS(hlLerp(a.x,b.x,eq),hlLerp(a.y,b.y,eq)); trail.push([pp[0],pp[1]-zq*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,trail.length>1?trail:null);
@@ -514,9 +514,9 @@ const HL_SPORT=(function(){
     def.forEach((p,i)=>{ if(i===c.offD&&!c.red)return; const [px,py]=P(W,H,c,p[0],p[1]);
       if(i===0&&dv){ const ang=((c.lr!=null?c.lr:c.home)?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
       const sent=c.red&&i===(c.sentSlot!=null?c.sentSlot:2)&&t>=c.pre, fade=sent&&t>c.pre+0.1?Math.max(0.25,1-(t-c.pre-0.1)*1.8):null;
-      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],sub:c.subD&&!sent?c.subD[i]:"",dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
+      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],sub:c.subD&&!sent&&W>=520?c.subD[i]:"",dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
       if(sent){ x.save(); x.translate(px+r*1.3,py-r*1.6); x.rotate(0.2); x.fillStyle="#E3262F"; x.fillRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=0.8; x.strokeRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.restore() } });
-    att.forEach((p,i)=>{ if(i===c.offA)return; const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],sub:c.subA&&!hot?c.subA[i]:"",dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
+    att.forEach((p,i)=>{ if(i===c.offA)return; const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],sub:c.subA&&!hot&&(W>=520||i===c.rec[0])?c.subA[i]:"",dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
     // the ball and the last few moments of its path
     const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(c,t-q*0.012); const pp=P(W,H,c,Math.min(1.03,b.bx),b.by); tr.push([pp[0],pp[1]-b.z*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,t>0.1?tr:null);

@@ -335,7 +335,7 @@ const HL_SPORT=(function(){
       (x.ev||[]).forEach(e=>{ const s=e.side==="home"?0:1; if(e.k==="pen"){ o[s].pim+=2; o[1-s].pp++ } if(e.k==="goal"&&e.pp)o[s].ppg++ });
       let c=null; try{ c=hpCounts(L,x) }catch(e){} if(c)[0,1].forEach(s=>o[s].hit+=c[s].hit) });
     if(last&&last.sog){ o[0].sog=last.sog[0]; o[1].sog=last.sog[1] }
-    if(d&&f!=null){ const t0=d.seg*5; (d.ev||[]).forEach(e=>{ const s=e.side==="home"?0:1, ef=(e.m+0.5-t0)/5; if(ef>f)return; if(e.k==="pen"){ o[s].pim+=2; o[1-s].pp++ } });
+    if(d&&f!=null){ let PP=null; try{ PP=hpPlan(L,d) }catch(e){} (PP?PP.pens:[]).forEach(p=>{ if(p.f>f)return; o[p.side].pim+=2; o[1-p.side].pp++ });   // the penalty as the play calls it
       const EP=d._ev; if(EP)EP.clips.forEach(c=>{ if(c.f>=f)return; const s=c.home?0:1; o[s].sog++; if(c.kind==="goal"&&c.pp)o[s].ppg++ });
       let P=null; try{ P=hpPlan(L,d) }catch(e){} if(P)P.moves.forEach(m=>m.T.forEach(t=>{ if(t.hit!=null&&t.f<=f)o[1-m.side].hit++ })) }
     return {o} }

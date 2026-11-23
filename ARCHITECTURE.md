@@ -460,7 +460,10 @@ decides everything with the same dice; what the screen shows is built from the s
   icings, offsides and frozen saves bring faceoffs at the dots (both lines set there), hits at the league's rate. The
   lines change every 45 seconds of play by the club's deployment (the clips' rule); the move before a shot is on the
   shot's own men (clip.an/dn). Twenty-eight seconds of play a stretch at Normal (was twelve). The scoreboard keeps shots,
-  power plays (goals/chances), PIM and hits. test/hk-pb.js. Shots come about five a stretch, so ~2% of moves are a
+  power plays (goals/chances), PIM and hits. test/hk-pb.js. Engine 20 puts a power play's shots and goals inside its
+  two minutes (the engine spread them over the stretch, so a side was drawn short for up to five minutes; windows now 2.1
+  minutes on average, at most 3 with whole minutes); minutes only, no draw. On a phone's pitch only the man on the ball
+  is named (twenty-two names piled up). Shots come about five a stretch, so ~2% of moves are a
   quick touch between two (bounded at 3%).
 - Baseball (bsPitches, round 105). Each plate appearance's pitches are a legal count that ends in the engine's result
   (strike three swinging or looking, ball four, in play, hit by pitch; a foul never strike three), from the at-bat's
