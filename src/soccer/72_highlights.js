@@ -167,14 +167,12 @@ const HL_SPORT=(function(){
     const lagged=home=>{ const S0=[0,120,240,360], o=BASE.map(()=>[0,0]); S0.forEach((dt,q)=>{ const w=4-q; shape(now-dt,home).forEach((p,i)=>{ o[i][0]+=p[0]*w; o[i][1]+=p[1]*w }) }); return o.map(p=>[p[0]/10,p[1]/10]) };
     const h2=live.drives.length*5>45, toS=(home,p)=>{ const lr=home!==h2, X=lr?p[0]:1-p[0], Y=lr?p[1]:1-p[1]; return [W*PAD+X*W*(1-2*PAD), H*PAD+Y*H*(1-2*PAD)] };
     const b=at(now), [qx,qy]=toS(true,[b.x,b.y]);   // the ball in the home side's frame
-    // round 102: the six men the squad has a line for (keeper, centre back, full back, midfield, wing, striker) by number and
-    // name in their slots, as the clips have them (a hurt man's backup takes his place); the partners keep a number
-    const nk=live.drives.length+"|"+g.home, NMs=ambient._n=ambient._n&&ambient._n.k===nk&&ambient._n.L===live?ambient._n:{k:nk,L:live,s:[g.away,g.home].map(team=>{
-      const R=(SEA.roster&&SEA.roster[team])||[], out={}; Object.keys(SLOT_N).forEach(u=>{ const i=typeof SC_UNIT!=="undefined"?hlFit(team,SC_UNIT[u]):-1; if(i>=0&&R[i])out[SLOT_N[u]]=[shirtNo(team,i),String(R[i].n).split(" ").slice(-1)[0]] }); return out })};
-    [false,true].forEach(home=>{ const k=kits[home?0:1], gk=hlKit("",home?"#E8F56B":"#C9A0FF"), P2=lagged(home), nm=NMs.s[home?1:0], used=new Set(Object.values(nm).map(q=>q[0]));
+    // round 104: the full match's eleven (spXI): every man by number and name, the same shirts as in the clips
+    const XIs=[spXI(live,g.away),spXI(live,g.home)];
+    [false,true].forEach(home=>{ const k=kits[home?0:1], gk=hlKit("",home?"#E8F56B":"#C9A0FF"), P2=lagged(home), X=XIs[home?1:0];
       // the man nearest the ball, on the side that has it, is on it
       let ni=-1,nd=1e9; if(b.home===home)P2.forEach((p,i)=>{ if(!i)return; const [sx,sy]=toS(home,p), dd=Math.hypot(sx-qx,sy-qy); if(dd<nd){nd=dd;ni=i} });
-      P2.forEach((p,i)=>{ let [sx,sy]=toS(home,p); if(i===ni){ sx=hlLerp(sx,qx,0.8); sy=hlLerp(sy,qy,0.8) } const q=nm[i], num=q?q[0]:(used.has(NUM[i])?NUM[i]+20:NUM[i]); hlPlayer(x,sx,sy,r,i?k:gk,q?{num:num,sub:q[1],dir:Math.atan2(qy-sy,qx-sx)}:{num:num,dir:Math.atan2(qy-sy,qx-sx)}) }) });
+      P2.forEach((p,i)=>{ let [sx,sy]=toS(home,p); if(i===ni){ sx=hlLerp(sx,qx,0.8); sy=hlLerp(sy,qy,0.8) } hlPlayer(x,sx,sy,r,i?k:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-sy,qx-sx)},X.nm[i]?{sub:X.nm[i]}:{})) }) });
     hlBall(x,qx,qy,r*0.55,0,null);
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a;
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||Math.min(90,live.drives.length*5)+"'"});
