@@ -30,7 +30,7 @@ function hlMount(){
   // home plate and the batter, and soccer's near touchline): a surface too tall for the room left is drawn narrower, centred
   let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
   try{ const bar=document.querySelector(".actionbar"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-top-6;
-    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.62),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
+    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
   const H=Math.round(W*HL_SPORT.aspect);
   if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
   if(!HL.cur)hlDraw(null,0);
