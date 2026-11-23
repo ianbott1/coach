@@ -61,7 +61,10 @@ const HL_SPORT=(function(){
     else { const cy=side?0.995:0.005; W=[[0.995,cy],[0.9+r()*0.04,0.42+r()*0.16]] }
     // the receivers: the nearest attacker to each spot (the last is the man who shoots: the named one when we know him)
     const sIdx=(UNIT_IDX[shooter.unit]||[9,10])[Math.floor(r()*2)];
-    const rec=W.map((w,i)=>{ if(i===W.length-1)return sIdx; let b=1,bd=9; for(let k=1;k<11;k++){ const p=BASE[k], dd=Math.hypot(p[0]+0.18-w[0],p[1]-w[1]); if(dd<bd&&k!==sIdx){bd=dd;b=k} } return b });
+    const rec=W.map((w,i)=>{ if(i===W.length-1)return sIdx; let b=1,bd=9; for(let k=1;k<11;k++){ const p=BASE[k], dd=Math.hypot(p[0]+0.18-w[0],p[1]-w[1])*(SP_NAMED.has(k)?0.7:1); if(dd<bd&&k!==sIdx){bd=dd;b=k} } return b });   // round 103: the squad's man of a pair a little more often (the full match credits the last pass)
+    // a goal's last pass: four times in five from the squad's nearest named man (so a watched season's goals come out assisted
+    // about as often as the engine's 72%: partners without a name can't be credited)
+    if(kind==="goal"&&plan!=="pen"&&W.length>=2&&((e.m||0)*31+u)%100<80){ const w=W[W.length-2]; let b=-1,bd=9; SP_NAMED.forEach(k=>{ if(!k||k===sIdx)return; const p=BASE[k], dd=Math.hypot(p[0]+0.18-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=k} }); if(b>0)rec[W.length-2]=b }
     // the end of the shot
     let end, kept=false, postHit=false;
     if(kind==="goal")end=[1.012,0.5+(r()-0.5)*goalW*0.8];
@@ -249,7 +252,7 @@ const HL_SPORT=(function(){
     const push=(m,fA,fB)=>{ const s=m.side, A=x=>s?1-x:x;   // A: our attacking frame <-> the home frame (y too: x and y both flip)
       const st=[A(ball.x),A(ball.y)];
       let sp;
-      if(m.end==="clip")sp=[A(m.ex),A(m.ey)];
+      if(m.end==="clip"){ sp=[A(m.ex),A(m.ey)]; const c=m.c, want=c.numsA?c.numsA[c.rec[0]]:null, j=want!=null?XI[s].nums.indexOf(want):-1; if(j>0)m.slot=j }   // the shot's first man by his shirt (the scorer's move can swap two slots)
       else if(m.end==="high")sp=[0.14+r()*0.16,0.15+r()*0.7];
       else if(m.end==="corner")sp=[0.985,r()<0.5?0.03:0.97];
       else if(m.end==="off")sp=[0.76+r()*0.1,0.3+r()*0.4];
@@ -274,7 +277,9 @@ const HL_SPORT=(function(){
       if(nx.kind==="kickoff"){ ball.x=0.5; ball.y=0.5 } else if(nx.kind==="gk"){ ball.x=nx.side?0.94:0.06; ball.y=0.5 } else if(nx.kind==="corner"&&m.end==="clip"){ ball.x=s?0.015:0.985; ball.y=((m.c.e.u||0)%2)?0.03:0.97 } };
     seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+m.nT,0); let at=q.f0;
       G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*m.nT/W2; push(m,at,fB); at=fB }) });
-    return d._sp={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball)} }
+    const out={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball)};
+    Object.defineProperty(d,"_sp",{value:out,writable:true,configurable:true,enumerable:false});   // never saved with the game (it holds the live game)
+    return out }
   // the counts the screen shows for the stretch (test/sc-pb.js checks them against the engine's)
   function spCounts(L,d){ const P=spPlan(L,d), o=[{cr:0,lb:0,to:0,foul:0,corner:0,off:0,card:0},{cr:0,lb:0,to:0,foul:0,corner:0,off:0,card:0}];
     P.moves.forEach(m=>{ m.T.forEach(t=>{ if(t.k==="cross")o[m.side].cr++; if(t.k==="long"||t.lk)o[m.side].lb++ });

@@ -144,7 +144,7 @@ function hlSkip(){
 function hlDraw(c,t){
   const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
   x.setTransform(dpr,0,0,dpr,0,0); const W=cv.width/dpr, H=cv.height/dpr;
-  HLK.t=t; HLK.now=Date.now();
+  HLK.t=t; if(!(typeof live!=="undefined"&&live&&live.paused&&HLK.now))HLK.now=Date.now();   // round 103: paused, the picture holds still (the ring round the man on the ball stops pulsing too)
   try{ hlPitch(x,W,H,dpr); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H); hlFinish(x,W,H) }catch(e){}
 }
 /* ---- round 101: the full match as events in time (soccer, hockey) ----
