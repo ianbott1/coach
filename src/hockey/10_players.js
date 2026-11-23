@@ -72,6 +72,11 @@ function teamLines(rng,c){
   const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited-nShown);
   const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
   dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]+(shown[d.n]||0); l.pts=l.goals+l.ast });
+  /* round 107 (engine 21): the shooters' shots never come to more than the team's (Muse: 31 against 30 in a full match
+     watched: the shots the screen showed went on top of the goals and the share). Over: taken back from the men whose
+     shown shots went over, most first, never below their goals. No draws. */
+  if(ENGINE_V>=21){ let over=dressed.reduce((t,d)=>t+L[d.n].sog,0)-sog;
+    while(over>0){ const x=dressed.filter(d=>L[d.n].sog>L[d.n].goals).sort((a,b)=>(shown[b.n]||0)-(shown[a.n]||0)||L[b.n].sog-L[a.n].sog)[0]; if(!x)break; L[x.n].sog--; over-- } }
   const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
   // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
   // against; an empty-net goal is nobody's
