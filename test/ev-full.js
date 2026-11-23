@@ -28,7 +28,7 @@ const DIST=process.env.DIST||path.join(__dirname,'..','dist');
   await pg.waitForTimeout(800);
   // the box score: each shot the screen showed is its shooter's (the shots kept with the game, d.pn)
   const cr=await pg.evaluate(()=>{ const arr=Object.values(S.played||{}).pop()||[], P=arr[arr.length-1], drives=(P&&P.drives)||[], g=live.g, shown={}; let n=0;
-    drives.forEach(d=>(d.pn||[]).forEach(q=>{ const tm=q[0]===0?g.home:g.away, p=SEA.roster[tm][q[2]]; if(!p)return; n++; shown[tm+'|'+p.n]=(shown[tm+'|'+p.n]||0)+1 }));
+    drives.forEach(d=>(d.pn||[]).forEach(q=>{ if(q[1]!=="s")return; const tm=q[0]===0?g.home:g.away, p=SEA.roster[tm][q[2]]; if(!p)return; n++; shown[tm+'|'+p.n]=(shown[tm+'|'+p.n]||0)+1 }));
     let short=0, players=0; const ex=[], key=LEAGUE.id==="nhl"?"sog":"shots";
     Object.keys(shown).forEach(k=>{ const [tm,nm]=k.split('|'), p=SEA.roster[tm].find(x=>x&&x.n===nm); if(!p)return; players++;
       const gl=p.gl||[], w=glStride(), st={}; if(gl.length>=w){ const o=gl.length-w; (STAT_KEYS[POS[gl[o+5]].p]||[]).forEach((kk,i)=>st[kk]=gl[o+6+i]) }
