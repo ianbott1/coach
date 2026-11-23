@@ -28,7 +28,10 @@ function recordStory(played,g,step,meHome){
     const k=typeof callClarity==="function"?callClarity(c):Math.round(c.worth*100);
     if(Math.abs(k)<4||!Number.isFinite(c.worth))return;
     (S.film=S.film||[]).push({y:yr,wk:wk,opp:opp,ha:ha,mine:played.mine,theirs:played.theirs,h:c.h,pick:c.pick,def:c.def,dd:c.dd,
-      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null});   // the card's own measure (football's graded calls: against the best option)
+      w:Math.round(k),po:po,title:g.title||null,team:my,k:c.k||null,
+      // round 107: what the measure is against. A graded call that lost is measured against the best option, not the
+      // assistant's (Instinct: "going cost seven points relative to punting": seven was kicking's edge, punting was worse)
+      vs:c.q!==undefined&&c.q<-3&&c.qb?c.qb:undefined});   // the card's own measure (football's graded calls: against the best option)
   });
   // the season's "what if" (round 49): each call made your own way, with how the same night ends on your assistant's
   // call (the same dice). Kept per season, the three that diverged most; shown at the season's end.
@@ -145,7 +148,7 @@ function rivalLine(opp){
 function filmMemoryHTML(dp){
   if(!STORY_ON||!FILMPRE_ON||!S.film||!dp||!dp.h)return "";
   const F=S.film.filter(x=>x.h===dp.h&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
-  const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`, alt=filmDef(F.def)||"his call";
+  const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`, alt=F.vs||filmDef(F.def)||"his call";
   return `<div class="filmmem"><b>The Film Room remembers:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}), the same call. ${/assistant/i.test(F.pick)?"You left it to your assistant":"You went with "+esc(F.pick)}, and it was ${F.w>7?"clearly better than":F.w>0?"a little better than":F.w<-7?"clearly worse than":"a little worse than"} ${esc(alt)}. Tonight is its own game.</div>`;   // in words: no number on tonight's options (Ian)
 }
 /* the series so far, before a play-off game (round 48, Instinct: "the game-7 scouting screen is the emptiest screen in
@@ -167,7 +170,7 @@ function filmLine(opp){
   if(!STORY_ON||!FILMPRE_ON||!S.film)return "";
   const F=S.film.filter(x=>x.opp===opp&&(x.team===undefined||x.team===S.myTeam)).reverse().sort((a,b)=>b.y-a.y)[0]; if(!F)return "";
   const res=`${F.mine>F.theirs?"W":F.mine<F.theirs?"L":"D"} ${F.mine}&ndash;${F.theirs}`;
-  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${filmDef(F.def)?esc(filmDef(F.def)):"his call"}.</div>`;
+  return `<div class="series filmpre"><b>From the Film Room:</b> ${F.y}${F.wk?" &middot; "+esc(F.wk):""}, ${esc(F.ha)} ${esc(F.opp)} (${res}). ${esc(F.h)}: ${/assistant/i.test(F.pick)?"you left it to your assistant":"you went with "+esc(F.pick)}, about ${Math.abs(F.w)} ${F.w>0?"more":"fewer"} wins in 100 than ${F.vs?esc(F.vs):filmDef(F.def)?esc(filmDef(F.def)):"his call"}.</div>`;
 }
 /* the career's count of calls made your own way, and their worth (round 71: the Film Room's count fell across an offseason,
    143 to 129 and 130 to 85, Muse: it took the larger of two ledgers, and the season ledger keeps only two seasons). One
@@ -212,7 +215,7 @@ function filmRoomHTML(){
   const res=x=>`${x.mine>x.theirs?"W":x.mine<x.theirs?"L":"D"} ${x.mine}&ndash;${x.theirs}`;
   const row=x=>`<div class="film ${x.w>0?'up':'dn'}"><div class="filmh">${esc(x.h)}</div>
     <div class="filmm">${x.y}${x.wk?" &middot; "+esc(x.wk):""}${x.title?" &middot; "+esc(x.title):""} &middot; ${esc(x.ha)} ${esc(x.opp)} &middot; ${res(x)}</div>
-    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${assistantSaid({dd:x.dd,def:x.def})} The match graded it ${verdictWord(x.w)}: from that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100.</div></div>`;
+    <div class="filmb">${/assistant/i.test(x.pick)?"You left it to your assistant":`You: ${esc(x.pick)}`}.${assistantSaid({dd:x.dd,def:x.def})} The match graded it ${verdictWord(x.w)}: from that moment your call won about ${Math.abs(x.w)} ${x.w>0?"more":"fewer"} games in 100${x.vs?" than "+esc(x.vs)+", the best option":""}.</div></div>`;
   return `<div class="grouphead">The Film Room</div>${id}${best.length||worst.length?rule:""}`+
     (best.length?`<div class="filmlab">Your best calls</div>`+best.map(row).join(""):"")+
     (worst.length?`<div class="filmlab">The ones that got away</div>`:"")+(worst.length?worst.map(row).join(""):"")+

@@ -369,7 +369,7 @@ function finishLive(){ liveEndedAt=Date.now();
       if(v){ c.worth=Math.round((v.rk[c.pk]-v.rk[c.dk])*10)/1000;
         // the headline judges the call as the bullets do, against the best option (Grokbot: "A strong call" above
         // "As good as any", "A good call" beside a cross)
-        const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])) }
+        const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])); if(v.best)c.qb=v.best }   // round 107: the best option's name, for what a lost call is measured against
       else if(played.closes&&played.closes.some(x=>x.h===c.h)){ c.q=0; c.sp=0 } });
     if(I.length){ played.impact=I;
       const C=careerCalls(true);   // round 71: one career count, kept, only ever added to
