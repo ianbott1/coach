@@ -1,5 +1,5 @@
 {
- "fp": "c32b9c06b0ff322e",
+ "fp": "df7d7d3f21670508",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -390,6 +390,11 @@
    "fp": "c32b9c06b0ff322e",
    "from": "7c77f5bce853bd97",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had); on ENGINE_NOW=18 the old fingerprint matches"
+  },
+  {
+   "fp": "df7d7d3f21670508",
+   "from": "c32b9c06b0ff322e",
+   "note": "Round 106 (engine 20): a stalled drive's fourth and N follows the drive; the shared seat's go-for-it calls play out differently; on ENGINE_NOW=19 the old fingerprint matches"
   }
  ],
  "out": [
@@ -399,20 +404,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost in the wild card round",
-      "grade": "B+"
+      "rec": "12-5",
+      "result": "Lost the Super Bowl",
+      "grade": "A"
      },
-     "book": "d6c57c3c8a3cf0d5"
+     "book": "e8c3366b5d7871ad"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "7-10",
+      "rec": "6-11",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "9ba86ca02fbb20dd"
+     "book": "275a93090dec3e9a"
     }
    ]
   },
@@ -422,20 +427,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the wild card round",
+      "rec": "9-8",
+      "result": "Lost in the divisional round",
       "grade": "B"
      },
-     "book": "128d858af298c769"
+     "book": "0887fd5c5f86c6c8"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
+      "rec": "10-7",
       "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "4a674d8fb5b7912b"
+     "book": "d4a4b3a0ccca8df5"
     }
    ]
   },
@@ -445,20 +450,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
+      "rec": "9-8",
       "result": "Lost in the wild card round",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "f8aa11b142f24493"
+     "book": "bc5be706a0525344"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
+      "rec": "11-6",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "2651ff06e210afc9"
+     "book": "1b1280fc707d6a11"
     }
    ]
   }

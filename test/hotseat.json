@@ -1,5 +1,5 @@
 {
- "fp": "04c16439bc76e232",
+ "fp": "d7e3be30d44efdae",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -365,6 +365,11 @@
    "fp": "04c16439bc76e232",
    "from": "8477a178b7be386b",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had); on ENGINE_NOW=18 the old fingerprint matches"
+  },
+  {
+   "fp": "d7e3be30d44efdae",
+   "from": "04c16439bc76e232",
+   "note": "Round 106 (engine 20): a stalled drive's fourth and N follows the drive; the shared seat's go-for-it calls play out differently; on ENGINE_NOW=19 the old fingerprint matches"
   }
  ],
  "out": [
@@ -378,16 +383,16 @@
       "result": "Lost the Citrus Bowl",
       "grade": "C-"
      },
-     "book": "ca0d0678836727f7"
+     "book": "b017d9ba36df2c14"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Idaho Potato Bowl",
-      "grade": "A-"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "beb2a47992d3d2fc"
+     "book": "0f1122182a036e5c"
     }
    ]
   },
@@ -397,20 +402,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Citrus Bowl",
-      "grade": "C-"
+      "rec": "10-5",
+      "result": "Eliminated in the semifinals",
+      "grade": "B+"
      },
-     "book": "30b9597a70c4a6ea"
+     "book": "ae360d3e43c30e52"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Myrtle Beach Bowl",
-      "grade": "A-"
+      "rec": "7-6",
+      "result": "Lost the Fenway Bowl",
+      "grade": "A"
      },
-     "book": "2e17f47cf6bff5ca"
+     "book": "d6665af99fba7902"
     }
    ]
   },
@@ -420,20 +425,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-4",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "B"
+      "rec": "7-6",
+      "result": "Won the Pop-Tarts Bowl",
+      "grade": "C-"
      },
-     "book": "8f2ab4a06145c81a"
+     "book": "2b05327ba836cbde"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
-      "result": "No bowl game",
-      "grade": "C"
+      "rec": "9-4",
+      "result": "Won the Birmingham Bowl",
+      "grade": "A+"
      },
-     "book": "effd37524b8679b2"
+     "book": "eb94dbb569c62fc4"
     }
    ]
   }

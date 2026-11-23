@@ -5,7 +5,7 @@
    down the call asked about (the spot; the distance where the engine's numbers allow it), the drive after the answer
    is the lead-up's plays and then picks up where they ended (a made fourth down from that spot, the plays adding to
    where the drive ended); a two-point call's lead-up is the drive and its touchdown, and nothing of it is shown again;
-   the drive keeps the plays the screen showed for the box score.
+   the drive keeps the plays the screen showed for the box score; every call's fourth and N is one the drive reached (engine 20).
      node test/fb-leadup.js     last line: MATCH or MISMATCH */
 const path=require('path'); const {load}=require('./harness.js');
 let bad=0, checks=0; const ok=(c,m)=>{ checks++; if(!c){ bad++; if(bad<=10)console.log('  FAIL '+m) } };
@@ -45,5 +45,6 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
   }
   console.log(`  ${f.padEnd(26)} ${n.fourth} fourth-down lead-ups (${n.conv} made, ${n.distOff} where the engine's fourth and N can't be reached), ${n.two} two-point lead-ups`);
   ok(n.two>=10&&n.conv>=10,`${f}: too few calls to say (${n.two} two-point, ${n.conv} made fourth downs)`);
+  ok(n.distOff===0,`${f}: ${n.distOff} fourth-down calls whose distance the drive couldn't reach (engine 20 draws it from the drive)`);
 }
 console.log(bad?`MISMATCH ${bad} of ${checks}`:`MATCH ${checks} checks`);
