@@ -443,6 +443,18 @@ decides everything with the same dice; what the screen shows is built from the s
   The line score's H is the hits as played (it read the last finished inning's, so a run could read on 0 hits).
   test/bs-pitch.js, test/bs-watch.js (fails on 62a4ca3: H never rose mid-inning).
 - A watched match is longer: soccer about 1.7x, hockey about 2x, baseball about 1.8x the round 101 time at the same speed.
+Round 102: the field on the screen, and two fixes found by watching every sport's full match (ships with round 101).
+- Hockey's header clock piled up (round 101's running clock): the label kept everything after its first dot, and hockey's
+  clock has one ("1st · 4'"), so each update kept the old minutes ("1st · 6' · 6' · 5' ..."). Its clock now sits in its
+  own span (.wclk) and only that is rewritten. test/ev-full.js reads the label (fails on 1259cb1, passes now).
+- The field above the action bar: at 1280x800 the fixed bar hid 24% of baseball's field (home plate, the batter, the
+  catcher), 23% of soccer's pitch, 12% of basketball's court, 5% of hockey's rink. hlEnsure now draws a surface too tall
+  for the room above the bar narrower and centred, down to 40% of the column (a 650-pixel-tall window: about 380 pixels
+  wide). It resizes once when the win-chance bar arrives after the first stretch. test/fit.js: all seven, six screens
+  (1280x800, 1366x650, 1280x680, 1440x900, 1920x1080, a phone), looked at through the first stretches and the calls.
+- Soccer's six squad men (keeper, centre back, full back, midfield, wing, striker) named in the play between moments.
+- Seen, not fixed: baseball's line score counts R for the inning under way but H only for innings finished, so a run can
+  read on 0 hits mid-inning (the H column catches up at the inning's end).
 
 Round 101: Full match as a match to watch (Ian: "it should be super interesting to watch full matches and as realistic as
 possible - in football manager I would do this all the time"; then "add a play-by-play engine").
