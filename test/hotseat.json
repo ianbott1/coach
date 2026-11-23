@@ -1,5 +1,5 @@
 {
- "fp": "8477a178b7be386b",
+ "fp": "04c16439bc76e232",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -360,6 +360,11 @@
    "fp": "8477a178b7be386b",
    "from": "8477a178b7be386b",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "04c16439bc76e232",
+   "from": "8477a178b7be386b",
+   "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had); on ENGINE_NOW=18 the old fingerprint matches"
   }
  ],
  "out": [
@@ -373,7 +378,7 @@
       "result": "Lost the Citrus Bowl",
       "grade": "C-"
      },
-     "book": "22358f690d31ae84"
+     "book": "ca0d0678836727f7"
     },
     {
      "team": "Rice",
@@ -382,7 +387,7 @@
       "result": "Lost the Idaho Potato Bowl",
       "grade": "A-"
      },
-     "book": "fb6339b759f88c24"
+     "book": "beb2a47992d3d2fc"
     }
    ]
   },
@@ -396,7 +401,7 @@
       "result": "Lost the Citrus Bowl",
       "grade": "C-"
      },
-     "book": "135ae6f7d28e6f66"
+     "book": "30b9597a70c4a6ea"
     },
     {
      "team": "Rice",
@@ -405,7 +410,7 @@
       "result": "Lost the Myrtle Beach Bowl",
       "grade": "A-"
      },
-     "book": "8a12617b6c7cf8f6"
+     "book": "2e17f47cf6bff5ca"
     }
    ]
   },
@@ -419,7 +424,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "B"
      },
-     "book": "d8132cdcef68d511"
+     "book": "8f2ab4a06145c81a"
     },
     {
      "team": "Rice",
@@ -428,7 +433,7 @@
       "result": "No bowl game",
       "grade": "C"
      },
-     "book": "b716a1903edb925b"
+     "book": "effd37524b8679b2"
     }
    ]
   }

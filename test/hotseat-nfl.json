@@ -1,5 +1,5 @@
 {
- "fp": "7c77f5bce853bd97",
+ "fp": "c32b9c06b0ff322e",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -385,6 +385,11 @@
    "fp": "7c77f5bce853bd97",
    "from": "7c77f5bce853bd97",
    "note": "round 95: engine 18 (soccer's 80' read on their legs, hockey's late window at ten minutes); ENGINE_NOW=17 matches round 94's fast goldens in all seven; at 18 the other five differ by the universe's engine stamp only"
+  },
+  {
+   "fp": "c32b9c06b0ff322e",
+   "from": "7c77f5bce853bd97",
+   "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had); on ENGINE_NOW=18 the old fingerprint matches"
   }
  ],
  "out": [
@@ -398,7 +403,7 @@
       "result": "Lost in the wild card round",
       "grade": "B+"
      },
-     "book": "09f0e623132ed12f"
+     "book": "d6c57c3c8a3cf0d5"
     },
     {
      "team": "Tennessee",
@@ -407,7 +412,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "5f3332b9acc273fd"
+     "book": "9ba86ca02fbb20dd"
     }
    ]
   },
@@ -421,7 +426,7 @@
       "result": "Lost in the wild card round",
       "grade": "B"
      },
-     "book": "fa7f65d122d217de"
+     "book": "128d858af298c769"
     },
     {
      "team": "Tennessee",
@@ -430,7 +435,7 @@
       "result": "Lost in the wild card round",
       "grade": "A-"
      },
-     "book": "be8ae37f9544d637"
+     "book": "4a674d8fb5b7912b"
     }
    ]
   },
@@ -444,7 +449,7 @@
       "result": "Lost in the wild card round",
       "grade": "B"
      },
-     "book": "0176796ee54447c7"
+     "book": "f8aa11b142f24493"
     },
     {
      "team": "Tennessee",
@@ -453,7 +458,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "4cb82a9d62fcdde7"
+     "book": "2651ff06e210afc9"
     }
    ]
   }
