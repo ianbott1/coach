@@ -424,6 +424,13 @@ Round 106: football's fourth and N follows the drive (engine 20; Ian: its own ro
   the full match's lead-ups reach the call's distance every time (fb-leadup: 0 of ~1,000, was ~70). The computer's
   simulated games don't use the drive engine's fourth and N (playGame), so the league's calibration is untouched
   (calibrate.js identical before and after).
+- Also under engine 20 (same draws): inside their 28 a stalled drive that didn't try the kick tried it all the same (it
+  fell through to "punt or downs", undoing "you don't punt from there": 12,755 of 49,268 rolled punts came from their 28
+  or closer; now none, kicks made 88%); no turnover on downs in your own end (inside your 40), or on fourth and 4+ in
+  your own half, unless the endgame's own rule goes for it (166 at fourth and 10+ in your own half in 500 college games;
+  now none; turnovers on downs ~1.6 a game, NFL ~1.6). Points a game rise: college 49.9 -> 50.8, pro 43.2 -> 44.3 (NFL
+  44-46); margin 10.7 -> 10.6, home wins within noise (2,000 even games). Punts from inside your own 15: 0.3% (the
+  "about 5% of punts from inside their 15" in round 101's notes was the opponent's 15: this).
 - Goldens: football's games and stat lines move where a seeded career's calls went for it (on ENGINE_NOW=19 the old
   fingerprints match); the other games change only by the engine number in the universe.
 
