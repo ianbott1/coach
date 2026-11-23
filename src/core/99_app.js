@@ -826,6 +826,17 @@ function downloadBackup(){
     document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
     return true }catch(e){ return false }
 }
+/* round 107: a backup straight from a slot on the title screen (Muse, Nov 23: back on the title screen with a college
+   football career and no export in sight; the only one was under "?" inside the career) */
+async function downloadSlot(n){
+  try{ const r=await store.get(KEYFOR(n)); if(!r||!r.value)return false;
+    const d=unsaveDup(JSON.parse(lzwUnpack(r.value))); if(!d||!d.myTeam)return false; d.league=saveLeague(d);
+    const text=lzwPack(saveText(d)), blob=new Blob([text],{type:"text/plain"});
+    const a=document.createElement("a"), yr=(d.seasonNow&&d.seasonNow.year)||(d.uStart&&d.uStart.year)||"";
+    a.href=URL.createObjectURL(blob); a.download=`${LEAGUE.id}-${String(d.myTeam).replace(/[^A-Za-z0-9]+/g,"-")}-${yr}.coach`;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
+    return true }catch(e){ return false }
+}
 /* a backup file's text to a career, or null if it isn't one of this game's */
 function readBackup(text){
   try{ const d=unsaveDup(JSON.parse(lzwUnpack(String(text).trim())));
@@ -4006,7 +4017,7 @@ function renderTitle(){
              ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}`}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            </button>${replaceAsk
              ?`<button class="slotdel repl" data-repl="${s.n}" aria-label="Replace the career in slot ${s.n} with a new one">Replace</button>`
-             :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}</div>`).join("")}</div>
+             :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}<button class="slotdel slotbk" data-bk="${s.n}" aria-label="Download a backup of the career in slot ${s.n}">Back up</button></div>`).join("")}</div>
     ${(()=>{ if(!slots.length||slots.some(x=>x.empty||x.broken))return "";
       // every slot full: a way into a new career (Muse: no entry point at all, short of erasing first)
       return replaceAsk
@@ -4023,6 +4034,8 @@ function renderTitle(){
     tapTwice(b,"Tap again to erase",async()=>{
       try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){} await bumpRev(+b.dataset.del);
       S._slots=await allSlots(); render() }) });
+  document.querySelectorAll("[data-bk]").forEach(b=>b.onclick=async(ev)=>{ ev.stopPropagation();
+    const ok=await downloadSlot(+b.dataset.bk); b.textContent=ok?"Saved":"Couldn't"; setTimeout(()=>{ b.textContent="Back up" },2000) });
   const tn=el("tnew"); if(tn)tn.onclick=()=>{ replaceAsk=true; render() };
   const tx=el("tnewx"); if(tx)tx.onclick=()=>{ replaceAsk=false; render() };
   document.querySelectorAll("[data-repl]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const n=+b.dataset.repl;
