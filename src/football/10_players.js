@@ -189,6 +189,19 @@ function teamLines(rng,c){
     [2,3].forEach(i=>{ if(has(i)){ L[i].rec=Math.max(sc(L[i].rec)+(rec[i]||0),L[i].ctd); L[i].cyd=sc(L[i].cyd)+(cyd[i]||0) } });
     if(has(0)){ const Q=L[0]; Q.cmp=sc(Q.cmp)+T.cmp; Q.pyd=sc(Q.pyd)+T.pyd; Q.att=sc(Q.att)+T.att;
       const got=[2,3].reduce((t,i)=>t+(has(i)?L[i].rec:0),0)+bkRec; if(got>Q.cmp)Q.cmp=got; Q.att=Math.max(Q.att,Q.cmp) } }
+  /* round 107 (engine 21): a man's touchdowns are inside his own yards. The catches and yards were a split of the
+     passer's, drawn apart from the touchdowns the scoring names, so a receiver's four touchdown catches came to 203 yards
+     against a line of 169 (Muse, Nov 23). Each receiver gets at least his touchdown yards and 2 a catch for the rest,
+     taken first from the catches the roster doesn't carry, then added to the passer; the back the same for his runs.
+     No draws: the season plays as it did. */
+  if(ENGINE_V>=21){ const tdY={};
+    c.drives.forEach((d,k)=>{ const w=rows[k]&&rows[k].who; if(!w||d.home!==home||w.y==null)return;
+      const si=has(w.i)?w.i:(()=>{ const p=c.R[w.i], x=p&&c.act.find(a=>a.pl===p); return x?x.i:-1 })();
+      if(si>=0&&((w.k==="pass"&&(si===2||si===3))||(w.k==="run"&&si===1)))tdY[si]=(tdY[si]||0)+w.y });
+    if(has(1)&&tdY[1]&&L[1].ryd<tdY[1]){ L[1].ryd=tdY[1]; L[1].car=Math.max(L[1].car||0,L[1].rtd||0) }
+    const rc=[2,3].filter(has);
+    rc.forEach(i=>{ const need=(tdY[i]||0)+2*Math.max(0,(L[i].rec||0)-(L[i].ctd||0)); if(L[i].cyd<need)L[i].cyd=need });
+    if(has(0)){ const Q=L[0], got=rc.reduce((t,i)=>t+L[i].cyd,0)+bkYd; if(got>Q.pyd)Q.pyd=got } }
   return c.act.map(x=>({pl:x.pl,pos:x.P,line:L[x.i]})).concat(Object.values(X));
 }
 function addStats(dst,src){
