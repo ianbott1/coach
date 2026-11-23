@@ -40,6 +40,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 @media (max-width:420px){.tab{padding:11px 6px;letter-spacing:.02em;font-size:13px}}
 .tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
  outline-offset:2px}
+.scstats{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.scstats .sct{display:inline-flex;align-items:baseline;gap:6px}.scstats .sct b{color:#E9ECF2;font-weight:600;min-width:1.4em;text-align:center}.scstats .sct i{font-style:normal;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
  background:linear-gradient(180deg,transparent,var(--ink) 14px)}
 .actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */
@@ -1018,7 +1020,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="e11a3cb";
+<script>const BUILD_ID="02c5ed2";
 /* ============ league: pro hockey ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 84-game schedule (2026-27),
@@ -1262,9 +1264,12 @@ function teamLines(rng,c){
     if(N.a&&L[N.a])L[N.a].ast++ });
   const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
   const sog=ev.filter(e=>e.side===c.side&&!e.en&&!e.extra).length+sv(o);
-  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited);
+  // round 101: a shot the full match showed is its shooter's (d.pn, roster slots); the rest shared as before
+  const sd=c.side==="home"?0:1, shown={}; let nShown=0;
+  c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]!==sd||q[1]!=="s")return; const p=c.R[q[2]]; if(p&&L[p.n]){ shown[p.n]=(shown[p.n]||0)+1; nShown++ } }));
+  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited-nShown);
   const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
-  dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]; l.pts=l.goals+l.ast });
+  dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]+(shown[d.n]||0); l.pts=l.goals+l.ast });
   const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
   // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
   // against; an empty-net goal is nobody's
@@ -1608,7 +1613,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||18);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||20);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -1617,6 +1622,8 @@ let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&p
                                       // 9: round 85, the computer's clubs trade with each other on deadline day (core 98_trades_cpu)
                                       // 10-12: rounds 87-89, the attributes play (baseball, basketball, hockey and soccer)
                                       // 13: round 90, hockey's goals and assists credited with less lean and more rating (HK13)
+                                      // 19: round 101, football: a touchdown's yards never longer than the field the drive had
+                                      // 20: round 106, football: a stalled drive's fourth and N follows how far it got (10 - gain from a fresh first down at least; the goal line when goal to go)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));
@@ -3198,12 +3205,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const sv=[];   // round 70: every shot stopped, for the highlights (Ian: "more saves"); placed by count, no draws
     const shoot=(side,n,p,pp,xk)=>{ const G=st.S[other(side)]; let g=0;
       for(let i=0;i<n;i++){ G.sa++; G.xga+=(pp?HK.ppSh:HK.sh)*(xk||1);
-        if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:t0+5*(i+0.5)/n,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
+        // engine 20 (round 106): a power play's shots inside its two minutes (they were spread over the five, so the full
+        // match drew a side short for up to five); no draw
+        const pm=pp&&ENGINE_V>=20&&st.penAt?st.penAt[other(side)]:null, at=pm!=null?Math.min(t0+4.99,pm+2*(i+0.5)/n):t0+5*(i+0.5)/n;
+        if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:at,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
         { g++; G.ga++;
           // was it soft? A goalie on a bad night lets in more that he should stop
           const bad=G.form>HK.offBy/2, soft=rng.r()<(bad?HK.softBad:HK.softOk);
           if(soft){G.soft++; G.lastSoft=true} else G.lastSoft=false;
-          ev.push({m:minute(),side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)}) } }
+          const gm=minute(); ev.push({m:pm!=null?Math.min(t0+4.99,pm+(gm-t0)/5*2):gm,side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)}) } }
       return g };
     const sH=shotsIn(rng,lamH), sA=shotsIn(rng,lamA);
     let gH=shoot("home",sH,pH,false,kH), gA=shoot("away",sA,pA,false,kA);
@@ -3697,9 +3707,28 @@ const HL_SPORT=(function(){
   const UNIT={C:3,LW:4,RW:5,D:1,D2:2}, GOAL=0.91, net=[0.47,0.53];
   const unitOf=u=>{ const x=u%100; return x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2" };
   const HL_CM=(typeof window!=="undefined"&&window.HLCM)||1;
+  /* round 104: one rule for when a side is short a man, for the clips and the play between them. The engine places a
+     power play's shots evenly through the stretch and the penalty at its own minute, so the window runs from whichever
+     comes first, the call or the first power-play shot, for two minutes or to the last power-play shot. The man called
+     sits it out (the commentary's man, hkSkater): he takes the sixth's place, which stays empty. */
+  function hkPPWin(x,e){ const pk=e.side, pp=pk==="home"?"away":"home", ms=[];
+    (x.sv||[]).forEach(q=>{ if(q.pp&&q.side===pk)ms.push(q.m) }); (x.ev||[]).forEach(q=>{ if(q.k==="goal"&&q.pp&&q.side===pp)ms.push(q.m) });
+    const s=Math.min(e.m,...(ms.length?ms:[e.m])), z=Math.max(s+2,...(ms.length?ms.map(m=>m+1):[s+2])); return [s,z] }
+  function hkShort(L,side,m){ for(const x of (L.drives||[]))for(const e of (x.ev||[])){ if(e.k!=="pen"||e.side!==side)continue; const w=hkPPWin(x,e); if(m>=w[0]&&m<w[1])return e } return null }
+  function hkOffender(team,e){ const n=hkSkater(team,e.u||0), R=(SEA.roster&&SEA.roster[team])||[]; return R.findIndex(p=>p&&p.n===n) }
   function clips(L,d,mode){
     // round 70: the shots stopped (d.sv, every one the engine played) give the saves; the commentary's big saves first.
     // Key moments: about one save for each goal over a game (Ian: "too high a share of goals")
+    if(mode==="pb"){ // round 101: the full match: every goal and every shot stopped (d.sv is every one the engine played)
+      const logged=(d.ev||[]).filter(e=>e.k==="save"), svAll=(d.sv||[]).filter(e=>!logged.some(x=>Math.abs(x.m-e.m)<1&&x.side===e.side));
+      const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").concat(svAll.map(e=>Object.assign({},e,{k:"save"}))).sort((a,b)=>a.m-b.m);
+      let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
+      const out=[]; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
+      if(d.so)return clips(L,d,"all");
+      ev.forEach(e=>{ if(e.k==="goal"){ const c=mk(L,e,"goal",rows,d); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
+        const c=mk(L,e,"save",rows,d); c.base=2200; out.push(c) });
+      out.forEach(c=>Object.defineProperty(c,"pbFrom",{value:L,writable:true,configurable:true,enumerable:false}));   // round 104: grows out of the touch-by-touch play
+      return out }
     const all=mode==="all"||mode==="full", logged=(d.ev||[]).filter(e=>e.k==="save");
     const svPick=(d.sv||[]).filter(e=>all?e.u%3===0:e.u%5===0||(e.pp&&e.u%2===0)).filter(e=>!logged.some(x=>Math.abs(x.m-e.m)<1&&x.side===e.side));
     const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").concat(svPick.map(e=>Object.assign({},e,{k:"save"}))).sort((a,b)=>a.m-b.m);
@@ -3734,9 +3763,11 @@ const HL_SPORT=(function(){
     else if(plan==="point")W=[[0.74,s?0.85:0.15],[0.65,s?0.68:0.32],[0.84,0.5]];
     else if(plan==="pp")W=[[0.65,0.5],[0.78,s?0.82:0.18],[0.82,s?0.7:0.3]];
     else W=[[0.35,0.5],[0.55,0.5+(r()-0.5)*0.3]];   // empty net: from anywhere
-    const sIdx=UNIT[unit]||3;
+    // round 104: a side short a man (a penalty in the last two minutes) has no sixth skater on the ice
+    const penA=e.so?null:hkShort(L,attSide,e.m||0), shortA=!!penA, penD=e.so?null:hkShort(L,attSide==="home"?"away":"home",e.m||0);
+    let sIdx=UNIT[unit]||3; const sWas=sIdx; if(shortA&&sIdx===5)sIdx=4;
     const rec=W.map((w,i)=>{ if(i===W.length-1||plan==="so")return sIdx;   // a shoot-out: one man carries it all the way
- let b=3,bd=9; for(let k=1;k<6;k++){ if(k===sIdx)continue; const p=ATT[k], dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=k} } return b });
+ let b=3,bd=9; for(let k=1;k<6;k++){ if(k===sIdx||shortA&&k===5)continue; const p=ATT[k], dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=k} } return b });
     const end=kind==="goal"?[GOAL+0.012,net[0]+r()*(net[1]-net[0])]:[GOAL-0.012,0.5+(r()-0.5)*0.05];
     const inks=hlKits(g.home,g.away).map(k=>k.fill); const gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks);
     const nm=shooter?String(shooter).split(" ").slice(-1)[0]:"";
@@ -3757,18 +3788,24 @@ const HL_SPORT=(function(){
     const slots=sd=>{ const team=sd==="home"?g.home:g.away, H=hurtOf(team); return [(gIn(sd)||H.has(5))&&typeof BK==="function"?BK(5):5,3,4,0,1,2] };
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home;
     const SL=[slots(attSide)[0],at(3,dL),at(4,dL),at(0,fL),at(1,fL),at(2,fL)];
+    if(sWas!==sIdx){ [SL[4],SL[5]]=[SL[5],SL[4]] }   // the shooter's dot is his: short a man, the right wing shoots from the left wing's place
+    if(penA){ const o=hkOffender(tm,penA), j=SL.indexOf(o); if(j>0&&j!==5&&j!==sIdx){ [SL[j],SL[5]]=[SL[5],SL[j]] } }   // the man in the box isn't out there
     // the assist from the other line: he's out there too (a shift on the change), at his own place if the scorer isn't
     // in it, else beside him
-    if(GN&&ai>=0&&!GN.depth&&SL.indexOf(ai)<0&&posOf(ai)<5){ const own=[3,4,5,1,2][posOf(ai)], grp=posOf(ai)<3?[3,4,5]:[1,2], shot=UNIT[unit]||3;
+    if(GN&&ai>=0&&!GN.depth&&SL.indexOf(ai)<0&&posOf(ai)<5){ const own=[3,4,5,1,2][posOf(ai)], grp=posOf(ai)<3?[3,4,5]:[1,2], shot=sIdx;
       const k=own!==shot?own:grp.find(x=>x!==shot); if(k!=null)SL[k]=ai }
     const Ro=(SEA.roster&&SEA.roster[opp])||[], HO=hurtOf(opp), atO=(i,l)=>pickAt(Ro,HO,i,l), oF=shift(opp,"f",13), oD=shift(opp,"d",19);
-    const an=hlNamed(tm,SL), dn=hlNamed(opp,[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)]), kits=hlKits(g.home,g.away);
+    const DL=[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)];
+    if(penD){ const o=hkOffender(opp,penD), j=DL.indexOf(o); if(j>0&&j!==5){ [DL[j],DL[5]]=[DL[5],DL[j]] } }
+    const an=hlNamed(tm,SL), dn=hlNamed(opp,DL), kits=hlKits(g.home,g.away);
     if(GN&&GN.depth){ an[3]=an[4]=an[5]=null }   // the fourth line: the roster doesn't carry them
     // the assist is the pass before the shot, when he's out there
-    if(GN&&ai>=0&&rec.length>=2&&plan!=="so"){ const aSlot=[3,4,5,1,2][posOf(ai)]; if(aSlot!=null&&aSlot!==sIdx)rec[rec.length-2]=aSlot }
+    if(GN&&ai>=0&&rec.length>=2&&plan!=="so"){ let aSlot=SL.indexOf(ai)>0?SL.indexOf(ai):[3,4,5,1,2][posOf(ai)];   // round 104: where he is (the slots can swap)
+      if(shortA&&aSlot===5){ const o=sIdx===4?3:4; [an[o],an[5]]=[an[5],an[o]]; [SL[o],SL[5]]=[SL[5],SL[o]]; aSlot=o }   // short a man: the assist from the man who's out there
+      if(aSlot!=null&&aSlot!==sIdx)rec[rec.length-2]=aSlot }
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
     const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>{ const N=hkGoalNames(x.side==="home"?g.home:g.away,x); return N.depth?null:N.n }):0;
-    return {gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
+    return {shortA,shortD:!!penD||!!e.pp,who:shooter,gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
   const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
@@ -3869,7 +3906,182 @@ const HL_SPORT=(function(){
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a, m=Math.min(60,live.drives.length*5);
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||(m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'"});   // round 100: the header's clock when it holds one (it read 6', the rink 10')
   }
-  function idle(x,W,H){ if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
+  function idle(x,W,H){ if(typeof live!=="undefined"&&live&&live.pb&&live.pb.d&&!live.done&&typeof hlEvDraw==="function"){ hlEvDraw(x,W,H); return }
+    if(typeof hlAmbOn==="function"?hlAmbOn():typeof hlMode==="function"&&hlMode()==="full")ambient(x,W,H) }   // round 67: nothing until something happens, unless you asked for the full match
+  /* ---- round 104: the full match, touch by touch (soccer's since round 103). Between the shots, each side's own numbers
+     for the stretch are played (d.T, the tells, less the stretch before: the giveaways it forced in their zone, the zone
+     entries it killed, the shifts it cycled below their goal line, so the read's numbers are what you saw); each penalty
+     at its minute, the side short a man on the ice for its two minutes; whistles (icing, offside, a goalie freezing it)
+     and faceoffs after them; hits at the league's rate. Each move is passed between the men on the ice, the lines
+     changing every shift by the club's deployment (the first unit its share), every man named. Each move picks up where
+     the last ended and the one before a shot ends where the shot's own move begins, on the shot's first man in his own
+     number. Drawn from the stretch and how far through it the clock is (d, f): the same frame however it's reached.
+     No game dice. */
+  const HP_RATE={icing:0.35,off:0.3,hit:1.8,freeze:0.4};   // a side's icings, offsides and hits in five minutes (NHL: about 4, 3.5, 22 a game); share of saves the goalie freezes
+  const HP_POS=["the goalie","the defenceman","the defenceman","the centre","the left wing","the right wing"];
+  // the six on the ice for a side and a shift (roster places, by slot: G, D, D, C, LW, RW), as the clips pick them
+  function hpSix(L,d,sd,fL,dL,off){ const g=L.g, team=sd==="home"?g.home:g.away, R=(SEA.roster&&SEA.roster[team])||[], nP=POS.length, bk=i=>typeof BK==="function"?BK(i):i+nP;
+    const H=new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]?SEA.talent.active(team).map(x=>x.idx):[]);
+    const pick=(i,l)=>{ const j=l?bk(i):i, o=l?i:bk(i); return R[j]&&!H.has(j)?j:R[o]&&!H.has(o)?o:R[j]?j:i };
+    const gIn=!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd]));
+    const gk=(gIn||H.has(5))&&typeof BK==="function"?BK(5):5, idx=[gk,pick(3,dL),pick(4,dL),pick(0,fL),pick(1,fL),pick(2,fL)];
+    if(off!=null&&off>=0){ const j=idx.indexOf(off); if(j>0&&j!==5)[idx[j],idx[5]]=[idx[5],idx[j]] }   // the man in the box takes the empty sixth place
+    return {idx,an:hlNamed(team,idx)} }
+  const hpWho=(S,s)=>S&&S.an&&S.an[s]?S.an[s][1]:HP_POS[s];
+  // where the six stand for a puck at (a,y) in the frame of the side with it (0 its own end), the other side between it and its net
+  function hpShape(a,y,short){ const lane=v=>0.5+(v-0.5)*0.92;
+    let A=[[0.08,0.5+(y-0.5)*0.1],[Math.max(0.06,a-0.2),lane(0.32)],[Math.max(0.06,a-0.18),lane(0.68)],[Math.min(0.9,a+0.03),0.5+(y-0.5)*0.45],[Math.min(0.92,a+0.07),lane(0.18+(y-0.5)*0.25)],[Math.min(0.92,a+0.07),lane(0.82+(y-0.5)*0.25)]];
+    if(a>0.66){ A[1]=[0.67,lane(0.3)]; A[2]=[0.67,lane(0.7)]; A[3]=[0.8,0.5+(y-0.5)*0.35]; A[4]=[0.86,lane(0.22+(y-0.5)*0.4)]; A[5]=[0.86,lane(0.78+(y-0.5)*0.4)] }
+    const d=Math.min(1,Math.max(0,(a-0.3)/0.5)), back=hlLerp(0.55,0.9,d);
+    let D=[[0.92,0.5+(y-0.5)*0.12],[Math.min(0.97,back+0.03),0.5+(y-0.5)*0.35-0.1],[Math.min(0.97,back+0.03),0.5+(y-0.5)*0.35+0.1],[Math.min(0.95,a+0.06),hlLerp(0.5,y,0.6)],[Math.min(0.93,back-0.08),0.24+(y-0.5)*0.2],[Math.min(0.93,back-0.08),0.76+(y-0.5)*0.2]];
+    return {A,D} }   // both in the attacking side's frame
+  const hpNear=(P,a,y,skip,short)=>{ let b=3,bd=9; for(let k=1;k<6;k++){ if(k===skip||short&&k===5)continue; const dd=Math.hypot(P[k][0]-a,P[k][1]-y); if(dd<bd){bd=dd;b=k} } return b };
+  function hpAfter(m){ const s=m.side, o=1-s, c=m.c;
+    if(m.end==="clip")return c.kind==="goal"?{side:null,kind:"faceoff",zone:"centre"}:((c.e.u||0)%100)<HP_RATE.freeze*100?{side:null,kind:"faceoff",zone:"d",def:o}:{side:o,kind:"won"};
+    if(m.end==="icing")return {side:null,kind:"faceoff",zone:"d",def:s}; if(m.end==="off")return {side:null,kind:"faceoff",zone:"n"};
+    if(m.end==="pen")return {side:null,kind:"faceoff",zone:"d",def:m.pen};   // the side short a man defends the draw
+    return {side:o,kind:"won"} }
+  function hpPlan(L,d){
+    const nD=(L.drives||[]).length; if(d._hp&&d._hp.L===L&&d._hp.n===nD)return d._hp;
+    const g=L.g, EP=typeof hlEvPlan==="function"?hlEvPlan(L,d):{clips:[]}, di=(L.drives||[]).indexOf(d), pv=di>0?L.drives[di-1]:null, t0=d.seg*5;
+    const r=mulberry32(strHash("hp|"+g.home+"|"+g.away+"|"+d.seg+"|"+d.sh+"|"+d.sa)), ri=n=>Math.floor(r()*n), cl=v=>Math.max(0.02,Math.min(0.98,v));
+    const pois=lam=>{ const Lx=Math.exp(-lam); let k=0,p=1; do{ k++; p*=r() }while(p>Lx&&k<9); return k-1 };
+    const dl=(sd,k)=>{ const a=d.T&&d.T[sd], b=pv&&pv.T&&pv.T[sd]; return a?Math.max(0,Math.round((a[k]||0)-(b?b[k]||0:0))):pois(0.7) };
+    const N={}; ["home","away"].forEach(sd=>{ N[sd]={to:dl(sd,"to"),fe:dl(sd,"fe"),cy:dl(sd,"cy"),icing:pois(HP_RATE.icing),off:pois(HP_RATE.off),hit:pois(HP_RATE.hit)} });
+    // the penalties: this stretch's at their minutes; a side is short for two minutes (one from the stretch before can run on)
+    const pens=(d.ev||[]).filter(e=>e.k==="pen").map(e=>{ const w=hkPPWin(d,e); return {side:e.side==="home"?0:1,f:Math.max(0.02,(w[0]-t0-0.5)/5-0.012),e:e} });   // called just before the window opens
+    const minAt=f=>Math.floor(t0+f*5+0.5), penAt=(s,f)=>hkShort(L,s?"away":"home",minAt(f)), shortAt=(s,f)=>!!penAt(s,f);
+    const pullAt=s=>{ const e=(d.ev||[]).find(q=>q.k==="pull"&&q.side===(s?"away":"home")); return e?Math.max(0,(e.m-t0)/5):2 };   // the goalie comes out for an extra man
+    // the shifts: a line change every 45 seconds of play, the first unit its deployment share (the clips' rule)
+    const shiftLines=(sd,k)=>{ const team=sd==="home"?g.home:g.away, dep=typeof deployOf==="function"?deployOf(SEA,team):{}, b=grp=>{ const q=dep[grp]||"bal"; return typeof DEPLOY!=="undefined"&&DEPLOY[grp]&&DEPLOY[grp].opts[q]?DEPLOY[grp].opts[q].b:0.3 };
+      const h=strHash(team+"|"+d.seg+"|"+k); return {fL:((h%100)+0.5)/100<(1-b("f"))?0:1, dL:(((h>>>8)%100)+0.5)/100<(1-b("d"))?0:1} };
+    const sixAt=(s,f)=>{ const sd=s?"away":"home", k=Math.floor(f*5*60/45), q=shiftLines(sd,k), pe=penAt(s,f); return hpSix(L,d,sd,q.fL,q.dL,pe?hkOffender(sd==="home"?g.home:g.away,pe):null) };
+    // the anchors: each shot's move at its clip's minute (on the clip's own men), each penalty at its minute
+    const anchors=[]; EP.clips.forEach(c=>{ const s=c.home?0:1, w0=c.W[0]; anchors.push({f:c.f,side:s,end:"clip",c:c,ea:w0[0],ey:w0[1],slot:c.rec[0]}) });
+    pens.forEach(p=>{ let text=""; try{ text=hkEventText(g,p.e).text }catch(er){} anchors.push({f:Math.max(0.02,Math.min(0.97,p.f)),side:1-p.side,end:"pen",pen:p.side,e:p.e,text:text}) });
+    anchors.sort((a,b)=>a.f-b.f);
+    const fl=[]; [0,1].forEach(s=>{ const n=N[s?"away":"home"], o=N[s?"home":"away"];
+      for(let k=0;k<o.to;k++)fl.push({side:s,end:"forced"});   // they forced a giveaway in our zone
+      for(let k=0;k<o.fe;k++)fl.push({side:s,end:"killed"});   // they killed our entry
+      for(let k=0;k<n.icing;k++)fl.push({side:s,end:"icing"});
+      for(let k=0;k<n.off;k++)fl.push({side:s,end:"off"});
+      const mine=fl.filter(m=>m.side===s), cyc=mine.filter(m=>m.end==="lost"||m.end==="off");
+      let c=n.cy; for(let k=0;k<c;k++){ fl.push({side:s,end:r()<0.6?"lost":"icing",cy:1}) }
+      const tgt=2; for(let k=fl.filter(m=>m.side===s).length+anchors.filter(a=>a.side===s).length;k<tgt;k++)fl.push({side:s,end:"lost"}) });
+    // the hits: on a move of the side hit (it keeps the puck or loses it; a hit that loses it is the giveaway already counted)
+    const hits=[[],[]]; [0,1].forEach(s=>{ for(let k=0;k<N[s?"away":"home"].hit;k++)hits[s].push(1) });
+    for(let i=fl.length-1;i>0;i--){ const j=ri(i+1); [fl[i],fl[j]]=[fl[j],fl[i]] }
+    const gaps=[]; let f0=0; anchors.forEach(a=>{ gaps.push({f0:f0,f1:a.f,a:a,m:[]}); f0=a.f }); gaps.push({f0:f0,f1:1,a:null,m:[]});
+    const room=gaps.map(q=>Math.max(0.0001,q.f1-q.f0)), tot=room.reduce((s,x)=>s+x,0);
+    fl.forEach(m=>{ let x=r()*tot, j=0; while(j<gaps.length-1&&x>room[j]){ x-=room[j]; j++ } gaps[j].m.push(m) });
+    for(let j=0;j<gaps.length;j++){ const q=gaps[j], cap=Math.max(0,Math.floor(room[j]/0.03)-(q.a?1:0));
+      while(q.m.length>cap){ const m=q.m.pop(); let k=-1; for(let z=1;z<gaps.length&&k<0;z++){ for(const jj of [j+z,j-z]){ if(jj>=0&&jj<gaps.length&&gaps[jj].m.length<Math.max(0,Math.floor(room[jj]/0.03)-(gaps[jj].a?1:0))){ k=jj; break } } } if(k<0){ q.m.push(m); break } gaps[k].m.push(m) } }
+    // the start: a faceoff at centre to open each period, else where the stretch before left it
+    let ball=d.seg%4===0?{side:null,kind:"faceoff",zone:"centre",x:0.5,y:0.5}:null;
+    if(!ball){ let q=null; try{ q=pv&&pv.seg===d.seg-1?hpPlan(L,pv).last:null }catch(e){} ball=q?Object.assign({},q):{side:r()<0.5?0:1,kind:"won",x:0.5,y:0.5} }
+    // a faceoff's winner from the stretch's hash
+    const settle=b=>{ if(b.side==null){ b.side=r()<0.5?0:1; b.fo=1 } return b };
+    const seqs=gaps.map(q=>({q,seq:[]}));
+    let side=null; { const b=Object.assign({},ball); settle(b); ball=b; side=b.side }
+    seqs.forEach(G=>{ const pool=G.q.m.slice();
+      const after=m=>{ const a=hpAfter(m); return a.side==null?(r()<0.5?0:1):a.side };
+      while(pool.length){ let j=pool.findIndex(m=>m.side===side); if(j<0){ j=0; G.seq.push({side:side,end:"lost"}); side=1-side } const m=pool.splice(j,1)[0]; G.seq.push(m); m.next=after(m); side=m.next }
+      if(G.q.a){ if(G.q.a.side!==side){ if(G.q.f1-G.q.f0<0.03*(G.seq.length+2))G.q.a.steal=1; else G.seq.push({side:side,end:"lost",next:1-side}); side=1-side } G.seq.push(G.q.a); G.q.a.next=after(G.q.a); side=G.q.a.next }   // no room for a move of theirs: a takeaway on the spot
+      G.seq.forEach(m=>{ if(m.next==null)m.next=1-m.side; m.nT=m.end==="clip"?2+ri(2):2+(r()<0.4?1:0)+(m.cy?2:0) }) });
+    const moves=[];
+    const toRink=(s,a,y)=>s===0?[1-a,1-y]:[a,y];   // the home side attacks left
+    const fromRink=(s,x,y)=>s===0?[1-x,1-y]:[x,y];
+    const push=(m,fA,fB)=>{ const s=m.side, short=shortAt(s,fA); if(ball.side!==s){ ball.side=s; ball.by=null; if(!ball.fo)ball.kind="won" } const [sa,sy]=fromRink(s,ball.x,ball.y);
+      let sp; if(m.end==="clip")sp=[m.ea,m.ey];
+      else if(m.end==="forced")sp=[0.12+r()*0.16,r()<0.5?0.12:0.88];   // lost behind or along our own boards
+      else if(m.end==="killed")sp=[0.6+r()*0.06,0.25+r()*0.5];          // stood up at their blue line
+      else if(m.end==="icing")sp=[0.3+r()*0.1,0.3+r()*0.4];
+      else if(m.end==="off")sp=[0.67,0.3+r()*0.4];
+      else if(m.end==="pen")sp=[0.3+r()*0.5,0.2+r()*0.6];
+      else sp=m.cy?[0.9,r()<0.5?0.15:0.85]:[0.35+r()*0.45,0.15+r()*0.7];
+      const pts=[{x:sa,y:sy,k:ball.fo?"faceoff":ball.kind==="won"?"won":"carry"}];
+      const mid=m.nT-1; let cur=[sa,sy];
+      if(m.cy){ const sd=sp[1]<0.5?0.12:0.88; pts.push({x:0.94,y:sd,k:"cycle"}); pts.push({x:0.95,y:sd<0.5?0.3:0.7,k:"cycle"}); cur=[0.95,sd<0.5?0.3:0.7] }
+      for(let k=pts.length;k<mid;k++){ const t=(k-pts.length+1)/(mid-pts.length+1); pts.push({x:cl(hlLerp(cur[0],sp[0],t)+(r()-0.5)*0.06),y:cl(hlLerp(cur[1],sp[1],t)+(r()-0.5)*0.3),k:"pass"}) }
+      if(m.end==="icing"){ pts.push({x:sp[0],y:sp[1],k:"ice"}); sp=[0.97,0.5+(r()-0.5)*0.6] }
+      pts.push({x:sp[0],y:sp[1],k:"end"});
+      const T=pts.map((p,k)=>{ const [x,y]=toRink(s,p.x,p.y); return {x,y,a:p.x,ay:p.y,f:hlLerp(fA,fB,k/(pts.length-1)),k:p.k} });
+      const six=m.end==="clip"?{an:m.c.an,clip:1}:sixAt(s,fA), oSix=m.end==="clip"?{an:m.c.dn,clip:1}:sixAt(1-s,fA);
+      T.forEach((t,k)=>{ if(k===0&&ball.by!=null&&!(ball.by===5&&shortAt(s,t.f))){ t.s=ball.by; return } const S=hpShape(t.a,t.ay).A; t.s=k===T.length-1&&m.slot!=null?m.slot:hpNear(S,t.a,t.ay,k>0?T[k-1].s:-1,shortAt(s,t.f)) });
+      const e=T[T.length-1]; if(m.end==="forced"||m.end==="killed"||m.end==="lost"||m.end==="pen"){ const S=hpShape(e.a,e.ay).D; m.by=hpNear(S,e.a,e.ay,-1,shortAt(1-s,e.f)) }
+      if(m.end==="pen"){ const o=hkOffender(m.pen?g.away:g.home,m.e), j=oSix.idx?oSix.idx.indexOf(o):-1; if(j>0)m.by=j }
+      // a hit on our man along the way
+      if(hits[s].length&&T.length>2&&m.end!=="clip"){ hits[s].pop(); const k=1+ri(T.length-2), S=hpShape(T[k].a,T[k].ay).D; T[k].hit=hpNear(S,T[k].a,T[k].ay,-1,shortAt(1-s,T[k].f)) }
+      moves.push({side:s,end:m.end,m:m,T:T,f0:fA,f1:fB,six,oSix,short,oShort:shortAt(1-s,fA)});
+      const nx=hpAfter(m); ball={side:m.next,kind:nx.kind,x:e.x,y:e.y,by:nx.kind==="won"?m.by:null,fo:nx.kind==="faceoff"?1:0};
+      if(nx.kind==="faceoff"){ if(nx.zone==="centre"){ ball.x=0.5; ball.y=0.5 } else if(nx.zone==="n"){ const [x,y]=toRink(s,0.6,e.ay<0.5?0.24:0.76); ball.x=x; ball.y=y } else { const df=nx.def, [x,y]=toRink(df,0.19,e.ay<0.5?0.24:0.76); ball.x=x; ball.y=y } }
+      if(m.end==="clip"&&nx.kind==="won"){ const [x,y]=toRink(1-s,0.12,0.5); ball.x=x; ball.y=y } };
+    seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+m.nT,0); let at=q.f0;
+      G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*m.nT/W2; push(m,at,fB); at=fB }) });
+    const out={L:L,n:nD,moves,N,pens,shortAt,pullAt,last:Object.assign({},ball,{fo:0})};
+    Object.defineProperty(d,"_hp",{value:out,writable:true,configurable:true,enumerable:false});
+    return out }
+  function hpCounts(L,d){ const P=hpPlan(L,d), o=[{to:0,fe:0,cy:0,icing:0,off:0,hit:0,pen:0},{to:0,fe:0,cy:0,icing:0,off:0,hit:0,pen:0}];
+    P.moves.forEach(m=>{ const s=m.side; if(m.end==="forced")o[1-s].to++; if(m.end==="killed")o[1-s].fe++; if(m.m.cy)o[s].cy++; if(m.end==="icing")o[s].icing++; if(m.end==="off")o[s].off++; if(m.end==="pen")o[m.m.pen].pen++;
+      m.T.forEach(t=>{ if(t.hit!=null)o[1-s].hit++ }) });
+    return o }
+  // round 104: the game's numbers so far, as the screen has shown them (shots on goal the engine's; power plays, the
+  // penalties drawn and the goals scored on them; hits as shown)
+  function hpTally(L,upto,d,f){ const o=[{sog:0,pp:0,ppg:0,pim:0,hit:0},{sog:0,pp:0,ppg:0,pim:0,hit:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&x.seg<SEGS);
+    let last=null; D.forEach(x=>{ const di=L.drives.indexOf(x); if(di>=upto)return; last=x;
+      (x.ev||[]).forEach(e=>{ const s=e.side==="home"?0:1; if(e.k==="pen"){ o[s].pim+=2; o[1-s].pp++ } if(e.k==="goal"&&e.pp)o[s].ppg++ });
+      let c=null; try{ c=hpCounts(L,x) }catch(e){} if(c)[0,1].forEach(s=>o[s].hit+=c[s].hit) });
+    if(last&&last.sog){ o[0].sog=last.sog[0]; o[1].sog=last.sog[1] }
+    if(d&&f!=null){ let PP=null; try{ PP=hpPlan(L,d) }catch(e){} (PP?PP.pens:[]).forEach(p=>{ if(p.f>f)return; o[p.side].pim+=2; o[1-p.side].pp++ });   // the penalty as the play calls it
+      const EP=d._ev; if(EP)EP.clips.forEach(c=>{ if(c.f>=f)return; const s=c.home?0:1; o[s].sog++; if(c.kind==="goal"&&c.pp)o[s].ppg++ });
+      let P=null; try{ P=hpPlan(L,d) }catch(e){} if(P)P.moves.forEach(m=>m.T.forEach(t=>{ if(t.hit!=null&&t.f<=f)o[1-m.side].hit++ })) }
+    return {o} }
+  function hpTallyHTML(T){ const o=T.o, row=(l,a,b)=>`<span class="sct"><b>${a}</b><i>${l}</i><b>${b}</b></span>`;
+    return row("Shots",o[1].sog,o[0].sog)+row("Power play",o[1].ppg+"/"+o[1].pp,o[0].ppg+"/"+o[0].pp)+row("PIM",o[1].pim,o[0].pim)+row("Hits",o[1].hit,o[0].hit) }   // the away side on the left, as hockey's scoreboard has it
+  function hpText(P,mv,k){ const S=mv.six, O=mv.oSix, t=mv.T[k], a=hpWho(S,t.s), nx=mv.T[k+1], b=nx?hpWho(S,nx.s):"";
+    if(k===mv.T.length-1){ const by=mv.m.by!=null?hpWho(O,mv.m.by):"";
+      if(mv.end==="clip")return ""; if(mv.end==="forced")return `${by} forces a giveaway from ${a}`; if(mv.end==="killed")return `${by} stands up ${a} at the line`;
+      if(mv.end==="icing")return `Icing`; if(mv.end==="off")return `${a} is offside`; if(mv.end==="pen")return mv.m.text||`Penalty: ${by}, two minutes`;
+      return `${by} picks it off ${a}` }
+    if(t.hit!=null)return `Big hit on ${a} by ${hpWho(O,t.hit)}`;
+    if(t.k==="faceoff")return `${a} wins the faceoff`; if(t.k==="cycle")return `${a} cycles it low`; if(t.k==="ice")return `${a} fires it down the ice`;
+    if(t.k==="won")return `${a} has it`; return `${a} to ${b}` }
+  function hpDraw(x,W,H,d,f){
+    const L=live, P=hpPlan(L,d); let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
+    const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
+    const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
+    const tr=Math.min(1,u/0.6), e=a.k==="ice"?tr:hlEase(tr), pa=hlLerp(a.a,b.a,e), py=hlLerp(a.ay,b.ay,e);
+    const s=mv.side, toS=(X,Y)=>[W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)], toR=(sd,aa,yy)=>sd===0?[1-aa,1-yy]:[aa,yy];
+    // the shapes a moment behind the puck
+    const shapeAt=fq=>{ const mm=P.moves.find(q=>fq>=q.f0&&fq<=q.f1)||mv, TT=mm.T; let kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++; const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.6));
+      const sh=hpShape(hlLerp(A.a,B.a,tt),hlLerp(A.ay,B.ay,tt)); return {s:mm.side,A:sh.A.map(p=>toR(mm.side,p[0],p[1])),D:sh.D.map(p=>toR(mm.side,p[0],p[1]))} };
+    const acc=[[],[]]; [0,0.005,0.01,0.015].forEach((dt,q)=>{ const w=4-q, S=shapeAt(Math.max(0,f-dt)); [[S.s,S.A],[1-S.s,S.D]].forEach(([si,arr])=>arr.forEach((p,i)=>{ if(!acc[si][i])acc[si][i]=[0,0,0]; acc[si][i][0]+=p[0]*w; acc[si][i][1]+=p[1]*w; acc[si][i][2]+=w })) });
+    const pos=[0,1].map(si=>acc[si].map(o=>[o[0]/o[2],o[1]/o[2]]));
+    const [bx,by]=toR(s,pa,py);
+    // a faceoff: both lines set at the dot, centres over the puck, wings on the hash marks, the D behind, until it's won
+    if(k===0&&a.k==="faceoff"&&u<0.45){ const w=1-hlEase(u/0.45), a0=a.a, y0=a.ay, o=1-s;
+      const FA=[null,[a0-0.13,y0-0.12],[a0-0.13,y0+0.12],[a0-0.014,y0],[a0-0.025,y0-0.09],[a0-0.025,y0+0.09]], FD=[null,[a0+0.13,y0-0.12],[a0+0.13,y0+0.12],[a0+0.014,y0],[a0+0.025,y0-0.09],[a0+0.025,y0+0.09]];
+      for(let i=1;i<6;i++){ const pA=toR(s,FA[i][0],FA[i][1]), pD=toR(s,FD[i][0],FD[i][1]); pos[s][i]=[hlLerp(pos[s][i][0],pA[0],w),hlLerp(pos[s][i][1],pA[1],w)]; pos[o][i]=[hlLerp(pos[o][i][0],pD[0],w),hlLerp(pos[o][i][1],pD[1],w)] } }
+    if(tr<1){ const [ax,ay]=toR(s,a.a,a.ay); pos[s][a.s]=[hlLerp(pos[s][a.s][0],ax,0.85*(1-tr)),hlLerp(pos[s][a.s][1],ay,0.85*(1-tr))] }
+    { const [tx,ty]=toR(s,b.a,b.ay); pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,0.4+0.55*tr),hlLerp(pos[s][b.s][1],ty,0.4+0.55*tr)] }
+    if(b.hit!=null&&tr>0.6){ const o=1-s; pos[o][b.hit]=[hlLerp(pos[o][b.hit][0],bx,0.8),hlLerp(pos[o][b.hit][1],by,0.8)] }
+    if(k===T.length-2&&mv.m.by!=null&&tr>0.5){ const o=1-s; pos[o][mv.m.by]=[hlLerp(pos[o][mv.m.by][0],bx,(tr-0.5)*1.6),hlLerp(pos[o][mv.m.by][1],by,(tr-0.5)*1.6)] }
+    const g=L.g, kits=hlKits(g.home,g.away), inks=kits.map(k=>k.fill), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks), r=Math.max(5,W/80);
+    const [qx,qy]=toS(bx,by);
+    [0,1].forEach(si=>{ const S=si===s?mv.six:mv.oSix, short=si===s?P.shortAt(s,f):P.shortAt(si,f);
+      pos[si].forEach((p,i)=>{ if(short&&i===5||i===0&&f>=P.pullAt(si))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
+        hlDot(x,px,py,r,i?inks[si]:gks[si],"rgba(0,0,0,.6)","",Object.assign(S&&S.an&&S.an[i]?{num:S.an[i][0],sub:S.an[i][1]}:{},on?{hot:true}:{})) }) });
+    hlBall(x,qx,qy,r*0.5,0,null,{kind:"puck"});
+    const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a;
+    hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:(Hd&&Hd.clock)||evPB.clock(d,f)});
+    let txt=hpText(P,mv,k===T.length-2&&u>0.6?T.length-1:k); const sh0=P.shortAt(0,f), sh1=P.shortAt(1,f);
+    if(sh0||sh1)txt=(txt?txt+" · ":"")+"Power play, "+(sh0?g.away:g.home);
+    if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
+    if(mv.end==="pen"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"PENALTY",{fill:"#F2C14E"},(u-0.7)/0.3);
+    if(Date.now()-(hpDraw.t||0)>500){ hpDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=hpTallyHTML(hpTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
+  }
+  /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
+  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>28000, clock:(d,f)=>{   /* round 104: twenty-eight seconds of play between the shots a stretch at Normal (was twelve): room for the touches */ const m=Math.min(60,Math.max(1,Math.floor(d.seg*5+f*5)+1)); return (m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'" }, skip:d=>d.seg>=SEGS};
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.72, ts=0.86;
     let bx,by;
@@ -3883,13 +4095,16 @@ const HL_SPORT=(function(){
       if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] }
       return [a,y] });
     const def=DEF.map((p,i)=>{ if(i===0){ if(c.en)return null; let y=0.5+(by-0.5)*0.3; if(t>=tb&&c.kind!=="goal")y=hlLerp(y,c.end[1],hlEase((t-tb)/(ts-tb))); return [GOAL-0.015,Math.max(0.45,Math.min(0.55,y))] }
-      if(c.pp&&i===5)return null;   // a man short
+      if((c.pp||c.shortD)&&i===5)return null;   // a man short
       return [hlLerp(p[0]-0.1,p[0],prog),p[1]+(by-0.5)*0.25] });
+    // round 104: in the full match the shot's move grows out of the play before it (each man from where it had him)
+    if(c.pbFrom&&t<0.16&&!c.so){ const w=1-hlEase(t/0.16), S=hpShape(c.W[0][0],c.W[0][1]);
+      att.forEach((p,i)=>{ if(p&&S.A[i])att[i]=[hlLerp(p[0],S.A[i][0],w),hlLerp(p[1],S.A[i][1],w)] }); def.forEach((p,i)=>{ if(p&&S.D[i])def[i]=[hlLerp(p[0],S.D[i][0],w),hlLerp(p[1],S.D[i][1],w)] }) }
     let nr=[]; def.forEach((p,i)=>{ if(p&&i)nr.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); nr.sort((a,b)=>a[0]-b[0]);
     nr.slice(0,1).forEach(([d,i])=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.5),hlLerp(p[1],by,0.5)] });
     const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     def.forEach((p,i)=>{ if(!p||c.so&&i)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)","",c.dn&&c.dn[i]?{num:c.dn[i][0],sub:c.dn[i][1]}:null) });
-    att.forEach((p,i)=>{ if(i===0&&c.en||c.so&&i!==c.rec[n-1])return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"",c.an&&c.an[i]?{num:c.an[i][0],sub:c.an[i][1]}:null) });
+    att.forEach((p,i)=>{ if(i===0&&c.en||c.so&&i!==c.rec[n-1]||c.shortA&&i===5)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"",c.an&&c.an[i]?{num:c.an[i][0],sub:c.an[i][1]}:null) });
     const [qx,qy]=P(W,H,c,bx,by);
     const pos=tt=>{ tt=Math.max(0,tt); if(tt<tb){ const f=tt/tb*(n-1), k=Math.min(n-2,Math.floor(f)), s=hlEase(f-k), a=c.W[k], b=c.W[k+1]; return P(W,H,c,hlLerp(a[0],b[0],s),hlLerp(a[1],b[1],s)) }
       if(tt<ts){ const s=(tt-tb)/(ts-tb), a=c.W[n-1]; return P(W,H,c,hlLerp(a[0],c.end[0],s),hlLerp(a[1],c.end[1],s)) } return P(W,H,c,c.end[0],c.end[1]) };
@@ -3901,7 +4116,7 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock};
+  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
 })();
 /* Hockey's big moments (round 73, core 96_moments): a hat-trick (the hats come down), the overtime winner, a shootout
    won. From the game's own events: the scorers the run of play and the box score name. */
@@ -4155,9 +4370,11 @@ function shotBars(g,drives){
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
   const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
-  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"PUCK DROP":esc(segLabel(last))}
+  const lab=`<span class="live"></span><span class="wclk">${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"PUCK DROP":esc(segLabel(last))}</span>
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
-  return scoreTop(g,H,A,lab,"",shotBars(g,live.drives));
+  // round 104: the game's numbers so far (the full match brings them up to its clock as it plays)
+  let st=""; try{ if(HL_SPORT.hpTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.hpTallyHTML(HL_SPORT.hpTally(live,upto,null,null))}</div>` } }catch(e){}
+  return scoreTop(g,H,A,lab,"",shotBars(g,live.drives)+st);
 }
 
 /* ---- the evidence ---- */
@@ -7523,8 +7740,13 @@ function hlMount(){
   if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
   if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
   else if(HL_SPORT.collapseIdle)box.style.display=""
-  const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
-  if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
+  // round 102: the whole surface above the action bar on a laptop (at 1280x800 the bar hid a quarter of baseball's field,
+  // home plate and the batter, and soccer's near touchline): a surface too tall for the room left is drawn narrower, centred
+  let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
+  try{ const bar=document.querySelector(".actionbar"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-top-6;
+    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
+  const H=Math.round(W*HL_SPORT.aspect);
+  if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
   if(!HL.cur)hlDraw(null,0);
   hlAmbient();
 }
@@ -7604,7 +7826,8 @@ function hlWatchAt(r){
 /* round 72: one clock (Instinct: the clip said 74' while the header said 70'). While a clip plays, the header shows the
    clip's own time, as the held score moves on with its goals (round 70); each sport says it in the header's words */
 function hlHeadClock(c){ try{ return c&&HL_SPORT.headClock?HL_SPORT.headClock(c)||null:null }catch(e){ return null } }
-function hlStart(c){ { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k; if(!first&&typeof render==="function")render() } }
+function hlStart(c){ if(c&&typeof c.onStart==="function"){ try{ c.onStart() }catch(e){} }   // round 101: a clip that marks what the screen showed (football's full match)
+  { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k; if(!first&&typeof render==="function")render() } }
   // the rewatch's header follows the clip's time too (round 73)
   if(typeof watch!=="undefined"&&watch&&watch.hl&&(typeof live==="undefined"||!live||live.done)){ const k=hlHeadClock(c); if(watch.hlClock!==k){ watch.hlClock=k; HL.cur=c; if(typeof render==="function")render() } }
   HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }
@@ -7635,8 +7858,51 @@ function hlSkip(){
 function hlDraw(c,t){
   const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
   x.setTransform(dpr,0,0,dpr,0,0); const W=cv.width/dpr, H=cv.height/dpr;
-  HLK.t=t; HLK.now=Date.now();
+  HLK.t=t; if(!(typeof live!=="undefined"&&live&&live.pb&&live.pb.frozen!=null&&HLK.now))HLK.now=Date.now();   // round 103: a full match paused mid-stretch holds still (the ring round the man on the ball stops pulsing too); stepping plays on
   try{ hlPitch(x,W,H,dpr); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H); hlFinish(x,W,H) }catch(e){}
+}
+/* ---- round 101: the full match as events in time (soccer, hockey) ----
+   Their engines play a stretch of minutes at once, with its goals and chances at their own minutes and the home side's
+   share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
+   goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
+   HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
+function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,S.mode||"all")||[] }catch(e){}
+  const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
+  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
+  clips.sort((a,b)=>a.f-b.f);
+  for(let i=1;i<clips.length;i++)if(clips[i].f<clips[i-1].f+0.04)clips[i].f=Math.min(0.985,clips[i-1].f+0.04);   // round 103: two in one minute, a moment apart (no play squeezed to nothing between them)
+  const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
+  clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
+  const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
+  return d._ev={seg:seg,tot:at,clips:clips} }
+/* the shots the full match showed (not the goals: those are credited by name already): [side 0/1, "s", roster slot] */
+function hlEvNames(L,d){ if(!d||!d._ev)return null; const g=L.g, out=[];
+  // round 103: a goal shows who passed to the scorer (soccer: the move's last pass; [side, "a", roster slot or -1, minute])
+  d._ev.clips.forEach(c=>{ if(c.kind!=="goal"||!c.idxA||!c.tm||!c.rec)return; const n=c.rec.length, p=c.plan!=="pen"&&n>=2?c.rec[n-2]:-1, i=p>=0?c.idxA[p]:-1;
+    out.push([c.tm===g.home?0:1,"a",i>=0?i:-1,c.m]) });
+  d._ev.clips.forEach(c=>{ if(c.kind==="goal"||c.kind==="red"||!c.who||!c.tm)return; const tm=c.tm, R=(SEA.roster&&SEA.roster[tm])||[];   // c.tm: the side that shot
+    const i=R.findIndex(p=>p&&p.n===c.who); if(i>=0)out.push([tm===g.home?0:1,"s",i]) });
+  return out }
+function hlEvPlayback(L,d){ if(!HL_SPORT.evPB||!d||d.seg==null||typeof d.seg!=="number"||d.so||(HL_SPORT.evPB.skip&&HL_SPORT.evPB.skip(d)))return 0; return Math.round(hlEvPlan(L,d).tot) }
+let hlEvKey="", hlEvLab=0;
+function hlEvDraw(x,W,H){
+  const PB=live.pb, d=PB.d, P=hlEvPlan(live,d), S=HL_SPORT.evPB, el=PB.frozen!=null?PB.frozen:Date.now()-PB.at;
+  let i=P.seg.findIndex(q=>el<q.at+q.ms+(q.k==="clip"?250:0)); if(i<0)i=P.seg.length-1; const q=P.seg[i];
+  // the score: the goals of the clips already past, and this one's once it has gone in
+  let h=PB.h0, a=PB.a0; const goal=c=>{ if(c.after){ h=c.after[0]; a=c.after[1] } };
+  P.seg.slice(0,i).forEach(z=>{ if(z.k==="clip")goal(z.c) });
+  let clock;
+  if(q.k==="clip"){ const t=Math.min(1,(el-q.at)/Math.max(1,q.ms)), rv=q.c.reveal!=null?q.c.reveal:HL_SPORT.reveal;
+    if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
+    clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
+    if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    HL_SPORT.frame(x,W,H,q.c,t) }
+  else { const f=q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)); clock=S.clock(d,f);
+    if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    if(HL_SPORT.amb)HL_SPORT.amb(x,W,H,d,f) }   // round 103: the stretch and how far through it (soccer plays its touches from them)
+  // the page follows: a redraw when the score moves, the clock in the header otherwise
+  const k=h+"|"+a; if(k!==hlEvKey){ const first=!hlEvKey; hlEvKey=k; if(!first)setTimeout(()=>{ if(live&&live.pb&&typeof render==="function")render() },0) }
+  if(Date.now()-hlEvLab>500){ hlEvLab=Date.now(); try{ const lb=document.querySelector(".wtop .wlabel"); const ck=lb&&lb.querySelector(".wclk"); if(ck)ck.textContent=clock; else if(lb){ const t=lb.textContent||"", j=t.indexOf("·"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${j>=0?" "+esc(t.slice(j).replace(/\s+/g," ")):""}` } if(typeof miniBar==="function")miniBar() }catch(e){} }
 }
 /* ---- the drawing kit (round 64: the pitches and players drawn to Football Manager's standard) ----
    The surface (grass, wood, ice, dirt, lines, nets) is painted once per size into an offscreen canvas and copied
@@ -8700,6 +8966,7 @@ function startLive(g,step,slot){
         drives:[], ask:null, done:false,
         paused:(S.watchStep===true), userIsHome:userIsHome,
         h2h:h2h?{coach:oj,team:opponentOf(g)}:null};
+  if(live.eng)live.eng.plog=true;   // round 101: the game on screen keeps its possession log for the full match (no replay does)
   // replay any answers already recorded for this week
   live.replay=((S.calls&&S.calls[live.ckey])||[]).slice();
   live.ri=0;
@@ -8714,6 +8981,43 @@ function syncTail(r){ if(r&&Array.isArray(r.drives)&&r.drives.length>live.drives
    showed an overtime result nobody watched: Muse, 3 of 10) */
 function liveH(){ return live&&live.tailShow?live.tailShow.h:live.eng.h }
 function liveA(){ return live&&live.tailShow?live.tailShow.a:live.eng.a }
+function presentAsk(r,floorCall){
+      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
+      live.ff=false;                            // skipping stops at your next call
+      // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
+      if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
+      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
+                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
+      render();
+      // round 100 (Grokbot, soccer on a phone: "call screens land scrolled to the bottom, so the read is off-screen"): a
+      // new call opens at its top when the page was scrolled away from it
+      try{ const c=document.querySelector(".callbox"); if(c&&c.getBoundingClientRect){ const q=c.getBoundingClientRect(); if(q.top<0||q.top>window.innerHeight*0.55)c.scrollIntoView({block:"start",behavior:"auto"}) } }catch(e){}
+}
+/* round 101: the full match plays back what the engine logged (HL_SPORT.playback gives its length on screen). A stretch
+   whose start was already shown (a call came inside it) plays on from where it stopped (live.pbSeen). */
+function pbOn(){ return typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan() }
+function pbFrom(d){ const S0=live.pbSeen; return S0&&S0.seg===d.seg?S0.n:0 }
+function pbScoreAt(d,i,h,a){ const q=i>0&&d.pl&&d.pl[i-1]; return q&&q.h!=null?[q.h,q.a]:[h,a] }
+function pbPartialStart(r,floorCall){
+  if(!pbOn()||live.paused||!live.eng||typeof live.eng.partial!=="function")return false;
+  const D=live.eng.partial(); if(!D||!Array.isArray(D.pl))return false;
+  const from=pbFrom(D), to=D.pl.length; if(to<=from)return false;
+  const d={seg:D.seg,pl:D.pl.slice(0,to),sh:D.sh,sa:D.sa,partial:true}, [h0,a0]=pbScoreAt(d,from,live.lastH||0,live.lastA||0);
+  const ms=HL_SPORT.playback(live,d,from,to); if(!ms)return false;
+  live.hold={n:live.drives.length,h:h0,a:a0,clock:null}; live.pb={d:d,at:Date.now(),ms:ms,h0:h0,a0:a0,from:from,to:to,frozen:null};
+  live.pbSeen={seg:D.seg,n:to}; live.askPend={r:r,floorCall:floorCall};
+  render(); live.timer=setTimeout(liveTick,ms); return true }
+/* round 101: a sport whose full match plays a stretch as clips (football's drives) shows the stretch up to a call before
+   asking it: the drive to its fourth down, or the drive and its touchdown before the two-point call (HL_SPORT.leadUp).
+   The stretch, pushed after the answer, plays on from there. */
+function hlLeadUpStart(r,floorCall){
+  if(live.paused||typeof hlMode!=="function"||hlMode()!=="full"||typeof HL_SPORT==="undefined"||typeof HL_SPORT.leadUp!=="function"||typeof hlCan!=="function"||!hlCan()||typeof hlPlay!=="function")return false;
+  let U=null; try{ U=HL_SPORT.leadUp(live,r) }catch(e){ U=null } if(!U||!U.clips||!U.clips.length)return false;
+  if(U.hold)live.hold={n:live.drives.length,h:live.lastH||0,a:live.lastA||0,clock:null};
+  render();
+  const tok={leadUp:true}; HL.pending={drive:tok,clips:U.clips}; const ms=hlPlay(live,tok);
+  if(!ms){ HL.pending=null; if(U.hold)live.hold=null; return false }
+  live.leadShown=U.key; live.askPend={r:r,floorCall:floorCall}; live.timer=setTimeout(liveTick,ms); return true }
 function liveTick(){
   // the overtime tail, one stretch at a time, then the final whistle
   if(live&&live.tailQ&&!live.done){ if(live.timer){clearTimeout(live.timer);live.timer=null}
@@ -8727,7 +9031,11 @@ function liveTick(){
     if(!live.ff&&live.drives[live.drives.length-1]===d){ if(live.timer){clearTimeout(live.timer);live.timer=null}
       const hm=typeof hlPlay==="function"?hlPlay(live,d):0; if(!hm&&live.hold&&typeof hlRelease==="function")hlRelease();
       if(!live.paused)live.timer=setTimeout(liveTick,Math.max(400,hm)); return } }
+  if(live&&live.pb&&!live.done){ const P=live.pb;
+    if(P.frozen!=null&&!live.paused&&!live.ff){ if(live.timer)clearTimeout(live.timer); P.at=Date.now()-P.frozen; const left=Math.max(0,P.ms-P.frozen); P.frozen=null; live.timer=setTimeout(liveTick,left); return }   // play on from where it stopped
+    live.pb=null }
   if(live&&live.hold&&typeof hlRelease==="function")hlRelease(true);
+  if(live&&live.askPend&&!live.done){ const A=live.askPend; live.askPend=null; if(live.timer){clearTimeout(live.timer);live.timer=null} presentAsk(A.r,A.floorCall); return }
   if(!live||live.done)return;               // a click after the final whistle: the game is already recorded
   if(live.timer){clearTimeout(live.timer);live.timer=null}
   if(!live.kicked){                       // a beat on the empty field first
@@ -8774,16 +9082,10 @@ function liveTick(){
           // the back-to-back goalie in a week of play, and couldn't tell rare from missing)
           if(ANNOUNCE_KINDS[r.ask.k]){ const AS={fouls:"sit",gstart:"backup"}, o=(r.ask.opts||[]).find(x=>x[0]===v&&!/assistant/i.test(x[1]))||(r.ask.opts||[]).find(x=>x[0]===AS[r.ask.k]); /* left to him: he sits a star in foul trouble, starts the backup */ live.autoNote={h:r.ask.k==="gstart"?"Second night of a back-to-back":(r.ask.h||""), l:o?o[1]:"", at:live.drives.length, rule:r.ask.k==="fouls"&&typeof foulRule==="function"?foulRule():""} }
           live.replay.push(v); live.ri=live.replay.length; live.eng.reply(v); continue } }
-      if(lateFloorDue(live,true))live.lateShown=true;   // round 71: the late window has had its call
-      live.ff=false;                            // skipping stops at your next call
-      // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
-      if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
-      live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
-                team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
-      render();
-      // round 100 (Grokbot, soccer on a phone: "call screens land scrolled to the bottom, so the read is off-screen"): a
-      // new call opens at its top when the page was scrolled away from it
-      try{ const c=document.querySelector(".callbox"); if(c&&c.getBoundingClientRect){ const q=c.getBoundingClientRect(); if(q.top<0||q.top>window.innerHeight*0.55)c.scrollIntoView({block:"start",behavior:"auto"}) } }catch(e){}
+      // round 101: a call inside a stretch (baseball's innings) waits while the full match plays the stretch up to it
+      if(!live.ff&&pbPartialStart(r,floorCall))return;
+      if(!live.ff&&hlLeadUpStart(r,floorCall))return;
+      presentAsk(r,floorCall);
       return;
     }
     // the score before this stretch (kept here: drives record it differently by sport,
@@ -8797,7 +9099,12 @@ function liveTick(){
     // round 66: when a highlight will play this stretch, the page keeps the score, the run of play and the goal's
     // sound and flash as they were until the clip is over (Ian: a goal was told before the ball went in). hlRelease
     // shows them.
-    if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
+    // round 101: a sport that plays the stretch back possession by possession (basketball's full match) holds the score
+    // for the whole stretch and moves it as each basket drops (HL_SPORT.playback: its length on screen, or 0)
+    const pbF=pbFrom(r.drive), pbMs=!live.ff&&!live.paused&&pbOn()?HL_SPORT.playback(live,r.drive,pbF):0;
+    if(pbMs){ const [h0,a0]=pbScoreAt(r.drive,pbF,pH,pA); live.hold={n:live.drives.length-1,h:h0,a:a0,clock:null}; live.pb={d:r.drive,at:Date.now(),ms:pbMs,h0:h0,a0:a0,from:pbF,frozen:null}; r.drive.pbShown=true }
+    else if(!live.ff){ if(typeof hlWillPlay==="function"&&hlWillPlay(live,r.drive))live.hold={n:live.drives.length-1,h:pH,a:pA,clock:typeof hlHeadClock==="function"&&HL.pending&&HL.pending.clips?hlHeadClock(HL.pending.clips[0]):null}; else feelSpell(live,pH,pA) }
+    live.pbSeen=null;
     live.lastH=live.eng.h; live.lastA=live.eng.a;
     // round 79: skipping stops for a close finish, so it's watched, not told (Ian: Skip jumped to the final of a one-score
     // game); once a game, at the sport's own late window
@@ -8806,10 +9113,11 @@ function liveTick(){
     break;
   }
   render();
+  if(fresh&&live.pb&&live.pb.d===fresh&&!live.done&&!live.ask){ if(!live.paused)live.timer=setTimeout(liveTick,live.pb.ms); return }
   /* round 99 (Ian: "Full match is not showing the full match"): in Full match the stretch is played before its moments, as
      a game is: the play runs with the score as it stood, then the stretch's goals and chances come at its end and the
      score moves with them, then the next stretch. (Elsewhere the moments play first, as before.) */
-  if(fresh&&live.hold&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&(!HL_SPORT.collapseIdle||HL_SPORT.leadIn)&&typeof hlCan==="function"&&hlCan()){   // round 100: basketball too (Grokbot: "a chunked text slideshow")
+  if(fresh&&live.hold&&!live.pb&&!live.done&&!live.ask&&!live.paused&&typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&(!HL_SPORT.collapseIdle||HL_SPORT.leadIn)&&typeof hlCan==="function"&&hlCan()){   // round 100: basketball too (Grokbot: "a chunked text slideshow")
     const gap=liveGap(), lead=Math.round(gap*0.6), mine=fresh; live.leadPend=mine;
     live.timer=setTimeout(()=>{ if(!live||live.done||live.paused||live.ask||live.drives[live.drives.length-1]!==mine||live.leadPend!==mine)return; live.leadPend=null;
       const hm2=typeof hlPlay==="function"?hlPlay(live,mine):0; if(!hm2&&live.hold&&typeof hlRelease==="function")hlRelease();
@@ -8875,7 +9183,12 @@ function finishLive(){ liveEndedAt=Date.now();
   const played={team:S.myTeam, other:(meHome?g.away:g.home),
               mine:(meHome?live.eng.h:live.eng.a),
               theirs:(meHome?live.eng.a:live.eng.h),
-              drives:live.drives};
+              drives:live.drives.map(d=>{ if(!d||!(d.pl||d.pbShown||d._ev))return d; const {pl,_pb,pbShown,_ev,...r}=d;
+                // round 101: the full match's possession log stays with the live game, not the save; a stretch it played
+                // back keeps the men it showed scoring (roster slots), and the box score credits them
+                if(pbShown&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.namesOf==="function"){ try{ const pn=HL_SPORT.namesOf(live,d); if(pn&&pn.length)r.pn=pn }catch(e){} }
+                if(pbShown&&typeof HL_SPORT!=="undefined"&&HL_SPORT.evPB&&typeof hlEvNames==="function"){ try{ const pn=hlEvNames(live,d); if(pn&&pn.length)r.pn=pn }catch(e){} }
+                return r })};
   if(LEAGUE.tracksOT){played.ot=live.eng.ot||0; played.so=!!live.eng.so}
   if(live.eng.rest&&live.eng.rest[meHome?"home":"away"])played.rested=true;   // starters rested: fewer knocks this week (Season._resolve)
   if(g.cup)played.cup=true;
@@ -12101,7 +12414,7 @@ function render0(){
       const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
         b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
       onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
-        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
+        if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb&&live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>setPlanMidGame(x.dataset.midplan)));
@@ -12782,7 +13095,9 @@ window.addEventListener("keydown",e=>{
   if((e.key===" "||e.key==="Enter")&&(tag==="SUMMARY"||tag==="BUTTON"||tag==="A"||tag==="SELECT"||(e.target&&e.target.getAttribute&&e.target.getAttribute("role")==="button")))return;
   if(live&&!live.done){
     if(live.ask)return;
-    if(e.key===" "){e.preventDefault();live.paused=!live.paused;S.watchStep=live.paused;liveTick();return}
+    if(e.key===" "){e.preventDefault();live.paused=!live.paused;S.watchStep=live.paused;
+      if(live.paused&&live.pb){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render(); return }   // round 101: a full match pauses where it is
+      liveTick();return}
     if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();live.paused=true;liveTick();return}
     if(e.key==="Enter"){e.preventDefault();skipLive();return}
     if(["1","2","3","4"].indexOf(e.key)>=0){e.preventDefault();

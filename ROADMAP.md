@@ -135,7 +135,12 @@ on numbers they can't trust and a sport they read rather than watch.
 - Not done: kicks instead of punts inside their 28 (a quarter of punts come from there). Tried in round 106 and taken
   out: it made blocking against the rush worth more than the rating, plan fit or chance count (the pro chance missed by
   up to 14 points on a pair). Needs its own round with the fit tables and the chance re-measured.
-- Next: red-zone punts (above); the plan as a real decision at even odds; testers' reports.
+- Open: pro football's draft board "likely gone" label is weak on both builds. Over 48 drafts 64% of those players were
+  gone at your first pick on the published 101+102 build and 73% on this one (band 75%+). At the suite's 16 drafts it
+  reads 64% and 50%, so test/draft-labels.js fails on this head (146 of 147); the test is unchanged.
+- Publishing: the 99-100 and 101-102 bundles never reached GitHub (coach main was 6473dcb, rounds 96-98), and the
+  101-102 bundle had not copied dist/site to the root. This release puts 99-106 on the site at once.
+- Next: red-zone punts (above); the plan as a real decision at even odds; the board's "likely gone"; testers' reports.
 
 ## Round 102 (done): the field fits the screen (ships with 101)
 - Hockey's header clock no longer piles up old minutes. The whole field sits above the action bar on a laptop (baseball's

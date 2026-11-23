@@ -450,6 +450,12 @@ Round 106: football's fourth and N follows the drive (engine 20; Ian: its own ro
   seeds no longer reach one; seeds 11 and 12 do; still fails on 6473dcb); regressions 65 weighs the calls the card
   weighs (a read, the scouting report too, is graded in the reads list and never heads the card: a +18 read beside a
   -15 wrong call read as a headline disagreeing with its bullets).
+- Suite on d7466b6: 146 of 147. The failure is draft-labels (pro football's board, "likely gone" at your first pick:
+  50% of 30 at 16 drafts, band 75%+). It is a weak label on both builds, not this round's: over 48 drafts the published
+  build reads 64% of 115 (out of band) and this one 73% of 135; at 16 drafts the published build read 64% of 45 and
+  passed by its margin. Left as an open item; the test unchanged.
+- Publishing (corrected): the root pages had not been copied since round 99-100's release, and GitHub's main was still
+  6473dcb (rounds 96-98). Round 99-106's release copies dist/site and version.json to the root.
 
 Rounds 103-105: soccer and hockey touch by touch, baseball pitch by pitch (Ian: "best in the world"; the engine
 decides everything with the same dice; what the screen shows is built from the stretch's own record and hash).
