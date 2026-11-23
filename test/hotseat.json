@@ -1,5 +1,5 @@
 {
- "fp": "d7e3be30d44efdae",
+ "fp": "8aeac894dfe8f294",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -370,6 +370,11 @@
    "fp": "d7e3be30d44efdae",
    "from": "04c16439bc76e232",
    "note": "Round 106 (engine 20): a stalled drive's fourth and N follows the drive; the shared seat's go-for-it calls play out differently; on ENGINE_NOW=19 the old fingerprint matches"
+  },
+  {
+   "fp": "8aeac894dfe8f294",
+   "from": "d7e3be30d44efdae",
+   "note": "Round 106 (engine 20) final: kicks inside their 28, no fourth-down tries deep in your own half; on ENGINE_NOW=19 the round 105 fingerprint (04c16439bc76e232 / c32b9c06b0ff322e) holds"
   }
  ],
  "out": [
@@ -380,19 +385,19 @@
      "team": "Alabama",
      "last": {
       "rec": "8-5",
-      "result": "Lost the Citrus Bowl",
+      "result": "Lost the Alamo Bowl",
       "grade": "C-"
      },
-     "book": "b017d9ba36df2c14"
+     "book": "d28ec498ca73324f"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "0f1122182a036e5c"
+     "book": "251e38070b6d39e4"
     }
    ]
   },
@@ -402,20 +407,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "10-5",
-      "result": "Eliminated in the semifinals",
-      "grade": "B+"
+      "rec": "9-4",
+      "result": "Won the Alamo Bowl",
+      "grade": "C+"
      },
-     "book": "ae360d3e43c30e52"
+     "book": "0c8a6e54dc9563fc"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Fenway Bowl",
-      "grade": "A"
+      "rec": "2-10",
+      "result": "No bowl game",
+      "grade": "C"
      },
-     "book": "d6665af99fba7902"
+     "book": "0dd6c7021bea39fd"
     }
    ]
   },
@@ -425,20 +430,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Pop-Tarts Bowl",
-      "grade": "C-"
+      "rec": "8-5",
+      "result": "Won the Music City Bowl",
+      "grade": "C"
      },
-     "book": "2b05327ba836cbde"
+     "book": "3b9ae52bc6c68392"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Birmingham Bowl",
-      "grade": "A+"
+      "rec": "7-6",
+      "result": "Won the Idaho Potato Bowl",
+      "grade": "A"
      },
-     "book": "eb94dbb569c62fc4"
+     "book": "bf44e39c9556b7dd"
     }
    ]
   }

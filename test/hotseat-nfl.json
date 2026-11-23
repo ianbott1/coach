@@ -1,5 +1,5 @@
 {
- "fp": "df7d7d3f21670508",
+ "fp": "92f0034847e52553",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -395,6 +395,11 @@
    "fp": "df7d7d3f21670508",
    "from": "c32b9c06b0ff322e",
    "note": "Round 106 (engine 20): a stalled drive's fourth and N follows the drive; the shared seat's go-for-it calls play out differently; on ENGINE_NOW=19 the old fingerprint matches"
+  },
+  {
+   "fp": "92f0034847e52553",
+   "from": "df7d7d3f21670508",
+   "note": "Round 106 (engine 20) final: kicks inside their 28, no fourth-down tries deep in your own half; on ENGINE_NOW=19 the round 105 fingerprint (04c16439bc76e232 / c32b9c06b0ff322e) holds"
   }
  ],
  "out": [
@@ -405,19 +410,19 @@
      "team": "Kansas City",
      "last": {
       "rec": "12-5",
-      "result": "Lost the Super Bowl",
-      "grade": "A"
+      "result": "Lost the conference championship",
+      "grade": "A-"
      },
-     "book": "e8c3366b5d7871ad"
+     "book": "d1dfafb343bea163"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
+      "rec": "5-12",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "275a93090dec3e9a"
+     "book": "241ca6ee3dde12ed"
     }
    ]
   },
@@ -427,20 +432,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the divisional round",
-      "grade": "B"
+      "rec": "11-6",
+      "result": "Lost in the wild card round",
+      "grade": "B+"
      },
-     "book": "0887fd5c5f86c6c8"
+     "book": "a160b7bb9cf1cd57"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "10-7",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "d4a4b3a0ccca8df5"
+     "book": "ae57b5d446503567"
     }
    ]
   },
@@ -450,20 +455,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
+      "rec": "11-6",
       "result": "Lost in the wild card round",
-      "grade": "B-"
+      "grade": "B+"
      },
-     "book": "bc5be706a0525344"
+     "book": "3010b61954d55728"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
-      "result": "SUPER BOWL CHAMPIONS",
+      "rec": "14-3",
+      "result": "Lost the Super Bowl",
       "grade": "A+"
      },
-     "book": "1b1280fc707d6a11"
+     "book": "83b60810c21bdc99"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "4b17d848f0040fbd",
+ "fp": "447d1c8483e3ddb8",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -100,21 +100,26 @@
    "fp": "4b17d848f0040fbd",
    "from": "ef3bfd5eee5dec47",
    "note": "Round 106 (engine 20): a stalled drive's fourth and N follows the drive; a seeded career's go-for-it calls play out differently (games, standings, awards move); on ENGINE_NOW=19 the old fingerprint matches"
+  },
+  {
+   "fp": "447d1c8483e3ddb8",
+   "from": "4b17d848f0040fbd",
+   "note": "Round 106 (engine 20), with kicks inside their 28 and no fourth-down tries deep in your own half: a seeded career's games, standings and awards move; on ENGINE_NOW=19 the round 105 fingerprint matches"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "4d0470cd87a1f706",
-    "post": "c47ce2ab2c3f4019",
-    "champion": "Chicago",
-    "rec": "208bc5e00c58f150",
-    "poll": "4536227ce4d3a1d2",
-    "heis": "1066cb68124e5a5d",
-    "history": "d86e4584fd624ebe",
-    "universe": "89d34c9d762def30",
-    "screens": "15ae59e3969e961a"
+    "games": "f15ae2c9cb5d656b",
+    "post": "63a94226f990b5bf",
+    "champion": "LA Rams",
+    "rec": "091a76d69f2c5c33",
+    "poll": "733c1e7529027e20",
+    "heis": "2eb4dc9720a4ead2",
+    "history": "a33787dfba488a97",
+    "universe": "433290cb0485cfb9",
+    "screens": "0dcd7c15308f0624"
    }
   ]
  }
