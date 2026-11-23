@@ -37,6 +37,7 @@ const HL_SPORT=(function(){
     const out=[]; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);
     ev.forEach(e=>{ if(e.k==="goal"){ const c=mk(L,e,"goal",sh,sa); if(e.side==="home")sh++; else sa++; c.after=[sh,sa]; out.push(c); return }
       const c=mk(L,e,e.k,sh,sa); if(e.pbx||e.k!=="red")c.base=Math.min(c.base,e.pbx?2300:c.base); out.push(c) });
+    out.forEach(c=>Object.defineProperty(c,"pbFrom",{value:L,writable:true,configurable:true,enumerable:false}));   // round 103: grows out of the touch-by-touch play
     return out }
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
@@ -97,7 +98,7 @@ const HL_SPORT=(function(){
     // or one bent in from the side
     const shot=r(), lift=how==="over"?0.05:shot<0.35?0.003:shot<0.65?0.012:shot<0.82?0.028:0.008, bend=shot>=0.82?(r()<0.5?-1:1)*(0.03+r()*0.03):0;
     const gno=kind==="goal"?hlGoalNo(L,e,x=>scGoalBy(x.side==="home"?g.home:g.away,x).n):0;
-    const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,idxA:SA.idx,legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
+    const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,idxA:SA.idx,subA:SA.idx.map(i=>i>=0&&SEA.roster[tm][i]?String(SEA.roster[tm][i].n).split(" ").slice(-1)[0]:""),subD:SD.idx.map(i=>i>=0&&SEA.roster[opp][i]?String(SEA.roster[opp][i].n).split(" ").slice(-1)[0]:""),legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     cl.who=shooter&&typeof shooter==="object"?shooter.n:shooter;   // round 101: the box score credits a shot the full match showed
     return cl;
@@ -448,6 +449,12 @@ const HL_SPORT=(function(){
     const lag=(fn)=>{ const S=[0,0.02,0.04,0.06], out=[]; S.forEach((dt,q)=>{ const P2=fn(Math.max(0,t-dt)); P2.forEach((p,i)=>{ if(!out[i])out[i]=[0,0,0]; if(!p)return; const wgt=4-q; out[i][0]+=p[0]*wgt; out[i][1]+=p[1]*wgt; out[i][2]+=wgt }) });
       return out.map(o=>o[2]?[o[0]/o[2],o[1]/o[2]]:null) };
     const att=lag(tt=>attAt(c,tt)), def=lag(tt=>defAt(c,tt,att));
+    // round 103: in the full match the shot's move grows out of the play before it: each man starts from where the
+    // touch-by-touch play had him (found by his shirt) and runs into the move's shape over its first moments
+    if(c.pbFrom&&t<0.16){ const w=1-hlEase(t/0.16), s0=c.home?0:1, w0=c.W[0], hx=s0?1-w0[0]:w0[0], hy=s0?1-w0[1]:w0[1], S=spShape(hx,hy,s0===0), fr=q=>s0?[1-q[0],1-q[1]]:q;
+      const XA=spXI(c.pbFrom,c.tm), XD=spXI(c.pbFrom,c.opp);
+      att.forEach((q,i)=>{ if(!q)return; const j=c.numsA?XA.nums.indexOf(c.numsA[i]):i, src=fr(S[s0][j>=0?j:i]); att[i]=[hlLerp(q[0],src[0],w),hlLerp(q[1],src[1],w)] });
+      def.forEach((q,i)=>{ if(!q)return; const j=c.numsD?XD.nums.indexOf(c.numsD[i]):i, src=fr(S[1-s0][j>=0?j:i]); def[i]=[hlLerp(q[0],src[0],w),hlLerp(q[1],src[1],w)] }) }
     const kick=t>=tb&&t<ts+0.02, sIdx=c.rec[n-1];
     const r=Math.max(5,W/80), [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
     // the move so far, faint, and the shot once it's struck
@@ -460,9 +467,9 @@ const HL_SPORT=(function(){
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]);
       if(i===0&&dv){ const ang=((c.lr!=null?c.lr:c.home)?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
       const sent=c.red&&i===2&&t>=c.pre, fade=sent&&t>c.pre+0.1?Math.max(0.25,1-(t-c.pre-0.1)*1.8):null;
-      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
+      hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],sub:c.subD&&!sent?c.subD[i]:"",dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
       if(sent){ x.save(); x.translate(px+r*1.3,py-r*1.6); x.rotate(0.2); x.fillStyle="#E3262F"; x.fillRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=0.8; x.strokeRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.restore() } });
-    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
+    att.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],sub:c.subA&&!hot?c.subA[i]:"",dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
     // the ball and the last few moments of its path
     const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(c,t-q*0.012); const pp=P(W,H,c,Math.min(1.03,b.bx),b.by); tr.push([pp[0],pp[1]-b.z*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,t>0.1?tr:null);
