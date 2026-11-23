@@ -216,7 +216,7 @@ const HL_SPORT=(function(){
     // the page follows: the score, the half and the outs (a redraw on each change: they come every few seconds)
     // round 105: the hits so far as shown (the line score's H read the inning's hits before they were played)
     const HIT={s1:1,s2:1,s3:1,hr:1}, di=live.drives.indexOf(d), pd=di>0?live.drives[di-1]:di<0&&live.drives.length?live.drives[live.drives.length-1]:null, hh=pd&&pd.hits?pd.hits.slice():[0,0];
-    for(let i=0;i<C.i;i++){ const qq=d.pl[i]; if(qq&&qq.t==="pa"&&HIT[qq.o])hh[qq.s]++ } if(q&&C.k==="pa"&&u>=tr&&HIT[q.o])hh[q.s]++;
+    for(let i=0;i<C.i;i++){ const qq=d.pl[i]; if(qq&&qq.t==="pa"&&HIT[qq.o])hh[qq.s]++ } if(q&&C.k==="pa"&&u>=tr&&HIT[q.o])hh[q.s]++; PB.hits=hh;   // this playback's own count (the line score reads it)
     const head=`${half==="Top"?"Top":"Bottom"} of the ${ordw(inn)}, ${outs} out`, k2=hs+"|"+as+"|"+head+"|"+hh.join(",");
     if(k2!==pbKey){ const was=pbKey; pbKey=k2; if(live.hold){ const runUp=live.hold.h!==hs||live.hold.a!==as; live.hold.h=hs; live.hold.a=as; live.hold.clock=head; live.hold.hits=hh;
         if(runUp&&was&&typeof sfx==="function"){ const mine=(bat==="home")===(g.home===S.myTeam); sfx(mine?(q&&q.o==="hr"?"hr":"run"):"against") } }

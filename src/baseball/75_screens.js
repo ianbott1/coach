@@ -85,11 +85,20 @@ function scoreTop(g,H,A,label,cls,extra){
 /* now: the live score (round 56: at a call in the middle of an inning the big score had the inning's runs and the
    line score didn't, "5TH INNING, DOWN 2" over a line reading 1-0: Instinct, Muse). The inning under way gets its
    runs so far, and R is the score itself. */
+/* round 105: the hits the full match has shown: while an inning plays back, its own count; at a call inside an inning,
+   the innings before and the at-bats of this one shown before the call (live.pbSeen) */
+function bsShownHits(){ if(typeof live==="undefined"||!live||live.done)return null;
+  const keep=hh=>{ live.hitsShown={n:live.drives.length,hh:hh}; return hh };
+  if(live.pb){ if(live.pb.hits)return keep(live.pb.hits); return live.hitsShown&&live.hitsShown.n===live.drives.length?live.hitsShown.hh:null }   // a playback that hasn't drawn yet: what was shown before it
+  const S0=live.pbSeen; if(S0&&live.eng&&typeof live.eng.partial==="function"){ let D=null; try{ D=live.eng.partial() }catch(e){}
+    if(D&&Array.isArray(D.pl)&&D.seg===S0.seg){ const pd=live.drives[live.drives.length-1], hh=pd&&pd.hits?pd.hits.slice():[0,0], HIT={s1:1,s2:1,s3:1,hr:1};
+      for(let i=0;i<Math.min(S0.n,D.pl.length);i++){ const q=D.pl[i]; if(q&&q.t==="pa"&&HIT[q.o])hh[q.s]++ } return keep(hh) } }
+  return live.hitsShown&&live.hitsShown.n===live.drives.length?live.hitsShown.hh:null }   // just after a call: what was shown, until the inning plays on
 function lineScore(g,drives,now){
   const ls=drives.length?drives[drives.length-1]:null, done={h:ls?ls.sh:0,a:ls?ls.sa:0};
   const part=now&&(now.h>done.h||now.a>done.a)?{h:now.h-done.h,a:now.a-done.a}:null;
   const n=Math.max(SEGS,drives.length+(part?1:0)), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
-  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell(live&&live.hold&&live.hold.hits&&!live.done?live.hold.hits[side==="h"?0:1]:drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;   /* round 105: in the full match, the hits as shown (held through a call inside an inning) */
+  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell((()=>{ const hh=bsShownHits(); return hh?hh[side==="h"?0:1]:null })()!=null?bsShownHits()[side==="h"?0:1]:drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;   /* round 105: in the full match, the hits as shown (held through a call inside an inning) */
   return `<div class="linescore"><table><tr><th></th>${Array.from({length:n},(_,i)=>`<td>${i+1}</td>`).join("")}<td class="b">R</td><td>H</td></tr>${row("a",g.away)}${row("h",g.home)}</table></div>`;
 }
 function liveScoreboard(){
