@@ -409,6 +409,31 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse and Instinct). Work in progress.
+- Backups: Muse found no export in college football once a career existed. Measured: every game, college football too,
+  had one under "?" inside the career (test/backup-reach.js presses it, laptop and phone, and reads the file back); she
+  was on the title screen. Each career on the title screen now has its own Back up.
+- Football's defense reads are headed by the quarter they come in. The second waits for two of your drives after the
+  break (the evidence it reads), so "After half-time" came at Q3 0:30 and Q4 12:33 (both testers). 0 of 164 reads in six
+  seasons now name a quarter other than the header's. Not changed: when it comes.
+- Engine 21 (football, stats only, no draws): a receiver's touchdown catches and a back's touchdown runs are inside his
+  own yards. Receivers' yards were a split of the passer's drawn apart from the scoring (Muse: 203 yards of touchdown
+  catches on a 169-yard line). 12 of 70 receivers with a touchdown catch were under in a season of games, worst 60 on 7;
+  now 0 (boxscore.js checks it). Each gets his touchdown yards and 2 a catch for the rest, from the catches the roster
+  doesn't carry first, then added to the passer.
+- Football's full match: the header and the line under the field follow the drive on the field. The header ran a drive
+  behind in 26 of 44 samples and lost its clock in 18 (the first clip's clock never drew; your own drive's lead-up had no
+  held score to draw it); the field line was a drive behind in all 44. Now 0, 0, 0 (test/fb-header.js, both games). Yard
+  lines past midfield read "their 45", not "own 55". HL_SPORT.headLive and footText set them in place: a render would
+  show the drive chart's result early.
+- Result cards: a postseason game is never an NBA Cup game (the pro basketball golden had a game 7 read "NBA Cup group
+  game: lost"; Instinct's play-in win). The Film Room measures a lost football call against the best option and now
+  names it (it named the assistant's: "cost seven relative to punting", seven being kicking's edge). A season's best or
+  costliest call where the assistant made the same call that night says it's compared with leaving it to him, replayed.
+- Pro football's division clause reads the standings once the regular season ends and before the champions are
+  written (Instinct's won-and-not-won; not reproduced in 640 team-seasons and 25 sims ahead: a guard).
+- Goldens re-recorded for engine 21; on ENGINE_NOW=20 only the result-card and call lines above move.
+
 Round 106: football's fourth and N follows the drive (engine 20; Ian: its own round).
 - rollDrive drew a stalled drive's fourth and N apart from how far it got, so 9.8% (college) and 10.9% (pro) of stalled
   live drives ended on a state no series of downs reaches (fourth and 1 after 2 yards from a fresh first down), and the
