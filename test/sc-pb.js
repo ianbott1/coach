@@ -18,6 +18,12 @@ for(let s=1;s<=40;s++){
   const hurt=t=>new Set(A.SEA.talent&&A.SEA.talent.inj&&A.SEA.talent.inj[t]?A.SEA.talent.active(t).map(q=>q.idx):[]);
   const H=[hurt(g.home),hurt(g.away)];
   let prevLast=null;
+  // the scoreboard's numbers at the end: the engine's shots and on target, the stretches' corners and fouls added up
+  { const T=A.HL_SPORT.spTally(L,e.drives.length,null,null), D=e.drives.filter(d=>typeof d.seg==='number'&&!d.ot), last=D[D.length-1];
+    [['home',0],['away',1]].forEach(([sd,i])=>{ ok(T.o[i].sh===last.st[sd][0]&&T.o[i].sot===last.st[sd][1],`seed ${s} ${sd}: the scoreboard's shots ${T.o[i].sh}/${T.o[i].sot}, engine ${last.st[sd]}`);
+      const sum=D.reduce((t,d)=>{ const c=A.HL_SPORT.spCounts(L,d)[i]; return {corner:t.corner+c.corner,foul:t.foul+c.foul} },{corner:0,foul:0});
+      ok(T.o[i].corner===sum.corner&&T.o[i].foul===sum.foul,`seed ${s} ${sd}: the scoreboard's corners and fouls aren't the stretches'`) });
+    ok(T.pH>0.2&&T.pH<0.8,`seed ${s}: possession ${T.pH}`) }
   e.drives.forEach((d,di)=>{ if(d.ot||d.seg==null||typeof d.seg!=='number')return;
     const P=A.HL_SPORT.spPlan(L,d), c=A.HL_SPORT.spCounts(L,d), tag=`seed ${s} stretch ${d.seg}`;
     tot.stretches++; tot.moves+=P.moves.length;

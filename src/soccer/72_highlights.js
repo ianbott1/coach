@@ -284,7 +284,7 @@ const HL_SPORT=(function(){
   // the counts the screen shows for the stretch (test/sc-pb.js checks them against the engine's)
   function spCounts(L,d){ const P=spPlan(L,d), o=[{cr:0,lb:0,to:0,foul:0,corner:0,off:0,card:0},{cr:0,lb:0,to:0,foul:0,corner:0,off:0,card:0}];
     P.moves.forEach(m=>{ m.T.forEach(t=>{ if(t.k==="cross")o[m.side].cr++; if(t.k==="long"||t.lk)o[m.side].lb++ });
-      if(m.end==="high")o[1-m.side].to++; if(m.end==="foul"||m.end==="card")o[1-m.side].foul++; if(m.end==="card")o[1-m.side].card++; if(m.end==="corner")o[m.side].corner++; if(m.end==="off")o[m.side].off++ });
+      if(m.end==="high")o[1-m.side].to++; if(m.end==="foul"||m.end==="card"||m.end==="clip"&&m.m.c.kind==="red")o[1-m.side].foul++; if(m.end==="card")o[1-m.side].card++; if(m.end==="corner")o[m.side].corner++; if(m.end==="off")o[m.side].off++ });
     return o }
   // round 103: the match's numbers so far, as the screen has shown them: every stretch before this one whole, this one up
   // to the clock (possession from the engine's lean, the read's own figure)
@@ -293,7 +293,7 @@ const HL_SPORT=(function(){
     if(last&&last.st)[["home",0],["away",1]].forEach(([sd,s])=>{ o[s].sh=last.st[sd][0]; o[s].sot=last.st[sd][1] });
     if(d&&f!=null){ let P=null; try{ P=spPlan(L,d) }catch(e){}
       if(P){ P.moves.forEach(m=>{ const z=m.T[m.T.length-1]; if(z.f>f)return; const s=m.side;
-          if(m.end==="corner")o[s].corner++; if(m.end==="off")o[s].off++; if(m.end==="foul"||m.end==="card")o[1-s].foul++;
+          if(m.end==="corner")o[s].corner++; if(m.end==="off")o[s].off++; if(m.end==="foul"||m.end==="card"||m.end==="clip"&&m.m.c.kind==="red")o[1-s].foul++;
           if(m.end==="clip"&&m.m.c.kind!=="red"){ /* the shot itself: counted once its clip has played */ } }) }
       const EP=d._ev; if(EP)EP.clips.forEach(c=>{ if(c.kind==="red"||c.f>=f)return; const s=c.home?0:1; o[s].sh++; if(c.kind==="goal"||c.kind==="save")o[s].sot++ }) }
     const ta=last&&last.TA, pH=ta&&ta.home&&ta.away?(50+ta.home.pos/Math.max(1,ta.home.n))/((50+ta.home.pos/Math.max(1,ta.home.n))+(50+ta.away.pos/Math.max(1,ta.away.n))):null;
