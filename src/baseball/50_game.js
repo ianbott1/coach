@@ -125,17 +125,17 @@ function readCall(T,cur){
     tell:Object.assign({},T), best:bsRead(T)};
 }
 function pullCall(inn,lead,P,on){
-  return {k:"pull",h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
+  return {k:"pull",inn:inn,h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
     q:`${P.n||"Your starter"} has faced ${P.bf} batters${P.ra?` and given up ${nOf(P.ra,"run")}`:""}.${on?" "+on:""} Go to the bullpen?`,
     opts:[["pen","Go to the bullpen"],["stay","Leave him in"],ASSIST], bf:P.bf, ra:P.ra, sp:P.n||null};
 }
 function pinchCall(inn,lead,who,bench,on){
-  return {k:"pinch",h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
+  return {k:"pinch",inn:inn,h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
     q:`${on}. ${who||"Your number nine"} is up. Pinch-hit${bench?" with "+bench:""}?`,
     opts:[["pinch",`Pinch-hit${bench?": "+bench.split(" ").slice(-1)[0]:""}`],["let","Let him hit"],ASSIST]};
 }
 function stealCall(inn,lead,runner,outs){
-  return {k:"steal",h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
+  return {k:"steal",inn:inn,h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
     q:`${runner||"Your runner"} on first, ${outs===0?"nobody":"one"} out. Send him?`,
     opts:[["send","Send him"],["hold","Hold him"],ASSIST]};
 }
