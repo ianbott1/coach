@@ -1,5 +1,5 @@
 {
- "fp": "2c8c496afc68c997",
+ "fp": "afabd12e9f82322f",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -230,6 +230,11 @@
    "fp": "2c8c496afc68c997",
    "from": "02e3bb983aa63af8",
    "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
+  },
+  {
+   "fp": "afabd12e9f82322f",
+   "from": "2c8c496afc68c997",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "result": {
@@ -243,8 +248,8 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "fd64034a4fd3d2ad",
-    "universe": "7d087044c2fd39e1",
-    "screens": "2e1a2b141a9b0bbd"
+    "universe": "324418115a2852f6",
+    "screens": "f135046a7961fcd7"
    },
    {
     "year": 2027,
@@ -255,8 +260,8 @@
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
     "history": "6eb635fcda3a4496",
-    "universe": "ec5b4b357257ab42",
-    "screens": "6b620bcd77c2ebbf"
+    "universe": "ffa3f3cdb3e3ce99",
+    "screens": "15bf13c90346c929"
    }
   ],
   "Colorado#777": [
@@ -269,8 +274,8 @@
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
     "history": "7fc71e187a31d02c",
-    "universe": "63cffa422e64653d",
-    "screens": "dcb23abca29fac79"
+    "universe": "4591916769b350ee",
+    "screens": "d6f99e3ab415002d"
    },
    {
     "year": 2027,
@@ -281,8 +286,8 @@
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
     "history": "12462c1fdf09ce32",
-    "universe": "5aea38a7c54e59a6",
-    "screens": "56c80b0e07479a05"
+    "universe": "ae0005fac3d7ac23",
+    "screens": "d186253ff003321b"
    }
   ],
   "schedules#60": [

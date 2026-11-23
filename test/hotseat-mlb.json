@@ -140,6 +140,11 @@
    "fp": "a8057d553642d8e4",
    "from": "6936c4490e1b48a6",
    "note": "round 97: baseball's live chance shrinks as tau^0.7, so the season story's lowest and highest moments move; a control with the old shrink matched the old baseline (6936c449)"
+  },
+  {
+   "fp": "a8057d553642d8e4",
+   "from": "a8057d553642d8e4",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "out": [

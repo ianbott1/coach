@@ -1,5 +1,5 @@
 {
- "fp": "34d7205a24ad6ca5",
+ "fp": "263e1ef366c85dc9",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -575,6 +575,11 @@
    "fp": "34d7205a24ad6ca5",
    "from": "280a58c165ec2a4a",
    "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
+  },
+  {
+   "fp": "263e1ef366c85dc9",
+   "from": "34d7205a24ad6ca5",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "result": {
@@ -588,8 +593,8 @@
     "poll": "2a55a0cfd29942e4",
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
-    "universe": "c2ade2a4607bf759",
-    "screens": "6d47c655b371e888"
+    "universe": "a8cfb55b751e8b36",
+    "screens": "2d8c0fca282ec81a"
    },
    {
     "year": 2027,
@@ -600,8 +605,8 @@
     "poll": "6104f50439b52067",
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
-    "universe": "5f6851b5dd9b7ee6",
-    "screens": "367622a3165d134d"
+    "universe": "90269ebe17c9b5e1",
+    "screens": "bf187fd363c8179e"
    }
   ],
   "Coppin State#2024": [
@@ -614,8 +619,8 @@
     "poll": "26edc4b624e67dc9",
     "heis": "942c9abdaed040d4",
     "history": "df81ab6f6095ef61",
-    "universe": "3f890510b73e71a1",
-    "screens": "1521565c9675228b"
+    "universe": "571f1386e2e52c60",
+    "screens": "55896d854427fd8b"
    },
    {
     "year": 2027,
@@ -626,8 +631,8 @@
     "poll": "9a4ecb50cbc55f8a",
     "heis": "ef6bde742321790a",
     "history": "29b9279493cb5e15",
-    "universe": "c39bc0a64aac336a",
-    "screens": "cdb3d212c0f4ec1a"
+    "universe": "7935b8a80855900c",
+    "screens": "7aeb9fd8bf290a7f"
    }
   ],
   "Gonzaga#777": [
@@ -640,8 +645,8 @@
     "poll": "dbdd18f0523ce927",
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
-    "universe": "10dc5f1b8dd09d6f",
-    "screens": "3a8e1d00d21c8c17"
+    "universe": "03be4fb9597890fa",
+    "screens": "99f2e457a5e0f6d3"
    },
    {
     "year": 2027,
@@ -652,8 +657,8 @@
     "poll": "2acaa39089e082dd",
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
-    "universe": "d6ae91930dbf2206",
-    "screens": "eaf629d2afb2d610"
+    "universe": "3526b3ba2ee839f1",
+    "screens": "6d9f8d0a882ca8bb"
    }
   ],
   "schedules#60": [

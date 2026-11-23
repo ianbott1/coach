@@ -1,5 +1,5 @@
 {
- "fp": "bcb09a99c1a405bd",
+ "fp": "a9b14102974f25c2",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -105,6 +105,11 @@
    "fp": "bcb09a99c1a405bd",
    "from": "519878de2263cdac",
    "note": "Round 106 revised: engine 20 without the kick inside their 28 (it widened the pro chance's miss to 14 points on a pair); fourth and N and own-half punts stay. ENGINE_NOW=19 gives d5adcd9's fingerprints"
+  },
+  {
+   "fp": "a9b14102974f25c2",
+   "from": "bcb09a99c1a405bd",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "result": {
@@ -116,10 +121,10 @@
     "champion": "Ohio State",
     "rec": "fdad2e3cad9aef25",
     "poll": "b598e68e8e87dfc2",
-    "heis": "6ea233d3aca64359",
-    "history": "0a5fd921838f821b",
-    "universe": "65ccfe2d4cbbd6a6",
-    "screens": "b083857f45b8508f"
+    "heis": "c15cc548db28d6ea",
+    "history": "103a796d2863e60b",
+    "universe": "2f13b301310bb63a",
+    "screens": "56801cdd46c0d2df"
    }
   ]
  }

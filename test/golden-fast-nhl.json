@@ -1,5 +1,5 @@
 {
- "fp": "e878f57670c1e540",
+ "fp": "c197b0a6e0ee4355",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -115,6 +115,11 @@
    "fp": "e878f57670c1e540",
    "from": "17800a07566e4a30",
    "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
+  },
+  {
+   "fp": "c197b0a6e0ee4355",
+   "from": "e878f57670c1e540",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "result": {
@@ -128,8 +133,8 @@
     "poll": "3930f4d04e8ea79e",
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
-    "universe": "321112602711f413",
-    "screens": "a2b3ca456e58e9b8"
+    "universe": "5fe65d7a272d9383",
+    "screens": "c52af99a39a17ada"
    }
   ]
  }

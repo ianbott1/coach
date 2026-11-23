@@ -1,5 +1,5 @@
 {
- "fp": "e8d5e99920dce383",
+ "fp": "4e3ef2cf56043344",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -110,6 +110,11 @@
    "fp": "e8d5e99920dce383",
    "from": "447d1c8483e3ddb8",
    "note": "Round 106 revised: engine 20 without the kick inside their 28 (it widened the pro chance's miss to 14 points on a pair); fourth and N and own-half punts stay. ENGINE_NOW=19 gives d5adcd9's fingerprints"
+  },
+  {
+   "fp": "4e3ef2cf56043344",
+   "from": "e8d5e99920dce383",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "result": {
@@ -122,9 +127,9 @@
     "rec": "9e0100c131c9cc8f",
     "poll": "44f7189f05bd9377",
     "heis": "ac04dcfdb5834804",
-    "history": "5ba9addeb9fff599",
-    "universe": "b4e0c4ad3e32a69f",
-    "screens": "b20a7bb4f694f319"
+    "history": "509f74bb6a73f72b",
+    "universe": "d46b9e91b6506a82",
+    "screens": "3d5968285b43ed1c"
    }
   ]
  }

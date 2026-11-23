@@ -1,5 +1,5 @@
 {
- "fp": "d15195f549a341c7",
+ "fp": "b79d4335209fe591",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -405,6 +405,11 @@
    "fp": "d15195f549a341c7",
    "from": "92f0034847e52553",
    "note": "Round 106 revised: engine 20 without the kick inside their 28; ENGINE_NOW=19 gives d5adcd9's"
+  },
+  {
+   "fp": "b79d4335209fe591",
+   "from": "d15195f549a341c7",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "out": [
@@ -418,7 +423,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "6235048c71f157af"
+     "book": "6dcb459521b5e6da"
     },
     {
      "team": "Tennessee",
@@ -427,7 +432,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "ddd686f9254c6e59"
+     "book": "978455b071bbff5c"
     }
    ]
   },
@@ -441,7 +446,7 @@
       "result": "Lost in the wild card round",
       "grade": "B-"
      },
-     "book": "677e5f45f051a49c"
+     "book": "2c6c8983a2460872"
     },
     {
      "team": "Tennessee",
@@ -450,7 +455,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A"
      },
-     "book": "f49eb436cf8bd61f"
+     "book": "610ff42ec4b92d1e"
     }
    ]
   },
@@ -464,7 +469,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "cf31325c3b6350d9"
+     "book": "f515acb7290862fa"
     },
     {
      "team": "Tennessee",
@@ -473,7 +478,7 @@
       "result": "Lost the conference championship",
       "grade": "A+"
      },
-     "book": "23aa7e9a27c9fd7d"
+     "book": "05e9cbbb1d05db03"
     }
    ]
   }

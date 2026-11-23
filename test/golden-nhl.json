@@ -1,5 +1,5 @@
 {
- "fp": "65148909282647f6",
+ "fp": "033f9ce35a24993f",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -585,6 +585,11 @@
    "fp": "65148909282647f6",
    "from": "25ac2a84a1528eeb",
    "note": "Round 106 (engine 20): a power play's shots and goals inside its two minutes (minutes only, no draw); one screen differs (a goal's minute), results identical"
+  },
+  {
+   "fp": "033f9ce35a24993f",
+   "from": "65148909282647f6",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
   }
  ],
  "result": {
@@ -598,8 +603,8 @@
     "poll": "3930f4d04e8ea79e",
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
-    "universe": "321112602711f413",
-    "screens": "a2b3ca456e58e9b8"
+    "universe": "5fe65d7a272d9383",
+    "screens": "c52af99a39a17ada"
    },
    {
     "year": 2027,
@@ -610,8 +615,8 @@
     "poll": "9e1437b4306e21ad",
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
-    "universe": "ad679e0824e5559c",
-    "screens": "5dfb6db235976255"
+    "universe": "8647e278cb6dbef4",
+    "screens": "b76d77ad36693d55"
    }
   ],
   "Edmonton#777": [
@@ -624,8 +629,8 @@
     "poll": "103fbed1ccbe4635",
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
-    "universe": "3fa5f2ceb7cf4242",
-    "screens": "9ed989157e2742b6"
+    "universe": "dad15a2971db45ab",
+    "screens": "1d19d5ae580fe784"
    },
    {
     "year": 2027,
@@ -636,7 +641,7 @@
     "poll": "6473ff5c85c28291",
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
-    "universe": "97faef7ebf5e7e9a",
+    "universe": "b50420b66f7983ae",
     "screens": "cee75777d68e319d"
    }
   ],
