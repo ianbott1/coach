@@ -409,6 +409,41 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Rounds 103-105: soccer and hockey touch by touch, baseball pitch by pitch (Ian: "best in the world"; the engine
+decides everything with the same dice; what the screen shows is built from the stretch's own record and hash).
+- Soccer (72_highlights spPlan/spDraw, round 103). Each five minutes is a run of moves, each passed between the men on the
+  pitch and ending in what the stretch's numbers say: the crosses, long balls and balls won high each side makes are the
+  engine's (d.TA, the whole match's tally, less the stretch before, so the read card's numbers are what you watched),
+  each booking at its minute on the man the commentary books (cardName's), fouls, corners and offsides at league rates
+  (10.5, 5 and 1.8 a side a match) from the stretch's hash, possession as the read has it (50 plus each side's lean,
+  normalised for the scoreboard). Every move picks up where the last ended (kick-off, goal kick, corner flag, free kick
+  where the foul was, a throw where it went out); the move before a shot ends where the shot's own move begins, on its
+  first man in his shirt (hlEvPlan's clips are the anchors; two shots in a minute are spread a moment apart), and the
+  clip grows out of the play (each man starts from where the play had him). The eleven: keeper, and each line's two
+  men (the squad has a first and second man per line; the engine shares the line's shots, goals and assists between
+  them all match, bench share ~25-32%), so every man on the pitch is named and no shooter comes from outside it (it was
+  20% with nameless partners). A man sent off leaves the pitch (slot 2, the centre back the red clip sends off). A goal's
+  last pass is the assist the box credits for a watched game (d.pn [side,"a",slot,minute]; the draws are made as before
+  either way); 72-76% of watched goals are assisted, the engine's 72%. The scoreboard keeps possession, shots, on target,
+  corners, fouls and offsides as far as the clock (spTally). Twenty seconds of play a stretch at Normal (was twelve).
+  Drawn from (stretch, fraction), so pause holds still (HLK.now frozen while live.pb.frozen). The plan is kept off the
+  save (non-enumerable d._sp). test/sc-pb.js (scripted: counts, continuity, shirts, red cards, bookings, scoreboard),
+  test/sc-watch.js (browser: assists against the passes shown, a reload keeps the box, pause holds still).
+- Hockey (hpPlan/hpDraw, round 104). The same shape on the rink: each side's forced giveaways, killed zone entries and
+  cycles are the engine's tells (d.T deltas: the read's "giveaways they force", "entries they kill", "shifts they cycle"),
+  each penalty at its minute with the side short a man for two minutes (no sixth skater, in the play and in the clips),
+  icings, offsides and frozen saves bring faceoffs at the dots (both lines set there), hits at the league's rate. The
+  lines change every 45 seconds of play by the club's deployment (the clips' rule); the move before a shot is on the
+  shot's own men (clip.an/dn). Twenty-eight seconds of play a stretch at Normal (was twelve). The scoreboard keeps shots,
+  power plays (goals/chances), PIM and hits. test/hk-pb.js. Shots come about five a stretch, so ~2% of moves are a
+  quick touch between two (bounded at 3%).
+- Baseball (bsPitches, round 105). Each plate appearance's pitches are a legal count that ends in the engine's result
+  (strike three swinging or looking, ball four, in play, hit by pitch; a foul never strike three), from the at-bat's
+  hash: 3.82 pitches a PA (MLB ~3.9), 26% of strikeouts looking, 12% full counts. The count and each call on screen.
+  The line score's H is the hits as played (it read the last finished inning's, so a run could read on 0 hits).
+  test/bs-pitch.js, test/bs-watch.js (fails on 62a4ca3: H never rose mid-inning).
+- A watched match is longer: soccer about 1.7x, hockey about 2x, baseball about 1.8x the round 101 time at the same speed.
+
 Round 101: Full match as a match to watch (Ian: "it should be super interesting to watch full matches and as realistic as
 possible - in football manager I would do this all the time"; then "add a play-by-play engine").
 - The rule throughout: the engine still decides everything, with the same dice. What the screen shows is logged or built
