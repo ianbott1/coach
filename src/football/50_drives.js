@@ -162,6 +162,13 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   return {td:td, fg:fg, to:to};
 }
 
+/* engine 20 (round 106): a fourth and N the drive could have reached, from a drawn one (no draw). G yards from a fresh
+   first down: with no first down since, it's 10 - G exactly; with one at X (at least 10 past the start) it's X + 10 - the
+   spot, so at least 20 - G; goal to go, the distance to the goal line. */
+function fbTogo(t,start,stall){ const G=stall-start;
+  if(start+10>=100)return Math.max(1,100-stall);
+  if(G<10)t=t>=20-G?t:10-G; else if(G<19)t=Math.max(t,20-G);
+  return Math.max(1,Math.min(t,100-stall)) }
 function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
   const o = driveOdds(offElo, defElo, startYd, aggr, dmode, sm);
   const r = rng.r();
@@ -170,7 +177,9 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
     if(ENGINE_V<2)return {pts:3, kind:"FG", stall:Math.min(92,startYd+Math.round(rng.range(12,40)))};
     // round 71: a drive that ends in a kick, from where real kicks come (about 36 yards, rarely past 55), made at its odds
     const dist=Math.round(Math.max(19,Math.min(60,rng.gauss(38,9)))), stall=117-dist;
-    return rng.r()<fgOdds(stall)?{pts:3,kind:"FG",stall:stall}:{pts:0,kind:"MISS",stall:stall} }
+    // engine 20: the fourth and N a kick is asked at follows the drive too (it read "fourth and 3" whatever the drive; no draw)
+    const kt=ENGINE_V>=20?fbTogo(3,startYd,stall):undefined;
+    return rng.r()<fgOdds(stall)?{pts:3,kind:"FG",stall:stall,togo:kt}:{pts:0,kind:"MISS",stall:stall,togo:kt} }
   if (r < o.td + o.fg + o.to) {
     return {pts:0, kind: rng.r()<0.55 ? "INT" : "FUM",
             stall:Math.min(96,startYd+Math.round(rng.range(0,42)))};
@@ -179,8 +188,12 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
   const gain = Math.round(rng.gauss(22,17)+(sm?sm.gain:0));
   const stall = Math.max(startYd-6, Math.min(96, startYd+gain));
   const u = rng.r();
-  const togo = u<0.24?1 : u<0.42?2 : u<0.56?3 : u<0.68?4 : u<0.78?5 :
+  let togo = u<0.24?1 : u<0.42?2 : u<0.56?3 : u<0.68?4 : u<0.78?5 :
                u<0.86?7 : u<0.93?9 : Math.round(rng.range(11,17));
+  // engine 20 (round 106): the fourth and N follows how far the drive got. From a fresh first down a drive that gained
+  // G < 10 yards is at least 10 - G short; goal to go, it's the distance to the goal line. Same draws (about 8% of
+  // drives ended on an impossible state: fourth and 1 after 2 yards from a fresh first down)
+  if(ENGINE_V>=20)togo=fbTogo(togo,startYd,stall);
   const s = rng.r();
   let kind = s<0.70 ? "PUNT" : (s<0.86 ? "DOWNS" : "MISS");
   if (stall>=72 && kind==="PUNT") kind="MISS";       // you don't punt from there
