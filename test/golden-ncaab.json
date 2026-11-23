@@ -1,5 +1,5 @@
 {
- "fp": "c887278a24156e00",
+ "fp": "280a58c165ec2a4a",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -565,6 +565,11 @@
    "fp": "c887278a24156e00",
    "from": "180638965af9fda3",
    "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
+  },
+  {
+   "fp": "280a58c165ec2a4a",
+   "from": "c887278a24156e00",
+   "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
   }
  ],
  "result": {
@@ -578,7 +583,7 @@
     "poll": "2a55a0cfd29942e4",
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
-    "universe": "cfdc0fa1ee1405de",
+    "universe": "5a5cf729f316bf76",
     "screens": "6d47c655b371e888"
    },
    {
@@ -590,7 +595,7 @@
     "poll": "6104f50439b52067",
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
-    "universe": "a21b8d17c6095b61",
+    "universe": "4e9c4b07b19c0f8e",
     "screens": "367622a3165d134d"
    }
   ],
@@ -604,7 +609,7 @@
     "poll": "26edc4b624e67dc9",
     "heis": "942c9abdaed040d4",
     "history": "df81ab6f6095ef61",
-    "universe": "b56afeaeafe8a90a",
+    "universe": "6bc0fd5765847887",
     "screens": "1521565c9675228b"
    },
    {
@@ -616,7 +621,7 @@
     "poll": "9a4ecb50cbc55f8a",
     "heis": "ef6bde742321790a",
     "history": "29b9279493cb5e15",
-    "universe": "ea42fe7b847c39fd",
+    "universe": "f5b3906306899c7b",
     "screens": "cdb3d212c0f4ec1a"
    }
   ],
@@ -630,7 +635,7 @@
     "poll": "dbdd18f0523ce927",
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
-    "universe": "328540b0fbddd01d",
+    "universe": "1834ca2fd47575c2",
     "screens": "3a8e1d00d21c8c17"
    },
    {
@@ -642,7 +647,7 @@
     "poll": "2acaa39089e082dd",
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
-    "universe": "b609d9c8f23da69f",
+    "universe": "ce220b5f99bef21a",
     "screens": "eaf629d2afb2d610"
    }
   ],

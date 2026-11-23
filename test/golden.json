@@ -1,5 +1,5 @@
 {
- "fp": "61ac6e7d46e7aad2",
+ "fp": "1b22fc6b20180a31",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -594,6 +594,11 @@
    "fp": "61ac6e7d46e7aad2",
    "from": "03eac32c1e90f3d2",
    "note": "round 101: a touchdown's yards never exceed the field the drive had (driveScript caps the same draw at 100-start); stat lines and awards move, games, standings, polls and champions identical"
+  },
+  {
+   "fp": "1b22fc6b20180a31",
+   "from": "61ac6e7d46e7aad2",
+   "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
   }
  ],
  "result": {
@@ -607,7 +612,7 @@
     "poll": "417ab7a88d36ae1f",
     "heis": "18dfdd2f20eb3b97",
     "history": "25e7fa6fd4e99b82",
-    "universe": "c030671bb41586ea",
+    "universe": "a00592ddfc8c6a94",
     "screens": "b116058ad2f915e9"
    },
    {
@@ -619,7 +624,7 @@
     "poll": "69979798e0d65c13",
     "heis": "8b7a474aedecef62",
     "history": "fff3a6bf7f757ac4",
-    "universe": "8acb8410c3aba0cf",
+    "universe": "0485be25c00e5f05",
     "screens": "f07937922956c4ee"
    },
    {
@@ -631,7 +636,7 @@
     "poll": "47a57fa40cf57aa4",
     "heis": "86a1f37110996796",
     "history": "6bd6df403bc2aba5",
-    "universe": "d24d0fe87864b86f",
+    "universe": "cfca8bddeac4ce3c",
     "screens": "76e40a95603d8e38"
    },
    {
@@ -643,7 +648,7 @@
     "poll": "59ae3e277fbbdfef",
     "heis": "c012d4792aa2ab0f",
     "history": "6c5057836e94fa5b",
-    "universe": "1feb89d6ce3da278",
+    "universe": "737be47e075d377b",
     "screens": "5f99cd873f8e3c37"
    }
   ],
@@ -657,7 +662,7 @@
     "poll": "3ee5921cf08b5e83",
     "heis": "22cd28654166ce01",
     "history": "f2713966858f5430",
-    "universe": "e31dea144436b9a1",
+    "universe": "fb8774913cd7c21f",
     "screens": "c9085b22f349affb"
    },
    {
@@ -669,7 +674,7 @@
     "poll": "c9431f99fa9d8989",
     "heis": "0b42dc554bd2406c",
     "history": "f62e96e8253f2fed",
-    "universe": "98387ef3b832957b",
+    "universe": "ec3c16ac3d59364d",
     "screens": "689aed4e92d0d5f5"
    },
    {
@@ -681,7 +686,7 @@
     "poll": "1492bde93a6580ab",
     "heis": "a16aace2f4251f32",
     "history": "1f39dca970666411",
-    "universe": "8429d1fbf7f4b063",
+    "universe": "60da2015451efcdd",
     "screens": "138550ba8831f041"
    },
    {
@@ -693,7 +698,7 @@
     "poll": "54c8a5e1b042dcc9",
     "heis": "b1582f00351852f6",
     "history": "d0216834f90092e0",
-    "universe": "14a5e68cc0c82329",
+    "universe": "0aa95a8bc3cfaab0",
     "screens": "673b31a02ce21eaf"
    }
   ],
@@ -707,7 +712,7 @@
     "poll": "b4a085250e192165",
     "heis": "66407f3f67f39674",
     "history": "a7870012908838a3",
-    "universe": "d64425bb967ddda3",
+    "universe": "d2fcea970b208ccd",
     "screens": "1a3b3c90c6752d59"
    },
    {
@@ -719,7 +724,7 @@
     "poll": "5f54ff98374fcaf8",
     "heis": "87d2de6f0270a30f",
     "history": "ad18f312858b4f81",
-    "universe": "208af284999281d9",
+    "universe": "f62feb429a431507",
     "screens": "d65a5366917e4c78"
    },
    {
@@ -731,7 +736,7 @@
     "poll": "bf6fd7503eb879bf",
     "heis": "8838c480ac698135",
     "history": "222507bc4551e5a7",
-    "universe": "9572236981fb635c",
+    "universe": "05d847d6c887518a",
     "screens": "7da88878696611c7"
    }
   ],
@@ -745,7 +750,7 @@
     "poll": "54856ffcb3626aca",
     "heis": "73505a430b8ca78b",
     "history": "de4cc0160e2b6650",
-    "universe": "d18f338e9fe6e095",
+    "universe": "57e4b54b3a0ba870",
     "screens": "93757510bef1fbee"
    },
    {
@@ -757,7 +762,7 @@
     "poll": "b6535693d835a89c",
     "heis": "930d68f26d9a5e15",
     "history": "83a63a76b9c84264",
-    "universe": "2486db90abbaaa05",
+    "universe": "17939f8a11719665",
     "screens": "949793f44a89f1c3"
    },
    {
@@ -769,7 +774,7 @@
     "poll": "dbf8ca88b2ca29eb",
     "heis": "b1ee17ec61f1d8f1",
     "history": "aaf1b0e1d83b9af5",
-    "universe": "cb85fe7a1ac2b60d",
+    "universe": "d8303b2782dcd654",
     "screens": "3575de2cbce540c1"
    }
   ],

@@ -1,5 +1,5 @@
 {
- "fp": "cfa8e788dfda5a6f",
+ "fp": "ef3bfd5eee5dec47",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -90,6 +90,11 @@
    "fp": "cfa8e788dfda5a6f",
    "from": "e658821d9a2021cd",
    "note": "round 101: a touchdown's yards never exceed the field the drive had (driveScript caps the same draw at 100-start); stat lines and awards move, games, standings, polls and champions identical"
+  },
+  {
+   "fp": "ef3bfd5eee5dec47",
+   "from": "cfa8e788dfda5a6f",
+   "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
   }
  ],
  "result": {
@@ -103,7 +108,7 @@
     "poll": "4536227ce4d3a1d2",
     "heis": "0ab2f5a98ced127c",
     "history": "d86e4584fd624ebe",
-    "universe": "dbfdacf4289126bc",
+    "universe": "a020c074cdfdbd07",
     "screens": "98d4651bb0079980"
    }
   ]

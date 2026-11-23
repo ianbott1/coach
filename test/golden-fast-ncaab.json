@@ -1,5 +1,5 @@
 {
- "fp": "15b16a47f2642f59",
+ "fp": "82f47270ad542111",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -80,6 +80,11 @@
    "fp": "15b16a47f2642f59",
    "from": "e8010cca86a625fa",
    "note": "Round 100: the Play button names the plan it starts on; basketball's read marks points in the paint (screens only; every other field checked equal, and a control with both off matches the old goldens)"
+  },
+  {
+   "fp": "82f47270ad542111",
+   "from": "15b16a47f2642f59",
+   "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
   }
  ],
  "result": {
@@ -93,7 +98,7 @@
     "poll": "2a55a0cfd29942e4",
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
-    "universe": "cfdc0fa1ee1405de",
+    "universe": "5a5cf729f316bf76",
     "screens": "6d47c655b371e888"
    }
   ]

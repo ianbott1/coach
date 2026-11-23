@@ -15,7 +15,7 @@ const HL_SPORT=(function(){
       if(dc){ if(dc.conv)out=out.filter(c=>c.kind!=="conv");
         // round 101: what the lead-up to a call already showed (leadUp) isn't shown again: the plays to the fourth down,
         // or the whole drive and its touchdown before the two-point call
-        const LS=typeof live!=="undefined"&&live&&L===live&&live.leadShown, sk=LS&&LS.n===d.n&&LS.start===d.start&&LS.home===!!d.home?LS:null;
+        const sk=leadFor(L,d);
         if(sk){ dc.plays=dc.plays.slice(sk.k); dc.base=Math.max(1,dc.plays.length)*1100; if(sk.all)out=[] }
         if(!sk||(!sk.all&&dc.plays.length))out=[dc].concat(out);
         // round 101: the live game keeps what the screen showed of this drive, from its first clip, for the box score
@@ -59,7 +59,7 @@ const HL_SPORT=(function(){
     return {k:pick(1,19,1), h:pick(10,19,2), line:[0,1,2,3,4,5,6,7,8].map(j=>pick(50,79,3+j))} }
   function base(L,d){ REST=!!(L&&L.restAt!=null&&L.drives&&L.drives.indexOf(d)>=L.restAt); const g=L.g, tm=d.home?g.home:g.away, opp=d.home?g.away:g.home, K=hlKits(g.home,g.away), O=numbers(tm,OFF_SL,FILL_O), D=numbers(opp,DEF_SL,FILL_D);
     return {offN:O.nums,defN:D.nums,onm:O.nm,ori:O.ri,dnm:D.nm,legend:[{team:tm,kit:K[d.home?0:1],list:O.list},{team:opp,kit:K[d.home?1:0],list:D.list}],d,tm:d.home?g.home:g.away,opp:d.home?g.away:g.home,home:!!d.home,q:d.q,inks:hlKits(g.home,g.away).map(k=>k.fill),kits:hlKits(g.home,g.away),hm:g.home,aw:g.away,ot:d.q>=5} }
-  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(40,Math.min(99,d.stall||75));
+  function mkKick(L,d){ const r=mulberry32(((d.n||1)*7919+(d.stall||0)*131+(d.home?17:29))>>>0), los=Math.max(25,Math.min(99,d.stall||75));
     // the kick's own length, as the run of play gives it; some hook, some start wide and curl back (round 70: Ian)
     const good=d.kind==="FG", hook=r()<0.45, wide=r()<0.5?-1:1;
     const B=base(L,d), team=d.home?L.g.home:L.g.away, st=stNums(team), kn=typeof kickerName==="function"?kickerName(team):null;
@@ -78,7 +78,7 @@ const HL_SPORT=(function(){
   // start, read ahead in the engine), with the passing side chasing him; the catch comes earlier to leave the run room
   // where they took over: read ahead in the engine, or (a game played before round 80, or simmed) the next drive's start
   function retTo(L,d){ if(d.retTo!=null)return d.retTo; const i=(L.drives||[]).indexOf(d), nx=i>=0?L.drives[i+1]:null; return nx&&nx.start!=null&&(d.lost!=null||d.stall!=null)?nx.start:null }
-  function mkPunt(L,d){ const rt=retTo(L,d), lost=d.lost!=null?d.lost:d.stall, r=mulberry32(((d.n||1)*7919+(lost||0)*131+(d.home?47:53))>>>0), los=Math.max(5,Math.min(85,lost)), end=100-rt;
+  function mkPunt(L,d){ const rt=retTo(L,d), lost=d.lost!=null?d.lost:d.stall, r=mulberry32(((d.n||1)*7919+(lost||0)*131+(d.home?47:53))>>>0), los=Math.max(1,Math.min(99,lost)), end=100-rt;
     const tb=rt===20&&los+40>=95, fair=!tb&&r()<0.25;
     let land=tb?104:fair?end:Math.min(99,end+Math.round(2+r()*Math.min(14,99-end)));
     if(land<=los+15)land=Math.min(99,los+30);
@@ -149,7 +149,7 @@ const HL_SPORT=(function(){
   // a punt: the snap back to the punter, the ball up and away, the coverage team down the field, the returner under it and
   // back to where they take over (or a fair catch, or a touchback)
   function puntFrame(x,W,H,c,t){
-    const snap=0.12, kick=0.24, landT=0.58, tEnd=0.92, pY=c.los-13, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const snap=0.12, kick=0.24, landT=0.58, tEnd=0.92, pY=Math.max(-9.5,c.los-13), r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     let bx,by,z=0; const ret=c.ret, rs=Math.max(0,Math.min(1,(t-landT)/(tEnd-landT)));
     const retAt=s=>[hlLerp(c.land,c.end,hlEase(s)),hlLerp(c.lane,0.5,hlEase(s)*0.4)];
     if(t<snap){ bx=c.los; by=0.5 } else if(t<kick){ const s=(t-snap)/(kick-snap); bx=hlLerp(c.los,pY,s); by=0.5 }
@@ -265,7 +265,7 @@ const HL_SPORT=(function(){
     return {plays,left:fail?c.left:null,forced} }
   function sideOf(r,pl,B){ if(pl.t==="pen")return pl; if(pl.t==="run"){ pl.rc=r()<(B.cfb?0.17:0.1)?0:1; if(pl.rc===1&&B.rb2&&r()<(B.cfb?0.33:0.25))pl.alt=1 } else if(pl.t==="sack"||pl.t==="scr")pl.rc=0; else pl.rc=RC[wpick(r,RCW)];
     if(pl.t==="sack")pl.by=r()<0.6?0:3; return pl }
-  function playsFor(L,d,next,B){ if(d.start==null)return null; const nx=next&&next[0], start=Math.max(1,Math.min(99,d.start)), k=d.kind;
+  function playsFor(L,d,next,B){ if(d.start==null)return null; const nx=(next||[]).find(c=>c.kind!=="conv"), start=Math.max(1,Math.min(99,d.start)), k=d.kind;
     let end=nx&&nx.los!=null&&nx.kind!=="conv"?nx.los:k==="TD"?100:(d.stall!=null?d.stall:d.lost!=null?d.lost:start); end=Math.max(1,Math.min(99,end));
     const fail=k==="PUNT"||k==="FG"||k==="MISS"||k==="DOWNS", r=mulberry32(((d.n||1)*104729+start*131+(d.home?7:13))>>>0);
     let plays=[], left=null, forced=false, conv=false;
@@ -273,7 +273,7 @@ const HL_SPORT=(function(){
     const A0=cv?stretch(r,start,cv[0],true,cv[1]):null;
     if(A0&&cv[0]+A0.left<100){ const A=A0, tg4=A.left, g4=Math.min(99-cv[0],Math.max(tg4,Math.min(90,cv[0]+Math.max(2,cv[1]))-cv[0])), bs=cv[0]+g4;
       const p4=Object.assign(fitPlay(r,4,tg4,g4),{down:4,togo:tg4,from:cv[0],fd:true,fourth:true}); if(p4.g<=0)p4.t="run";
-      const Bz=stretch(r,bs,Math.max(bs,end),fail,fail?d.togo:null); plays=A.plays.concat([p4],Bz.plays); left=Bz.left; forced=A.forced||Bz.forced; conv=true; end=Math.max(bs,end) }
+      const Bz=stretch(r,bs,end,fail,fail?d.togo:null); plays=A.plays.concat([p4],Bz.plays); left=Bz.left; forced=A.forced||Bz.forced; conv=true }
     else { const A=stretch(r,start,end,fail,fail?d.togo:null); plays=A.plays; left=A.left; forced=A.forced }   // (a fourth down made inside the 10 the plays can't reach: drawn as a drive without it)
     plays.forEach(p=>sideOf(r,p,B));
     return {plays,start,end,left,forced,conv} }
@@ -282,13 +282,28 @@ const HL_SPORT=(function(){
   function record(B,P,out){ const K={run:0,pass:1,inc:2,sack:3,scr:4}, rec=P.plays.filter(p=>p.t!=="pen").map(p=>[K[p.t],p.alt?B.rb2:(B.ori&&B.ori[p.rc]!=null?B.ori[p.rc]:-1),p.g]);
     out.forEach(c=>{ if(c.kind==="td")rec.push([c.pass?5:6,-1,c.len]); else if(c.kind==="int")rec.push([7,-1,0]); else if(c.kind==="fum"||c.kind==="downs")rec.push([0,B.ori?B.ori[1]:-1,c.len||0]) });
     return rec }
+  // the lead-up a call showed of this drive (live only): its plays, where they ended and the fourth and N they left
+  function leadFor(L,d){ const LS=typeof live!=="undefined"&&live&&L===live&&live.leadShown; return LS&&LS.n===d.n&&LS.start===d.start&&LS.home===!!d.home?LS:null }
+  /* the drive after a call: what the lead-up showed, then from where it ended: nothing more for a kick, a punt or a
+     turnover on downs; for a fourth down made, the play that made it (a flag on the defense when it was fourth and goal:
+     a made fourth and goal the engine carries on with, short of the line) and the rest of the drive from there */
+  function afterLead(L,d,next,LS){ const r=mulberry32(((d.n||1)*104729+(d.start||0)*131+(d.home?7:13)+977)>>>0), k=d.kind, fail=k==="PUNT"||k==="FG"||k==="MISS"||k==="DOWNS";
+    const plays=LS.plays.slice(); let end=LS.end, left=LS.left, conv=false, forced=!!LS.forced;
+    if(!LS.all&&d.cv){ const e0=LS.end, tg4=LS.left||d.cv[1], nx=(next||[]).find(c=>c.kind!=="conv"); let p4;
+      if(e0+tg4<100){ const g4=Math.min(99-e0,Math.max(tg4,Math.min(90,e0+Math.max(2,d.cv[1]))-e0)); p4=Object.assign(fitPlay(r,4,tg4,g4),{down:4,togo:tg4,from:e0,fd:true,fourth:true}); if(p4.g<=0)p4.t="run" }
+      else { const g=Math.max(1,Math.floor((100-e0)/2)); p4={t:"pen",g,down:4,togo:tg4,from:e0,fd:true,fourth:true,flag:"Defensive pass interference"} }
+      const bs=e0+p4.g, b=nx&&nx.los!=null?nx.los:k==="TD"?100:(d.stall!=null?d.stall:d.lost!=null?d.lost:bs), e1=Math.max(1,Math.min(99,b));
+      const Bz=stretch(r,bs,e1,fail,fail?d.togo:null); Bz.plays.forEach(p=>sideOf(r,p,LS.B)); plays.push(p4,...Bz.plays); left=Bz.left; forced=forced||Bz.forced; conv=true; end=e1 }
+    return {plays,start:d.start,end,left,forced,conv} }
   function mkDrive(L,d,next){ const B=base(L,d), tm=B.tm, R=(SEA.roster&&SEA.roster[tm])||[]; B.cfb=typeof LEAGUE!=="undefined"&&LEAGUE.id==="cfb"; PENS=B.cfb?[10,15]:[5,15];
     // the second back: a carry in five or so (the starter's number swapped for his); not when he's already the starter
     // (never a hurt man: hlFit gives the starter back when the backup is out, and then there's no second back)
     const r2=typeof BK==="function"?hlFit(tm,BK(1)):null;
     if(r2!=null&&B.ori&&B.ori[1]!==r2&&R[r2]){ B.rb2=r2; B.rb2n=shirtNo(tm,r2); B.rb2nm=String(R[r2].n).split(" ").slice(-1)[0] }
-    const P=playsFor(L,d,next,B); if(!P)return null;
-    const nx=next&&next[0]; if(nx&&nx.kind==="downs"&&P.left!=null&&P.left!==nx.togo){ nx.togo=P.left; nx.len=Math.min(nx.len,P.left-1) }   // (the engine's own fourth and N is what it left, unless the data can't get there)
+    const LS=leadFor(L,d); let P;
+    if(LS&&LS.plays){ LS.B=B; P=afterLead(L,d,next,LS) } else P=playsFor(L,d,next,B);
+    if(!P)return null;
+    const nx=(next||[]).find(c=>c.kind==="downs"); if(nx&&P.left!=null&&P.left!==nx.togo){ nx.togo=P.left; nx.len=Math.min(nx.len,P.left-1) }   // (the engine's own fourth and N is what it left, unless the data can't get there)
     const c=Object.assign(B,{kind:"drive",plays:P.plays,start:P.start,end:P.end,left:P.left,forced:P.forced,conv:P.conv,base:Math.min(16500,Math.max(1,P.plays.length)*1100),reveal:0.999});
     c.rec=record(B,P,next||[]); return c }
   const who=(c,pl)=>pl.alt?c.rb2nm||"#"+c.rb2n:c.onm&&c.onm[pl.rc]?c.onm[pl.rc]:(pl.rc===4?"tight end #":pl.rc===5?"slot receiver #":"#")+(c.offN?c.offN[pl.rc]:"");
@@ -401,7 +416,7 @@ const HL_SPORT=(function(){
     const n=L2.drives.length; [dc].concat(out).forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+n; c.scores=two });
     const clips=two?[dc].concat(out.filter(c=>c.kind==="td")):[dc];
     if(!dc.plays.length&&!two)return null;
-    return {clips:clips.filter(c=>c.kind!=="drive"||c.plays.length),hold:two,key:{n:d.n,start:d.start,home:d.home,k:dc.plays.length,all:two}} }
+    return {clips:clips.filter(c=>c.kind!=="drive"||c.plays.length),hold:two,key:{n:d.n,start:d.start,home:d.home,k:dc.plays.length,all:two,plays:dc.plays,end:dc.plays.reduce((t,p)=>t+p.g,dc.start),left:dc.left,forced:dc.forced}} }
   const headClock=c=>c&&c.hd||null;
   return {replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
            clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns",
