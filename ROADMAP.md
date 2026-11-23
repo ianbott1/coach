@@ -126,6 +126,11 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 102 (done): the field fits the screen (ships with 101)
+- Hockey's header clock no longer piles up old minutes. The whole field sits above the action bar on a laptop (baseball's
+  home plate and batter were under it at 1280x800). Soccer's squad men named between moments.
+- Next: soccer play by play (round 103), hockey (104), baseball pitch by pitch (105), then football's fourth and N.
+
 ## Round 101 (done): Full match as a match to watch
 - Every sport's Full match plays the game's own events, not decoration: basketball every possession, baseball every
   at-bat and steal, soccer and hockey on a running clock with every goal and counted shot at its minute.
