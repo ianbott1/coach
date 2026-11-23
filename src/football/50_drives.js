@@ -424,9 +424,13 @@ function fbPrepCall(rep){
     opts:Object.keys(FB_ANSWERS).map(a=>[a,FB_ANSWERS[a].l]).concat([["normal","Wait and see: leave it to your assistant"]]),
     report:Object.assign({},rep), n:FB_READ.scouted, pearl:top};
 }
-function fbReadCall(stage,T,T2,last,cur){
-  const D=T2&&T2.n?T2:null;
-  return {k:"read",stage:stage,h:stage===1?"Second quarter: their defense":"After half-time: their defense",
+/* round 107: the header names the quarter it's asked in. The second read waits for two of your drives after the
+   break (the evidence it reads), so it came in the third or fourth quarter headed "After half-time" (both testers,
+   Nov 23: "After half-time" at Q4 12:33); the first read can come in the third too */
+const FB_QN=["","First","Second","Third","Fourth"];
+function fbReadCall(stage,T,T2,last,cur,q){
+  const D=T2&&T2.n?T2:null, qn=q>=5?"Overtime":(FB_QN[q]||"Second")+" quarter";
+  return {k:"read",stage:stage,h:stage===1?qn+": their defense":qn+": their defense since the break",
     b:stage===1?"How are they defending you? Pick your answer.":"Anything changed since the break? Adjust, or leave it.",
     opts:(cur&&FB_ANSWERS[cur]?[["keep","Keep it: "+FB_ANSWERS[cur].l]]:[]).concat(Object.keys(FB_ANSWERS).filter(a=>a!==cur).map(a=>[a,FB_ANSWERS[a].l])).concat([FB_ASSIST]),
     tell:Object.assign({},T), tell2:D?Object.assign({},D):null, best:fbRead(D||T), pearl:last?fbRead(last):fbRead(T)};
@@ -670,8 +674,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)] } }) }
     if(isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
       if(!D.asked.prep&&D.fav){ D.asked.prep=true; dp=fbPrepCall(fbReport(D.fav,(ctx.seed||0)+(side==="home"?2:1))); if(i>0)dp.h="Before your first drive: the scouting report" }   // round 79: they had the ball first ("Before kickoff" came after their score: Ian)
-      else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side]) }
-      else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side]) }
+      else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side],q) }
+      else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side],q) }
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
     // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----
