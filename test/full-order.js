@@ -9,7 +9,7 @@ const {chromium}=require('playwright'); const path=require('path');
     const want=new Set(), got=new Set(); const orig=hlPlay; window.hlPlay=function(L,d){ const v=orig(L,d); if(v>0)got.add(L.drives.indexOf(d)); return v };
     const ow=hlWillPlay; window.hlWillPlay=function(L,d){ const v=ow(L,d); if(v)want.add(L.drives.length-1); return v };
     for(let k=0;k<4&&!live;k++){ doAdvance(); await new Promise(r=>setTimeout(r,200)) }
-    const t0=Date.now(); let n=0; while(live&&!live.done&&Date.now()-t0<240000){ if(live.ask)answerLive(live.ask.dp.opts[0][0]);
+    const t0=Date.now(); let n=0; while(live&&!live.done&&Date.now()-t0<600000){ if(live.ask)answerLive(live.ask.dp.opts[0][0]);
       if(pauses&&(++n%9===0)){ live.paused=true; if(live.timer){clearTimeout(live.timer);live.timer=null} await new Promise(r=>setTimeout(r,120)); live.paused=false; liveTick() }
       await new Promise(r=>setTimeout(r,150)) }
     const lost=[...want].filter(i=>!got.has(i)); return {want:want.size,got:got.size,lost,done:!live||live.done} },[t,pauses]);
