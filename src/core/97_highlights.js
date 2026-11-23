@@ -26,8 +26,13 @@ function hlMount(){
   if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
   if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
   else if(HL_SPORT.collapseIdle)box.style.display=""
-  const W=Math.max(240,Math.round(box.clientWidth||320)), H=Math.round(W*HL_SPORT.aspect), dpr=Math.min(2,window.devicePixelRatio||1);
-  if(HL.cv.width!==W*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px" }
+  // round 102: the whole surface above the action bar on a laptop (at 1280x800 the bar hid a quarter of baseball's field,
+  // home plate and the batter, and soccer's near touchline): a surface too tall for the room left is drawn narrower, centred
+  let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
+  try{ const bar=document.querySelector(".actionbar"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-top-6;
+    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.62),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
+  const H=Math.round(W*HL_SPORT.aspect);
+  if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
   if(!HL.cur)hlDraw(null,0);
   hlAmbient();
 }
