@@ -162,6 +162,9 @@ function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=
   return d._ev={seg:seg,tot:at,clips:clips} }
 /* the shots the full match showed (not the goals: those are credited by name already): [side 0/1, "s", roster slot] */
 function hlEvNames(L,d){ if(!d||!d._ev)return null; const g=L.g, out=[];
+  // round 103: a goal shows who passed to the scorer (soccer: the move's last pass; [side, "a", roster slot or -1, minute])
+  d._ev.clips.forEach(c=>{ if(c.kind!=="goal"||!c.idxA||!c.tm||!c.rec)return; const n=c.rec.length, p=c.plan!=="pen"&&n>=2?c.rec[n-2]:-1, i=p>=0?c.idxA[p]:-1;
+    out.push([c.tm===g.home?0:1,"a",i>=0?i:-1,c.m]) });
   d._ev.clips.forEach(c=>{ if(c.kind==="goal"||c.kind==="red"||!c.who||!c.tm)return; const tm=c.tm, R=(SEA.roster&&SEA.roster[tm])||[];   // c.tm: the side that shot
     const i=R.findIndex(p=>p&&p.n===c.who); if(i>=0)out.push([tm===g.home?0:1,"s",i]) });
   return out }
@@ -181,7 +184,7 @@ function hlEvDraw(x,W,H){
     HL_SPORT.frame(x,W,H,q.c,t) }
   else { const f=q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)); clock=S.clock(d,f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
-    if(HL_SPORT.amb)HL_SPORT.amb(x,W,H) }
+    if(HL_SPORT.amb)HL_SPORT.amb(x,W,H,d,f) }   // round 103: the stretch and how far through it (soccer plays its touches from them)
   // the page follows: a redraw when the score moves, the clock in the header otherwise
   const k=h+"|"+a; if(k!==hlEvKey){ const first=!hlEvKey; hlEvKey=k; if(!first)setTimeout(()=>{ if(live&&live.pb&&typeof render==="function")render() },0) }
   if(Date.now()-hlEvLab>500){ hlEvLab=Date.now(); try{ const lb=document.querySelector(".wtop .wlabel"); const ck=lb&&lb.querySelector(".wclk"); if(ck)ck.textContent=clock; else if(lb){ const t=lb.textContent||"", j=t.indexOf("·"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${j>=0?" "+esc(t.slice(j).replace(/\s+/g," ")):""}` } if(typeof miniBar==="function")miniBar() }catch(e){} }

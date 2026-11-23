@@ -79,8 +79,14 @@ function teamLines(rng,c){
     if(st)on.push({p:st,i:i,P:P.p,m:bk?1-b:1}); if(bk)on.push({p:bk,i:BK(i),P:P.p,m:st?b:1}) });
   const L=new Map(); on.forEach(x=>L.set(x.p.n,{goals:0,ast:0,shots:0}));
   const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
+  // round 103: a goal the full match showed: the assist is the man the screen showed passing to the scorer (none if it
+  // was a partner without a name, or a penalty); the draws are made as before either way
+  const sdA=c.side==="home"?0:1, shownA=[]; c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]===sdA&&q[1]==="a")shownA.push({i:q[2],m:q[3]}) }));
   ev.filter(e=>e.side===c.side).forEach(e=>{ const S=scGoalBy(tm,e), l=L.get(S.n); e.nm=S.n; e.un=S.unit; if(!l)return; l.goals++;
-    if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)*scLean(x.p,"pas")), k=splitDraw(rng,1,w).indexOf(1); if(k>=0)L.get(on[k].p.n).ast++ } });
+    let k=-1; if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n?0:ROLE[x.P].ast*x.m*star(x.p)*scLean(x.p,"pas")); k=splitDraw(rng,1,w).indexOf(1) }
+    const j=shownA.findIndex(q=>q.m===e.m);
+    if(j>=0){ const q=shownA.splice(j,1)[0], p=q.i>=0?c.R[q.i]:null; if(p&&p.n!==S.n&&L.has(p.n))L.get(p.n).ast++ }
+    else if(k>=0)L.get(on[k].p.n).ast++ });
   const sts=c.drives.filter(d=>d.st), st=sts.length?sts[sts.length-1].st:null;
   // round 101: a shot the full match showed is its shooter's (d.pn, roster slots); the rest shared as before
   const sd=c.side==="home"?0:1, shown={}; let nShown=0;
