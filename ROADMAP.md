@@ -126,6 +126,13 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Rounds 103-106 (done): every sport played as it happened
+- Soccer touch by touch: the engine's crosses, long balls, balls won high and bookings, every man named, the scoreboard's
+  match numbers, assists as shown. Hockey touch by touch: forechecks, killed entries, cycles, penalties with the man in
+  the box, faceoffs, line changes, the scoreboard's numbers. Baseball pitch by pitch, H as the hits are played.
+- Football engine 20: a stalled drive's fourth and N is one the drive could have reached (was impossible in ~10%).
+- Next: the plan as a real decision at even odds; testers' reports.
+
 ## Round 102 (done): the field fits the screen (ships with 101)
 - Hockey's header clock no longer piles up old minutes. The whole field sits above the action bar on a laptop (baseball's
   home plate and batter were under it at 1280x800). Soccer's squad men named between moments.

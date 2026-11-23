@@ -409,6 +409,24 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 106: football's fourth and N follows the drive (engine 20; Ian: its own round).
+- rollDrive drew a stalled drive's fourth and N apart from how far it got, so 9.8% (college) and 10.9% (pro) of stalled
+  live drives ended on a state no series of downs reaches (fourth and 1 after 2 yards from a fresh first down), and the
+  full match's lead-up to a fourth-down call couldn't reach the call's distance in about 1 call in 12. Now fbTogo
+  turns the drawn distance into one the drive could have reached, with no new draw: G yards from the drive's start, no
+  first down since: exactly 10 - G; a first down at X (at least 10 past the start): X + 10 - the spot, so at least 20 - G;
+  goal to go: the distance to the goal line. A kick rolled as a drive's end carries one too (fbTogo(3, ...): it read
+  "fourth and 3" whatever the drive, so a fourth-down call on a kick offered a short go). Gated on ENGINE_V >= 20; a
+  season begun on 19 or earlier replays as it was (engine-replay now includes d5adcd9).
+- Measured (600 live games a league, the assistant answering): points a game unchanged (college 49.9, pro 43.2), home
+  wins within 0.4; fourth-down calls 3.09 -> 2.96 (college) and 2.95 -> 2.81 (pro) a game (a long fourth and N on a kick
+  isn't asked: it's kicked); going for it converts less often (the distances are honest now). Impossible states 0;
+  the full match's lead-ups reach the call's distance every time (fb-leadup: 0 of ~1,000, was ~70). The computer's
+  simulated games don't use the drive engine's fourth and N (playGame), so the league's calibration is untouched
+  (calibrate.js identical before and after).
+- Goldens: football's games and stat lines move where a seeded career's calls went for it (on ENGINE_NOW=19 the old
+  fingerprints match); the other games change only by the engine number in the universe.
+
 Rounds 103-105: soccer and hockey touch by touch, baseball pitch by pitch (Ian: "best in the world"; the engine
 decides everything with the same dice; what the screen shows is built from the stretch's own record and hash).
 - Soccer (72_highlights spPlan/spDraw, round 103). Each five minutes is a run of moves, each passed between the men on the
