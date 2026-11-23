@@ -208,7 +208,9 @@ function liveScoreboard(){
   const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
   const lab=`<span class="live"></span><span class="wclk">${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"PUCK DROP":esc(segLabel(last))}</span>
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
-  return scoreTop(g,H,A,lab,"",shotBars(g,live.drives));
+  // round 104: the game's numbers so far (the full match brings them up to its clock as it plays)
+  let st=""; try{ if(HL_SPORT.hpTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.hpTallyHTML(HL_SPORT.hpTally(live,upto,null,null))}</div>` } }catch(e){}
+  return scoreTop(g,H,A,lab,"",shotBars(g,live.drives)+st);
 }
 
 /* ---- the evidence ---- */

@@ -312,6 +312,19 @@ const HL_SPORT=(function(){
     P.moves.forEach(m=>{ const s=m.side; if(m.end==="forced")o[1-s].to++; if(m.end==="killed")o[1-s].fe++; if(m.m.cy)o[s].cy++; if(m.end==="icing")o[s].icing++; if(m.end==="off")o[s].off++; if(m.end==="pen")o[m.m.pen].pen++;
       m.T.forEach(t=>{ if(t.hit!=null)o[1-s].hit++ }) });
     return o }
+  // round 104: the game's numbers so far, as the screen has shown them (shots on goal the engine's; power plays, the
+  // penalties drawn and the goals scored on them; hits as shown)
+  function hpTally(L,upto,d,f){ const o=[{sog:0,pp:0,ppg:0,pim:0,hit:0},{sog:0,pp:0,ppg:0,pim:0,hit:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&x.seg<SEGS);
+    let last=null; D.forEach(x=>{ const di=L.drives.indexOf(x); if(di>=upto)return; last=x;
+      (x.ev||[]).forEach(e=>{ const s=e.side==="home"?0:1; if(e.k==="pen"){ o[s].pim+=2; o[1-s].pp++ } if(e.k==="goal"&&e.pp)o[s].ppg++ });
+      let c=null; try{ c=hpCounts(L,x) }catch(e){} if(c)[0,1].forEach(s=>o[s].hit+=c[s].hit) });
+    if(last&&last.sog){ o[0].sog=last.sog[0]; o[1].sog=last.sog[1] }
+    if(d&&f!=null){ const t0=d.seg*5; (d.ev||[]).forEach(e=>{ const s=e.side==="home"?0:1, ef=(e.m+0.5-t0)/5; if(ef>f)return; if(e.k==="pen"){ o[s].pim+=2; o[1-s].pp++ } });
+      const EP=d._ev; if(EP)EP.clips.forEach(c=>{ if(c.f>=f)return; const s=c.home?0:1; o[s].sog++; if(c.kind==="goal"&&c.pp)o[s].ppg++ });
+      let P=null; try{ P=hpPlan(L,d) }catch(e){} if(P)P.moves.forEach(m=>m.T.forEach(t=>{ if(t.hit!=null&&t.f<=f)o[1-m.side].hit++ })) }
+    return {o} }
+  function hpTallyHTML(T){ const o=T.o, row=(l,a,b)=>`<span class="sct"><b>${a}</b><i>${l}</i><b>${b}</b></span>`;
+    return row("Shots",o[1].sog,o[0].sog)+row("Power play",o[1].ppg+"/"+o[1].pp,o[0].ppg+"/"+o[0].pp)+row("PIM",o[1].pim,o[0].pim)+row("Hits",o[1].hit,o[0].hit) }   // the away side on the left, as hockey's scoreboard has it
   function hpText(P,mv,k){ const S=mv.six, O=mv.oSix, t=mv.T[k], a=hpWho(S,t.s), nx=mv.T[k+1], b=nx?hpWho(S,nx.s):"";
     if(k===mv.T.length-1){ const by=mv.m.by!=null?hpWho(O,mv.m.by):"";
       if(mv.end==="clip")return ""; if(mv.end==="forced")return `${by} forces a giveaway from ${a}`; if(mv.end==="killed")return `${by} stands up ${a} at the line`;
@@ -352,6 +365,7 @@ const HL_SPORT=(function(){
     if(sh0||sh1)txt=(txt?txt+" · ":"")+"Power play, "+(sh0?g.away:g.home);
     if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
     if(mv.end==="pen"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"PENALTY",{fill:"#F2C14E"},(u-0.7)/0.3);
+    if(Date.now()-(hpDraw.t||0)>500){ hpDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=hpTallyHTML(hpTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
   const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>28000, clock:(d,f)=>{   /* round 104: twenty-eight seconds of play between the shots a stretch at Normal (was twelve): room for the touches */ const m=Math.min(60,Math.max(1,Math.floor(d.seg*5+f*5)+1)); return (m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'" }, skip:d=>d.seg>=SEGS};
@@ -389,5 +403,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts};
+  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML};
 })();
