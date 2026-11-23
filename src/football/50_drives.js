@@ -202,11 +202,11 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
   // and only 59% of kicks went in (NFL ~84%, college ~77%).
   if(ENGINE_V>=2&&kind==="MISS"){ const K=KICK2[LEAGUE.id]||KICK2.cfb;
     if(stall>=K.range&&rng.r()<K.kick){ const dist=fgDistance(stall); if(rng.r()<fgOdds(stall))return {pts:3,kind:"FG",stall:stall,togo:togo,att:dist}; return {pts:0,kind:"MISS",stall:stall,togo:togo,att:dist} }
-    const r2=rng.r();
-    // engine 20: inside their 28 a kick not tried above is tried all the same (same draw: it went in at the kick's odds),
-    // not a punt from the red zone (a quarter of all punts came from their 28 or closer)
-    if(ENGINE_V>=20&&stall>=72){ const dist=fgDistance(stall); return r2<fgOdds(stall)?{pts:3,kind:"FG",stall:stall,togo:togo,att:dist}:{pts:0,kind:"MISS",stall:stall,togo:togo,att:dist} }
-    kind=r2<0.8?"PUNT":"DOWNS" }
+    // (round 106 tried a kick here inside their 28, not a punt: a quarter of all punts come from their 28 or closer. It made
+    // yards on a stalled drive worth points, so blocking against the rush counted for more than any rating or plan fit
+    // says: the pro chance shown missed the engine by up to 14 points on a pair (Denver-Arizona), the spread over random
+    // pairs from 1.6 to 3.2 at the median. Taken out of engine 20; it needs its own round with the fit tables re-measured)
+    kind=rng.r()<0.8?"PUNT":"DOWNS" }
   // engine 20 (round 106): nobody goes for it deep in his own end, or on a long fourth down in his own half, when nothing
   // forces it (the endgame's own rule goes for it when it must): a punt. Same draws.
   if(ENGINE_V>=20&&kind==="DOWNS"&&(stall<40||stall<55&&togo>=4))kind="PUNT";

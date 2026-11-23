@@ -1,5 +1,5 @@
 {
- "fp": "447d1c8483e3ddb8",
+ "fp": "e8d5e99920dce383",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -105,21 +105,26 @@
    "fp": "447d1c8483e3ddb8",
    "from": "4b17d848f0040fbd",
    "note": "Round 106 (engine 20), with kicks inside their 28 and no fourth-down tries deep in your own half: a seeded career's games, standings and awards move; on ENGINE_NOW=19 the round 105 fingerprint matches"
+  },
+  {
+   "fp": "e8d5e99920dce383",
+   "from": "447d1c8483e3ddb8",
+   "note": "Round 106 revised: engine 20 without the kick inside their 28 (it widened the pro chance's miss to 14 points on a pair); fourth and N and own-half punts stay. ENGINE_NOW=19 gives d5adcd9's fingerprints"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "f15ae2c9cb5d656b",
-    "post": "63a94226f990b5bf",
-    "champion": "LA Rams",
-    "rec": "091a76d69f2c5c33",
-    "poll": "733c1e7529027e20",
-    "heis": "2eb4dc9720a4ead2",
-    "history": "a33787dfba488a97",
-    "universe": "433290cb0485cfb9",
-    "screens": "0dcd7c15308f0624"
+    "games": "03d9a62996f32a50",
+    "post": "9a97ef2d7b9b4bc5",
+    "champion": "New Orleans",
+    "rec": "9e0100c131c9cc8f",
+    "poll": "44f7189f05bd9377",
+    "heis": "ac04dcfdb5834804",
+    "history": "5ba9addeb9fff599",
+    "universe": "b4e0c4ad3e32a69f",
+    "screens": "b20a7bb4f694f319"
    }
   ]
  }

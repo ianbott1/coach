@@ -422,17 +422,34 @@ Round 106: football's fourth and N follows the drive (engine 20; Ian: its own ro
   wins within 0.4; fourth-down calls 3.09 -> 2.96 (college) and 2.95 -> 2.81 (pro) a game (a long fourth and N on a kick
   isn't asked: it's kicked); going for it converts less often (the distances are honest now). Impossible states 0;
   the full match's lead-ups reach the call's distance every time (fb-leadup: 0 of ~1,000, was ~70). The computer's
-  simulated games don't use the drive engine's fourth and N (playGame), so the league's calibration is untouched
-  (calibrate.js identical before and after).
-- Also under engine 20 (same draws): inside their 28 a stalled drive that didn't try the kick tried it all the same (it
-  fell through to "punt or downs", undoing "you don't punt from there": 12,755 of 49,268 rolled punts came from their 28
-  or closer; now none, kicks made 88%); no turnover on downs in your own end (inside your 40), or on fourth and 4+ in
-  your own half, unless the endgame's own rule goes for it (166 at fourth and 10+ in your own half in 500 college games;
-  now none; turnovers on downs ~1.6 a game, NFL ~1.6). Points a game rise: college 49.9 -> 50.8, pro 43.2 -> 44.3 (NFL
-  44-46); margin 10.7 -> 10.6, home wins within noise (2,000 even games). Punts from inside your own 15: 0.3% (the
-  "about 5% of punts from inside their 15" in round 101's notes was the opponent's 15: this).
+  simulated games don't use the drive engine's fourth and N (playGame), so that part leaves the league's calibration
+  untouched (the punt rule below doesn't: it runs in playGame too).
+- Also under engine 20 (same draws): no turnover on downs in your own end (inside your 40), or on fourth and 4+ in your
+  own half, unless the endgame's own rule goes for it (166 at fourth and 10+ in your own half in 500 college games; now
+  none): a punt. Punts from inside your own 15: 0.3% (the "about 5% of punts from inside their 15" in round 101's notes
+  was the opponent's 15).
+- Measured with both rules (engine 20 against 19, same build): computer games (calibrate.js, 200 seasons) college 49.5
+  -> 48.6 points a game, favourites 0.699 both, margin 15.4 -> 15.2, home 57.9 -> 58.1%; pro 42.9 -> 42.3, favourites
+  0.588 both, margin 11.4 -> 11.3, home 53.1 -> 52.9%. Live games (600 a league, the assistant answering) college 49.9
+  -> 49.3, pro 43.2 -> 42.3 (NFL ~44-46: the gap below it widens by about a point; a punt for a turnover on downs gives
+  the other side a longer field); home wins within 0.4; fourth-down calls 3.09 -> 2.93 and 2.95 -> 2.77 a game. The
+  chance shown against the engine (regressions 37) holds: random pairs, pro, median miss 1.3 points, 90th 3.7 (engine
+  19: 1.3, 4.1); the one pair past 7 (Seattle-Arizona, 8.0) reads the same on engine 19.
+- Tried and taken out (round 106): inside their 28 a stalled drive that didn't try the kick tried it all the same (it
+  falls through to "punt or downs", undoing "you don't punt from there": 12,755 of 49,268 rolled punts come from their
+  28 or closer). That made yards on a stalled drive worth points, and blocking against the rush (the drive's "gain")
+  worth more than any rating, plan fit or chance counts: the pro chance shown missed the engine by up to 14 points on a
+  pair (Denver-Arizona 72% shown, 58% won; college Alabama-BYU 47% and 57%), the median miss over random pro pairs 1.3
+  -> 2.5, 90th 3.7 -> 6.1, and the miss followed the gain gap (correlation -0.73). The first measurement of this round
+  said the computer's games were untouched (calibrate.js identical): that was before these two rules, and wrong after
+  them; the full suite caught it. Red-zone punts need their own round, with the plan-fit tables and the chance
+  re-measured on the new worth of a yard.
 - Goldens: football's games and stat lines move where a seeded career's calls went for it (on ENGINE_NOW=19 the old
   fingerprints match); the other games change only by the engine number in the universe.
+- Tests on engine 20's seeds: cfb-conf tries seeds until Ohio State and Miami have each lost a title game (the two old
+  seeds no longer reach one; seeds 11 and 12 do; still fails on 6473dcb); regressions 65 weighs the calls the card
+  weighs (a read, the scouting report too, is graded in the reads list and never heads the card: a +18 read beside a
+  -15 wrong call read as a headline disagreeing with its bullets).
 
 Rounds 103-105: soccer and hockey touch by touch, baseball pitch by pitch (Ian: "best in the world"; the engine
 decides everything with the same dice; what the screen shows is built from the stretch's own record and hash).

@@ -1,5 +1,5 @@
 {
- "fp": "519878de2263cdac",
+ "fp": "bcb09a99c1a405bd",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -100,21 +100,26 @@
    "fp": "519878de2263cdac",
    "from": "65d28101a74bfa85",
    "note": "Round 106 (engine 20), with kicks inside their 28 and no fourth-down tries deep in your own half: a seeded career's games, standings and awards move; on ENGINE_NOW=19 the round 105 fingerprint matches"
+  },
+  {
+   "fp": "bcb09a99c1a405bd",
+   "from": "519878de2263cdac",
+   "note": "Round 106 revised: engine 20 without the kick inside their 28 (it widened the pro chance's miss to 14 points on a pair); fourth and N and own-half punts stay. ENGINE_NOW=19 gives d5adcd9's fingerprints"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "71e317e8f0a21778",
-    "post": "69a05a77e28449a6",
-    "champion": "Texas Tech",
-    "rec": "5834a998eaaa5706",
-    "poll": "28f2ff7a9ce5b337",
-    "heis": "0718e9f42651a8b1",
-    "history": "3769c7575b836d83",
-    "universe": "9fb29c424954e328",
-    "screens": "f3fef20dd8ac3bf8"
+    "games": "1dede2795cb4e7ad",
+    "post": "9415b158a2c02390",
+    "champion": "Ohio State",
+    "rec": "fdad2e3cad9aef25",
+    "poll": "b598e68e8e87dfc2",
+    "heis": "6ea233d3aca64359",
+    "history": "0a5fd921838f821b",
+    "universe": "65ccfe2d4cbbd6a6",
+    "screens": "b083857f45b8508f"
    }
   ]
  }

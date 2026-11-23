@@ -1,5 +1,5 @@
 {
- "fp": "8aeac894dfe8f294",
+ "fp": "0badedb686aabacd",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -375,6 +375,11 @@
    "fp": "8aeac894dfe8f294",
    "from": "d7e3be30d44efdae",
    "note": "Round 106 (engine 20) final: kicks inside their 28, no fourth-down tries deep in your own half; on ENGINE_NOW=19 the round 105 fingerprint (04c16439bc76e232 / c32b9c06b0ff322e) holds"
+  },
+  {
+   "fp": "0badedb686aabacd",
+   "from": "8aeac894dfe8f294",
+   "note": "Round 106 revised: engine 20 without the kick inside their 28; ENGINE_NOW=19 gives d5adcd9's"
   }
  ],
  "out": [
@@ -384,11 +389,11 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Alamo Bowl",
-      "grade": "C-"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "F"
      },
-     "book": "d28ec498ca73324f"
+     "book": "e77fac9a2c2717fb"
     },
     {
      "team": "Rice",
@@ -397,7 +402,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "251e38070b6d39e4"
+     "book": "7e4c1bb6d8350a13"
     }
    ]
   },
@@ -407,20 +412,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Alamo Bowl",
-      "grade": "C+"
+      "rec": "7-6",
+      "result": "Won the Gasparilla Bowl",
+      "grade": "C-"
      },
-     "book": "0c8a6e54dc9563fc"
+     "book": "b3d5e94a1c473a86"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "2-10",
-      "result": "No bowl game",
-      "grade": "C"
+      "rec": "6-7",
+      "result": "Lost the Hawaii Bowl",
+      "grade": "A-"
      },
-     "book": "0dd6c7021bea39fd"
+     "book": "6af64ec21cd27748"
     }
    ]
   },
@@ -431,19 +436,19 @@
      "team": "Alabama",
      "last": {
       "rec": "8-5",
-      "result": "Won the Music City Bowl",
-      "grade": "C"
+      "result": "Lost the Holiday Bowl",
+      "grade": "C+"
      },
-     "book": "3b9ae52bc6c68392"
+     "book": "88b98178c86319df"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "7-6",
-      "result": "Won the Idaho Potato Bowl",
+      "result": "Lost the New Mexico Bowl",
       "grade": "A"
      },
-     "book": "bf44e39c9556b7dd"
+     "book": "510ccbb95a40e6c5"
     }
    ]
   }

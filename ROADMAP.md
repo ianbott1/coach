@@ -130,8 +130,12 @@ on numbers they can't trust and a sport they read rather than watch.
 - Soccer touch by touch: the engine's crosses, long balls, balls won high and bookings, every man named, the scoreboard's
   match numbers, assists as shown. Hockey touch by touch: forechecks, killed entries, cycles, penalties with the man in
   the box, faceoffs, line changes, the scoreboard's numbers. Baseball pitch by pitch, H as the hits are played.
-- Football engine 20: a stalled drive's fourth and N is one the drive could have reached (was impossible in ~10%).
-- Next: the plan as a real decision at even odds; testers' reports.
+- Football engine 20: a stalled drive's fourth and N is one the drive could have reached (was impossible in ~10%); no
+  turnover on downs deep in your own end or on a long fourth down in your own half (a punt).
+- Not done: kicks instead of punts inside their 28 (a quarter of punts come from there). Tried in round 106 and taken
+  out: it made blocking against the rush worth more than the rating, plan fit or chance count (the pro chance missed by
+  up to 14 points on a pair). Needs its own round with the fit tables and the chance re-measured.
+- Next: red-zone punts (above); the plan as a real decision at even odds; testers' reports.
 
 ## Round 102 (done): the field fits the screen (ships with 101)
 - Hockey's header clock no longer piles up old minutes. The whole field sits above the action bar on a laptop (baseball's

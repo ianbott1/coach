@@ -472,7 +472,11 @@ for(const [f,team] of [['football-coach.html','Alabama'],['football-coach-pro.ht
     graded.forEach(r=>{ const v=Object.values(r.rk), sp=Math.max(...v)-Math.min(...v); if(sp<=3)flip++ });
     const h=A.impactHTML(P), head=(h.match(/imphead">([^<]*)/)||[])[1]||'';
     // round 28: a headline only for a clear call (callClarity beyond 7), good or wrong as its sign says
-    const ks=(p.impact||[]).map(c=>A.callClarity(c)), best=ks.reduce((a,k)=>Math.abs(k)>Math.abs(a)?k:a,0);
+    // round 106: the calls the card weighs, as impactHTML does: a read (the scouting report too) is graded in the reads
+    // list, a fourth down option by option; neither heads the card (a 'prep' read at +18 beside a wrong call at -15 read as
+    // a disagreement on engine 20's seed)
+    const RK={}; P.forEach(q=>(q.reads||[]).forEach(r=>{ RK[r.k]=1 }));
+    const ks=[].concat(...P.map(q=>q.impact||[])).filter(c=>!(c.k&&RK[c.k])&&c.q===undefined).map(c=>A.callClarity(c)), best=ks.reduce((a,k)=>Math.abs(k)>Math.abs(a)?k:a,0);
     if(head){ if(Math.abs(best)<=7)bad++; else if(/^A strong/.test(head)!==(best>0))bad++ } }
   ok(made>0&&made===shown,`college football: ${made} calls made, ${shown} on the cards`); ok(!flip,`college football: ${flip} coin-flip calls graded`); ok(!bad,`college football: ${bad} headlines that disagree with the bullets`) }
 /* 66. fired: no milestone under "has fired you", and a move reads as yours */
