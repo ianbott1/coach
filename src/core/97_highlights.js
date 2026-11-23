@@ -179,7 +179,7 @@ function hlEvDraw(x,W,H){
     if(HL_SPORT.amb)HL_SPORT.amb(x,W,H) }
   // the page follows: a redraw when the score moves, the clock in the header otherwise
   const k=h+"|"+a; if(k!==hlEvKey){ const first=!hlEvKey; hlEvKey=k; if(!first)setTimeout(()=>{ if(live&&live.pb&&typeof render==="function")render() },0) }
-  if(Date.now()-hlEvLab>500){ hlEvLab=Date.now(); try{ const lb=document.querySelector(".wtop .wlabel"); if(lb){ const t=lb.textContent||"", j=t.indexOf("·"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${j>=0?" "+esc(t.slice(j).replace(/\s+/g," ")):""}` } if(typeof miniBar==="function")miniBar() }catch(e){} }
+  if(Date.now()-hlEvLab>500){ hlEvLab=Date.now(); try{ const lb=document.querySelector(".wtop .wlabel"); const ck=lb&&lb.querySelector(".wclk"); if(ck)ck.textContent=clock; else if(lb){ const t=lb.textContent||"", j=t.indexOf("·"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${j>=0?" "+esc(t.slice(j).replace(/\s+/g," ")):""}` } if(typeof miniBar==="function")miniBar() }catch(e){} }
 }
 /* ---- the drawing kit (round 64: the pitches and players drawn to Football Manager's standard) ----
    The surface (grass, wood, ice, dirt, lines, nets) is painted once per size into an offscreen canvas and copied
