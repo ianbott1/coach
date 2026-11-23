@@ -1,5 +1,5 @@
 {
- "fp": "25ac2a84a1528eeb",
+ "fp": "65148909282647f6",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -580,6 +580,11 @@
    "fp": "25ac2a84a1528eeb",
    "from": "c6c5736a79e45314",
    "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
+  },
+  {
+   "fp": "65148909282647f6",
+   "from": "25ac2a84a1528eeb",
+   "note": "Round 106 (engine 20): a power play's shots and goals inside its two minutes (minutes only, no draw); one screen differs (a goal's minute), results identical"
   }
  ],
  "result": {
@@ -632,7 +637,7 @@
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
     "universe": "97faef7ebf5e7e9a",
-    "screens": "b8fb712ba785b72a"
+    "screens": "cee75777d68e319d"
    }
   ],
   "schedules#60": [

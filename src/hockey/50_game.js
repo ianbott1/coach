@@ -294,12 +294,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const sv=[];   // round 70: every shot stopped, for the highlights (Ian: "more saves"); placed by count, no draws
     const shoot=(side,n,p,pp,xk)=>{ const G=st.S[other(side)]; let g=0;
       for(let i=0;i<n;i++){ G.sa++; G.xga+=(pp?HK.ppSh:HK.sh)*(xk||1);
-        if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:t0+5*(i+0.5)/n,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
+        // engine 20 (round 106): a power play's shots inside its two minutes (they were spread over the five, so the full
+        // match drew a side short for up to five); no draw
+        const pm=pp&&ENGINE_V>=20&&st.penAt?st.penAt[other(side)]:null, at=pm!=null?Math.min(t0+4.99,pm+2*(i+0.5)/n):t0+5*(i+0.5)/n;
+        if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:at,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
         { g++; G.ga++;
           // was it soft? A goalie on a bad night lets in more that he should stop
           const bad=G.form>HK.offBy/2, soft=rng.r()<(bad?HK.softBad:HK.softOk);
           if(soft){G.soft++; G.lastSoft=true} else G.lastSoft=false;
-          ev.push({m:minute(),side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)}) } }
+          const gm=minute(); ev.push({m:pm!=null?Math.min(t0+4.99,pm+(gm-t0)/5*2):gm,side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)}) } }
       return g };
     const sH=shotsIn(rng,lamH), sA=shotsIn(rng,lamA);
     let gH=shoot("home",sH,pH,false,kH), gA=shoot("away",sA,pA,false,kA);
