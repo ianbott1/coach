@@ -333,12 +333,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         let m=0; while(m<mins){ const dt=Math.min(1,mins-m); m+=dt;
           const trG=rng.r()<HK.pullFor*dt*(1+edge*HK.finishEdge), enG=rng.r()<HK.pullAgainst*dt*(1-edge*HK.finishEdge);
           if(trG&&(!enG||rng.r()<0.5)){ if(tr==="home")st.h++; else st.a++; en={side:tr,kind:"extra"};
-            ev.push({m:60-mins+m,side:tr,k:"goal",extra:true,u:rng.int(100)}); break }
+            ev.push({m:60-mins+m,side:tr,k:"goal",extra:true,u:rng.int(100)}); if(ENGINE_V>=21){ if(tr==="home")st.lines.h.sog++; else st.lines.a.sog++ } break }
           if(enG){ if(tr==="home")st.a++; else st.h++; en={side:tr==="home"?"away":"home",kind:"empty"};
-            ev.push({m:60-mins+m,side:other(tr),k:"goal",en:true,u:rng.int(100)}); break }
+            ev.push({m:60-mins+m,side:other(tr),k:"goal",en:true,u:rng.int(100)}); if(ENGINE_V>=21){ if(tr==="home")st.lines.a.sog++; else st.lines.h.sog++ } break }
         }
       }
     }
+    // round 107 (engine 21): a goal into an empty net, or with the goalie pulled for an extra man, is a shot on goal (it
+    // was the scorer's but not his team's: Chicago's shooters 36 against the team's 35, test/ev-full.js)
     ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m))); sv.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
     const prev=st.drives.length?st.drives[st.drives.length-1]:{sh:0,sa:0};
     const mom=Math.max(0.12,Math.min(0.88,(sH+ppH+0.5)/(sH+ppH+sA+ppA+1)+rng.gauss(0,0.05)));

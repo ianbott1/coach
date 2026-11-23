@@ -23,7 +23,12 @@ const HL_SPORT=(function(){
     // round 70: the shots stopped (d.sv, every one the engine played) give the saves; the commentary's big saves first.
     // Key moments: about one save for each goal over a game (Ian: "too high a share of goals")
     if(mode==="pb"){ // round 101: the full match: every goal and every shot stopped (d.sv is every one the engine played)
-      const logged=(d.ev||[]).filter(e=>e.k==="save"), svAll=(d.sv||[]).filter(e=>!logged.some(x=>Math.abs(x.m-e.m)<1&&x.side===e.side));
+      // round 107: each big save the commentary logged is one of the stretch's stops, the nearest on that side: it takes
+      // that one's place (matched within the minute only, a big save a minute or more from any stop was shown as well as
+      // all the stops, a save more than the goalie made: Vegas stopped 33, the screen showed 35 stopped)
+      const logged=(d.ev||[]).filter(e=>e.k==="save"), used=new Set();
+      logged.forEach(x=>{ let bi=-1, bd=1e9; (d.sv||[]).forEach((e,i)=>{ if(used.has(i)||e.side!==x.side)return; const dd=Math.abs(e.m-x.m); if(dd<bd){bd=dd;bi=i} }); if(bi>=0)used.add(bi) });
+      const svAll=(d.sv||[]).filter((e,i)=>!used.has(i));
       const ev=(d.ev||[]).filter(e=>e.k==="goal"||e.k==="save").concat(svAll.map(e=>Object.assign({},e,{k:"save"}))).sort((a,b)=>a.m-b.m);
       let rows=[]; try{ rows=rowsOf(L.g,L.drives) }catch(e){}
       const out=[]; let sh=d.sh-(d.h||0), sa=d.sa-(d.a||0);

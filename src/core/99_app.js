@@ -334,6 +334,14 @@ function answerLive(v){
   save(); liveTick();
 }
 let liveEndedAt=0;
+/* round 107: a tap that began on the game screen and ends after the game has ended is not a tap on the screen that
+   followed. Ending a game and drawing its result can take a second or more on a phone, and the tap's click comes after
+   it, onto whatever now sits under the finger: Play, at the spot of Skip (Grokbot, baseball at 390px: one Skip in the
+   eighth, and the next game's first pitch; its result card never showed). The 1.2s wait alone measured from the start
+   of the ending, so a slow ending used it up. Keyboard and scripted clicks carry no press and are let through. */
+let LAST_PD={at:0,id:""};
+if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("pointerdown",e=>{ const b=e.target&&e.target.closest?e.target.closest("button"):null; LAST_PD={at:Date.now(),id:b?b.id:""} },true);
+function strayTap(e){ return !!(e&&e.detail>0&&LAST_PD.at&&LAST_PD.at<=liveEndedAt&&Date.now()>=liveEndedAt) }
 function finishLive(){ liveEndedAt=Date.now();
   if(view!=="team"&&view!=="scores")view="team";   // the result card lives on the team page: a game started from Dynasty ended there, with no card (Grokbot)
   if(live.finished)return;                  // once per game, however it's reached
@@ -3788,8 +3796,8 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=()=>{ if(Date.now()-(liveEndedAt||0)<1200)return; advance() };   // round 100: the side column's Play waits too
-  ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=()=>{simSheet=true;render()} });
+  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; advance() };   // round 100: the side column's Play waits too
+  ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=e=>{ if(strayTap(e))return; simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
     const c=el("simclose"); if(c)c.onclick=()=>{simSheet=false;render()};
@@ -3799,7 +3807,7 @@ function render0(){
   // a tap that was meant for the game screen's controls lands here when the game ends under the finger:
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
   const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
-  ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=()=>{ if(settling())return;
+  ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=e=>{ if(settling()||strayTap(e))return;
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
   }});
@@ -3807,7 +3815,7 @@ function render0(){
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
   };
-  el("adv").onclick=()=>{ if(settling())return;
+  el("adv").onclick=e=>{ if(settling()||strayTap(e))return;
     if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team")view="scores";

@@ -65,7 +65,9 @@ function teamLines(rng,c){
     if(L[N.n]){ L[N.n].goals++; if(!e.en&&!e.extra)mine++ } else if(!e.en&&!e.extra)mine++;
     if(N.a&&L[N.a])L[N.a].ast++ });
   const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
-  const sog=ev.filter(e=>e.side===c.side&&!e.en&&!e.extra).length+sv(o);
+  // round 107 (engine 21): a goal into an empty net or with an extra man is a shot on goal (it was left out, and its
+  // scorer had a shot more than his team's: Chicago's shooters 36, the team 35, test/ev-full.js)
+  const sog=ev.filter(e=>e.side===c.side&&(ENGINE_V>=21||!e.en&&!e.extra)).length+sv(o);
   // round 101: a shot the full match showed is its shooter's (d.pn, roster slots); the rest shared as before
   const sd=c.side==="home"?0:1, shown={}; let nShown=0;
   c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]!==sd||q[1]!=="s")return; const p=c.R[q[2]]; if(p&&L[p.n]){ shown[p.n]=(shown[p.n]||0)+1; nShown++ } }));
@@ -73,10 +75,11 @@ function teamLines(rng,c){
   const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
   dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]+(shown[d.n]||0); l.pts=l.goals+l.ast });
   /* round 107 (engine 21): the shooters' shots never come to more than the team's (Muse: 31 against 30 in a full match
-     watched: the shots the screen showed went on top of the goals and the share). Over: taken back from the men whose
-     shown shots went over, most first, never below their goals. No draws. */
-  if(ENGINE_V>=21){ let over=dressed.reduce((t,d)=>t+L[d.n].sog,0)-sog;
-    while(over>0){ const x=dressed.filter(d=>L[d.n].sog>L[d.n].goals).sort((a,b)=>(shown[b.n]||0)-(shown[a.n]||0)||L[b.n].sog-L[a.n].sog)[0]; if(!x)break; L[x.n].sog--; over-- } }
+     watched: the shots the screen showed went on top of the goals and the share). Over: taken back from the share,
+     the man with most share first; never below his goals and the saved shots the screen showed him take (the first cut of
+     this took them from the shown shots, and a man shown taking 8 had 5 in the box: test/ev-full.js). No draws. */
+  if(ENGINE_V>=21){ let over=dressed.reduce((t,d)=>t+L[d.n].sog,0)-sog; const floor=d=>L[d.n].goals+(shown[d.n]||0);
+    while(over>0){ const x=dressed.filter(d=>L[d.n].sog>floor(d)).sort((a,b)=>(L[b.n].sog-floor(b))-(L[a.n].sog-floor(a)))[0]; if(!x)break; L[x.n].sog--; over-- } }
   const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
   // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
   // against; an empty-net goal is nobody's
