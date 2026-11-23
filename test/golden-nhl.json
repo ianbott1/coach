@@ -1,5 +1,5 @@
 {
- "fp": "c6c5736a79e45314",
+ "fp": "25ac2a84a1528eeb",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -575,6 +575,11 @@
    "fp": "c6c5736a79e45314",
    "from": "0d1602574b18ad8e",
    "note": "Rounds 102-104: screens only (the header clock's span, the live scoreboard's numbers); field-by-field only screens differ, results identical"
+  },
+  {
+   "fp": "25ac2a84a1528eeb",
+   "from": "c6c5736a79e45314",
+   "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
   }
  ],
  "result": {
@@ -588,7 +593,7 @@
     "poll": "3930f4d04e8ea79e",
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
-    "universe": "fd5baea0fb4bbd78",
+    "universe": "321112602711f413",
     "screens": "a2b3ca456e58e9b8"
    },
    {
@@ -600,7 +605,7 @@
     "poll": "9e1437b4306e21ad",
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
-    "universe": "f45180777c79ac31",
+    "universe": "ad679e0824e5559c",
     "screens": "5dfb6db235976255"
    }
   ],
@@ -614,7 +619,7 @@
     "poll": "103fbed1ccbe4635",
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
-    "universe": "cc609536ee9e0bfb",
+    "universe": "3fa5f2ceb7cf4242",
     "screens": "9ed989157e2742b6"
    },
    {
@@ -626,7 +631,7 @@
     "poll": "6473ff5c85c28291",
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
-    "universe": "c2e3411ac8328d78",
+    "universe": "97faef7ebf5e7e9a",
     "screens": "b8fb712ba785b72a"
    }
   ],

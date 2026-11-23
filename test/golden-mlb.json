@@ -1,5 +1,5 @@
 {
- "fp": "02e3bb983aa63af8",
+ "fp": "2c8c496afc68c997",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -225,6 +225,11 @@
    "fp": "02e3bb983aa63af8",
    "from": "bd70c2aff6ba6737",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
+  },
+  {
+   "fp": "2c8c496afc68c997",
+   "from": "02e3bb983aa63af8",
+   "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
   }
  ],
  "result": {
@@ -238,7 +243,7 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "fd64034a4fd3d2ad",
-    "universe": "39626f3ebbee49bb",
+    "universe": "7d087044c2fd39e1",
     "screens": "2e1a2b141a9b0bbd"
    },
    {
@@ -250,7 +255,7 @@
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
     "history": "6eb635fcda3a4496",
-    "universe": "d0824ec5bd36b1ac",
+    "universe": "ec5b4b357257ab42",
     "screens": "6b620bcd77c2ebbf"
    }
   ],
@@ -264,7 +269,7 @@
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
     "history": "7fc71e187a31d02c",
-    "universe": "d7260be61f8602a6",
+    "universe": "63cffa422e64653d",
     "screens": "dcb23abca29fac79"
    },
    {
@@ -276,7 +281,7 @@
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
     "history": "12462c1fdf09ce32",
-    "universe": "6feda5e9412dfe30",
+    "universe": "5aea38a7c54e59a6",
     "screens": "56c80b0e07479a05"
    }
   ],

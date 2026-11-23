@@ -1,5 +1,5 @@
 {
- "fp": "17800a07566e4a30",
+ "fp": "e878f57670c1e540",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -110,6 +110,11 @@
    "fp": "17800a07566e4a30",
    "from": "fd41b6556591ec30",
    "note": "Round 104: screens only (the live scoreboard's numbers: shots, power plays, PIM, hits); field-by-field only screens differ, results identical"
+  },
+  {
+   "fp": "e878f57670c1e540",
+   "from": "17800a07566e4a30",
+   "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
   }
  ],
  "result": {
@@ -123,7 +128,7 @@
     "poll": "3930f4d04e8ea79e",
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
-    "universe": "fd5baea0fb4bbd78",
+    "universe": "321112602711f413",
     "screens": "a2b3ca456e58e9b8"
    }
   ]

@@ -1,5 +1,5 @@
 {
- "fp": "20a4bb30b14113c2",
+ "fp": "65d28101a74bfa85",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -90,21 +90,26 @@
    "fp": "20a4bb30b14113c2",
    "from": "292a4e8c87b0647b",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
+  },
+  {
+   "fp": "65d28101a74bfa85",
+   "from": "20a4bb30b14113c2",
+   "note": "Round 106 (engine 20): a stalled drive's fourth and N follows the drive; a seeded career's go-for-it calls play out differently (games, standings, awards move); on ENGINE_NOW=19 the old fingerprint matches"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "85568f808f1d788f",
-    "post": "81e0913cfb6e8ee8",
+    "games": "fe917b509d311ec2",
+    "post": "5ad494faa0df8fd1",
     "champion": "Washington",
-    "rec": "04058f0bd13c33a0",
-    "poll": "417ab7a88d36ae1f",
+    "rec": "c73a850e979639c3",
+    "poll": "bd00e68f175df282",
     "heis": "18dfdd2f20eb3b97",
-    "history": "25e7fa6fd4e99b82",
-    "universe": "a00592ddfc8c6a94",
-    "screens": "b116058ad2f915e9"
+    "history": "862701ba13319980",
+    "universe": "2f602d4a75ae595f",
+    "screens": "fad7a0f5a3f92655"
    }
   ]
  }

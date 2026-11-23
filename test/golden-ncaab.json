@@ -1,5 +1,5 @@
 {
- "fp": "280a58c165ec2a4a",
+ "fp": "34d7205a24ad6ca5",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -570,6 +570,11 @@
    "fp": "280a58c165ec2a4a",
    "from": "c887278a24156e00",
    "note": "round 101: engine 19 (football: a touchdown's yards never longer than the field the drive had). Other games: only the engine number in the universe (STRIP=engV hashes equal on 18 and 19). Football on ENGINE_NOW=18 reproduces round 100's goldens."
+  },
+  {
+   "fp": "34d7205a24ad6ca5",
+   "from": "280a58c165ec2a4a",
+   "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
   }
  ],
  "result": {
@@ -583,7 +588,7 @@
     "poll": "2a55a0cfd29942e4",
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
-    "universe": "5a5cf729f316bf76",
+    "universe": "c2ade2a4607bf759",
     "screens": "6d47c655b371e888"
    },
    {
@@ -595,7 +600,7 @@
     "poll": "6104f50439b52067",
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
-    "universe": "4e9c4b07b19c0f8e",
+    "universe": "5f6851b5dd9b7ee6",
     "screens": "367622a3165d134d"
    }
   ],
@@ -609,7 +614,7 @@
     "poll": "26edc4b624e67dc9",
     "heis": "942c9abdaed040d4",
     "history": "df81ab6f6095ef61",
-    "universe": "6bc0fd5765847887",
+    "universe": "3f890510b73e71a1",
     "screens": "1521565c9675228b"
    },
    {
@@ -621,7 +626,7 @@
     "poll": "9a4ecb50cbc55f8a",
     "heis": "ef6bde742321790a",
     "history": "29b9279493cb5e15",
-    "universe": "f5b3906306899c7b",
+    "universe": "c39bc0a64aac336a",
     "screens": "cdb3d212c0f4ec1a"
    }
   ],
@@ -635,7 +640,7 @@
     "poll": "dbdd18f0523ce927",
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
-    "universe": "1834ca2fd47575c2",
+    "universe": "10dc5f1b8dd09d6f",
     "screens": "3a8e1d00d21c8c17"
    },
    {
@@ -647,7 +652,7 @@
     "poll": "2acaa39089e082dd",
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
-    "universe": "ce220b5f99bef21a",
+    "universe": "d6ae91930dbf2206",
     "screens": "eaf629d2afb2d610"
    }
   ],

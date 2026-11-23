@@ -1,5 +1,5 @@
 {
- "fp": "08837471afd6f2b8",
+ "fp": "ed58b3515cdfc29c",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -100,6 +100,11 @@
    "fp": "08837471afd6f2b8",
    "from": "b9c9fd72717a027c",
    "note": "Rounds 103-104: screens only (the live scoreboard's match numbers: possession, shots, corners, fouls, offsides); field-by-field only screens differ, results identical"
+  },
+  {
+   "fp": "ed58b3515cdfc29c",
+   "from": "08837471afd6f2b8",
+   "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
   }
  ],
  "result": {
@@ -113,7 +118,7 @@
     "poll": "a724b4fac2f06904",
     "heis": "01dd37bc7325f176",
     "history": "6384997958515063",
-    "universe": "cc00140abb0d8f58",
+    "universe": "06037c808bf7813b",
     "screens": "bbb0724a51a47c5b"
    }
   ]
