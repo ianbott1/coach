@@ -7,7 +7,7 @@
    it's reached; a stretch carries on from the last.
      node test/hk-pb.js     last line: MATCH or MISMATCH */
 const path=require('path'); const {load}=require('./harness.js');
-const A=load({file:path.join(__dirname,'..','dist','hockey-coach-pro.html'),settable:['live'],expose:['makeLiveGame','RNG','newDynasty','SEA','S','HL_SPORT','live','hlEvPlan','SEGS']});
+const A=load({file:path.join(__dirname,'..','dist','hockey-coach-pro.html'),settable:['live'],expose:['makeLiveGame','RNG','newDynasty','SEA','S','HL_SPORT','live','hlEvPlan','SEGS','hkSkater']});
 let bad=0, checks=0; const ok=(c,m)=>{ checks++; if(!c){ bad++; if(bad<=12)console.log('  FAIL '+m) } };
 A.newDynasty('Vegas',5,'T'); const teams=Object.keys(A.SEA.roster);
 const tot={stretches:0,moves:0,touches:0,to:0,fe:0,cy:0,pens:0,clips:0,short:0,hits:0,named:0};
@@ -36,11 +36,22 @@ for(let s=1;s<=30;s++){
       ok(Math.abs(z.a-cl.W[0][0])<1e-9&&Math.abs(z.ay-cl.W[0][1])<1e-9,`${tag}: the move before a shot ends away from the shot's start`);
       ok(z.s===cl.rec[0],`${tag}: the move before a shot ends on another man`);
       ok(m.six.an===cl.an&&m.oSix.an===cl.dn,`${tag}: other men on the ice before the shot than in it`) });
+    // one rule for short a man: the clips and the play agree; every power-play shot comes with its side drawn short
+    (d._ev?d._ev.clips:[]).forEach(cl=>{ if(cl.so)return; const s0=cl.home?0:1; tot.ppClips=(tot.ppClips||0)+(cl.pp?1:0);
+      const sA=!!A.HL_SPORT.hkShort(L,s0?'away':'home',cl.m), sD=!!A.HL_SPORT.hkShort(L,s0?'home':'away',cl.m);
+      ok(!!cl.shortA===sA,`${tag}: the shooters short in the clip ${!!cl.shortA}, by the rule ${sA}`);
+      ok(!!cl.shortD===(sD||!!cl.pp),`${tag}: the defenders short in the clip ${!!cl.shortD}, by the rule ${sD}`);
+      if(cl.pp)ok(sD,`${tag}: a power-play shot with the other side at full strength`);
+      // the dot that shoots wears the shooter's name
+      const n=cl.rec.length, sh=cl.an&&cl.an[cl.rec[n-1]]; if(sh&&cl.who&&!cl.en)ok(String(cl.who).split(' ').slice(-1)[0]===sh[1],`${tag}: the shooting dot is ${sh[1]}, the shot is ${cl.who}'s`) });
+    // the man in the box isn't on the ice
+    P.moves.forEach(m=>{ if(m.end==='clip'||!m.six.idx)return; const e=A.HL_SPORT.hkShort(L,m.side?'away':'home',Math.floor(d.seg*5+m.f0*5+0.5)); if(!e)return; tot.pkMoves=(tot.pkMoves||0)+1;
+      const i=A.HL_SPORT.hkOffender(m.side?g.away:g.home,e); if(i>=0&&m.six.idx.slice(1,5).indexOf(i)>=0)tot.boxOn=(tot.boxOn||0)+1 });
     const sig=JSON.stringify(P.moves.map(m=>m.T.map(t=>[t.x,t.y,t.f,t.s,t.k])));
     Object.defineProperty(d,"_hp",{value:null,writable:true,configurable:true,enumerable:false}); const P2=A.HL_SPORT.hpPlan(L,d);
     ok(JSON.stringify(P2.moves.map(m=>m.T.map(t=>[t.x,t.y,t.f,t.s,t.k])))===sig,`${tag}: built twice, two different stretches`);
     prevLast=P2.last });
 }
-ok(tot.short<=tot.moves*0.03,`${tot.short} moves played in under a hundredth of a stretch`);   // hockey: shots come thick (about five a stretch, a moment apart at the least), so a quick touch between two is real hockey
-console.log(`  ${tot.stretches} stretches: ${(tot.moves/tot.stretches).toFixed(1)} moves and ${(tot.touches/tot.stretches).toFixed(1)} touches a stretch (${Math.round(100*tot.named/tot.touches)}% on a named man); shown: ${tot.to} giveaways forced, ${tot.fe} entries killed, ${tot.cy} cycles, ${tot.pens} penalties, ${tot.hits} hits, ${tot.clips} shots set up, ${tot.short} moves under a hundredth of a stretch`);
+ok(!tot.boxOn&&tot.pkMoves>20,`a penalised man on the ice in ${tot.boxOn} of ${tot.pkMoves} moves short a man`); ok(tot.short<=tot.moves*0.03,`${tot.short} moves played in under a hundredth of a stretch`);   // hockey: shots come thick (about five a stretch, a moment apart at the least), so a quick touch between two is real hockey
+console.log(`  ${tot.stretches} stretches: ${(tot.moves/tot.stretches).toFixed(1)} moves and ${(tot.touches/tot.stretches).toFixed(1)} touches a stretch (${Math.round(100*tot.named/tot.touches)}% on a named man); shown: ${tot.to} giveaways forced, ${tot.fe} entries killed, ${tot.cy} cycles, ${tot.pens} penalties (${tot.ppClips||0} power-play shots, each with the other side short), ${tot.hits} hits, ${tot.clips} shots set up, ${tot.short} moves under a hundredth of a stretch`);
 console.log(bad?`MISMATCH ${bad} of ${checks}`:`MATCH ${checks} checks`);

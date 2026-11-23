@@ -10,6 +10,15 @@ const HL_SPORT=(function(){
   const UNIT={C:3,LW:4,RW:5,D:1,D2:2}, GOAL=0.91, net=[0.47,0.53];
   const unitOf=u=>{ const x=u%100; return x<30?"C":x<52?"LW":x<74?"RW":x<88?"D":"D2" };
   const HL_CM=(typeof window!=="undefined"&&window.HLCM)||1;
+  /* round 104: one rule for when a side is short a man, for the clips and the play between them. The engine places a
+     power play's shots evenly through the stretch and the penalty at its own minute, so the window runs from whichever
+     comes first, the call or the first power-play shot, for two minutes or to the last power-play shot. The man called
+     sits it out (the commentary's man, hkSkater): he takes the sixth's place, which stays empty. */
+  function hkPPWin(x,e){ const pk=e.side, pp=pk==="home"?"away":"home", ms=[];
+    (x.sv||[]).forEach(q=>{ if(q.pp&&q.side===pk)ms.push(q.m) }); (x.ev||[]).forEach(q=>{ if(q.k==="goal"&&q.pp&&q.side===pp)ms.push(q.m) });
+    const s=Math.min(e.m,...(ms.length?ms:[e.m])), z=Math.max(s+2,...(ms.length?ms.map(m=>m+1):[s+2])); return [s,z] }
+  function hkShort(L,side,m){ for(const x of (L.drives||[]))for(const e of (x.ev||[])){ if(e.k!=="pen"||e.side!==side)continue; const w=hkPPWin(x,e); if(m>=w[0]&&m<w[1])return e } return null }
+  function hkOffender(team,e){ const n=hkSkater(team,e.u||0), R=(SEA.roster&&SEA.roster[team])||[]; return R.findIndex(p=>p&&p.n===n) }
   function clips(L,d,mode){
     // round 70: the shots stopped (d.sv, every one the engine played) give the saves; the commentary's big saves first.
     // Key moments: about one save for each goal over a game (Ian: "too high a share of goals")
@@ -58,8 +67,8 @@ const HL_SPORT=(function(){
     else if(plan==="pp")W=[[0.65,0.5],[0.78,s?0.82:0.18],[0.82,s?0.7:0.3]];
     else W=[[0.35,0.5],[0.55,0.5+(r()-0.5)*0.3]];   // empty net: from anywhere
     // round 104: a side short a man (a penalty in the last two minutes) has no sixth skater on the ice
-    const shortA=(L.drives||[]).some(x=>(x.ev||[]).some(q=>q.k==="pen"&&q.side===attSide&&(e.m||0)>=q.m&&(e.m||0)<q.m+2));
-    let sIdx=UNIT[unit]||3; if(shortA&&sIdx===5)sIdx=4;
+    const penA=e.so?null:hkShort(L,attSide,e.m||0), shortA=!!penA, penD=e.so?null:hkShort(L,attSide==="home"?"away":"home",e.m||0);
+    let sIdx=UNIT[unit]||3; const sWas=sIdx; if(shortA&&sIdx===5)sIdx=4;
     const rec=W.map((w,i)=>{ if(i===W.length-1||plan==="so")return sIdx;   // a shoot-out: one man carries it all the way
  let b=3,bd=9; for(let k=1;k<6;k++){ if(k===sIdx||shortA&&k===5)continue; const p=ATT[k], dd=Math.hypot(p[0]-w[0],p[1]-w[1]); if(dd<bd){bd=dd;b=k} } return b });
     const end=kind==="goal"?[GOAL+0.012,net[0]+r()*(net[1]-net[0])]:[GOAL-0.012,0.5+(r()-0.5)*0.05];
@@ -82,20 +91,24 @@ const HL_SPORT=(function(){
     const slots=sd=>{ const team=sd==="home"?g.home:g.away, H=hurtOf(team); return [(gIn(sd)||H.has(5))&&typeof BK==="function"?BK(5):5,3,4,0,1,2] };
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home;
     const SL=[slots(attSide)[0],at(3,dL),at(4,dL),at(0,fL),at(1,fL),at(2,fL)];
+    if(sWas!==sIdx){ [SL[4],SL[5]]=[SL[5],SL[4]] }   // the shooter's dot is his: short a man, the right wing shoots from the left wing's place
+    if(penA){ const o=hkOffender(tm,penA), j=SL.indexOf(o); if(j>0&&j!==5&&j!==sIdx){ [SL[j],SL[5]]=[SL[5],SL[j]] } }   // the man in the box isn't out there
     // the assist from the other line: he's out there too (a shift on the change), at his own place if the scorer isn't
     // in it, else beside him
     if(GN&&ai>=0&&!GN.depth&&SL.indexOf(ai)<0&&posOf(ai)<5){ const own=[3,4,5,1,2][posOf(ai)], grp=posOf(ai)<3?[3,4,5]:[1,2], shot=UNIT[unit]||3;
       const k=own!==shot?own:grp.find(x=>x!==shot); if(k!=null)SL[k]=ai }
     const Ro=(SEA.roster&&SEA.roster[opp])||[], HO=hurtOf(opp), atO=(i,l)=>pickAt(Ro,HO,i,l), oF=shift(opp,"f",13), oD=shift(opp,"d",19);
-    const an=hlNamed(tm,SL), dn=hlNamed(opp,[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)]), kits=hlKits(g.home,g.away);
+    const DL=[slots(defSide)[0],atO(3,oD),atO(4,oD),atO(0,oF),atO(1,oF),atO(2,oF)];
+    if(penD){ const o=hkOffender(opp,penD), j=DL.indexOf(o); if(j>0&&j!==5){ [DL[j],DL[5]]=[DL[5],DL[j]] } }
+    const an=hlNamed(tm,SL), dn=hlNamed(opp,DL), kits=hlKits(g.home,g.away);
     if(GN&&GN.depth){ an[3]=an[4]=an[5]=null }   // the fourth line: the roster doesn't carry them
     // the assist is the pass before the shot, when he's out there
-    if(GN&&ai>=0&&rec.length>=2&&plan!=="so"){ let aSlot=[3,4,5,1,2][posOf(ai)];
+    if(GN&&ai>=0&&rec.length>=2&&plan!=="so"){ let aSlot=SL.indexOf(ai)>0?SL.indexOf(ai):[3,4,5,1,2][posOf(ai)];   // round 104: where he is (the slots can swap)
       if(shortA&&aSlot===5){ const o=sIdx===4?3:4; [an[o],an[5]]=[an[5],an[o]]; [SL[o],SL[5]]=[SL[5],SL[o]]; aSlot=o }   // short a man: the assist from the man who's out there
       if(aSlot!=null&&aSlot!==sIdx)rec[rec.length-2]=aSlot }
     const legend=[{team:tm,kit:kits[attSide==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[attSide==="home"?1:0],list:dn.filter(Boolean)}];
     const gno=kind==="goal"&&!e.so?hlGoalNo(L,e,x=>{ const N=hkGoalNames(x.side==="home"?g.home:g.away,x); return N.depth?null:N.n }):0;
-    return {shortA,who:shooter,gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
+    return {shortA,shortD:!!penD||!!e.pp,who:shooter,gno,an,dn,legend:e.so?null:legend,kind,so:!!e.so,e,tm,home:attSide==="home",W,rec,end,nm,text:e.so?"":text,plan,m:e.m,base:3200,inks,gk:gks,en:!!e.en,pp:!!e.pp};
   }
   // the home side attacks left: flip the attack frame for it
   const P=(W,H,c,a,y)=>{ const X=c.home?1-a:a, Y=c.home?1-y:y; return [W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)] };
@@ -210,11 +223,12 @@ const HL_SPORT=(function(){
   const HP_RATE={icing:0.35,off:0.3,hit:1.8,freeze:0.4};   // a side's icings, offsides and hits in five minutes (NHL: about 4, 3.5, 22 a game); share of saves the goalie freezes
   const HP_POS=["the goalie","the defenceman","the defenceman","the centre","the left wing","the right wing"];
   // the six on the ice for a side and a shift (roster places, by slot: G, D, D, C, LW, RW), as the clips pick them
-  function hpSix(L,d,sd,fL,dL){ const g=L.g, team=sd==="home"?g.home:g.away, R=(SEA.roster&&SEA.roster[team])||[], nP=POS.length, bk=i=>typeof BK==="function"?BK(i):i+nP;
+  function hpSix(L,d,sd,fL,dL,off){ const g=L.g, team=sd==="home"?g.home:g.away, R=(SEA.roster&&SEA.roster[team])||[], nP=POS.length, bk=i=>typeof BK==="function"?BK(i):i+nP;
     const H=new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]?SEA.talent.active(team).map(x=>x.idx):[]);
     const pick=(i,l)=>{ const j=l?bk(i):i, o=l?i:bk(i); return R[j]&&!H.has(j)?j:R[o]&&!H.has(o)?o:R[j]?j:i };
     const gIn=!!((d.gIn&&d.gIn[sd])||(L.drives[0]&&L.drives[0].bk&&L.drives[0].bk[sd]));
     const gk=(gIn||H.has(5))&&typeof BK==="function"?BK(5):5, idx=[gk,pick(3,dL),pick(4,dL),pick(0,fL),pick(1,fL),pick(2,fL)];
+    if(off!=null&&off>=0){ const j=idx.indexOf(off); if(j>0&&j!==5)[idx[j],idx[5]]=[idx[5],idx[j]] }   // the man in the box takes the empty sixth place
     return {idx,an:hlNamed(team,idx)} }
   const hpWho=(S,s)=>S&&S.an&&S.an[s]?S.an[s][1]:HP_POS[s];
   // where the six stand for a puck at (a,y) in the frame of the side with it (0 its own end), the other side between it and its net
@@ -238,15 +252,16 @@ const HL_SPORT=(function(){
     const dl=(sd,k)=>{ const a=d.T&&d.T[sd], b=pv&&pv.T&&pv.T[sd]; return a?Math.max(0,Math.round((a[k]||0)-(b?b[k]||0:0))):pois(0.7) };
     const N={}; ["home","away"].forEach(sd=>{ N[sd]={to:dl(sd,"to"),fe:dl(sd,"fe"),cy:dl(sd,"cy"),icing:pois(HP_RATE.icing),off:pois(HP_RATE.off),hit:pois(HP_RATE.hit)} });
     // the penalties: this stretch's at their minutes; a side is short for two minutes (one from the stretch before can run on)
-    const pens=[]; [pv,d].forEach(x=>{ if(!x)return; (x.ev||[]).forEach(e=>{ if(e.k==="pen")pens.push({side:e.side==="home"?0:1,f:(e.m+0.5-t0)/5,e:e}) }) });
-    const shortAt=(s,f)=>pens.some(p=>p.side===s&&f>=p.f&&f<p.f+0.4);
+    const pens=(d.ev||[]).filter(e=>e.k==="pen").map(e=>{ const w=hkPPWin(d,e); return {side:e.side==="home"?0:1,f:Math.max(0.02,(w[0]-t0-0.5)/5-0.012),e:e} });   // called just before the window opens
+    const minAt=f=>Math.floor(t0+f*5+0.5), penAt=(s,f)=>hkShort(L,s?"away":"home",minAt(f)), shortAt=(s,f)=>!!penAt(s,f);
+    const pullAt=s=>{ const e=(d.ev||[]).find(q=>q.k==="pull"&&q.side===(s?"away":"home")); return e?Math.max(0,(e.m-t0)/5):2 };   // the goalie comes out for an extra man
     // the shifts: a line change every 45 seconds of play, the first unit its deployment share (the clips' rule)
     const shiftLines=(sd,k)=>{ const team=sd==="home"?g.home:g.away, dep=typeof deployOf==="function"?deployOf(SEA,team):{}, b=grp=>{ const q=dep[grp]||"bal"; return typeof DEPLOY!=="undefined"&&DEPLOY[grp]&&DEPLOY[grp].opts[q]?DEPLOY[grp].opts[q].b:0.3 };
       const h=strHash(team+"|"+d.seg+"|"+k); return {fL:((h%100)+0.5)/100<(1-b("f"))?0:1, dL:(((h>>>8)%100)+0.5)/100<(1-b("d"))?0:1} };
-    const sixAt=(s,f)=>{ const sd=s?"away":"home", k=Math.floor(f*5*60/45), q=shiftLines(sd,k); return hpSix(L,d,sd,q.fL,q.dL) };
+    const sixAt=(s,f)=>{ const sd=s?"away":"home", k=Math.floor(f*5*60/45), q=shiftLines(sd,k), pe=penAt(s,f); return hpSix(L,d,sd,q.fL,q.dL,pe?hkOffender(sd==="home"?g.home:g.away,pe):null) };
     // the anchors: each shot's move at its clip's minute (on the clip's own men), each penalty at its minute
     const anchors=[]; EP.clips.forEach(c=>{ const s=c.home?0:1, w0=c.W[0]; anchors.push({f:c.f,side:s,end:"clip",c:c,ea:w0[0],ey:w0[1],slot:c.rec[0]}) });
-    pens.filter(p=>p.f>=0&&p.f<1).forEach(p=>anchors.push({f:Math.max(0.03,Math.min(0.97,p.f)),side:1-p.side,end:"pen",pen:p.side,e:p.e}));
+    pens.forEach(p=>{ let text=""; try{ text=hkEventText(g,p.e).text }catch(er){} anchors.push({f:Math.max(0.02,Math.min(0.97,p.f)),side:1-p.side,end:"pen",pen:p.side,e:p.e,text:text}) });
     anchors.sort((a,b)=>a.f-b.f);
     const fl=[]; [0,1].forEach(s=>{ const n=N[s?"away":"home"], o=N[s?"home":"away"];
       for(let k=0;k<o.to;k++)fl.push({side:s,end:"forced"});   // they forced a giveaway in our zone
@@ -297,6 +312,7 @@ const HL_SPORT=(function(){
       const six=m.end==="clip"?{an:m.c.an,clip:1}:sixAt(s,fA), oSix=m.end==="clip"?{an:m.c.dn,clip:1}:sixAt(1-s,fA);
       T.forEach((t,k)=>{ if(k===0&&ball.by!=null&&!(ball.by===5&&shortAt(s,t.f))){ t.s=ball.by; return } const S=hpShape(t.a,t.ay).A; t.s=k===T.length-1&&m.slot!=null?m.slot:hpNear(S,t.a,t.ay,k>0?T[k-1].s:-1,shortAt(s,t.f)) });
       const e=T[T.length-1]; if(m.end==="forced"||m.end==="killed"||m.end==="lost"||m.end==="pen"){ const S=hpShape(e.a,e.ay).D; m.by=hpNear(S,e.a,e.ay,-1,shortAt(1-s,e.f)) }
+      if(m.end==="pen"){ const o=hkOffender(m.pen?g.away:g.home,m.e), j=oSix.idx?oSix.idx.indexOf(o):-1; if(j>0)m.by=j }
       // a hit on our man along the way
       if(hits[s].length&&T.length>2&&m.end!=="clip"){ hits[s].pop(); const k=1+ri(T.length-2), S=hpShape(T[k].a,T[k].ay).D; T[k].hit=hpNear(S,T[k].a,T[k].ay,-1,shortAt(1-s,T[k].f)) }
       moves.push({side:s,end:m.end,m:m,T:T,f0:fA,f1:fB,six,oSix,short,oShort:shortAt(1-s,fA)});
@@ -305,7 +321,7 @@ const HL_SPORT=(function(){
       if(m.end==="clip"&&nx.kind==="won"){ const [x,y]=toRink(1-s,0.12,0.5); ball.x=x; ball.y=y } };
     seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+m.nT,0); let at=q.f0;
       G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*m.nT/W2; push(m,at,fB); at=fB }) });
-    const out={L:L,n:nD,moves,N,pens,shortAt,last:Object.assign({},ball,{fo:0})};
+    const out={L:L,n:nD,moves,N,pens,shortAt,pullAt,last:Object.assign({},ball,{fo:0})};
     Object.defineProperty(d,"_hp",{value:out,writable:true,configurable:true,enumerable:false});
     return out }
   function hpCounts(L,d){ const P=hpPlan(L,d), o=[{to:0,fe:0,cy:0,icing:0,off:0,hit:0,pen:0},{to:0,fe:0,cy:0,icing:0,off:0,hit:0,pen:0}];
@@ -328,7 +344,7 @@ const HL_SPORT=(function(){
   function hpText(P,mv,k){ const S=mv.six, O=mv.oSix, t=mv.T[k], a=hpWho(S,t.s), nx=mv.T[k+1], b=nx?hpWho(S,nx.s):"";
     if(k===mv.T.length-1){ const by=mv.m.by!=null?hpWho(O,mv.m.by):"";
       if(mv.end==="clip")return ""; if(mv.end==="forced")return `${by} forces a giveaway from ${a}`; if(mv.end==="killed")return `${by} stands up ${a} at the line`;
-      if(mv.end==="icing")return `Icing`; if(mv.end==="off")return `${a} is offside`; if(mv.end==="pen")return `Penalty: ${by}, two minutes`;
+      if(mv.end==="icing")return `Icing`; if(mv.end==="off")return `${a} is offside`; if(mv.end==="pen")return mv.m.text||`Penalty: ${by}, two minutes`;
       return `${by} picks it off ${a}` }
     if(t.hit!=null)return `Big hit on ${a} by ${hpWho(O,t.hit)}`;
     if(t.k==="faceoff")return `${a} wins the faceoff`; if(t.k==="cycle")return `${a} cycles it low`; if(t.k==="ice")return `${a} fires it down the ice`;
@@ -356,7 +372,7 @@ const HL_SPORT=(function(){
     const g=L.g, kits=hlKits(g.home,g.away), inks=kits.map(k=>k.fill), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks), r=Math.max(5,W/80);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const S=si===s?mv.six:mv.oSix, short=si===s?P.shortAt(s,f):P.shortAt(si,f);
-      pos[si].forEach((p,i)=>{ if(short&&i===5)return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
+      pos[si].forEach((p,i)=>{ if(short&&i===5||i===0&&f>=P.pullAt(si))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
         hlDot(x,px,py,r,i?inks[si]:gks[si],"rgba(0,0,0,.6)","",Object.assign(S&&S.an&&S.an[i]?{num:S.an[i][0],sub:S.an[i][1]}:{},on?{hot:true}:{})) }) });
     hlBall(x,qx,qy,r*0.5,0,null,{kind:"puck"});
     const Hd=live.hold, hs=Hd?Hd.h:live.eng.h, as=Hd?Hd.a:live.eng.a;
@@ -382,7 +398,7 @@ const HL_SPORT=(function(){
       if(i===c.rec[n-1]&&t>=tb){ a=c.W[n-1][0]; y=c.W[n-1][1] }
       return [a,y] });
     const def=DEF.map((p,i)=>{ if(i===0){ if(c.en)return null; let y=0.5+(by-0.5)*0.3; if(t>=tb&&c.kind!=="goal")y=hlLerp(y,c.end[1],hlEase((t-tb)/(ts-tb))); return [GOAL-0.015,Math.max(0.45,Math.min(0.55,y))] }
-      if(c.pp&&i===5)return null;   // a man short
+      if((c.pp||c.shortD)&&i===5)return null;   // a man short
       return [hlLerp(p[0]-0.1,p[0],prog),p[1]+(by-0.5)*0.25] });
     // round 104: in the full match the shot's move grows out of the play before it (each man from where it had him)
     if(c.pbFrom&&t<0.16&&!c.so){ const w=1-hlEase(t/0.16), S=hpShape(c.W[0][0],c.W[0][1]);
@@ -403,5 +419,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML};
+  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
 })();
