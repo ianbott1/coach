@@ -7,7 +7,7 @@
    reached (the plan is built twice and compared); a stretch carries on from the last.
      node test/sc-pb.js     last line: MATCH or MISMATCH */
 const path=require('path'); const {load}=require('./harness.js');
-const A=load({file:path.join(__dirname,'..','dist','soccer-coach.html'),settable:['live'],expose:['makeLiveGame','RNG','newDynasty','SEA','S','HL_SPORT','live','hlEvPlan','SC_UNIT']});
+const A=load({file:path.join(__dirname,'..','dist','soccer-coach.html'),settable:['live'],expose:['makeLiveGame','RNG','newDynasty','SEA','S','HL_SPORT','live','hlEvPlan','SC_UNIT','scEventTextIn']});
 let bad=0, checks=0; const ok=(c,m)=>{ checks++; if(!c){ bad++; if(bad<=12)console.log('  FAIL '+m) } };
 A.newDynasty('Arsenal',5,'T'); const teams=Object.keys(A.SEA.roster);
 const tot={stretches:0,moves:0,touches:0,cr:0,lb:0,to:0,cards:0,clips:0,named:0,touchesNamed:0};
@@ -46,7 +46,10 @@ for(let s=1;s<=40;s++){
       const want=a.end==='clip'?null:(a.end==='foul'||a.end==='card'||a.end==='corner')?a.side:1-a.side; if(want!=null)ok(m.side===want,`${tag} move ${j}: the wrong side has it after a ${a.end}`) });
     // a booking: the man drawn fouling is the man the commentary books; a man sent off is never on the ball after
     P.moves.filter(m=>m.end==='card').forEach(m=>{ const X=P.XI[1-m.side], nm=X.nm[m.m.by]; ok(nm&&(m.m.text||'').indexOf(nm)>=0,`${tag}: ${nm} drawn fouling, the booking reads "${m.m.text}"`) });
-    P.moves.forEach(m=>{ m.T.forEach(x=>{ if(x.s===2&&P.offAt(m.side,x.f))ok(false,`${tag}: the man sent off is on the ball`) }); if(m.m.by===2&&P.offAt(1-m.side,m.f1))ok(false,`${tag}: the man sent off wins the ball`) });
+    P.moves.forEach(m=>{ m.T.forEach(x=>{ if(x.s===P.offSlot[m.side]&&P.offAt(m.side,x.f))ok(false,`${tag}: the man sent off is on the ball`) }); if(m.m.by===P.offSlot[1-m.side]&&P.offAt(1-m.side,m.f1))ok(false,`${tag}: the man sent off wins the ball`) });
+    // the man the red card's words send off is the one who leaves
+    [0,1].forEach(si=>{ const red=e.drives.slice(0,di+1).flatMap(x=>(x.ev||[]).filter(q=>q.k==='red'&&q.side===(si?'away':'home')))[0]; if(!red)return; tot.reds=(tot.reds||0)+1;
+      let txt=''; try{ txt=A.scEventTextIn(g,e.drives,red).text }catch(er){} const nm=P.XI[si].nm[P.offSlot[si]]; if(/sees/.test(txt))ok(nm&&txt.indexOf(nm)>=0,`${tag}: "${txt}" but ${nm} leaves`) });
     P.moves.forEach(m=>{ tot.short=(tot.short||0)+(m.f1-m.f0<0.012?1:0) });
     // the move before each shot: ends where the shot's move begins, on its first man, same number
     P.moves.filter(m=>m.end==='clip').forEach(m=>{ const cl=m.m.c, z=m.T[m.T.length-1], s0=cl.home?0:1, w=cl.W[0]; tot.clips++;
@@ -62,5 +65,5 @@ for(let s=1;s<=40;s++){
   });
 }
 ok((tot.short||0)<=tot.moves*0.005,`${tot.short} moves played in under a hundredth of a stretch`);
-console.log(`  ${tot.stretches} stretches: ${(tot.moves/tot.stretches).toFixed(1)} moves and ${(tot.touches/tot.stretches).toFixed(1)} touches a stretch (${Math.round(100*tot.touchesNamed/tot.touches)}% on a named man); shown: ${tot.cr} crosses, ${tot.lb} long balls, ${tot.to} won high, ${tot.cards} bookings, ${tot.clips} shots set up, ${tot.short||0} moves under a hundredth of a stretch`);
+console.log(`  ${tot.stretches} stretches: ${(tot.moves/tot.stretches).toFixed(1)} moves and ${(tot.touches/tot.stretches).toFixed(1)} touches a stretch (${Math.round(100*tot.touchesNamed/tot.touches)}% on a named man); shown: ${tot.cr} crosses, ${tot.lb} long balls, ${tot.to} won high, ${tot.cards} bookings, ${tot.reds||0} stretches down to ten, ${tot.clips} shots set up, ${tot.short||0} moves under a hundredth of a stretch`);
 console.log(bad?`MISMATCH ${bad} of ${checks}`:`MATCH ${checks} checks`);

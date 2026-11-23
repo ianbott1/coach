@@ -61,12 +61,23 @@ const HL_SPORT=(function(){
     else if(plan==="pen"){ W=[start,[0.6+r()*0.06,0.3+r()*0.4],[0.88+r()*0.03,0.36+r()*0.28]] }
     else { const cy=side?0.995:0.005; W=[[0.995,cy],[0.9+r()*0.04,0.42+r()*0.16]] }
     // the receivers: the nearest attacker to each spot (the last is the man who shoots: the named one when we know him)
-    const before=x=>(L.drives||[]).some(d=>(d.ev||[]).some(q=>q!==e&&q.k==="red"&&q.side===x&&(q.m||0)<(e.m||0))), offA=before(aside), offD=before(aside==="home"?"away":"home");
-    let sIdx=(UNIT_IDX[shooter.unit]||[9,10])[Math.floor(r()*2)]; if(offA&&sIdx===2)sIdx=3;
-    const rec=W.map((w,i)=>{ if(i===W.length-1)return sIdx; let b=1,bd=9; for(let k=1;k<11;k++){ if(offA&&k===2)continue; const p=BASE[k], dd=Math.hypot(p[0]+0.18-w[0],p[1]-w[1])*(SP_NAMED.has(k)?0.7:1); if(dd<bd&&k!==sIdx){bd=dd;b=k} } return b });   // round 103: the squad's man of a pair a little more often (the full match credits the last pass)
+    const before=x=>{ let f=null; (L.drives||[]).forEach(d=>(d.ev||[]).forEach(q=>{ if(!f&&q!==e&&q.k==="red"&&q.side===x&&(q.m||0)<(e.m||0))f=q })); return f };
+    const redA=before(aside), redD=before(aside==="home"?"away":"home"), XA0=spXI(L,tm), offA=redA?spSlotOf(XA0.nm,spRedMan(L,redA)):-1;
+    let sIdx=(UNIT_IDX[shooter.unit]||[9,10])[Math.floor(r()*2)]; if(offA>=0&&sIdx===offA)sIdx=UNIT_IDX[shooter.unit]?UNIT_IDX[shooter.unit].find(k=>k!==offA)||sIdx:sIdx;
+    const rec=W.map((w,i)=>{ if(i===W.length-1)return sIdx; let b=1,bd=9; for(let k=1;k<11;k++){ if(k===offA)continue; const p=BASE[k], dd=Math.hypot(p[0]+0.18-w[0],p[1]-w[1])*(SP_NAMED.has(k)?0.7:1); if(dd<bd&&k!==sIdx){bd=dd;b=k} } return b });   // round 103: the squad's man of a pair a little more often (the full match credits the last pass)
     // round 103: a goal's last leg: about 72 in 100 from a team-mate's pass (the engine's assisted share), the rest the
     // scorer carries it himself (the full match credits the pass it shows, so a watched season comes out as an unwatched one)
     if(kind==="goal"&&plan!=="pen"&&plan!=="corner"&&W.length>=3&&((e.m||0)*31+u)%100>=72)rec[W.length-2]=sIdx;
+    // round 104: the man who makes it is picked as the engine picks an assist (by line: midfield and wings most, full
+    // backs, the strikers, a centre back now and then; the line's first man about three times in four), and the pass
+    // comes from his side of the pitch (it went to the nearest dot: wingers 46%, full backs never)
+    else if(kind==="goal"&&plan==="corner"&&W.length>=2){ const hz=strHash("crn|"+(e.m||0)+"|"+u+"|"+e.side), x=hz%100, un=x<45?"W":x<80?"CM":"FB", pair=UNIT_IDX[un], first=SP_NAMED.has(pair[0])?pair[0]:pair[1], second=pair[0]===first?pair[1]:pair[0];
+      let k=((hz>>>8)%100)<74?first:second; if(k===sIdx||k===offA)k=k===first?second:first; if(k!==sIdx&&k>0)rec[0]=k }   // round 104: who takes the corner (a winger, a midfielder, a full back), not always the nearest winger
+    else if(kind==="goal"&&plan!=="pen"&&plan!=="corner"&&W.length>=3){ const AW={CB:0.04,FB:0.14,CM:0.24,W:0.24,ST:0.12}, us=Object.keys(AW).filter(x=>x!==shooter.unit||true), tot=us.reduce((s,x)=>s+AW[x],0);
+      const hz=strHash("ast|"+(e.m||0)+"|"+u+"|"+e.side); let h=(hz%1000)/1000*tot, un=us[0]; for(const x of us){ if(h<AW[x]){ un=x; break } h-=AW[x] }
+      const pair=UNIT_IDX[un]||[9,10], first=SP_NAMED.has(pair[0])?pair[0]:pair[1], second=pair[0]===first?pair[1]:pair[0];
+      let k=((hz>>>10)%100)<74?first:second; if(k===sIdx)k=k===first?second:first; if(k===offA)k=k===first?second:first;
+      if(k!==sIdx&&k>0){ rec[W.length-2]=k; const b=BASE[k], w=W[W.length-2]; W[W.length-2]=[Math.max(w[0],Math.min(0.86,b[0]+0.36)),hlLerp(w[1],b[1],0.6)] } }
     // the end of the shot
     let end, kept=false, postHit=false;
     if(kind==="goal")end=[1.012,0.5+(r()-0.5)*goalW*0.8];
@@ -102,7 +113,9 @@ const HL_SPORT=(function(){
     const cl={gno,lift,bend,lr:(aside==="home")!==((e.m||0)>45),numsA:SA.nums,numsD:SD.nums,idxA:SA.idx,subA:SA.idx.map(i=>i>=0&&SEA.roster[tm][i]?String(SEA.roster[tm][i].n).split(" ").slice(-1)[0]:""),subD:SD.idx.map(i=>i>=0&&SEA.roster[opp][i]?String(SEA.roster[opp][i].n).split(" ").slice(-1)[0]:""),legend:[{team:tm,kit:kits[aside==="home"?0:1],list:SA.list},{team:opp,kit:kits[aside==="home"?1:0],list:SD.list}],kind,how:red?"red":how,e,tm,opp,home:aside==="home",W,rec,end,kept,postHit,nm:red?off:nm,text,plan,sh,sa,m:e.m,base:red?3000:3600,red,from,pre,inks,kits,gk:[gks[0],gks[1]],home0:g.home,away0:g.away};
     cl.open=Object.assign({},cl,{plan:"through",pre:0,red:false,from:W[W.length-1]});
     cl.who=shooter&&typeof shooter==="object"?shooter.n:shooter;   // round 101: the box score credits a shot the full match showed
-    cl.offA=offA; cl.offD=offD;   // round 103: down to ten: the man sent off isn't drawn
+    // round 103: down to ten: the man sent off isn't drawn (round 104: the man the commentary sent off, wherever he stands)
+    const slotByName=(S,team,who)=>{ if(!who)return 2; const R=(SEA.roster&&SEA.roster[team])||[]; for(let k=1;k<11;k++){ const i=S.idx[k]; if(i>=0&&R[i]&&who.indexOf(String(R[i].n).split(" ").slice(-1)[0])>=0)return k } return 2 };
+    cl.offA=redA?slotByName(SA,tm,spRedMan(L,redA)):-1; cl.offD=redD?slotByName(SD,opp,spRedMan(L,redD)):-1; cl.sentSlot=red?slotByName(SD,opp,text?(/^(.*?) sees/.exec(text)||[])[1]:""):2;
     return cl;
   }
   // pitch coordinates (attack frame -> screen)
@@ -182,6 +195,9 @@ const HL_SPORT=(function(){
   const SP_PART={FB:4,CB:3,W:8,CM:7,ST:10};   // each line's second man in the eleven   // a side's fouls, corners and offsides in five minutes (EPL: about 10.5, 5, 1.8 a match)
   const SP_POS=["the keeper","the full back","the centre back","the centre back","the full back","the winger","the midfielder","the midfielder","the winger","the striker","the striker"];
   const SP_UNIT=["GK","FB","CB","CB","FB","W","CM","CM","W","ST","ST"];
+  // round 104: the man a red card sends off, as the commentary names him (cardName), and his slot in an eleven's numbering
+  function spRedMan(L,e){ let txt=""; try{ txt=scEventTextIn(L.g,L.drives,e).text }catch(er){} const m=/^(.*?) sees/.exec(txt); return m?m[1]:"" }
+  const spSlotOf=(names,who)=>{ if(!who)return 2; for(let k=1;k<11;k++)if(names[k]&&who.indexOf(names[k])>=0)return k; return 2 };
   function spXI(L,team){ const key=team+"|"+(L.drives?L.drives.length:0); spXI.c=spXI.c||{}; if(spXI.c[key]&&spXI.c[key].L===L)return spXI.c[key];
     const R=(SEA.roster&&SEA.roster[team])||[], idx=Array(11).fill(-1), nm=Array(11).fill(null), nums=NUM.slice(), used={};
     Object.keys(SLOT_N).forEach(u=>{ const s=SLOT_N[u], i=typeof SC_UNIT!=="undefined"?hlFit(team,SC_UNIT[u]):-1; if(i<0||!R[i])return; idx[s]=i; nm[s]=String(R[i].n).split(" ").slice(-1)[0]; nums[s]=shirtNo(team,i); used[nums[s]]=s });
@@ -200,7 +216,7 @@ const HL_SPORT=(function(){
     return P.map(p=>home?p:[1-p[0],1-p[1]]) }) }
   // the man nearest, the named one of a pair a little more often (the squad's man for the line is its first choice)
   const SP_NAMED=new Set(Object.values(SLOT_N));
-  const spNear=(P,x,y,skip,off)=>{ let b=1,bd=9; for(let k=1;k<11;k++){ if(k===skip||off&&k===2)continue; const dd=Math.hypot(P[k][0]-x,P[k][1]-y)*(SP_NAMED.has(k)?0.7:1); if(dd<bd){bd=dd;b=k} } return b };
+  const spNear=(P,x,y,skip,off)=>{ let b=1,bd=9; for(let k=1;k<11;k++){ if(k===skip||k===off)continue; const dd=Math.hypot(P[k][0]-x,P[k][1]-y)*(SP_NAMED.has(k)?0.7:1); if(dd<bd){bd=dd;b=k} } return b };
   // after a move: who has the ball and how it restarts (no dice: a clip's own draw decides a save's corner)
   function spAfter(m){ const s=m.side, o=1-s, c=m.c;
     if(m.end==="clip")return c.kind==="goal"?{side:o,kind:"kickoff"}:c.kind==="red"?{side:s,kind:"free"}:c.kind==="save"&&((c.e.u||0)%5)<2?{side:s,kind:"corner"}:{side:o,kind:"gk"};
@@ -223,6 +239,8 @@ const HL_SPORT=(function(){
     const offPrev=[0,1].map(s=>(L.drives||[]).slice(0,Math.max(0,di)).some(x=>(x.ev||[]).some(e=>e.k==="red"&&e.side===(s?"away":"home"))));
     const redF=[0,1].map(s=>{ const c=EP.clips.find(c=>c.kind==="red"&&(c.home?1:0)===s); return c?c.f:2 });
     const offAt=(s,f)=>offPrev[s]||f>redF[s];
+    const offSlot=[0,1].map(s=>{ const side=s?"away":"home"; let e=null; (L.drives||[]).slice(0,Math.max(0,di)+1).forEach(x=>(x.ev||[]).forEach(q=>{ if(q.k==="red"&&q.side===side&&!e)e=q })); return e?spSlotOf(XI[s].nm,spRedMan(L,e)):2 });
+    const offK=(s,f)=>offAt(s,f)?offSlot[s]:-1;
     // the anchors: each shot's move at its clip's minute (it ends where the clip's own move begins), each booking at its own
     const anchors=[]; EP.clips.forEach(c=>{ const s=c.home?0:1, w0=c.W[0];
       anchors.push({f:c.f,side:s,end:"clip",c:c,ex:cl(s?1-w0[0]:w0[0]),ey:cl(s?1-w0[1]:w0[1]),slot:c.rec[0]}) });
@@ -285,15 +303,15 @@ const HL_SPORT=(function(){
       pts.push({x:sp[0],y:sp[1],k:"end"});
       // timing by touch; who: the man nearest each spot in the shape we hold there (the clip's own first receiver at its end)
       const T=pts.map((p,k)=>({x:A(p.x),y:A(p.y),f:hlLerp(fA,fB,k/(pts.length-1)),k:p.lk&&(p.k==="pass"||p.k==="won")?"long":p.k,lk:p.lk?1:0}));
-      T.forEach((t,k)=>{ if(k===0&&t.k==="gk"){ t.s=0; return } if(k===0&&ball.by!=null){ t.s=ball.by; return } const S=spShape(t.x,t.y,s===0)[s]; t.s=k===T.length-1&&m.slot!=null?m.slot:spNear(S,t.x,t.y,k>0?T[k-1].s:-1,offAt(s,t.f)) });
+      T.forEach((t,k)=>{ if(k===0&&t.k==="gk"){ t.s=0; return } if(k===0&&ball.by!=null){ t.s=ball.by; return } const S=spShape(t.x,t.y,s===0)[s]; t.s=k===T.length-1&&m.slot!=null?m.slot:spNear(S,t.x,t.y,k>0?T[k-1].s:-1,offK(s,t.f)) });
       // the man who won it or fouled
-      const e=T[T.length-1], o=1-s; if(m.end!=="clip"&&m.end!=="out"&&m.end!=="off"){ const S=spShape(e.x,e.y,s===0)[o]; m.by=m.byFixed!=null?m.byFixed:spNear(S,e.x,cl(e.y),-1,offAt(o,e.f)) }
+      const e=T[T.length-1], o=1-s; if(m.end!=="clip"&&m.end!=="out"&&m.end!=="off"){ const S=spShape(e.x,e.y,s===0)[o]; m.by=m.byFixed!=null?m.byFixed:spNear(S,e.x,cl(e.y),-1,offK(o,e.f)) }
       moves.push({side:s,end:m.end,m:m,T:T,f0:fA,f1:fB});
       const nx=spAfter(m); ball={side:nx.side,kind:nx.kind,x:e.x,y:e.y,by:nx.kind==="won"?m.by:null};
       if(nx.kind==="kickoff"){ ball.x=0.5; ball.y=0.5 } else if(nx.kind==="gk"){ ball.x=nx.side?0.94:0.06; ball.y=0.5 } else if(nx.kind==="corner"&&m.end==="clip"){ ball.x=s?0.015:0.985; ball.y=((m.c.e.u||0)%2)?0.03:0.97 } };
     seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+m.nT,0); let at=q.f0;
       G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*m.nT/W2; push(m,at,fB); at=fB }) });
-    const out={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball),offAt};
+    const out={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball),offAt,offSlot};
     Object.defineProperty(d,"_sp",{value:out,writable:true,configurable:true,enumerable:false});   // never saved with the game (it holds the live game)
     return out }
   // the counts the screen shows for the stretch (test/sc-pb.js checks them against the engine's)
@@ -348,7 +366,7 @@ const HL_SPORT=(function(){
     const kits=hlKits(g.home,g.away), r=Math.max(5,W/80), gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],[kits[0].fill,kits[1].fill]);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const X=P.XI[si], kt=kits[si], gk=hlKit("",gks[si]);
-      pos[si].forEach((p,i)=>{ if(i===2&&P.offAt(si,f))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
+      pos[si].forEach((p,i)=>{ if(i===P.offSlot[si]&&P.offAt(si,f))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
         hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]?{sub:X.nm[i]}:{},on?{hot:true}:{})) }) });
     // the ball's last moments
     const trail=[]; if(a.k!=="pass"||tr<1)for(let q=6;q>=1;q--){ const tq=Math.max(0,tr-q*0.04), eq=lf?tq:hlEase(tq), zq=lf&&tq<1?Math.sin(Math.PI*tq)*lf:0, pp=toS(hlLerp(a.x,b.x,eq),hlLerp(a.y,b.y,eq)); trail.push([pp[0],pp[1]-zq*W]) }
@@ -495,12 +513,12 @@ const HL_SPORT=(function(){
     if(t>=tb&&!c.red){ const a=P(W,H,c,c.from[0],c.from[1]); hlPath(x,[a,[qx,qy]],c.kind==="goal"&&t>=ts?"rgba(255,226,92,.85)":"rgba(255,255,255,.6)",null,1.8) }   // gold only once it's in
     const face=(px,py)=>Math.atan2(qy-py,qx-px);
     const dv=keeperDive(c,t);
-    def.forEach((p,i)=>{ if(i===2&&c.offD&&!c.red)return; const [px,py]=P(W,H,c,p[0],p[1]);
+    def.forEach((p,i)=>{ if(i===c.offD&&!c.red)return; const [px,py]=P(W,H,c,p[0],p[1]);
       if(i===0&&dv){ const ang=((c.lr!=null?c.lr:c.home)?1:-1)*(dv.dir>0?Math.PI/2:-Math.PI/2); hlPlayer(x,px,py,r,hlKit("",c.gk[1]),{dive:{ang:ang,k:dv.k}}); return }
-      const sent=c.red&&i===2&&t>=c.pre, fade=sent&&t>c.pre+0.1?Math.max(0.25,1-(t-c.pre-0.1)*1.8):null;
+      const sent=c.red&&i===(c.sentSlot!=null?c.sentSlot:2)&&t>=c.pre, fade=sent&&t>c.pre+0.1?Math.max(0.25,1-(t-c.pre-0.1)*1.8):null;
       hlPlayer(x,px,py,r,i?kD:hlKit("",c.gk[1]),{num:c.numsD?c.numsD[i]:NUM[i],sub:c.subD&&!sent?c.subD[i]:"",dir:face(px,py),alpha:fade,label:sent?c.nm:"",hot:sent});
       if(sent){ x.save(); x.translate(px+r*1.3,py-r*1.6); x.rotate(0.2); x.fillStyle="#E3262F"; x.fillRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=0.8; x.strokeRect(-r*0.45,-r*0.65,r*0.9,r*1.3); x.restore() } });
-    att.forEach((p,i)=>{ if(i===2&&c.offA)return; const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],sub:c.subA&&!hot?c.subA[i]:"",dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
+    att.forEach((p,i)=>{ if(i===c.offA)return; const [px,py]=P(W,H,c,p[0],p[1]); const hot=!c.red&&i===sIdx&&t>=ts; hlPlayer(x,px,py,r,i?kA:hlKit("",c.gk[0]),{num:c.numsA?c.numsA[i]:NUM[i],sub:c.subA&&!hot?c.subA[i]:"",dir:face(px,py),hot:hot,label:hot?c.nm:""}) });
     // the ball and the last few moments of its path
     const tr=[]; for(let q=8;q>=1;q--){ const b=ballAt(c,t-q*0.012); const pp=P(W,H,c,Math.min(1.03,b.bx),b.by); tr.push([pp[0],pp[1]-b.z*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,t>0.1?tr:null);
