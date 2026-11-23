@@ -144,7 +144,7 @@ function hlSkip(){
 function hlDraw(c,t){
   const cv=HL.cv, x=HL.x; if(!cv||!x)return; const dpr=cv.width/(parseFloat(cv.style.width)||cv.width);
   x.setTransform(dpr,0,0,dpr,0,0); const W=cv.width/dpr, H=cv.height/dpr;
-  HLK.t=t; if(!(typeof live!=="undefined"&&live&&live.paused&&HLK.now))HLK.now=Date.now();   // round 103: paused, the picture holds still (the ring round the man on the ball stops pulsing too)
+  HLK.t=t; if(!(typeof live!=="undefined"&&live&&live.pb&&live.pb.frozen!=null&&HLK.now))HLK.now=Date.now();   // round 103: a full match paused mid-stretch holds still (the ring round the man on the ball stops pulsing too); stepping plays on
   try{ hlPitch(x,W,H,dpr); if(c)HL_SPORT.frame(x,W,H,c,t); else HL_SPORT.idle(x,W,H); hlFinish(x,W,H) }catch(e){}
 }
 /* ---- round 101: the full match as events in time (soccer, hockey) ----
@@ -156,6 +156,7 @@ function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=
   const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
   clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
   clips.sort((a,b)=>a.f-b.f);
+  for(let i=1;i<clips.length;i++)if(clips[i].f<clips[i-1].f+0.04)clips[i].f=Math.min(0.985,clips[i-1].f+0.04);   // round 103: two in one minute, a moment apart (no play squeezed to nothing between them)
   const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
   clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
   const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
