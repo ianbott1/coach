@@ -291,6 +291,17 @@ function liveTick(){
 }
 /* your game plan, changed mid-game: from the next stretch, recorded so a reload or a replay plays it the same */
 function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
+/* round 107: a change of plan in a live game takes a second tap on the same button. One tap arms it, and the
+   arming lapses after a few seconds or on a tap anywhere else (Grokbot: a click meant for Full match landed on
+   Shorten the game as the screen moved, and the plan changed with nothing said) */
+let PLAN_ARM=null; const PLAN_ARM_MS=4000;
+function planArmed(p){ return !!(PLAN_ARM&&PLAN_ARM.p===p&&live&&PLAN_ARM.ck===live.ckey&&Date.now()-PLAN_ARM.at<PLAN_ARM_MS) }
+function pressPlanMidGame(p){
+  if(!live||live.done||!PLANS[p]||live.h2h)return; if(livePlanNow()===p){ PLAN_ARM=null; render(); return }
+  if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setPlanMidGame(p); return }
+  if(planArmed(p))return;
+  PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
+  setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
 function setPlanMidGame(p){
   if(!live||live.done||!PLANS[p]||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
   const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side)live.pm.splice(i,1);
@@ -301,9 +312,9 @@ function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
   const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
   return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
-    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
+    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(PLANS[k].l)}</button>`).join("")}</div>`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
-    <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
+    <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" id="hl-${v}" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
   // a full match: the pitch keeps playing between the moments, so each stretch takes long enough to watch (round 68)
   if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,(HL_SPORT.fullMs||4200)/Math.sqrt(speedMult())));   // round 99: each sport its own length (Ian: "Full match is not showing the full match")
@@ -3582,13 +3593,14 @@ function render0(){
       // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
       // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
       const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
-        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
+        const go=()=>{ if(!b.dataset.midplan)PLAN_ARM=null; fn() };
+        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); go() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)go() } };
       onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
         if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb&&live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
-      document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>setPlanMidGame(x.dataset.midplan)));
-      document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
+      document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>pressPlanMidGame(x.dataset.midplan)));
+      document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
         S.watchSpeed=x.dataset.speed;save();render()}));
     }
