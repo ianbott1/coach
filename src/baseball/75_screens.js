@@ -89,7 +89,7 @@ function lineScore(g,drives,now){
   const ls=drives.length?drives[drives.length-1]:null, done={h:ls?ls.sh:0,a:ls?ls.sa:0};
   const part=now&&(now.h>done.h||now.a>done.a)?{h:now.h-done.h,a:now.a-done.a}:null;
   const n=Math.max(SEGS,drives.length+(part?1:0)), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
-  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell(drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;
+  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell(live&&live.pb&&live.hold&&live.hold.hits&&!live.done?live.hold.hits[side==="h"?0:1]:drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;   /* round 105: in the full match, the hits as shown */
   return `<div class="linescore"><table><tr><th></th>${Array.from({length:n},(_,i)=>`<td>${i+1}</td>`).join("")}<td class="b">R</td><td>H</td></tr>${row("a",g.away)}${row("h",g.home)}</table></div>`;
 }
 function liveScoreboard(){

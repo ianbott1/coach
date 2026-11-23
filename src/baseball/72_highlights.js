@@ -99,11 +99,27 @@ const HL_SPORT=(function(){
      sacrifice fly, the home run and its trot. The score and the outs change as they happen. Names are the engine's
      own, so the box score (counted at bat by at bat) agrees. Between halves, a beat for the change of sides. */
   const W_PA={k:0.9,bb:0.75,hbp:0.75,s1:1.25,s2:1.35,s3:1.4,hr:1.5,out:1.0,sb:0.7,cs:0.7,change:0.6};
+  /* round 105: pitch by pitch. Each plate appearance's pitches lead to the result the engine logged: a strikeout ends on
+     strike three (swinging or looking), a walk on ball four, a ball in play or a hit batter on the pitch the count
+     leaves; fouls with two strikes keep it going. From the at-bat's own hash, no game dice (MLB: about 3.9 pitches a
+     plate appearance, a quarter of strikeouts looking). */
+  const W_PITCH=0.42;
+  function bsPitches(q,z){ const r=mulberry32((z^0x9E3779B9)>>>0), o=q.o, out=[]; let b=0,s=0;
+    const strike=()=>{ const x=r(); if(s===2)return x<0.55?"F":x<0.8?"C":"W"; return x<0.36?"C":x<0.62?"W":"F" };   // called, swinging, foul (a foul can't be strike three)
+    const add=c=>{ out.push(c); if(c==="B")b++; else if(c==="F"){ if(s<2)s++ } else s++ };
+    const pre=(stopP,maxB,maxS)=>{ for(let k=0;k<12;k++){ if(r()<stopP&&k>0)break; const ball=r()<(b<maxB?0.4:0); if(ball)add("B"); else { const c=strike(); if((c==="C"||c==="W")&&s>=maxS){ add("F") } else add(c) } } };
+    if(o==="k"){ for(let k=0;k<14&&s<2;k++){ if(b<3&&r()<0.36)add("B"); else { const c=strike(); add(c) } } for(let k=0;k<3&&r()<0.22;k++){ if(b<3&&r()<0.4)add("B"); else add("F") } out.push(r()<0.25?"KC":"KS") }
+    else if(o==="bb"){ for(let k=0;k<14&&b<3;k++){ if(r()<0.62||s>=2&&r()<0.8)add("B"); else { const c=strike(); if(s>=2&&c!=="F")add("F"); else add(c) } } out.push("B4") }
+    else if(o==="hbp"){ pre(0.5,3,2); out.push("HBP") }
+    else { pre(0.4,3,2); out.push("X") }
+    return out }
+  const bsCount=(P,j)=>{ let b=0,s=0; for(let i=0;i<j;i++){ const c=P[i]; if(c==="B")b++; else if(c==="F"){ if(s<2)s++ } else if(c==="C"||c==="W")s++ } return [b,s] };
   function pbItems(d,from,to){ const key=(from||0)+"|"+(to==null?d.pl.length:to)+"|"+d.pl.length; if(d._pb&&d._pb.key===key)return d._pb;
     const L=d.pl.slice(0,to==null?d.pl.length:to), out=[]; let tot=0, side=from>0&&L[from-1]?L[from-1].s:null;
     for(let i=from||0;i<L.length;i++){ const q=L[i];
       if(q.s!==side){ if(side!==null||i>0||true){ out.push({k:"change",s:q.s,at:tot,w:W_PA.change,i:i}); tot+=W_PA.change } side=q.s }
-      const w=q.t==="pa"?(q.dp?1.3:W_PA[q.o]||1):W_PA[q.t]||0.7; out.push({k:q.t,q:q,at:tot,w:w,i:i}); tot+=w }
+      const z=strHash("bs|"+d.seg+"|"+i+"|"+(q.nm||"")), ps=q.t==="pa"?bsPitches(q,z):null, wF=q.t==="pa"?(q.dp?1.3:W_PA[q.o]||1):W_PA[q.t]||0.7, w=wF+(ps?W_PITCH*(ps.length-1):0);
+      out.push({k:q.t,q:q,at:tot,w:w,wF:wF,ps:ps,i:i}); tot+=w }
     return d._pb={key:key,P:out,tot:tot} }
   function playback(L,d,from,to){ if(!d||!Array.isArray(d.pl))return 0; const it=pbItems(d,from||0,to); if(!it.P.length)return 0;
     const sp=typeof speedMult==="function"?speedMult():1; return Math.round(it.tot*1900/Math.pow(Math.max(0.25,sp),0.75)) }
@@ -114,7 +130,9 @@ const HL_SPORT=(function(){
   let pbKey="";
   function pbDraw(x,W,H){
     const PB=live.pb, d=PB.d, it=pbItems(d,PB.from||0,PB.to), el=PB.frozen!=null?PB.frozen:Date.now()-PB.at, f=Math.max(0,Math.min(0.9999,el/Math.max(1,PB.ms))), T=f*it.tot;
-    let ci=it.P.findIndex(q=>T<q.at+q.w); if(ci<0)ci=it.P.length-1; const C=it.P[ci], u=(T-C.at)/C.w;
+    let ci=it.P.findIndex(q=>T<q.at+q.w); if(ci<0)ci=it.P.length-1; const C=it.P[ci];
+    // round 105: the pitches before the last, then the last (the result) on the at-bat's own time
+    const wPre=C.ps?W_PITCH*(C.ps.length-1):0, tin=T-C.at, pj=C.ps&&tin<wPre?Math.floor(tin/W_PITCH):null, pu=pj!=null?(tin-pj*W_PITCH)/W_PITCH:null, u=pj!=null?0:Math.max(0,(tin-wPre)/(C.wF||C.w));
     const g=live.g, Pp=(a,b)=>[a*W,b*H], r=Math.max(5,W/85), kits=hlKits(g.home,g.away);
     const prevQ=C.i>0?d.pl[C.i-1]:null, q=C.q||(C.k==="change"?d.pl[C.i]:null), batS=C.s!=null?C.s:q.s, bat=batS===0?"home":"away", fld=bat==="home"?"away":"home";
     const btm=g[bat], ftm=g[fld], ink=kits[batS===0?0:1].fill, dink=kits[batS===0?1:0].fill;
@@ -178,6 +196,14 @@ const HL_SPORT=(function(){
           :hitN?`${sur(q.nm)}: ${H_[hitN]}${rn}`:q.dp?`Double play${rn}`:q.sf?`Sac fly: ${sur(q.nm)}, a run scores`:`${sur(q.nm)} ${fly?"flies out":"grounds out"}${rn}`;
         endInk=o==="k"||o==="out"?dink:ink }
     }
+    // round 105: a pitch before the last: to the plate, then the call (into the mitt, or a foul off the bat)
+    let call="";
+    if(pj!=null){ const c=C.ps[pj]; if(pu<0.5)ball=[0.5,hlLerp(0.72,0.905,pu/0.5)]; else if(c==="F"){ const v=(pu-0.5)/0.5, sd=(z>>>pj)&1?1:-1; ball=[0.5+sd*v*0.32,0.905-v*0.12]; lift=Math.sin(Math.min(1,v)*Math.PI)*0.06*H } else ball=[0.5,0.93];
+      if(pu>=0.5)call=c==="B"?"Ball":c==="C"?"Called strike":c==="W"?"Swinging strike":"Foul";
+      runners.length=0; on.forEach((nm,i)=>{ if(nm)runners.push([i+1,nm,true]) }); runners.push([0,q.nm,true,true]); fpos.splice(0,fpos.length,...F.map(p=>p.slice())); end="" }
+    if(C.ps&&C.k!=="change"){ const jj=pj!=null?(pu>=0.5?pj+1:pj):C.ps.length-1, [cb,cs]=bsCount(C.ps,jj);
+      if(pj!=null||u<tr)top=top+` · ${cb}-${cs}`+(call?` · ${call}`:"");
+      if(pj==null&&u<tr&&u>=tp){ const lastP=C.ps[C.ps.length-1]; const lc=lastP==="KC"?"Called strike three":lastP==="KS"?"Swinging strike three":lastP==="B4"?"Ball four":""; if(lc)top=top+` · ${lc}` } }
     if(C.k!=="change"&&u>=tr&&q&&q.h!=null){ hs=q.h; as=q.a }   // the score moves once the play is done
     // draw: the fielders, the runners, the ball
     fpos.forEach((p,i)=>{ const [px,py]=Pp(p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",fn&&fn[i]?{num:fn[i][0],sub:fn[i][1]}:null) });
@@ -188,8 +214,11 @@ const HL_SPORT=(function(){
     hlTicker(x,W,H,top,8.01);
     if(end){ const key=ci+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
     // the page follows: the score, the half and the outs (a redraw on each change: they come every few seconds)
-    const head=`${half==="Top"?"Top":"Bottom"} of the ${ordw(inn)}, ${outs} out`, k2=hs+"|"+as+"|"+head;
-    if(k2!==pbKey){ const was=pbKey; pbKey=k2; if(live.hold){ const runUp=live.hold.h!==hs||live.hold.a!==as; live.hold.h=hs; live.hold.a=as; live.hold.clock=head;
+    // round 105: the hits so far as shown (the line score's H read the inning's hits before they were played)
+    const HIT={s1:1,s2:1,s3:1,hr:1}, di=live.drives.indexOf(d), pd=di>0?live.drives[di-1]:di<0&&live.drives.length?live.drives[live.drives.length-1]:null, hh=pd&&pd.hits?pd.hits.slice():[0,0];
+    for(let i=0;i<C.i;i++){ const qq=d.pl[i]; if(qq&&qq.t==="pa"&&HIT[qq.o])hh[qq.s]++ } if(q&&C.k==="pa"&&u>=tr&&HIT[q.o])hh[q.s]++;
+    const head=`${half==="Top"?"Top":"Bottom"} of the ${ordw(inn)}, ${outs} out`, k2=hs+"|"+as+"|"+head+"|"+hh.join(",");
+    if(k2!==pbKey){ const was=pbKey; pbKey=k2; if(live.hold){ const runUp=live.hold.h!==hs||live.hold.a!==as; live.hold.h=hs; live.hold.a=as; live.hold.clock=head; live.hold.hits=hh;
         if(runUp&&was&&typeof sfx==="function"){ const mine=(bat==="home")===(g.home===S.myTeam); sfx(mine?(q&&q.o==="hr"?"hr":"run"):"against") } }
       setTimeout(()=>{ if(live&&live.pb&&typeof render==="function")render() },0) }
   }
@@ -282,5 +311,5 @@ const HL_SPORT=(function(){
 
   // round 72: the header says the inning a clip shows ("After the 1st" stayed up through the 2nd's home run)
   const headClock=c=>c&&c.inn&&c.half?`${c.half} of the ${ordw(c.inn)}`:null;
-  return {reveal:0.72, collapseIdle:true, ambient:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, playback, goalsLabel:"Big home runs"};
+  return {reveal:0.72, collapseIdle:true, ambient:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, playback, goalsLabel:"Big home runs", bsPitches, bsCount};
 })();
