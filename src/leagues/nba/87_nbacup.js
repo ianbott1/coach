@@ -148,6 +148,10 @@ function nbaCupStake(my,opp,g){
 }
 /* the result card's line for a Cup game */
 function nbaCupResult(g,my){
+  // round 107: a postseason game is never a Cup game (Instinct: a play-in win read "NBA Cup group game: won, 2-2 in West
+  // Group A" above "First Round: Game 1")
+  if(SEA.rounds&&Object.keys(SEA.rounds).some(r=>(SEA.rounds[r]||[]).some(x=>x===g||(x.home===g.home&&x.away===g.away&&x.title&&x.title===g.title))))return null;
+  if(g.title&&/play-in|round|finals|semifinal|conference/i.test(g.title)&&!/cup/i.test(g.title))return null;
   const k=SEA.cup?nbaCupKnock(SEA,g):-1;
   if(k>=0){ const won=g.winner===my, last=k===NBACUP_ROUNDS.length-1;
     return `<div class="hmove ${won?'up':'dn'}">${won?(last?"NBA CUP WINNERS":"Through to the NBA Cup "+NBACUP_ROUNDS[k+1].name+(NBACUP_ROUNDS[k+1].neutral?", in Las Vegas":"")):(last?"Beaten in the NBA Cup championship":"Out of the NBA Cup in the "+NBACUP_ROUNDS[k].name)}</div><button class="rewatch seedraw" data-cupview="1">See the Cup</button>` }
