@@ -113,7 +113,14 @@ function hlWatchAt(r){
    clip's own time, as the held score moves on with its goals (round 70); each sport says it in the header's words */
 function hlHeadClock(c){ try{ return c&&HL_SPORT.headClock?HL_SPORT.headClock(c)||null:null }catch(e){ return null } }
 function hlStart(c){ if(c&&typeof c.onStart==="function"){ try{ c.onStart() }catch(e){} }   // round 101: a clip that marks what the screen showed (football's full match)
-  { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k; if(!first&&typeof render==="function")render() } }
+  { const k=hlHeadClock(c); if(k&&typeof live!=="undefined"&&live&&live.hold&&live.hold.clock!==k){ const first=!live.hold.clock; live.hold.clock=k;
+    // round 107: a sport that can set its header in place does, the first clip too (football's header was a drive behind: Muse)
+    if(HL_SPORT.headLive){ try{ const e=document.querySelector(".wlabel"); if(e)HL_SPORT.headLive(e,k) }catch(x){} }
+    else if(!first&&typeof render==="function")render() } }
+  // round 107: the line under the field follows the clip (HL_SPORT.footText: football's drive on the field)
+  try{ const ft=HL_SPORT.footText&&HL_SPORT.footText(c); if(ft){ HL.foot=ft; HL.footG=typeof live!=="undefined"&&live?live.g:null; const e=document.querySelector(".fpos"); if(e&&e.textContent!==ft)e.textContent=ft } }catch(e){}
+  // ...and the header's clock, when the sport sets it in place, with no held score too (your own drive's lead-up)
+  if(HL_SPORT.headLive&&typeof live!=="undefined"&&live&&!live.done&&!(live.hold)){ const k=hlHeadClock(c); if(k){ try{ const e=document.querySelector(".wlabel"); if(e)HL_SPORT.headLive(e,k) }catch(x){} } }
   // the rewatch's header follows the clip's time too (round 73)
   if(typeof watch!=="undefined"&&watch&&watch.hl&&(typeof live==="undefined"||!live||live.done)){ const k=hlHeadClock(c); if(watch.hlClock!==k){ watch.hlClock=k; HL.cur=c; if(typeof render==="function")render() } }
   HL.cur=c; if(HL.leg){ HL.leg.innerHTML=c.legend?hlLegendHTML(c.legend):""; HL.leg.style.display=c.legend?"":"none" } HL.t0=Date.now(); cancelAnimationFrame(HL.raf); HL.raf=requestAnimationFrame(hlFrame) }

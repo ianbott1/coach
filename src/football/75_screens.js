@@ -115,7 +115,7 @@ function watchView(){
     </div>
     ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,cur,teamColor(g.home),teamColor(g.away),venue)}
-    ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started own ${cur.start}
+    ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started ${fbYd(cur.start)}
       &middot; ${cur.yards} yards</div>`
       :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
     <div class="grouphead">Drive chart</div>
@@ -139,6 +139,9 @@ function watchView(){
     </div></div>`;
 }
 
+/* round 107: a yard line in words, from the side with the ball: own 45, midfield, their 45 ("own 55": Muse) */
+function fbYd(n){ n=Math.round(n); return n<50?"own "+n:n===50?"midfield":"their "+(100-n) }
+function fbVenueTag(){ const g=live.g, my=S.myTeam; return g.label?" &middot; "+esc(g.label):(g.neutral?" &middot; neutral site"+(g.site?", "+esc(g.site):""):(g.home===my?" &middot; at home":" &middot; on the road")) }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam;
   const H=liveH(), A=liveA();
@@ -150,7 +153,7 @@ function liveScoreboard(){
   const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
     <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":(q>=5?"OT":"Q"+q)+(ENGINE_V>=7&&q<5?" "+fbClock(q,Math.max(0,live.drives.length-(ask?0:1))+(ask&&live.ask.dp&&live.ask.dp.k!=="prep"?0.7:0),DRIVES_PER_TEAM*2):"")+" &middot; drive "+(live.drives.length+(ask?1:0))}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?" &middot; neutral site"+(g.site?", "+esc(g.site):""):(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
+      ${fbVenueTag()}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
         <span class="wn">${A}</span></div>
@@ -170,7 +173,7 @@ function liveView(){
     ${liveScoreboard()}
     ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
-    ${last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started own ${last.start}</div>`
+    ${typeof HL!=="undefined"&&HL.foot&&HL.footG===g&&!live.done?`<div class="fpos">${esc(HL.foot)}</div>`:last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started ${fbYd(last.start)}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().map(d=>{
