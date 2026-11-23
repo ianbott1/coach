@@ -286,6 +286,20 @@ const HL_SPORT=(function(){
     P.moves.forEach(m=>{ m.T.forEach(t=>{ if(t.k==="cross")o[m.side].cr++; if(t.k==="long"||t.lk)o[m.side].lb++ });
       if(m.end==="high")o[1-m.side].to++; if(m.end==="foul"||m.end==="card")o[1-m.side].foul++; if(m.end==="card")o[1-m.side].card++; if(m.end==="corner")o[m.side].corner++; if(m.end==="off")o[m.side].off++ });
     return o }
+  // round 103: the match's numbers so far, as the screen has shown them: every stretch before this one whole, this one up
+  // to the clock (possession from the engine's lean, the read's own figure)
+  function spTally(L,upto,d,f){ const o=[{sh:0,sot:0,corner:0,foul:0,off:0},{sh:0,sot:0,corner:0,foul:0,off:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&!x.ot);
+    let last=null; D.forEach((x,k)=>{ const di=L.drives.indexOf(x); if(di>=upto)return; last=x; let c=null; try{ c=spCounts(L,x) }catch(e){} if(c)[0,1].forEach(s=>{ o[s].corner+=c[s].corner; o[s].foul+=c[s].foul; o[s].off+=c[s].off }) });
+    if(last&&last.st)[["home",0],["away",1]].forEach(([sd,s])=>{ o[s].sh=last.st[sd][0]; o[s].sot=last.st[sd][1] });
+    if(d&&f!=null){ let P=null; try{ P=spPlan(L,d) }catch(e){}
+      if(P){ P.moves.forEach(m=>{ const z=m.T[m.T.length-1]; if(z.f>f)return; const s=m.side;
+          if(m.end==="corner")o[s].corner++; if(m.end==="off")o[s].off++; if(m.end==="foul"||m.end==="card")o[1-s].foul++;
+          if(m.end==="clip"&&m.m.c.kind!=="red"){ /* the shot itself: counted once its clip has played */ } }) }
+      const EP=d._ev; if(EP)EP.clips.forEach(c=>{ if(c.kind==="red"||c.f>=f)return; const s=c.home?0:1; o[s].sh++; if(c.kind==="goal"||c.kind==="save")o[s].sot++ }) }
+    const ta=last&&last.TA, pH=ta&&ta.home&&ta.away?(50+ta.home.pos/Math.max(1,ta.home.n))/((50+ta.home.pos/Math.max(1,ta.home.n))+(50+ta.away.pos/Math.max(1,ta.away.n))):null;
+    return {o,pH} }
+  function spTallyHTML(T){ const o=T.o, row=(l,a,b)=>`<span class="sct"><b>${a}</b><i>${l}</i><b>${b}</b></span>`;
+    return (T.pH!=null?row("Possession",Math.round(T.pH*100)+"%",(100-Math.round(T.pH*100))+"%"):"")+row("Shots",o[0].sh,o[1].sh)+row("On target",o[0].sot,o[1].sot)+row("Corners",o[0].corner,o[1].corner)+row("Fouls",o[0].foul,o[1].foul)+row("Offsides",o[0].off,o[1].off) }
   function spText(P,mv,k){ const X=P.XI[mv.side], Xo=P.XI[1-mv.side], t=mv.T[k], a=spWho(X,t.s), nx=mv.T[k+1], b=nx?spWho(X,nx.s):"";
     if(k===mv.T.length-1){ const by=mv.m.by!=null?spWho(Xo,mv.m.by):"";
       if(mv.end==="clip")return "";
@@ -329,6 +343,8 @@ const HL_SPORT=(function(){
     const txt=spText(P,mv,k===T.length-2&&u>0.62?T.length-1:k);
     if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
     if(mv.end==="card"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"YELLOW CARD",{fill:"#F2C14E"},(u-0.7)/0.3);
+    // the numbers on the scoreboard, as far as the clock
+    if(Date.now()-(spDraw.t||0)>500){ spDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=spTallyHTML(spTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
   const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>20000,   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
@@ -485,5 +501,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's minute
   const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spXI};
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spXI, spTally, spTallyHTML};
 })();

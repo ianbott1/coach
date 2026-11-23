@@ -40,6 +40,8 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 @media (max-width:420px){.tab{padding:11px 6px;letter-spacing:.02em;font-size:13px}}
 .tab:focus-visible,.pick:focus-visible,.advance:focus-visible{outline:2px solid var(--sodium);
  outline-offset:2px}
+.scstats{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.scstats .sct{display:inline-flex;align-items:baseline;gap:6px}.scstats .sct b{color:#E9ECF2;font-weight:600;min-width:1.4em;text-align:center}.scstats .sct i{font-style:normal;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
  background:linear-gradient(180deg,transparent,var(--ink) 14px)}
 .actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */

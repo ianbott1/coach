@@ -144,7 +144,9 @@ function liveScoreboard(){
   const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
   const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"KICK-OFF":esc(segLabel(last))}
       ${g.label?" &middot; "+esc(g.label):g.title?" &middot; "+esc(g.title)+(g.neutral?"":(g.home===my?", at home":", away")):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
-  return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives)+`</div>`;
+  // round 103: the match's numbers so far (the full match brings them up to its clock as it plays)
+  let st=""; try{ if(HL_SPORT.spTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.spTallyHTML(HL_SPORT.spTally(live,upto,null,null))}</div>` } }catch(e){}
+  return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives)+st+`</div>`;
 }
 /* the momentum bar: a bar for each five minutes, above the line for the home
    side when it was on top, below for the away side; the size is how much */
