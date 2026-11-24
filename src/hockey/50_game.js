@@ -346,6 +346,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     }
     // round 107 (engine 21): a goal into an empty net, or with the goalie pulled for an extra man, is a shot on goal (it
     // was the scorer's but not his team's: Chicago's shooters 36 against the team's 35, test/ev-full.js)
+    /* round 107 (engine 21): an even-strength goal is never timed inside the other side's penalty (Grokbot: a 37' goal
+       inside a penalty, not a power-play goal). The power play's own shots are timed inside the two minutes; the others
+       were timed anywhere in the stretch. One that lands inside goes just before the penalty, or just after it ends. */
+    if(ENGINE_V>=21){ const pens=ev.filter(x=>x.k==="pen").map(x=>({side:x.side,m:x.m})).concat(st.penCarry||[]);
+      // by the minutes shown: a goal at the penalty's minute or the two after reads as inside it
+      ev.forEach(x=>{ if(x.k!=="goal"||x.pp||x.en||x.extra)return; const F=Math.floor, pn=pens.find(q=>q.side!==x.side&&F(x.m)>=F(q.m)&&F(x.m)<=F(q.m)+2); if(!pn)return;
+        const b=F(pn.m)-0.5, a=F(pn.m)+3.5; if(b>=t0)x.m=b; else if(a<t0+5)x.m=a });
+      st.penCarry=ev.filter(x=>x.k==="pen"&&x.m+2>t0+5).map(x=>({side:x.side,m:x.m})) }
     ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m))); sv.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
     const prev=st.drives.length?st.drives[st.drives.length-1]:{sh:0,sa:0};
     const mom=Math.max(0.12,Math.min(0.88,(sH+ppH+0.5)/(sH+ppH+sA+ppA+1)+rng.gauss(0,0.05)));
