@@ -440,6 +440,11 @@ function bsSpZ(t,step){ try{ const sp=spCtx(t,step), R=SEA.roster[t], p=sp&&R.fi
 function bsVsZ(z,pl){ return !z||!pl||pl==="balanced"?0:PLAN_VS_K*BS17.e*(pl==="aggressive"?-z:z) }
 function sportPlanVsC(o,pl){ return planVsV()?bsVsZ(bsSpZ(o,SEA.step),pl):0 }
 function sportPlanCap(){ return BS17.cap }
+/* round 109 (engine 23): today's starter in the chance (the engine always played him: a team's strength is the rotation's
+   average, so the card read the same whoever pitched). Measured (r109 spq.js, 20,000 games a cell, equal clubs): a
+   starter's q is worth 853 Elo a unit, so ten rating points over his rotation's mean about 43 Elo, 4 points of chance */
+const BS23_SPQ=853;
+function sportTonightEdge(t){ if(!planVsV()||typeof SEA==="undefined"||!SEA)return 0; const sp=spCtx(t,SEA.step); return sp&&sp.q?BS23_SPQ*sp.q:0 }
 function sportPlanVsWhy(o,k,v){ const sp=spCtx(o,SEA.step), nm=sp?esc(sp.n):"their starter"; return k==="aggressive"?(v<0?`${nm} starts for ${esc(o)}, a power arm who misses bats`:`${nm} starts for ${esc(o)} and doesn't miss many bats`):(v<0?`${nm} starts for ${esc(o)}, a control artist who walks no one`:`${nm} starts for ${esc(o)} and gives up walks`) }
 const PLAN_LEAN={safe:"contact and eye",aggressive:"power"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return planAmpV()?planFitWords(t,pl,{safe:"contact and eye",aggressive:"power"}):"" }
