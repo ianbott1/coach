@@ -472,6 +472,38 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
 - Left for later: the pitch applying soccer's late change, the hockey rink on a
   phone, red-zone punts (round 106), kicks against going for it (a model question).
 
+Round 109: the plan is a decision, and the roster moves it (engine 23; Grokbot round 13, asks 2 and 3: "a tactic that is
+right against one side is wrong against another. Until that is true here, the plan is a setting, not a decision").
+Every change is gated on engine 23: at ENGINE_NOW=22 all seven fast goldens match round 108, and the computer's games
+play exactly as before (the opponent's part is on a person's side only), except soccer's keeper weight below.
+- Measured first (scratch r109 probe.js, grok.js: depth-chart swaps as a person makes them, the card read as shown). A
+  starter for a backup 20 points worse, at even: pro football 4-9 points (QB 21), college 3-7 (QB 17), pro basketball
+  11-13, college 7-9, hockey 2-3 (goalie 7), soccer 2-4, baseball 1-2. Football and basketball were already in
+  Grokbot's 5-15; his 96% to 95% was a mismatch. A correction: round 108's note that only injuries reach team strength
+  was wrong (swapDepth and trades move it by the change in rosterElo).
+- The real gap: a plan's worth was your fit plus the gap's shift, never the opponent, so each club had one best plan.
+  modal.js (a club's usual pick as the card's pick, over every opponent 20-80%, ten clubs a league): pro football 74%,
+  college 90, pro basketball 90, college 95, hockey 96, soccer 96, baseball 100.
+- planVs (core 93_attrs): on a person's side a plan is worth his fit and the opponent's part, held to the sport's cap.
+  Hockey and soccer play one game both ways: the opponent's part is how well their roster suits the same plan (skating
+  with a quicker side is worth less). Basketball and football plan your offence: their defence against it (inside
+  against rim protection, threes against perimeter defence; risks against coverage and pass rush, safe against
+  tackling and speed in space), a league spread worth a spread of fit (football two: the gap's shift dominated).
+  Baseball: the day's starter, Stuff over Control (a power arm punishes Swing for the fences, a control artist Small
+  ball), kept with the game (ctx.spz). After: pro football 64%, college 67, pro basketball 56, college 66, hockey 72,
+  soccer 75, baseball 59. The card names the opponent ("Philadelphia don't protect the rim", "Omari Contreras starts
+  for San Francisco and gives up walks"). Your assistant reads it when he picks (cpuPlanOf, person's path).
+- Played on shown (vs2.js: the change from engine 22 on common dice, 16 matchups x 2,000-3,000 games): college
+  basketball 1.20 at first (played at 0.83 now 1.02), the pros 0.79 (played at 1.27 now 1.06), hockey 1.14 (0.88, now
+  0.99), soccer 0.92, pro football 0.96, college 1.04, baseball 0.49 at first (the counter was in the bat's half only;
+  fit plays half in the field) now 1.03.
+- Ian chose in between (goalies, starting pitchers and key players matter more; skaters and hitters moderately):
+  baseball's card counts today's starter (853 Elo a unit of q, spq.js 20,000 games a cell; the engine always played
+  him, the card read the rotation's average); soccer's keeper weighs 0.20 of a side (was 0.14, from the back line and
+  wings; a 20-point worse keeper 4.2 points, was 3.6; calibrate.js 60 seasons unchanged, epl-predict MATCH, PL 0.87).
+- Open: baseball pairs play a few points under the card on your path at engine 22 too (Seattle v Houston 32 shown, 25
+  played): not this round's change, to look at.
+
 Round 108: watching, and managing in real time (engine 22; Ian: "I should feel like I'm managing the team in
 real-time"; "I often would watch full 90 minute soccer matches in football manager"). Every change below is gated on
 engine 22: at ENGINE_NOW=21 all seven goldens match round 107's byte for byte, and the computer's games play the same

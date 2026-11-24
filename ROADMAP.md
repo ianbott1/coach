@@ -157,11 +157,10 @@ on numbers they can't trust and a sport they read rather than watch.
   box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five
   minutes a game) and Full as the default. Hockey's power plays in the right end, college basketball using both halves,
   the soccer pitch applying the late change, hockey's rink on a phone.
-- Round 109: the roster and the plan matter (Grokbot's second and third asks). Measure what a 15-25 point downgrade does
-  to the chance and the recommended plan in each sport now (only college football moves), set targets by sport and
-  position, then make plan edges depend on the opponent so no plan wins every night (Work it inside, Skate with them).
-  Soccer moved the wrong way (a weaker midfielder made Attack look better). Check against the calibration targets.
-  Live agency between calls belongs here.
+- Round 109 (Nov 24, on its branch, engine 23): the plan depends on tonight's opponent in all seven (a club's usual
+  plan the card's pick in 56-75% of live games, was 74-100%), played as shown; baseball's card counts today's starter;
+  soccer's keeper weighs more. See ARCHITECTURE. Not done: hockey skaters and baseball hitters stay near real-world
+  weight (Ian's in-between); live agency between calls.
 - Later: the career layer (Grokbot's list): development you can see, injuries and form that change the next month,
   recruiting and contracts, job security and rivalries, history, news.
 
