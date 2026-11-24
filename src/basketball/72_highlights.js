@@ -187,6 +187,7 @@ const HL_SPORT=(function(){
   let pbShown="";
   function pbPatch(h,a,clock){ const k=h+"|"+a+"|"+clock; if(k===pbShown)return; pbShown=k;
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    if(typeof lwRefresh==="function")setTimeout(lwRefresh,0);
     try{ const top=document.querySelector(".wtop"); if(!top)return; const sd=top.querySelectorAll(".wside"), wn=top.querySelectorAll(".wn");
       if(wn.length===2){ wn[0].textContent=a; wn[1].textContent=h; sd[0].classList.toggle("lead",a>h); sd[1].classList.toggle("lead",h>a) }
       const lb=top.querySelector(".wlabel"); if(lb){ const t=lb.textContent||"", i=t.indexOf("\u00b7"); lb.innerHTML=`<span class="live"></span>${esc(clock)}${i>=0?" "+esc(t.slice(i).replace(/\s+/g," ")):""}` }

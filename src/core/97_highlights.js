@@ -189,6 +189,7 @@ function hlEvDraw(x,W,H){
     if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
     clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
+    if(typeof lwRefresh==="function")lwRefresh();
     HL_SPORT.frame(x,W,H,q.c,t) }
   else { const f=q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)); clock=S.clock(d,f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
