@@ -1,4 +1,5 @@
-/* soccer's and hockey's full match as they move (sport: soccer | hockey): every stretch of a played match drawn frame by frame (a 500th of a stretch, about a
+/* soccer's and hockey's full match as they move (sport: soccer | hockey). The cap that stops a jump must hold a man
+   back rarely and not far, so the picture is otherwise the play's own: every stretch of a played match drawn frame by frame (a 500th of a stretch, about a
    tenth of a second at Normal), each man's step between frames. No one jumps across the pitch, no two of a side stand
    on each other for long, and everyone stays on the pitch.
      node test/sc-motion.js [dist]   last line: MATCH or MISMATCH */
@@ -10,17 +11,18 @@ const CFG={soccer:{file:'soccer-coach.html',team:'Southampton',W:105,H:68,n:11,n
   const R=await p.evaluate((C)=>{ newDynasty(C.team,7,'T'); S.title=false; S.guide=false; render(); for(let k=0;k<3&&!live;k++)doAdvance();
     let n=0; while(live&&!live.done&&n++<5000){ if(live.ask){ answerLive(live.ask.dp.opts[0][0]); continue } liveTick() }
     if(!live)return null; const c=document.createElement('canvas'); c.width=900; c.height=560; const x=c.getContext('2d');
-    const out={held:0,loose:0,steps:[],big:0,stack:0,offp:0,frames:0,maxStep:0,where:''}; const D=live.drives.filter(d=>typeof d.seg==='number'&&!d.ot&&d.seg<SEGS);
-    D.forEach(d=>{ let prev=null; for(let i=0;i<=500;i++){ const f=i/500; HL_SPORT.amb(x,900,560,d,f); const P=(HL_SPORT.spDrawPos||HL_SPORT.drawPos)(), G=(HL_SPORT.spDrawDbg||HL_SPORT.drawDbg)(); if(!P)return; out.frames++;
+    const out={ncl:0,lag:0,held:0,loose:0,steps:[],big:0,stack:0,offp:0,frames:0,maxStep:0,where:''}; const D=live.drives.filter(d=>typeof d.seg==='number'&&!d.ot&&d.seg<SEGS);
+    D.forEach(d=>{ let prev=null; for(let i=0;i<=500;i++){ const f=i/500; HL_SPORT.amb(x,900,560,d,f); const P=(HL_SPORT.spDrawPos||HL_SPORT.drawPos)(), G=(HL_SPORT.spDrawDbg||HL_SPORT.drawDbg)(); if(!P)return; out.frames++; if(G&&G.cl){ out.ncl+=G.cl.nCl; out.lag+=G.cl.lagM }
         if(G&&G.u>=0.8){ out.held++; const q=P[G.s][G.bs]; if(Math.hypot((q[0]-G.bx)*C.W,(q[1]-G.by)*C.H)>C.carry)out.loose++ }
-        P.forEach((A,s)=>A.forEach((q,k)=>{ if(q[0]<-0.01||q[0]>1.01||q[1]<-0.01||q[1]>1.01)out.offp++; if(prev){ const m=Math.hypot((q[0]-prev[s][k][0])*C.W,(q[1]-prev[s][k][1])*C.H); if(m>out.maxStep){out.maxStep=m; out.where=d.seg+'@'+f+' side '+s+' man '+k} if(m>5)out.big++ } }));
+        P.forEach((A,s)=>A.forEach((q,k)=>{ if(q[0]<-0.01||q[0]>1.01||q[1]<-0.01||q[1]>1.01)out.offp++; if(prev){ const m=Math.hypot((q[0]-prev[s][k][0])*C.W,(q[1]-prev[s][k][1])*C.H); if(m>out.maxStep){out.maxStep=m; out.where=d.seg+'@'+f+' side '+s+' man '+k} if(m>7)out.big++ } }));
         P.forEach(A=>{ for(let a=1;a<C.n;a++)for(let c2=a+1;c2<C.n;c2++)if(Math.hypot((A[a][0]-A[c2][0])*C.W,(A[a][1]-A[c2][1])*C.H)<C.near)out.stack++ });
         prev=P.map(A=>A.map(q=>q.slice())) } });
     return out },CFG);
   if(!R){ console.log('MISMATCH no live game'); process.exit(1) }
-  const fr=R.frames*2*CFG.n, ok1=R.big/fr<0.002, ok2=R.stack/fr<0.01, ok3=R.offp===0, ok4=R.loose/Math.max(1,R.held)<0.05;
-  console.log(`  ${ok1?'ok  ':'FAIL'} steps over 5 m between frames: ${R.big} of ${fr} (${(100*R.big/fr).toFixed(3)}%), largest ${R.maxStep.toFixed(1)} m (${R.where})`);
+  const fr=R.frames*2*CFG.n, ok1=R.big/fr<0.002, ok2=R.stack/fr<0.01, ok3=R.offp===0, ok4=R.loose/Math.max(1,R.held)<0.05, ok5=R.ncl/fr<0.12&&R.lag/fr<0.6;
+  console.log(`  ${ok1?'ok  ':'FAIL'} steps over 7 m between frames (the cap: 3 m, the ball's men 6.6): ${R.big} of ${fr} (${(100*R.big/fr).toFixed(3)}%), largest ${R.maxStep.toFixed(1)} m (${R.where})`);
   console.log(`  ${ok2?'ok  ':'FAIL'} two of a side within ${CFG.near} m: ${R.stack} pair-frames of ${fr}`);
   console.log(`  ${ok3?'ok  ':'FAIL'} men off the pitch: ${R.offp}`);
   console.log(`  ${ok4?'ok  ':'FAIL'} the man the ball went to has it: more than ${CFG.carry} m from it in ${R.loose} of ${R.held} frames (${(100*R.loose/Math.max(1,R.held)).toFixed(1)}%)`);
-  await b.close(); const ok=ok1&&ok2&&ok3&&ok4; console.log(ok?'MATCH the full match moves smoothly':'MISMATCH the full match jumps'); process.exit(ok?0:1) })();
+  await b.close(); console.log(`  ${ok5?'ok  ':'FAIL'} held back by the cap in ${(100*R.ncl/fr).toFixed(1)}% of man-frames, on average ${(R.lag/fr).toFixed(2)} m behind where the play wants him`);
+  const ok=ok1&&ok2&&ok3&&ok4&&ok5; console.log(ok?'MATCH the full match moves smoothly':'MISMATCH the full match jumps'); process.exit(ok?0:1) })();

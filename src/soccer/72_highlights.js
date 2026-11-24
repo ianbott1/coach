@@ -417,7 +417,7 @@ const HL_SPORT=(function(){
     for(let s=0;s<2;s++){ const sd=s?"away":"home"; for(let u=0;u<3;u++)if(d.sub?d.sub[sd].indexOf(u)>=0:d.E[sd][u]-pv.E[sd][u]>12)return {t:"CHANGE: "+up(s)+", FRESH LEGS "+SP_UNITW[u].toUpperCase(),side:s} }
     if(pv.md&&d.md)for(let s=0;s<2;s++){ const sd=s?"away":"home", a=spMode(pv.md[sd]), b=spMode(d.md[sd]); if(a!==b&&SP_SAYS[b])return {t:SP_SAYS[b].replace("%s",up(s)).toUpperCase(),side:s} }
     return null }
-  const SP_VMAX=1100;   // metres a stretch at most: 2.2 m a 500th of it (about a tenth of a second at Normal)
+  const SP_VMAX=1500;   // metres a stretch at most: 3 m a 500th of it (about a tenth of a second at Normal); it holds a man back only on a jump (5% of man-frames, 0.26 m behind on average; test/sc-motion.js)
   function spDraw(x,W,H,d,f){
     const L=live, P=spPlan(L,d); spCtx=P.ctx||null; let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
@@ -454,10 +454,10 @@ const HL_SPORT=(function(){
     // the ball is going to gets a little more. Seeking (a rewatch, a reload) starts afresh.
     if(SP2()){ const Q=spDraw.st, di=(L.drives||[]).indexOf(d); let df=-1;
       if(Q&&Q.d===d&&f>=Q.f)df=f-Q.f; else if(Q&&Q.di===di-1&&Q.f>0.97&&f<0.03&&d.seg!==9)df=f+1-Q.f;
-      if(df>=0&&df<0.02){ const lim=SP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*105, dy=(q[1]-o[1])*68, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.7:1);
-        return m>L2&&m>0?[o[0]+dx*L2/m/105,o[1]+dy*L2/m/68]:q })) }
-      spDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))} }
-    spDraw.pos=pos; spDraw.dbg={mi:P.moves.indexOf(mv),k,as:a.s,bs:b.s,s:mv.side,tr,u,bx,by};   // for test/sc-motion.js
+      let nCl=0, lagM=0; if(df>=0&&df<0.02){ const lim=SP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*105, dy=(q[1]-o[1])*68, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.7:1);
+        if(m>L2&&m>0){ nCl++; lagM+=m-L2; return [o[0]+dx*L2/m/105,o[1]+dy*L2/m/68] } return q })) }
+      spDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))}; spDraw.cl={nCl,lagM} }
+    spDraw.pos=pos; spDraw.dbg={mi:P.moves.indexOf(mv),k,as:a.s,bs:b.s,s:mv.side,tr,u,bx,by,cl:spDraw.cl};   // for test/sc-motion.js
     const kits=hlKits(g.home,g.away), r=Math.max(5,W/80), gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],[kits[0].fill,kits[1].fill]);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const X=P.XI[si], kt=kits[si], gk=hlKit("",gks[si]);

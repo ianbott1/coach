@@ -146,7 +146,7 @@ const HL_SPORT=(function(){
      again), a turnover, free throws. The page holds the score until the stretch is over and moves it basket by basket.
      Who: the stretch's five on each side (onFloor, one five a side for the stretch), the shooter by position from the
      possession's own hash: the team totals are the engine's, the names are the screen's (the box score credits its own). */
-  const PB_W={to:0.8, att:1, ft:0.9, base:0.55}, BB_VMAX=2.2;   // courts a second of playback at most (round 108)
+  const PB_W={to:0.8, att:1, ft:0.9, base:0.55}, BB_VMAX=3.5;   // courts a unit of the playback's own clock at most (a unit is 700 ms at Normal), round 108: it holds a man back only on a jump (4% of man-frames, 0.05 m behind on average; test/bb-motion.js)
   const pbSeed=(d,i,k)=>strHash((live&&live.step||0)+"|"+d.seg+"|"+i+"|"+k);
   const pickBy=(w,u)=>{ let t=w.reduce((a,b)=>a+b,0), x=(u%1000)/1000*t; for(let i=0;i<w.length;i++){ x-=w[i]; if(x<0)return i } return w.length-1 };
   const W3=[25,30,25,12,8], W2=[14,14,20,26,26], WTO=[40,25,15,12,8], WRB=[6,8,14,32,40], WST=[30,26,20,14,10];
@@ -261,16 +261,16 @@ const HL_SPORT=(function(){
     }
     if(!def)def=defOf(att,holder);
     // round 108 (engine 22): nobody outruns his legs. Each man (by side and slot, in the court's own frame) covers at most
-    // BB_VMAX courts a second of playback from the last frame; the set for free throws, a new possession, a turnover used
+    // BB_VMAX courts a unit of the playback's clock (whatever the speed) from the last frame; the set for free throws, a new possession, a turnover used
     // to put men there in one frame. The ball stays in the hands of the man who has it.
     if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=pbDraw.st, ab=p=>home?p:[1-p[0],1-p[1]], sA=home?0:1, sD=1-sA;
       const cur={}; att.forEach((p,i)=>cur[sA+"|"+i]=ab(p)); def.forEach((p,i)=>cur[sD+"|"+i]=ab(p));
       const dt=Q&&Q.d===d?el-Q.el:-1;
-      if(dt>=0&&dt<400){ const lim=BB_VMAX*dt/1000; Object.keys(cur).forEach(k=>{ const o=Q.pos[k]; if(!o)return; const q=cur[k], dx=(q[0]-o[0])*28, dy=(q[1]-o[1])*15, m=Math.hypot(dx,dy), L2=lim*28;
-        if(m>L2&&m>0)cur[k]=[o[0]+dx*L2/m/28,o[1]+dy*L2/m/15] });
+      let lagM=0, nCl=0; if(dt>=0&&dt<400){ const lim=BB_VMAX*dt/Math.max(1,PB.ms)*plan.tot; Object.keys(cur).forEach(k=>{ const o=Q.pos[k]; if(!o)return; const q=cur[k], dx=(q[0]-o[0])*28, dy=(q[1]-o[1])*15, m=Math.hypot(dx,dy), L2=lim*28;
+        if(m>L2&&m>0){ cur[k]=[o[0]+dx*L2/m/28,o[1]+dy*L2/m/15]; nCl++; lagM+=m-L2 } });
         const back=p=>home?p:[1-p[0],1-p[1]]; att=att.map((p,i)=>back(cur[sA+"|"+i])); def=def.map((p,i)=>back(cur[sD+"|"+i]));
         if(held&&holder>=0&&att[holder])ball=[att[holder][0]-0.012,att[holder][1]] }
-      pbDraw.st={d,el,pos:cur}; pbDraw.pos={att:att.map(ab),def:def.map(ab),sA,ball:ab(ball),held,holder} }
+      pbDraw.st={d,el,pos:cur}; pbDraw.pos={att:att.map(ab),def:def.map(ab),sA,ball:ab(ball),held,holder,nCl:typeof nCl==='number'?nCl:0,lagM:typeof lagM==='number'?lagM:0,upf:plan.tot/Math.max(1,PB.ms)} }
     const ink=kits[home?0:1].fill, dink=kits[home?1:0].fill;
     const scr=att.map(p=>P(W,H,c,p[0],p[1])), crowd=(px,py)=>scr.some(q=>Math.abs(q[0]-px)<r*5&&Math.abs(q[1]-py)<r*2.6);
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=dn[i]; hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:crowd(px,py)?"":q[1]}:null) });
