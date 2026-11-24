@@ -126,7 +126,7 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
-## Round 107 (in progress): the game agrees with itself (the November 23 reviews: Muse, Instinct, Grokbot)
+## Round 107 (released Nov 24): the game agrees with itself (the November 23 reviews: Muse, Instinct, Grokbot)
 - Done: a backup from the title screen; football reads headed by their quarter; touchdown yards inside a man's yards;
   football's header and field line follow the drive; a postseason game never an NBA Cup game; the Film Room names what
   a call is measured against; a live plan change takes two taps; a tap as a game ends never starts the next; baseball
@@ -135,8 +135,14 @@ on numbers they can't trust and a sport they read rather than watch.
   and running numbers; the win chance in overtime; hockey's even-strength goals outside penalties, third-person cues,
   bars on the clock; the board's verdict said; soccer's late change named only when possible.
 - Also done: hockey overtime drawn three-on-three; football reads by the card's marks too.
-- Left in 107: red-zone punts (needs its own fit tables); the residual soccer
-  number drop (one in two matches); re-record goldens, the full suite, release.
+- Left for later: red-zone punts (needs its own fit tables); the residual soccer number drop (one in two matches).
+- Released: goldens re-recorded (engine 21), the full suite on 119ef83 (the release head differs by one test file):
+  122 of 124. migrate.js wanted the old staff card (Keep him is new on purpose: the test now compares without it,
+  2253 of 2253). draft-labels.js fails one band, identically on this head and on the published d07d747 (football's
+  "likely gone" at your first pick: 50% of 30, band 75%+): an open item, not a regression. The March check (ncaab)
+  failed once beside the browser tests and passed alone and on re-run: test/bb-longrun.js stops each career at 270 s
+  of wall clock, so a busy machine pools fewer tournaments (116 against 185 from the same seeds). Worth making it count
+  seasons instead.
 - Round 108: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
   Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
   box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five
