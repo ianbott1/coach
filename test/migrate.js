@@ -49,7 +49,9 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       const noR79=x=>{ let sch=""; x=x.replace(/<div class="grouphead">\d+ schedule<\/div>[\s\S]*?(?=<div class="grouphead">|<div class="note">No completed seasons|$)/,m=>{ sch=m; return "" }); return x.replace(/<details class="boxscore"[\s\S]*?<\/details>/g,"").replace(/<div class="pland">\s*Play your game\.[\s\S]*?<\/div>\s*/g,"").replace(/<div class="grouphead">Season stats[^<]*<\/div>(?:<div style="overflow-x:auto[\s\S]*?<\/table><\/div>)*/g,"")+sch };   // ("Play your game." and the roster's season stats too)
       const noR72=x=>noR79(x).replace(/ Target: \d+ wins?(?:, \d+ to go)?\.(?=<\/span>)/g,'');
       const noLead=x=>noR72(x).replace(/<div class="grouphead">Career leaders<\/div>[\s\S]*?(?=<div class="grouphead">|$)/g,'');
-      const noWhy=x=>noLead(x).replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
+      // round 107, on purpose: a staff warning offers Keep him beside Make a change (Grokbot: no way to say no)
+      const noKeep=x=>x.replace(/<div class="attnbtns">\s*([\s\S]*?)\s*<button class="attnbtn"[^>]*data-keepstaff[^>]*>Keep him<\/button>\s*<\/div>/g,'$1 ');
+      const noWhy=x=>noKeep(noLead(x)).replace(/ (One of the weakest at the job in the league\.|You're \d+-\d+, and he isn't good enough to be spared it\.)\n?\s*/g,' ');
       want.forEach((w,i)=>{checks++;if(roster&&/youtag/.test(w)&&/class="trec"/.test(w))return; if(coachList(noSeat(noWhy(w)))!==coachList(noSeat(noWhy(got[i])))){bad++;console.log(`  ${team}#${seed} after ${2026+y}: tab ${i} differs`); if(process.env.DEBUG){ const A=coachList(noSeat(noWhy(w))),B=coachList(noSeat(noWhy(got[i]))); let k=0; while(k<A.length&&A[k]===B[k])k++; console.log('    old: '+A.slice(k-100,k+150)+'\n    new: '+B.slice(k-100,k+150)) }}});
       // the game's name on the card changed on purpose ("College Football Coach"),
       // and the owl's markup gained a (college: empty) helmet slot
