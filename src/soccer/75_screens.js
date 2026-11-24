@@ -148,7 +148,8 @@ function liveScoreboard(){
       ${g.label?" &middot; "+esc(g.label):g.title?" &middot; "+esc(g.title)+(g.neutral?"":(g.home===my?", at home":", away")):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   // round 103: the match's numbers so far (the full match brings them up to its clock as it plays)
   let st=""; try{ if(HL_SPORT.spTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.spTallyHTML(HL_SPORT.spTally(live,upto,null,null))}</div>` } }catch(e){}
-  return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives)+st+`</div>`;
+  const pb2=live.pb&&live.pb.d&&!live.done, up2=pb2?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length;   // round 107: the bars stop at the stretches shown
+  return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives.slice(0,up2>=0?up2:live.drives.length))+st+`</div>`;
 }
 /* the momentum bar: a bar for each five minutes, above the line for the home
    side when it was on top, below for the away side; the size is how much */

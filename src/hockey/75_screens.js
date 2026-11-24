@@ -203,7 +203,7 @@ function shotBars(g,drives){
   return `<div class="mom"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Shots by five minutes">
     <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="var(--line)"/>
     ${[1,2].map(k=>`<line x1="${k*W/3}" y1="2" x2="${k*W/3}" y2="${H-2}" stroke="var(--line)" stroke-dasharray="2 3"/>`).join("")}${bars}</svg>
-    <div class="momkey"><span style="color:${ac}">${esc(g.away)}${sog?" "+sog[1]:""}</span><span>shots</span><span style="color:${hc}">${sog?sog[0]+" ":""}${esc(g.home)}</span></div></div>`;
+    <div class="momkey"><span style="color:${ac}">${esc(g.away)}</span><span>shots, each stretch</span><span style="color:${hc}">${esc(g.home)}</span></div></div>`;
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
@@ -212,7 +212,10 @@ function liveScoreboard(){
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   // round 104: the game's numbers so far (the full match brings them up to its clock as it plays)
   let st=""; try{ if(HL_SPORT.hpTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.hpTallyHTML(HL_SPORT.hpTally(live,upto,null,null))}</div>` } }catch(e){}
-  return scoreTop(g,H,A,lab,"",shotBars(g,live.drives)+st);
+  // round 107: the shot bars stop at the stretches shown, as the numbers do (Instinct: at 7' the bars read 4-5, the live
+  // totals 2-4: the bars had the stretch's end)
+  const pb2=live.pb&&live.pb.d&&!live.done, up2=pb2?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length, shown=live.drives.slice(0,up2>=0?up2:live.drives.length);
+  return scoreTop(g,H,A,lab,"",shotBars(g,shown)+st);   /* the totals are the numbers below the bars, which run with the clock */
 }
 
 /* ---- the evidence ---- */
