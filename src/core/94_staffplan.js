@@ -411,6 +411,8 @@ function liveWPHTML(onCall){
    this wrapper counts the stretches each engine hands back and sets the side's plan before the one it names. */
 function setLivePlan(e,side,plan){
   if(!e||!plan)return;
+  // round 108: a change on the bench, "sub:<unit>" (soccer: 0 the back, 1 midfield, 2 up front); it leaves the plan alone
+  if(typeof plan==="string"&&plan.indexOf("sub:")===0){ if(typeof e.subNow==="function")e.subNow(side,+plan.slice(4)); return }
   if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
   // engine 22: the latest word wins. A change after the late call (soccer, hockey) was kept in the mode the late
   // answer had already overruled, so from 65' on it did nothing (measured: Park the bus when level, 0.37 against 0.39)

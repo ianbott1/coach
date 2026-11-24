@@ -99,6 +99,7 @@ const LATE_K=(()=>{ const e=k=>{ const v=typeof process!=="undefined"&&process.e
 const SC18_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
 function scV18(){ return (typeof ENGINE_V!=="undefined"&&ENGINE_V>=18)||SC18_ENV("SC18")===1 }
 const SC18={a0:SC18_ENV("SC18_A0")??1.8, a1:SC18_ENV("SC18_A1")??2.0, ao:SC18_ENV("SC18_AO")??1.6, ao1:SC18_ENV("SC18_AO1")??0.8, k0:SC18_ENV("SC18_K0")??1.25, k1:SC18_ENV("SC18_K1")??0.5, ko:SC18_ENV("SC18_KO")??0.75, ko1:SC18_ENV("SC18_KO1")??0.7, kd:SC18_ENV("SC18_KD")??1.35, noise:SC18_ENV("SC18_N")??8};
+const SC_SUBS=2;   // round 108: the changes a side makes (your assistant's two at 60' and 70', or yours, when you like)
 const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
@@ -398,7 +399,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       T2:{home:H.tell2?Object.assign({},H.tell2):null,away:A.tell2?Object.assign({},A.tell2):null},
       TA:{home:H.tellAll?Object.assign({},H.tellAll):null,away:A.tellAll?Object.assign({},A.tellAll):null},
       st:{home:[H.sh,H.sot],away:[A.sh,A.sot]}};
-    if(ENGINE_V>=22){ d.ap={home:H.app,away:A.app}; d.md={home:m.home,away:m.away} }   // round 108: how each side is playing and the mode it played the stretch in (the computer's late push or sit too), for the pitch (no draws)   // round 108: how each side is playing, for the pitch (no draws)
+    if(ENGINE_V>=22){ d.ap={home:H.app,away:A.app}; d.md={home:m.home,away:m.away}; if(st.subQ&&(st.subQ.home.length||st.subQ.away.length)){ d.sub=st.subQ; st.subQ=null } }   // round 108: how each side is playing and the mode it played the stretch in (the computer's late push or sit too), for the pitch (no draws)   // round 108: how each side is playing, for the pitch (no draws)
     st.drives.push(d); return d;
   };
   const extraTime=()=>{
@@ -413,7 +414,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   };
   // your assistant makes the other change: the most tired unit
   const assistantSub=(side)=>{ const X=st.S[side]; const u=[0,1,2].reduce((a,b)=>X.E[b]<X.E[a]?b:a,0);
-    X.E[u]=1; X.subs++; if(u===0)X.booked=0 };
+    X.E[u]=1; X.subs++; if(u===0)X.booked=0; subMark(side,u) };
+  const subMark=(side,u)=>{ if(ENGINE_V>=22){ st.subQ=st.subQ||{home:[],away:[]}; st.subQ[side].push(u) } };   // round 108: the stretch's changes, for the pitch
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -468,8 +470,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
-    if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
+    // round 108: once you've made a change yourself the bench is yours (your assistant made both at 60' and 70' regardless)
+    const benchMine=sd=>ENGINE_V>=22&&humans[sd]&&st.bench&&st.bench[sd];
+    if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
+    if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
     if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))>1)return;
       if(scV18()&&humans[sd]){ const rd=X=>Math.round(Math.max(5,Math.min(95,65-25*scLegsZ(X)+rng.gauss(0,SC18.noise))));   // the staff's read of each back line's legs, 0-100; drawn only for a person's side
         queueCall(sd,finalCall18(lead(sd),st.playoff,{mine:rd(st.S[sd]),theirs:rd(st.S[other(sd)])})) }
@@ -480,6 +484,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     return {drive:d,h:st.h,a:st.a};
   };
   st.reply=function(v){ st.answer=v; st.waiting=null };
+  /* round 108 (engine 22): a change of your own, any time, from the next five minutes: fresh legs in one unit (0 the back,
+     1 midfield, 2 up front). Two a match, as your assistant makes; once you make one the bench is yours, and he makes none. */
+  st.subsLeft=side=>Math.max(0,SC_SUBS-st.S[side].subs);
+  st.subNow=function(side,u){ if(ENGINE_V<22||!humans[side]||!(u>=0&&u<=2)||st.done)return false; const X=st.S[side];
+    if(X.subs>=SC_SUBS)return false;   // his changes already made count (assistantSub counts them)
+    st.bench=st.bench||{}; st.bench[side]=true; X.E[u]=1; X.subs++; if(u===0)X.booked=0; subMark(side,u); return true };
   return st;
 }
 /* each club's usual approach this season, and the seed for its scouting report */

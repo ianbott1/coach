@@ -256,7 +256,7 @@ const HL_SPORT=(function(){
     const r=mulberry32(strHash("sp|"+g.home+"|"+g.away+"|"+d.seg+"|"+d.sh+"|"+d.sa)), ri=n=>Math.floor(r()*n), cl=v=>Math.max(0.02,Math.min(0.98,v));
     const pois=lam=>{ const Lx=Math.exp(-lam); let k=0,p=1; do{ k++; p*=r() }while(p>Lx&&k<9); return k-1 };
     const XI=[spXI(L,g.home),spXI(L,g.away)];
-    const planAt=sd=>{ let v=L.args?L.args[sd==="home"?2:3]:"balanced"; (L.pm||[]).forEach(x=>{ if(x[1]===sd&&x[0]<=Math.max(0,di))v=x[2] }); return v||"balanced" };
+    const planAt=sd=>{ let v=L.args?L.args[sd==="home"?2:3]:"balanced"; (L.pm||[]).forEach(x=>{ if(x[1]===sd&&x[0]<=Math.max(0,di)&&String(x[2]).indexOf("sub:")!==0)v=x[2] }); return v||"balanced" };
     const ctx={ap:[d.ap?d.ap.home:"",d.ap?d.ap.away:""],pl:d.md?[spMode(d.md.home),spMode(d.md.away)]:[planAt("home"),planAt("away")],E:d.E?[d.E.home,d.E.away]:null}, ctx0=spCtx; spCtx=ctx;
     // the stretch's numbers
     const dl=(sd,k)=>{ const a=d.TA&&d.TA[sd], b=pv&&pv.TA&&pv.TA[sd]; return a?Math.max(0,Math.round((a[k]||0)-(b?b[k]||0:0))):null };
@@ -414,7 +414,7 @@ const HL_SPORT=(function(){
   const SP_UNITW=["at the back","in midfield","up front"];
   const SP_SAYS={push:"%s throw men forward",sit:"%s drop deep to hold on",safe:"%s go for it",aggressive:"%s sit deep"};
   function spBench(g,pv,d){ if(!pv||!d||pv===d||pv.seg!==d.seg-1||!pv.E||!d.E)return null; const teams=[g.home,g.away], up=s=>String(teams[s]).toUpperCase();
-    for(let s=0;s<2;s++){ const sd=s?"away":"home"; for(let u=0;u<3;u++)if(d.E[sd][u]-pv.E[sd][u]>12)return {t:"CHANGE: "+up(s)+", FRESH LEGS "+SP_UNITW[u].toUpperCase(),side:s} }
+    for(let s=0;s<2;s++){ const sd=s?"away":"home"; for(let u=0;u<3;u++)if(d.sub?d.sub[sd].indexOf(u)>=0:d.E[sd][u]-pv.E[sd][u]>12)return {t:"CHANGE: "+up(s)+", FRESH LEGS "+SP_UNITW[u].toUpperCase(),side:s} }
     if(pv.md&&d.md)for(let s=0;s<2;s++){ const sd=s?"away":"home", a=spMode(pv.md[sd]), b=spMode(d.md[sd]); if(a!==b&&SP_SAYS[b])return {t:SP_SAYS[b].replace("%s",up(s)).toUpperCase(),side:s} }
     return null }
   const SP_VMAX=1100;   // metres a stretch at most: 2.2 m a 500th of it (about a tenth of a second at Normal)

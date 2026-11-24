@@ -46,7 +46,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  background:linear-gradient(180deg,transparent,var(--ink) 14px)}
 /* round 107: the bar's fade and the gaps between its buttons pass a tap through to what shows there (Grokbot: a tap on a
    plan seen through the top of the bar went to the bar, and the game started on the old plan) */
-.actionbar{pointer-events:none}.actionbar>*{pointer-events:auto}
+.spbtn .lgs{display:inline;padding:0;border:0;background:none;font-family:var(--mono),monospace;margin-left:6px;color:#7CF2A0;font-weight:700}.spbtn .lgs.mid{color:#F4C95D}.spbtn .lgs.low{color:#FF7A6B}.spbtn[disabled]{opacity:.45}.actionbar{pointer-events:none}.actionbar>*{pointer-events:auto}
 .actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */
 .advance{display:block;width:100%;max-width:728px;margin:0 auto;background:var(--sodium);
  color:#10131C;border:none;font-family:var(--cond);font-weight:700;font-size:19px;
