@@ -137,7 +137,11 @@ on numbers they can't trust and a sport they read rather than watch.
 - Also done: hockey overtime drawn three-on-three; football reads by the card's marks too.
 - Left in 107: red-zone punts (needs its own fit tables); the residual soccer
   number drop (one in two matches); re-record goldens, the full suite, release.
-- Round 108: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
+- Round 108 (Nov 24, on its branch, engine 22): soccer, hockey and basketball move like their sports (no jumps, shots
+  growing out of the play), tired legs and the benches show, live instructions and soccer changes any time; the play
+  by play is one line. See ARCHITECTURE. Not yet: the full suite on this branch; goldens for engine 22; basketball's
+  live instructions; football and baseball looked at only.
+- Round 108 as first planned: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
   Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
   box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five
   minutes a game) and Full as the default. Hockey's power plays in the right end, college basketball using both halves,

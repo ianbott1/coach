@@ -472,6 +472,39 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
 - Left for later: the pitch applying soccer's late change, the hockey rink on a
   phone, red-zone punts (round 106), kicks against going for it (a model question).
 
+Round 108: watching, and managing in real time (engine 22; Ian: "I should feel like I'm managing the team in
+real-time"; "I often would watch full 90 minute soccer matches in football manager"). Every change below is gated on
+engine 22: at ENGINE_NOW=21 all seven goldens match round 107's byte for byte, and the computer's games play the same
+(soccer's calibrate.js output identical before and after). A new career is needed to see it.
+- Soccer's full match plays football's numbers (Opta via The Analyst, six matches): 855 passes a match (real 850-940),
+  3.4 a sequence, a mean pass of 20 m, touches by third 34/35/32. Teams hold shapes on and off the ball, moved by how
+  each side plays (d.ap) and by the mode it played the stretch in (d.md: the computer's late push or sit, your call).
+  The nearest man presses (two on a press), a striker runs in behind, a full back overlaps.
+- Motion (test/sc-motion.js soccer and hockey, test/bb-motion.js): each man follows the play from a longer, even lag,
+  the man the ball goes to runs onto it, and a cap stops a jump (soccer and hockey 1,500 m a stretch, basketball 3.5
+  courts a unit of its playback clock). Before: soccer 551 steps over 8 m a match, basketball 3,331 over 1.5 m a frame
+  (to 13.4 m). The cap holds a man back in 4-7% of man-frames, 0.05-0.53 m behind on average; the tests report it.
+- A shot grows out of the play and the play goes on from it (test/sc-clipjoin.js, hk-clipjoin.js): a clip starts from
+  where the pitch last drew each man and hands back where it leaves them. Before: soccer 130 men more than 8 m off at a
+  clip's start in 19 clips (to 48 m) and 371 after (to 79 m); hockey 71 and 255. Now none.
+- Tired legs show: a tired unit follows the play from further back, a tired back line drops off and the team stretches,
+  and a bar over each of your men once his unit's legs go (amber, then red). The benches and the touchline: a change
+  (d.sub) and a side changing how it plays show as banners as the stretch begins (soccer and hockey).
+- Live instructions, any time, from the next five minutes: soccer All-out attack and Park the bus, hockey Pour it on
+  and Lock it down (the computer's own late modes, AGGR push and sit, so the league's calibration doesn't move). The
+  latest word wins: a plan change after the late call was kept in a mode the late answer overruled, so it did nothing
+  from 65'. Soccer from 70', level, 47 games an arm: Park the bus 0.26 for, 0.13 against after; as it was 0.45/0.21.
+- Soccer changes any time (test/sc-subs.js): fresh legs at the back, in midfield or up front, each unit's legs on its
+  button; two a match, as your assistant makes at 60' and 70' (he still does when you make none), and once you make one
+  the bench is yours. Recorded with the plan changes (pm "sub:<unit>"). Each pm entry is now made once in each game
+  played (e.pmOn): a stretch that opens with a call came back to the plan changes before it played, and a half-time
+  change was made twice.
+- The play by play is one line, the latest, unless you open it.
+- Hockey: deep in its own end a side breaks out and the other forechecks (a small effect, measured: the nearest
+  forechecker 5.8 m from the puck on average, 6.3 before).
+- Open: test/bb-longrun.js stops each career at 270 s of wall clock, so the March check pools fewer tournaments on a busy
+  machine (116 against 185 from the same seeds).
+
 Round 106: football's fourth and N follows the drive (engine 20; Ian: its own round).
 - rollDrive drew a stalled drive's fourth and N apart from how far it got, so 9.8% (college) and 10.9% (pro) of stalled
   live drives ended on a state no series of downs reaches (fourth and 1 after 2 yards from a fresh first down), and the
