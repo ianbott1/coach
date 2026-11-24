@@ -443,7 +443,7 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
   - A baseball call inside an inning is headed by its inning (test/bs-call-head.js).
   - Hockey's shooters' shots come to the team's (ev-full.js checks it). The full match showed a logged big save as
     well as the stop it stood for when they were a minute or more apart. An empty-net or extra-man goal is a shot on
-    goal for the team too (engine 21). My first cap took shots off what the screen had shown; the suite caught it.
+    goal for the team too (engine 21). The first cap took shots off what the screen had shown; the suite caught it.
   - A read answering a style the card marks fits the evidence and is never graded wrong (readFlags, engine 21; all
     five games with reads; test/read-marks.js).
   - Moves made before the day's game survive a reload (test/promo-reload.js). The replay applied each day's
