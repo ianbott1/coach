@@ -148,6 +148,9 @@ on numbers they can't trust and a sport they read rather than watch.
   by play is one line. Basketball's pace follows a mid-game push or sit; football and baseball move without jumps;
   baseball shows the pitch count. See ARCHITECTURE. Open: hockey's instruction effects measured for direction only;
   tired legs drawn, not measured; the roster round (109) next.
+  Full suite on 1b86acc: 171 of 173. draft-labels.js (pro) and the March check (ncaab, 7 v 10 seeds 54.9% against
+  60.6 within 5.3, 194 tournaments) fail identically on the round 107 release f3d658a: open items, not regressions.
+  The March check fails whenever the machine is quick enough to pool its full count; it passed before only short.
 - Round 108 as first planned: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
   Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
   box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five
