@@ -6,6 +6,9 @@ const PLANS={
   balanced:  {sd:1.0,  edge:0, l:"Balanced",        d:""},
   aggressive:{sd:1.2,  edge:0, l:"Clog it up",      d:"Trap the neutral zone, block shots, shorten the game: fewer chances at both ends, and more luck. Best when you're outgunned."}
 };
+/* round 108 (engine 22): instructions in a live game beyond the three plans, from the next five minutes: the computer's
+   own third-period modes (AGGR push and sit, calibrated for the league's late games), any time you choose. */
+const LIVE_EXTRA={push:{l:"Pour it on",d:"Pinch the D, everyone in on the forecheck. More shots both ways."},sit:{l:"Lock it down",d:"Trap the neutral zone, block shots. Fewer chances both ways."}};
 function isBigGame(g,team,seaRankMap,rivalName){
   if(!g)return false;
   if(rivalName)return true;
