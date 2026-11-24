@@ -142,9 +142,10 @@ function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.trai
    measured per sport: the Elo on the balanced curve that a plan is worth at a gap, with no lean). gap: this side's edge.
    human: the fit on a person's path (the plan also picks a person's system), for your assistant's pick. */
 const PLAN_PICK_MIN=12;
-function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
+function cpuPlanOf(t,gap,human,opp){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
   let best="balanced", bv=0;
-  ["safe","aggressive"].forEach(pl=>{ const f=human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl); if(!(f>=PLAN_PICK_MIN))return;
+  // round 109: your assistant, on your path, reads tonight's opponent too (planVs: 0 before engine 23 or with no opp)
+  ["safe","aggressive"].forEach(pl=>{ const f=(human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl))+(human&&opp?planVs(t,opp,pl):0); if(!(f>=PLAN_PICK_MIN))return;
     const v=f+(typeof sportPlanShift==="function"?sportPlanShift(pl,gap||0):0); if(v>bv){ bv=v; best=pl } });
   return best }
 /* round 94 (engine 17): the plan your roster suits is worth about 8 points of win chance at even for a roster one league
