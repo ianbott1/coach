@@ -361,3 +361,21 @@ function hlInks(home,away){
   const green=c=>c[1]>c[0]+30&&c[1]>c[2]+20;
   return [green(A)?"#F4F1E8":a, d<90||green(B)?(green(A)?"#1A1D26":"#F4F1E8"):b];
 }
+
+/* ---- round 108: the play by play ----
+   The full match's own commentary, every move as it is played, newest first: the sport hands its lines up to the clock
+   (HL_SPORT feed functions, keyed so a line comes once); the panel is patched in place, as the score is, a few times a
+   second. Kept with the game on screen (live.feed). */
+let hlFeedT=0;
+function hlFeedTick(get){
+  if(typeof live==="undefined"||!live||Date.now()-hlFeedT<250)return; hlFeedT=Date.now();
+  let lines=[]; try{ lines=get()||[] }catch(e){ return }
+  const F=live.feed=live.feed||[], seen=live.feedK=live.feedK||{}; let added=false;
+  lines.forEach(x=>{ if(seen[x.k])return; seen[x.k]=1; F.push(x); added=true });
+  if(added){ try{ const el=document.getElementById("pbp"); if(el)el.innerHTML=hlFeedRows() }catch(e){} } }
+const PBP_SHOW=9;
+function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
+  if(!F.length)return `<div class="pbpe">Kick-off: the play by play follows the ball.</div>`;
+  return F.slice(-PBP_SHOW).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}'</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+function hlFeedHTML(){ if(typeof pbOn!=="function"||!pbOn()||typeof live==="undefined"||!live)return "";
+  return `<div class="grouphead">Play by play</div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }

@@ -263,6 +263,7 @@ function liveView(){
     ${liveScoreboard()}
     ${typeof hlBox==="function"?hlBox():""}
     ${statStrip(g,last)}
+    ${typeof hlFeedHTML==="function"?hlFeedHTML():""}
     <div class="grouphead">Run of play</div>
     <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Kick-off at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">

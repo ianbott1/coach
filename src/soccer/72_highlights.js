@@ -346,6 +346,25 @@ const HL_SPORT=(function(){
     if(t.k==="free")return `${a} takes the free kick`; if(t.k==="throw")return `${a} takes the throw`;
     if(t.k==="cross")return `${a} crosses`; if(t.k==="long")return `${a} goes long for ${b}`; if(t.k==="won")return `${a} on the ball`;
     return `${a} to ${b}` }
+  /* round 108: the play by play. Every move of the stretch as a line once it has been played: who moved it, the touch
+     that mattered (a cross, a ball over the top, a set piece), how it ended. A shot or goal is the clip's own line. */
+  function spLine(P,mv,g){
+    const X=P.XI[mv.side], T=mv.T, who=s=>{ const n=spWho(X,s); return String(n).split(" ").slice(-1)[0] };
+    if(mv.end==="clip"){ const c=mv.m.c; if(!c||c.kind==="red")return null; let t=""; try{ t=c.e?scEventText(g,c.e,{}).text:"" }catch(e){}
+      return {text:t||(c.kind==="goal"?"Goal":"A chance"), big:c.kind==="goal"?"goal":"shot"} }
+    const nm=k=>who(T[k].s), ded=a=>a.filter((x,q)=>q===0||x!==a[q-1]), cap=x=>x.replace(/^(\w)/,c=>c.toUpperCase());
+    let ki=-1; for(let k=T.length-2;k>=0;k--){ const t=T[k]; if(t.k==="cross"||t.k==="long"||t.k==="corner"||t.k==="free"||t.lk){ ki=k; break } }
+    const VERB={cross:"crosses",long:"goes long",corner:"swings in the corner",free:"takes the free kick"};
+    let lead;
+    if(ki>=0){ const pre=ded(T.slice(0,ki+1).map((t,k)=>nm(k))), kn=pre.pop(), v=VERB[T[ki].k]||"goes long"; lead=pre.length?pre.slice(-2).join(" to ")+" to "+kn+", who "+v:kn+" "+v }
+    else { const ch=ded(T.slice(0,-1).map((t,k)=>nm(k))); lead=ch.length>1?ch.slice(-3).join(" to "):ch.length?ch[0]+" on the ball":"" }
+    const end=spText(P,mv,T.length-1)||"";
+    const big=mv.end==="card"?"card":ki>=0&&(T[ki].k==="cross"||T[ki].k==="corner")||mv.end==="corner"?"att":"";
+    return {text:[lead,end].filter(Boolean).map(cap).join(". "),big} }
+  function spFeed(L,d,f){ const P=spPlan(L,d), g=L.g, out=[];
+    P.moves.forEach((mv,i)=>{ const z=mv.T[mv.T.length-1]; if(z.f>f)return; const ln=spLine(P,mv,g); if(!ln||!ln.text)return;
+      out.push({k:d.seg+"|"+i, m:Math.min(90,Math.floor(d.seg*5+z.f*5)+1), team:mv.side?g.away:g.home, text:ln.text, big:ln.big}) });
+    return out }
   function spDraw(x,W,H,d,f){
     const L=live, P=spPlan(L,d); let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
@@ -376,6 +395,7 @@ const HL_SPORT=(function(){
     if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
     if(mv.end==="card"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"YELLOW CARD",{fill:"#F2C14E"},(u-0.7)/0.3);
     // the numbers on the scoreboard, as far as the clock
+    if(typeof hlFeedTick==="function")hlFeedTick(()=>spFeed(L,d,f));
     if(Date.now()-(spDraw.t||0)>500){ spDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=spTallyHTML(spTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */

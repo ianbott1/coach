@@ -555,6 +555,16 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .slotdel:hover{color:var(--flag);border-color:var(--flag)}
 .slotbk{top:auto;bottom:12px}
 .attnbtns{display:flex;flex-direction:column;gap:6px}
+/* round 108: the play by play */
+.pbp{margin:4px 16px 10px;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.pbpl{display:flex;gap:10px;padding:6px 10px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.35;color:var(--muted)}
+.pbpl:first-child{border-top:0}.pbpl b{color:var(--bone);font-weight:600}
+.pbpl.now{color:var(--bone);background:rgba(255,255,255,.04)}
+.pbpl.b-att .pbpt{color:var(--bone)}.pbpl.b-shot{color:var(--bone)}.pbpl.b-shot b{color:var(--gold,#F2C14E)}
+.pbpl.b-goal{background:rgba(242,193,78,.14);color:var(--bone)}.pbpl.b-goal .pbpt{font-weight:600}
+.pbpl.b-card .pbpt{color:#F2C14E}
+.pbpm{font-family:var(--mono);font-size:11px;min-width:26px;padding-top:2px;color:var(--muted)}
+.pbpe{padding:8px 10px;color:var(--muted);font-size:13px}
 .slotbk:hover{color:var(--bone);border-color:var(--bone)}
 .titlebtns{width:100%;margin-top:40px;display:flex;flex-direction:column;gap:9px}
 .titlebtns .advance{margin:0}
