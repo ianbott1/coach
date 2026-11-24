@@ -28,7 +28,7 @@ function lateFloorDue(L,any){
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
+const COACH_FIELDS=["myTeam","keepStaff","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
                     "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer","train"];   // round 87: training focus   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -2321,6 +2321,7 @@ function attentionHTML(my){
     // a losing run puts an ordinary assistant under fire, not a good one ("SACK HIM" for a +24
     // after an 11-3 year: Grokbot); a poor one is under fire whatever the record
     if(st[my].q>-25&&!(shortfall&&st[my].q<10))return;
+    if(S.keepStaff&&S.keepStaff[SEA.year+":"+side+":"+st[my].n])return;   // round 107: you said keep him
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
       // says why he's under fire (Grokbot: "under fire" after a 1-5 run, no reason given)
@@ -2333,7 +2334,7 @@ function attentionHTML(my){
       <div class="attnmain"><div class="fname">${esc(x.h)}</div>
       <div class="cdesc">${x.b}</div></div>
       ${x.k==="depth"?`<button class="attnbtn" data-promo="${x.i}">Start him</button>`
-        :`<button class="attnbtn flag" data-fire="${x.side}">Make a change</button>`}
+        :`<div class="attnbtns"><button class="attnbtn flag" data-fire="${x.side}">Make a change</button><button class="attnbtn" data-keepstaff="${x.side}" title="Keep him for the rest of the season: this card won't ask again">Keep him</button></div>`}
     </div>${(()=>{const s=staffAside(x.k,(SEA.step||0)+(x.i||0));
       return s?`<div class="say tight"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
@@ -3858,6 +3859,9 @@ function render0(){
   bindGuide();
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
     tapTwice(b,"Tap again to confirm",()=>fireCoord(b.dataset.fire)));
+  // round 107: keeping a coach is a choice too (Instinct: no explicit keep action, so not replacing him read as skipping it)
+  document.querySelectorAll("[data-keepstaff]").forEach(b=>b.onclick=()=>{ const sd=b.dataset.keepstaff, st=sd==="oc"?SEA.oc:SEA.dc, c=st&&st[S.myTeam]; if(!c)return;
+    S.keepStaff=S.keepStaff||{}; S.keepStaff[SEA.year+":"+sd+":"+c.n]=true; save(); render() });
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
