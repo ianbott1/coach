@@ -423,6 +423,10 @@ if(typeof makeLiveGame==="function"){ const _mlg=makeLiveGame;
   makeLiveGame=function(rng,eH,eA,pH,pA,humans,knock,ctx,pm){
     const e=_mlg(rng,eH,eA,pH,pA,humans,knock,ctx); if(!pm)return e;
     let n=0; const nx=e.next;
-    e.next=function(){ for(let i=0;i<pm.length;i++)if(pm[i][0]===n)setLivePlan(e,pm[i][1],pm[i][2]);
+    // round 108: each entry once in each game played (a stretch that opens with a call comes back here before it plays:
+    // a change on the bench there was made twice); e.pmOn holds the ones this game has made (the replays of a game
+    // share its pm, so the mark is the game's own)
+    const on=e.pmOn=new WeakSet();
+    e.next=function(){ for(let i=0;i<pm.length;i++)if(pm[i][0]===n&&!on.has(pm[i])){ on.add(pm[i]); setLivePlan(e,pm[i][1],pm[i][2]) }
       const r=nx.apply(e,arguments); if(r&&!r.done&&!r.ask&&r.drive)n++; return r };
     return e } }

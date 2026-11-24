@@ -312,7 +312,7 @@ function pressPlanMidGame(p){
    Two taps, as a plan change; recorded with the plan changes so a reload makes it at the same moment. */
 const LIVE_UNITS=[["0","at the back"],["1","in midfield"],["2","up front"]];
 function liveSubsOn(){ return !!(live&&!live.done&&!live.h2h&&live.eng&&typeof live.eng.subNow==="function"&&live.eng.S&&(typeof ENGINE_V==="undefined"||ENGINE_V>=22)) }
-function liveSubsLeft(){ const side=live.userIsHome?"home":"away"; return live.eng.subsLeft(side)-(live.pm||[]).filter(x=>x[1]===side&&isSubPm(x)&&x[0]>=live.drives.length).length }
+function liveSubsLeft(){ const side=live.userIsHome?"home":"away"; return live.eng.subsLeft(side)-(live.pm||[]).filter(x=>x[1]===side&&isSubPm(x)&&!(live.eng.pmOn&&live.eng.pmOn.has(x))).length }   // made as its stretch starts (the pm wrapper keeps them)
 function pressSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0||live.ask)return; const p="sub:"+u;
   if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setSubMidGame(u); return } if(planArmed(p))return;
   PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
