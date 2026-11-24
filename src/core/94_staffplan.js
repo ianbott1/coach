@@ -412,6 +412,9 @@ function liveWPHTML(onCall){
 function setLivePlan(e,side,plan){
   if(!e||!plan)return;
   if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
+  // engine 22: the latest word wins. A change after the late call (soccer, hockey) was kept in the mode the late
+  // answer had already overruled, so from 65' on it did nothing (measured: Park the bus when level, 0.37 against 0.39)
+  if((typeof ENGINE_V==="undefined"||ENGINE_V>=22)&&e.late&&typeof e.late==="object"&&side in e.late)e.late[side]=null;
   if("aggrH" in e){ e[side==="home"?"aggrH":"aggrA"]=plan; e[side==="home"?"baseH":"baseA"]=plan }
 }
 if(typeof makeLiveGame==="function"){ const _mlg=makeLiveGame;
