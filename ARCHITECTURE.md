@@ -493,7 +493,13 @@ engine 22: at ENGINE_NOW=21 all seven goldens match round 107's byte for byte, a
 - Live instructions, any time, from the next five minutes: soccer All-out attack and Park the bus, hockey Pour it on
   and Lock it down (the computer's own late modes, AGGR push and sit, so the league's calibration doesn't move). The
   latest word wins: a plan change after the late call was kept in a mode the late answer overruled, so it did nothing
-  from 65'. Soccer from 70', level, 47 games an arm: Park the bus 0.26 for, 0.13 against after; as it was 0.45/0.21.
+  from 65'. Soccer from 60', every call answered "keep" (your own plan as it stands), 96-149 games an arm: behind,
+  All-out attack 0.70 for and 0.47 against after (lost 77%) against 0.51/0.42 (83%); level, Park the bus 0.46/0.35
+  (drawn 53%) against 0.56/0.41 (43%); ahead, Park the bus 0.48/0.49 (won 82%) against 0.63/0.57 (79%). The first table
+  sent to Ian answered the late call with the assistant, so its "as it was" was the assistant playing the score.
+- Basketball's live instructions were tried and not kept: a game's possessions are drawn at tip-off from the starting
+  plans (50_game.js, tempo), so a change of mode mid-game moves only the share of threes. That holds for the
+  half-time call's push and sit too, which say pace: an open item.
 - Soccer changes any time (test/sc-subs.js): fresh legs at the back, in midfield or up front, each unit's legs on its
   button; two a match, as your assistant makes at 60' and 70' (he still does when you make none), and once you make one
   the bench is yours. Recorded with the plan changes (pm "sub:<unit>"). Each pm entry is now made once in each game
