@@ -433,6 +433,42 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
 - Pro football's division clause reads the standings once the regular season ends and before the champions are
   written (Instinct's won-and-not-won; not reproduced in 640 team-seasons and 25 sims ahead: a guard).
 - Goldens re-recorded for engine 21; on ENGINE_NOW=20 only the result-card and call lines above move.
+- Grokbot's round 13 review (Nov 23) added to the round. Each item reproduced on the released build before it was
+  changed, and each has a test that fails there and passes here unless said:
+  - A plan change in a live game takes a second tap on the same button (test/plan-confirm.js). The action bar's fade and
+    gaps pass a tap through to what shows there.
+  - A tap that began on the game screen does nothing on the screen after it (test/stray-tap.js). Baseball on a phone:
+    one Skip in the eighth started the next game, its result card unseen. The click came 1.1s after the press, and the
+    1.2s wait was measured from the start of the ending (LAST_PD, strayTap).
+  - A baseball call inside an inning is headed by its inning (test/bs-call-head.js).
+  - Hockey's shooters' shots come to the team's (ev-full.js checks it). The full match showed a logged big save as
+    well as the stop it stood for when they were a minute or more apart. An empty-net or extra-man goal is a shot on
+    goal for the team too (engine 21). My first cap took shots off what the screen had shown; the suite caught it.
+  - A read answering a style the card marks fits the evidence and is never graded wrong (readFlags, engine 21; all
+    five games with reads; test/read-marks.js).
+  - Moves made before the day's game survive a reload (test/promo-reload.js). The replay applied each day's
+    promotions, trades and firings only before playing that day, so the day still to play lost them.
+  - Shirt numbers stay with the man: who chooses first goes by position and name (engine 21), and p.sh keeps a number
+    once given (test/shirts.js).
+  - A rewatch on Slow takes 102s for a college basketball game (35s before; live Slow is about three minutes).
+  - The Needs a decision card comes before the team card in the desktop side column, above the pinned Play button
+    (test/side-decision.js). A staff card has Keep him.
+  - The summer plan's hire is the candidate graded best of those shown (staffDefault, engine 21; test/staff-default.js).
+  - Soccer's save line names the keeper who played (test/sc-keeper.js). Soccer's and hockey's running numbers count
+    every stretch before one still being played (a partial stretch read 0-0), and their bars stop at the stretches shown.
+  - Pro basketball's win chance follows the score patched in place during a stretch (lwRefresh; test/ot-wp.js; seed 75's
+    overtime read 45% while down 5).
+  - Hockey's even-strength goals are never timed inside the other side's penalty, by the minutes shown (engine 21, no
+    draws; test/hk-pp-goal.js). Hockey's cue lines are written in the third person.
+  - The board's verdict is said once the regular season ends: the grade and what it weighs (no test).
+  - Soccer's late change is named only when the man coming on is on the bench and the man going off is on the pitch.
+- Measured, not changed: pro basketball live scoring by plan 108-114 a team (target 114.6). Baseball earned runs:
+  engines 20 and 21 attribute the same in 56 games; Muse's case reads as the rule (a starter's runner scoring after he
+  left). Who put a runner on is now kept for the half-inning only. Speed resetting after calls: not reproduced. A
+  rebound/assist swap: no swap in the code; 5 of 3,943 lines had a big man with five more assists than rebounds.
+  College football's opponent field goal credited to your kicker: not reproduced (29 field goals, kicker's team right).
+- Left for later: overtime drawn three-on-three (hockey), the pitch applying soccer's late change, the hockey rink on a
+  phone, red-zone punts (round 106), kicks against going for it (a model question).
 
 Round 106: football's fourth and N follows the drive (engine 20; Ian: its own round).
 - rollDrive drew a stalled drive's fourth and N apart from how far it got, so 9.8% (college) and 10.9% (pro) of stalled
