@@ -24,6 +24,11 @@ const POS=[
   {p:"W",  w:0.15, drop:9,  hz:0.18, bench:0.32},
   {p:"ST", w:0.17, drop:10, hz:0.18, bench:0.28},
 ];
+/* round 109 (engine 23; Ian chose "in between": goalies, starting pitchers and key players matter more, skaters and
+   hitters move moderately): the keeper is one man, and a 20-point worse one moved the chance 3.6 points (r109 probe.js);
+   his share goes to 0.20, taken from the back line and the wings, so the shares still sum to 1 */
+const SC23_W={GK:0.20, CB:0.155, FB:0.12, W:0.135};
+function posW(P){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23&&SC23_W[P.p]!=null?SC23_W[P.p]:P.w }
 const BENCH=0.25;                        // an average, for anything that needs one number
 function pickInjuredPos(rng){
   let x=rng.r(), acc=0;
@@ -38,15 +43,15 @@ const BK=i=>i+POS.length;
 function teamRating(roster){
   let s=0;
   POS.forEach((P,i)=>{const st=roster[i], bk=roster[BK(i)]||st;
-    s+=P.w*((1-P.bench)*st.r+P.bench*bk.r)});
+    s+=posW(P)*((1-P.bench)*st.r+P.bench*bk.r)});
   return s;
 }
 function rosterElo(roster){return ratingToElo(teamRating(roster))}
 function injuryCost(roster,idx){
   const P=POS[idx];
-  if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
+  if(!roster||!roster[BK(idx)])return -posW(P)*P.drop*R_SLOPE;
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
-  return -P.w*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
+  return -posW(P)*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
 }
 function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 

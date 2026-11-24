@@ -63,7 +63,7 @@ function scV12(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=12 }
 function scShapeOf(R,H){ const T={}; SC_SHK.forEach(k=>T[k]=0); if(!R||typeof attrOf!=="function")return T;
   const add=(p,m)=>{ if(!p||!(m>0))return; const A=attrOf(p); if(!A)return; const W=ATTRS.w[attrGrp(p)]||{}; SC_SHK.forEach(k=>{ if(A[k]!=null&&W[k])T[k]+=m*W[k]*(A[k]-p.r) }) };
   POS.forEach((P,i)=>{ const hs=H&&H.has(i), hb=H&&H.has(BK(i));
-    if(hs)add(hb?null:R[BK(i)],P.w); else { add(R[i],P.w*(1-P.bench)); if(!hb)add(R[BK(i)],P.w*P.bench) } });
+    const w=posW(P); if(hs)add(hb?null:R[BK(i)],w); else { add(R[i],w*(1-P.bench)); if(!hb)add(R[BK(i)],w*P.bench) } });
   SC_SHK.forEach(k=>T[k]=Math.round(T[k]*1000)/1000); return T }
 function scShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return scShapeOf(SEA.roster[t],H) }catch(e){ return scShapeOf(null) } }
 /* the plan's fit (round 89): taking the game to them is a passing game, sitting deep a game of pace on the break and of
