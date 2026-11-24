@@ -150,7 +150,8 @@ on numbers they can't trust and a sport they read rather than watch.
   tired legs drawn, not measured; the roster round (109) next.
   Full suite on 1b86acc: 171 of 173. draft-labels.js (pro) and the March check (ncaab, 7 v 10 seeds 54.9% against
   60.6 within 5.3, 194 tournaments) fail identically on the round 107 release f3d658a: open items, not regressions.
-  The March check fails whenever the machine is quick enough to pool its full count; it passed before only short.
+  The March check sits on its band's edge: how many tournaments the wall clock lets it pool decides it (round 107:
+  failed at 116, passed at 185; now fails at 193-194). It should count seasons, and 7 v 10 needs a look.
 - Round 108 as first planned: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
   Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
   box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five
