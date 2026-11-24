@@ -498,9 +498,22 @@ engine 22: at ENGINE_NOW=21 all seven goldens match round 107's byte for byte, a
   All-out attack 0.70 for and 0.47 against after (lost 77%) against 0.51/0.42 (83%); level, Park the bus 0.46/0.35
   (drawn 53%) against 0.56/0.41 (43%); ahead, Park the bus 0.48/0.49 (won 82%) against 0.63/0.57 (79%). The first table
   sent to Ian answered the late call with the assistant, so its "as it was" was the assistant playing the score.
-- Basketball's live instructions were tried and not kept: a game's possessions are drawn at tip-off from the starting
-  plans (50_game.js, tempo), so a change of mode mid-game moves only the share of threes. That holds for the
-  half-time call's push and sit too, which say pace: an open item.
+- Basketball's pace follows the stretch it's set (50_game.js): a stretch's possessions are scaled by both sides' tempo
+  now over their tempo at tip-off, for a person's side whose mode differs from his starting plan (the computer's own
+  games and the assistant's late call keep tip-off pace, so bb-calibrate is identical before and after). Live
+  instructions Push the pace and Milk the clock; the half-time push and sit now say what they do. Both teams'
+  possessions after half-time, behind at the half, 77-80 games an arm: push 109.5, as it was 102.6, sit 94.0 (points
+  for/against after 61.5/59.4, 58.3/54.3, 52.7/49.7). Ahead: 107.5, 100.4, 93.0. The win rates move inside noise.
+- Football and baseball move too (test/fb-motion.js, bs-motion.js): football's men walk back to the line between snaps
+  (the cap 200 yards a play of the drive clock, penalty plays included) where they jumped up to 32 yards a frame, 1,060
+  times a pro game and 1,851 a college one; now none over 3 yards, held back in 2-2.5% of frames. Baseball's fielders
+  jog back and runners run the bases (1.4 field widths a unit of playback) where 50 a game jumped up to 18% of the
+  field; held back 0.1%. Baseball's bug shows the pitcher's count ("Odom 77p") and the ticker the outs and runners once
+  a play is done.
+- Roster, measured read-only for round 109 (each team's best starter out hurt before game one): the chance moves 0.5-9
+  points; the recommended plan flips only in pro basketball (balanced to safe, threes down 14) and hockey (aggressive
+  to safe; backwards for a weaker side, to look at). A rating changed mid-season reaches team strength only through
+  injuries: strength is fixed at the season's start.
 - Soccer changes any time (test/sc-subs.js): fresh legs at the back, in midfield or up front, each unit's legs on its
   button; two a match, as your assistant makes at 60' and 70' (he still does when you make none), and once you make one
   the bench is yours. Recorded with the plan changes (pm "sub:<unit>"). Each pm entry is now made once in each game
