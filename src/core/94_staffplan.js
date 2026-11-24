@@ -326,7 +326,7 @@ function seasonCallsHTML(){
   const one=(x,lab)=>`<div class="cand"><div class="candtop"><div><div class="fname">${lab}</div>
     <div class="fnote">${esc(x.c.h)}, against ${esc(x.p.other)} (${x.p.mine}&ndash;${x.p.theirs})</div></div></div>
     <div class="cdesc">${/assistant/i.test(x.c.pick)?"You left it to your assistant.":`You: ${esc(x.c.pick)}.`}${typeof assistantSaid==="function"?assistantSaid(x.c):""}
-    ${(w=>w>=1?` Why: from that moment, your choice won about ${w} more games in 100 than his${x.p.mine>x.p.theirs?"":", though the game went the other way"}.`:w<=-1?` Why: from that moment, your choice won about ${-w} fewer games in 100 than his${x.p.mine>x.p.theirs?", though you won anyway":""}.`:"")(Math.round(x.c.worth*100))}</div></div>`;
+    ${(w=>w>=1?` Why: from that moment, your choice won about ${w} more games in 100 than ${x.c.dd?"leaving it to him (replayed, he doesn't always make the same call)":"his"}${x.p.mine>x.p.theirs?"":", though the game went the other way"}.`:w<=-1?` Why: from that moment, your choice won about ${-w} fewer games in 100 than ${x.c.dd?"leaving it to him (replayed, he doesn't always make the same call)":"his"}${x.p.mine>x.p.theirs?", though you won anyway":""}.`:"")(Math.round(x.c.worth*100))}</div></div>`;
   const best=P.length&&P[0].c.worth>=0.03?P[0]:null, worst=P.length&&P[P.length-1].c.worth<=-0.03?P[P.length-1]:null;
   if(!t&&!best&&!worst)return "";
   return t+(best||worst?`<div class="grouphead">The season's big calls</div>`+(best?one(best,"Your best call"):"")+(worst&&worst!==best?one(worst,"Your costliest call"):""):"");
@@ -370,6 +370,11 @@ const LWHIDE=`<button class="lwtog" data-livewp="false" aria-label="Hide the win
    before it beside it: Muse read 94% at 9-7 in the second quarter as too high, and measured it is honest (a side shown
    90%+ before half-time on a lead of ten or fewer won 94% in college football, 92% in the pros, 94% in college
    basketball); the gap between the teams is what makes it high, so the line says so. */
+/* round 107: the bar follows the score as the page patches it in place during a stretch (Grokbot: OT 2:16, down 107-114,
+   "Orlando: 53% to win": the bar was drawn at the start of the stretch, level, and the score moved under it) */
+let lwLast=0;
+function lwRefresh(){ try{ if(typeof document==="undefined"||Date.now()-lwLast<250)return; lwLast=Date.now(); const e=document.querySelector(".livewp"); if(!e)return;
+  const h=liveWPHTML(false); if(!h)return; const t=document.createElement("div"); t.innerHTML=h; const n=t.firstElementChild; if(n&&n.outerHTML!==e.outerHTML)e.replaceWith(n) }catch(x){} }
 function liveWPHTML(onCall){
   if(!LIVE_WP_ON||!live||(live.ask&&!onCall)||live.done||live.h2h||!live.drives||!live.drives.length)return "";
   // round 56: hide or show it from the game itself (both testers wanted a toggle; it was only in the ? panel)
@@ -380,7 +385,7 @@ function liveWPHTML(onCall){
   // round 100: while the score is held for a moment still to play, so is the chance (it read 29%, after the run, over a
   // held 2-2): the held score, at the stretch before; a call inside the stretch, half an inning on (baseball)
   if(live.hold&&!live.ask&&live.hold.h!=null){ const d0=live.drives[live.hold.n-1], hm=meH?live.hold.h-live.hold.a:live.hold.a-live.hold.h;
-    m=hm; tau=d0?liveTau(d0):1; const q=live.askScore; if(SPORT.id==="baseball"&&q&&q.n===live.hold.n&&q.h===live.hold.h&&q.a===live.hold.a){ const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) } }
+    m=hm; tau=d0?liveTau(d0):1; { const dn=live.drives[live.hold.n]; if(dn&&(dn.ot||typeof SEGS!=="undefined"&&dn.seg>=SEGS))tau=0.03 }   /* round 107: an overtime stretch being played */ const q=live.askScore; if(SPORT.id==="baseball"&&q&&q.n===live.hold.n&&q.h===live.hold.h&&q.a===live.hold.a){ const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) } }
   /* round 97: baseball asks inside an inning (a stretch here is an inning), so on its call screens the last inning's
      reading was stale: "8th inning, down 1" over the 44% of the 2-2 inning before it (Grokbot: 5% at 10-10 in the
      9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */

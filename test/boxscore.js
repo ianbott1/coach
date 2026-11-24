@@ -31,7 +31,13 @@ for(const [f,team] of CASES.filter(c=>!process.argv[2]||c[0].startsWith(process.
           ok(q&&q.s.ptd===passTD&&q.s.int===own.filter(d=>d.kind==='INT').length,`${tag} ${sd}: the passer's ${q&&q.s.ptd} TD, ${q&&q.s.int} INT against the log's ${passTD} and ${own.filter(d=>d.kind==='INT').length}`);
           ok(S2(sd,'ctd')===passTD,`${tag} ${sd}: ${S2(sd,'ctd')} TDs caught, ${passTD} thrown`);
           ok(S2(sd,'ints')===opp.filter(d=>d.kind==='INT').length,`${tag} ${sd}: ${S2(sd,'ints')} picks credited, ${opp.filter(d=>d.kind==='INT').length} in the game`);
-          ok(q&&S2(sd,'cyd',x=>x.pos!=='QB')<=q.s.pyd&&S2(sd,'rec',x=>x.pos!=='QB')<=q.s.cmp,`${tag} ${sd}: receivers' yards or catches over the passer's`) }
+          ok(q&&S2(sd,'cyd',x=>x.pos!=='QB')<=q.s.pyd&&S2(sd,'rec',x=>x.pos!=='QB')<=q.s.cmp,`${tag} ${sd}: receivers' yards or catches over the passer's`);
+          // round 107 (engine 21): a man's touchdown yards in the scoring are inside his yards (Muse: 203 yards of touchdown catches, 169 on the line)
+          if(A.ENGINE_V>=21){ const tdY={}; Dr.forEach((d,k)=>{ if(d.home!==(sd==='home'))return; const t=rows[k].text||'', mp=/(\d+)-yd TD pass to (.+)$/.exec(t), mr=/^(.+?) (\d+)-yd TD run$/.exec(t);
+              if(mp)tdY['c|'+mp[2]]=(tdY['c|'+mp[2]]||0)+(+mp[1]); else if(mr)tdY['r|'+mr[1]]=(tdY['r|'+mr[1]]||0)+(+mr[2]) });
+            BL[sd].forEach(x=>{ const c=tdY['c|'+x.n], r=tdY['r|'+x.n];
+              if(c&&(x.pos==='WR'||x.pos==='WR2'))ok((x.s.cyd||0)>=c,`${tag} ${sd}: ${x.n}'s touchdown catches come to ${c} yards, his line ${x.s.cyd}`);
+              if(r&&x.pos==='RB')ok((x.s.ryd||0)>=r,`${tag} ${sd}: ${x.n}'s touchdown runs come to ${r} yards, his line ${x.s.ryd}`) }) } }
         if(sp==='hockey'){ const G=goals.filter(e=>e.side===sd), named=G.filter(e=>!A.hkGoalNames(sd==='home'?g.home:g.away,e).depth).length;
           ok(S2(sd,'goals',x=>x.pos!=='G')===named,`${tag} ${sd}: ${S2(sd,'goals',x=>x.pos!=='G')} goals credited, ${named} named`);
           if(A.ENGINE_V>=16)ok(named===G.length,`${tag} ${sd}: every goal has a scorer's name (round 93): ${named} of ${G.length}`);

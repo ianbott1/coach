@@ -124,6 +124,11 @@ const SYSTEM = {
   trap:     {l:"a neutral-zone trap",     own:0.88, opp:0.86, counter:"dump"},
   cycle:    {l:"a grinding cycle",        own:1.03, opp:0.98, counter:"collapse"}
 };
+/* round 107: what the read card marks, from the same counts and the same marks it shows. A pick that answers a marked
+   style fits the evidence and is never graded wrong, like the best fit (Grokbot: two marks on the card and a hard cross;
+   soccer's card marked crosses and the grade went by going long) */
+function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1,T.n), f=[];
+  if(T.to/n>=1.2)f.push("forecheck"); if(T.fe/n>=1.2)f.push("trap"); if(T.cy/n>=1.2)f.push("cycle"); return f }
 const SYSTEM_KEYS=["forecheck","trap","cycle"];
 const ANSWERS = {
   stretch: {beats:"forecheck", l:"Stretch passes: beat the first man", d:"Quick, direct breakouts before their forwards arrive"},
@@ -333,12 +338,22 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         let m=0; while(m<mins){ const dt=Math.min(1,mins-m); m+=dt;
           const trG=rng.r()<HK.pullFor*dt*(1+edge*HK.finishEdge), enG=rng.r()<HK.pullAgainst*dt*(1-edge*HK.finishEdge);
           if(trG&&(!enG||rng.r()<0.5)){ if(tr==="home")st.h++; else st.a++; en={side:tr,kind:"extra"};
-            ev.push({m:60-mins+m,side:tr,k:"goal",extra:true,u:rng.int(100)}); break }
+            ev.push({m:60-mins+m,side:tr,k:"goal",extra:true,u:rng.int(100)}); if(ENGINE_V>=21){ if(tr==="home")st.lines.h.sog++; else st.lines.a.sog++ } break }
           if(enG){ if(tr==="home")st.a++; else st.h++; en={side:tr==="home"?"away":"home",kind:"empty"};
-            ev.push({m:60-mins+m,side:other(tr),k:"goal",en:true,u:rng.int(100)}); break }
+            ev.push({m:60-mins+m,side:other(tr),k:"goal",en:true,u:rng.int(100)}); if(ENGINE_V>=21){ if(tr==="home")st.lines.a.sog++; else st.lines.h.sog++ } break }
         }
       }
     }
+    // round 107 (engine 21): a goal into an empty net, or with the goalie pulled for an extra man, is a shot on goal (it
+    // was the scorer's but not his team's: Chicago's shooters 36 against the team's 35, test/ev-full.js)
+    /* round 107 (engine 21): an even-strength goal is never timed inside the other side's penalty (Grokbot: a 37' goal
+       inside a penalty, not a power-play goal). The power play's own shots are timed inside the two minutes; the others
+       were timed anywhere in the stretch. One that lands inside goes just before the penalty, or just after it ends. */
+    if(ENGINE_V>=21){ const pens=ev.filter(x=>x.k==="pen").map(x=>({side:x.side,m:x.m})).concat(st.penCarry||[]);
+      // by the minutes shown: a goal at the penalty's minute or the two after reads as inside it
+      ev.forEach(x=>{ if(x.k!=="goal"||x.pp||x.en||x.extra)return; const F=Math.floor, pn=pens.find(q=>q.side!==x.side&&F(x.m)>=F(q.m)&&F(x.m)<=F(q.m)+2); if(!pn)return;
+        const b=F(pn.m)-0.5, a=F(pn.m)+3.5; if(b>=t0)x.m=b; else if(a<t0+5)x.m=a });
+      st.penCarry=ev.filter(x=>x.k==="pen"&&x.m+2>t0+5).map(x=>({side:x.side,m:x.m})) }
     ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m))); sv.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
     const prev=st.drives.length?st.drives[st.drives.length-1]:{sh:0,sa:0};
     const mom=Math.max(0.12,Math.min(0.88,(sH+ppH+0.5)/(sH+ppH+sA+ppA+1)+rng.gauss(0,0.05)));
@@ -379,7 +394,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].sys, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
-    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best,fe:ANSWERS[v].beats===dp.best}) }
+    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best,fe:ANSWERS[v].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(ANSWERS[v].beats))}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,h:dp.h,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the system as it was" } return }
     if(dp.k==="third"){ const t=st.S[other(side)].sys, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;

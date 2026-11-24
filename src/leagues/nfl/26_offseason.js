@@ -437,7 +437,9 @@ LEAGUE.goals={
   /* the bundled objectives, clause by clause, as they happen (Instinct: "Win the division and a playoff game" still
      read "still to do" after the division was clinched) */
   clauseLine(e,my){
-    const sea=SEA, div=sea.champs&&Object.keys(sea.champs).some(d=>sea.champs[d]===my);
+    // round 107: once the regular season is over the division is decided, seeded or not (Instinct: the recap said "Finish
+    // top of the AFC North" was done while this said "Didn't win the division": the champions are written at seeding)
+    const sea=SEA, div=sea.champs&&Object.keys(sea.champs).length?Object.keys(sea.champs).some(d=>sea.champs[d]===my):(sea.phase!=="week"&&typeof sea._tb==="function"&&NAMES.filter(t=>CONF[t]===CONF[my]).sort((a,b)=>sea._tb(a,b))[0]===my);
     const pw=["wc","div","conf","sb"].reduce((n,r)=>n+((sea.rounds&&sea.rounds[r])||[]).filter(g=>g.winner===my).length,0);
     const sn=sea.phase!=="week"&&!(sea.field&&sea.field.length)&&typeof sea.seedsNow==="function"?sea.seedsNow():null;   // not seeded yet (round 42)
     const inP=!!(sea.seeds&&sea.seeds[my])||!!(sn&&Object.values(sn).some(a=>a.indexOf(my)>=0)), out=["wc","div","conf","sb"].some(r=>((sea.rounds&&sea.rounds[r])||[]).some(g=>g.loser===my));

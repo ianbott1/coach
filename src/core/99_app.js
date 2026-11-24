@@ -28,7 +28,7 @@ function lateFloorDue(L,any){
    Several people can share one save, each coaching their own program in the
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
-const COACH_FIELDS=["myTeam","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
+const COACH_FIELDS=["myTeam","keepStaff","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
                     "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer","train"];   // round 87: training focus   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
@@ -291,6 +291,17 @@ function liveTick(){
 }
 /* your game plan, changed mid-game: from the next stretch, recorded so a reload or a replay plays it the same */
 function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
+/* round 107: a change of plan in a live game takes a second tap on the same button. One tap arms it, and the
+   arming lapses after a few seconds or on a tap anywhere else (Grokbot: a click meant for Full match landed on
+   Shorten the game as the screen moved, and the plan changed with nothing said) */
+let PLAN_ARM=null; const PLAN_ARM_MS=4000;
+function planArmed(p){ return !!(PLAN_ARM&&PLAN_ARM.p===p&&live&&PLAN_ARM.ck===live.ckey&&Date.now()-PLAN_ARM.at<PLAN_ARM_MS) }
+function pressPlanMidGame(p){
+  if(!live||live.done||!PLANS[p]||live.h2h)return; if(livePlanNow()===p){ PLAN_ARM=null; render(); return }
+  if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setPlanMidGame(p); return }
+  if(planArmed(p))return;
+  PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
+  setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
 function setPlanMidGame(p){
   if(!live||live.done||!PLANS[p]||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
   const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side)live.pm.splice(i,1);
@@ -301,15 +312,18 @@ function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
   const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
   return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
-    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn" data-midplan="${k}" aria-pressed="${cur===k}">${esc(PLANS[k].l)}</button>`).join("")}</div>`}
+    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(PLANS[k].l)}</button>`).join("")}</div>`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
-    <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
+    <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" id="hl-${v}" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
   // a full match: the pitch keeps playing between the moments, so each stretch takes long enough to watch (round 68)
   if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,(HL_SPORT.fullMs||4200)/Math.sqrt(speedMult())));   // round 99: each sport its own length (Ian: "Full match is not showing the full match")
   if(typeof liveGapFor==="function")return liveGapFor(live,speedMult());   // the sport paces it (soccer: by what happened)
   const n=DRIVES_PER_TEAM*2;
-  return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
+  // round 107: Slow is slow enough to study. A whole rewatch took 7.2s of rows over the speed (21s on Slow), where the
+  // live game takes minutes (Instinct: on Slow the clock went from 16:15 to 8:00 in about six seconds, some eight times
+  // the live Slow pace). Now 30s at Fast, about 70s at Normal and 110s on Slow; Very fast as quick as before.
+  const m=speedMult(); return Math.max(120,Math.min(4000,Math.round((m>=2?7200/m:30000/Math.pow(m,1.2))/n)));
 }
 function answerLive(v){
   if(!live||live.done||!live.ask)return;    // a second click on a call already answered
@@ -323,6 +337,14 @@ function answerLive(v){
   save(); liveTick();
 }
 let liveEndedAt=0;
+/* round 107: a tap that began on the game screen and ends after the game has ended is not a tap on the screen that
+   followed. Ending a game and drawing its result can take a second or more on a phone, and the tap's click comes after
+   it, onto whatever now sits under the finger: Play, at the spot of Skip (Grokbot, baseball at 390px: one Skip in the
+   eighth, and the next game's first pitch; its result card never showed). The 1.2s wait alone measured from the start
+   of the ending, so a slow ending used it up. Keyboard and scripted clicks carry no press and are let through. */
+let LAST_PD={at:0,id:""};
+if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("pointerdown",e=>{ const b=e.target&&e.target.closest?e.target.closest("button"):null; LAST_PD={at:Date.now(),id:b?b.id:""} },true);
+function strayTap(e){ return !!(e&&e.detail>0&&LAST_PD.at&&LAST_PD.at<=liveEndedAt&&Date.now()>=liveEndedAt) }
 function finishLive(){ liveEndedAt=Date.now();
   if(view!=="team"&&view!=="scores")view="team";   // the result card lives on the team page: a game started from Dynasty ended there, with no card (Grokbot)
   if(live.finished)return;                  // once per game, however it's reached
@@ -369,7 +391,7 @@ function finishLive(){ liveEndedAt=Date.now();
       if(v){ c.worth=Math.round((v.rk[c.pk]-v.rk[c.dk])*10)/1000;
         // the headline judges the call as the bullets do, against the best option (Grokbot: "A strong call" above
         // "As good as any", "A good call" beside a cross)
-        const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])) }
+        const ks=Object.keys(v.rk), top=Math.max(...ks.map(k=>v.rk[k])); c.q=v.rk[c.pk]-top; c.sp=top-Math.min(...ks.map(k=>v.rk[k])); if(v.best)c.qb=v.best }   // round 107: the best option's name, for what a lost call is measured against
       else if(played.closes&&played.closes.some(x=>x.h===c.h)){ c.q=0; c.sp=0 } });
     if(I.length){ played.impact=I;
       const C=careerCalls(true);   // round 71: one career count, kept, only ever added to
@@ -597,6 +619,10 @@ function rebuild(){
     SEA.advance();
     SEA.forcedList=[]; SEA.forced=null;
   }
+  // round 107: and the moves made on the day still to play (a man started, a trade, a coordinator fired before this
+  // week's game): the loop replays each day's moves only before playing it, so these were lost on a reload and the depth
+  // chart went back (measured: ten promotions before week 1, none there after a reload)
+  { const i=SEA.step; if(!SEA.half)coachMoves().forEach(([tm,P,F])=>{ if(P&&P[i])P[i].forEach(k=>swapDepth(SEA,k,tm)); if(F&&F[i])F[i].forEach(sd=>SEA.fireCoordinator(tm,sd)) }) }
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;   // and now, what's chosen now
   SEA.plan=plan;
   replayCarousel();
@@ -745,6 +771,13 @@ function unsaveDup(d){
 }
 /* which game a save belongs to: new saves say; older ones are told apart by
    their players (pro players have contracts; basketball players play PG-C) */
+/* round 107: the summer plan's hire is the candidate rated best of those shown, not the first listed (Instinct: the plan
+   had picked a man marked "in over his head", and the season began at -37 with a prompt to fire him). By the grade the
+   screen shows; level grades, the first. Nothing is drawn. */
+const STAFF_GRADE_RANK=["in over his head","unproven","solid","highly regarded","one of the best"];
+function staffDefault(L){ if(!L||!L.length||typeof ENGINE_V!=="undefined"&&ENGINE_V<21)return null;
+  const rk=c=>{ const g=String(c.grade||""); for(let i=STAFF_GRADE_RANK.length-1;i>=0;i--)if(g.indexOf(STAFF_GRADE_RANK[i])===0)return i; return 1 };
+  let b=0; L.forEach((c,i)=>{ if(rk(c)>rk(L[b]))b=i }); return b }
 function saveLeague(d){
   if(!d)return null;
   if(d.league)return d.league;
@@ -823,6 +856,17 @@ function downloadBackup(){
     const text=lzwPack(saveText(Object.assign({},S,{league:LEAGUE.id}))), blob=new Blob([text],{type:"text/plain"});
     const a=document.createElement("a"), yr=(SEA&&SEA.year)||"";
     a.href=URL.createObjectURL(blob); a.download=`${LEAGUE.id}-${(S.myTeam||"career").replace(/[^A-Za-z0-9]+/g,"-")}-${yr}.coach`;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
+    return true }catch(e){ return false }
+}
+/* round 107: a backup straight from a slot on the title screen (Muse, Nov 23: back on the title screen with a college
+   football career and no export in sight; the only one was under "?" inside the career) */
+async function downloadSlot(n){
+  try{ const r=await store.get(KEYFOR(n)); if(!r||!r.value)return false;
+    const d=unsaveDup(JSON.parse(lzwUnpack(r.value))); if(!d||!d.myTeam)return false; d.league=saveLeague(d);
+    const text=lzwPack(saveText(d)), blob=new Blob([text],{type:"text/plain"});
+    const a=document.createElement("a"), yr=(d.seasonNow&&d.seasonNow.year)||(d.uStart&&d.uStart.year)||"";
+    a.href=URL.createObjectURL(blob); a.download=`${LEAGUE.id}-${String(d.myTeam).replace(/[^A-Za-z0-9]+/g,"-")}-${yr}.coach`;
     document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
     return true }catch(e){ return false }
 }
@@ -1136,7 +1180,7 @@ function openOffseason(){
   const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,openJ,my):poachOffers(U,rng,C.rep,openJ,my));
   const LO=LEAGUE.offseason.open(U,my,SEA.rec[my][0]);   // the league's own choices
   S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:LO.pool,staff:staffCands,
-    picks:Object.assign({phil:(U.phil||"balanced"),oc:null,dc:null},LO.picks),
+    picks:Object.assign({phil:(U.phil||"balanced"),oc:staffDefault(staffCands.oc),dc:staffDefault(staffCands.dc)},LO.picks),
     rngA:[rng.a,rng.sp]};
   flash=null; save(); render();
 }
@@ -1369,7 +1413,10 @@ function speedMult(){
 }
 function watchGap(){
   const n=Math.max(1,watch.script.length);
-  return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
+  // round 107: Slow is slow enough to study. A whole rewatch took 7.2s of rows over the speed (21s on Slow), where the
+  // live game takes minutes (Instinct: on Slow the clock went from 16:15 to 8:00 in about six seconds, some eight times
+  // the live Slow pace). Now 30s at Fast, about 70s at Normal and 110s on Slow; Very fast as quick as before.
+  const m=speedMult(); return Math.max(120,Math.min(4000,Math.round((m>=2?7200/m:30000/Math.pow(m,1.2))/n)));
 }
 /* playback speeds for watching a game (live or a replay) */
 const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
@@ -1624,7 +1671,7 @@ function readsHTML(step){
     if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
     // round 93: an in-game read that answered the style tonight's numbers fit best (dp.best, from the same counts the call
     // shows) is never marked wrong (testers: graded wrong for reading the evidence as it stood); said as a surprise, not counted
-    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", the answer to what tonight's numbers fit best. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
+    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", ${ENGINE_V>=21?"an answer to what tonight's numbers showed":"the answer to what tonight's numbers fit best"}. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
   // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result
@@ -1828,6 +1875,14 @@ function seatWhy(prev){
   const t=prev.exp?String(prev.exp).replace(/^Target:\s*/i,"").toLowerCase():"";
   return `You missed last year's target${t?` (${t})`:""}. Miss this year's too and the job goes.`;
 }
+/* round 107: the board's verdict on the season as it stands, in a sentence that says what it weighs (Instinct, hockey:
+   Secure straight after a second-round exit the objectives called short, and a B-minus, with nothing saying why) */
+function seatVerdict(my){
+  try{ my=my||S.myTeam; if(!SEA||SEA.phase==="week"||typeof SEA.seasonResult!=="function")return "";
+    const r=SEA.seasonResult(my)||"", w=SEA.rec[my][0], l=SEA.rec[my][1], exp=S.expNow||expectations(); if(!exp)return "";
+    const g=seasonGrade(w,l,r,exp); if(!g||!g.g)return "";
+    const aim=exp.l?String(exp.l).replace(/\.$/,""):"";
+    return `The board's verdict so far: ${g.g}, ${String(g.l||"").replace(/\.$/,"").toLowerCase()}. It weighs the season together: ${w} wins${exp.w?` against the ${exp.w} it hoped for`:""}${r?`, and ${r.replace(/\.$/,"").replace(/^[A-Z](?=[a-z])/,c=>c.toLowerCase())}`:""}${aim?` against its aim (${aim})`:""}. ${g.miss?"That's short, and the job is under pressure.":"Taken together, the job is safe."}` }catch(e){ return "" } }
 function seatWhyNow(){ return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
 /* where you stand against that rule: missed last year here, you're on the
    hot seat all season; on pace to miss this year, you're under pressure */
@@ -1865,7 +1920,7 @@ function seatBadge(){
       g=seasonGrade(w,l,r2,exp) }
     else g=seasonGrade(paceW,games-paceW,res,exp) }
   if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
-  return `<span class="seat cool">Secure</span>`;
+  return `<span class="seat cool"${seatVerdict()?` title="${esc(seatVerdict())}"`:""}>Secure</span>`;
 }
 
 let ROLE_SEL=null;   // round 82: the first of two pitchers tapped to trade roles
@@ -1913,9 +1968,12 @@ function teamPanel(){
   const inj=SEA.talent.active(my);
   const co=U&&U.coach?U.coach[my]:null;
   let h=heroResult();
+  // round 107: a decision comes before the team card, where it's seen with the Play button: below the card, the side
+  // column's pinned Play button sat over it (Instinct: "the sticky PLAY WEEK area covers part of the Needs a decision cards")
+  const att=reveal==="half"?"":attentionHTML(my);   // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
+  h+=att;
   h+=teamCardHTML(my,rk,co);
   if(reveal==="half")return h;
-  h+=attentionHTML(my);      // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
   h+=injuryHTML(inj);
   h+=nextUpHTML(my,rk);
   return h;
@@ -2263,6 +2321,7 @@ function attentionHTML(my){
     // a losing run puts an ordinary assistant under fire, not a good one ("SACK HIM" for a +24
     // after an 11-3 year: Grokbot); a poor one is under fire whatever the record
     if(st[my].q>-25&&!(shortfall&&st[my].q<10))return;
+    if(S.keepStaff&&S.keepStaff[SEA.year+":"+side+":"+st[my].n])return;   // round 107: you said keep him
     out.push({k:"staff",side:side,
       h:`Your ${SPORT.staff[side].long} is under fire`,
       // says why he's under fire (Grokbot: "under fire" after a 1-5 run, no reason given)
@@ -2275,7 +2334,7 @@ function attentionHTML(my){
       <div class="attnmain"><div class="fname">${esc(x.h)}</div>
       <div class="cdesc">${x.b}</div></div>
       ${x.k==="depth"?`<button class="attnbtn" data-promo="${x.i}">Start him</button>`
-        :`<button class="attnbtn flag" data-fire="${x.side}">Make a change</button>`}
+        :`<div class="attnbtns"><button class="attnbtn flag" data-fire="${x.side}">Make a change</button><button class="attnbtn" data-keepstaff="${x.side}" title="Keep him for the rest of the season: this card won't ask again">Keep him</button></div>`}
     </div>${(()=>{const s=staffAside(x.k,(SEA.step||0)+(x.i||0));
       return s?`<div class="say tight"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
         <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
@@ -3571,13 +3630,14 @@ function render0(){
       // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
       // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
       const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
-        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); fn() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)fn() } };
+        const go=()=>{ if(!b.dataset.midplan)PLAN_ARM=null; fn() };
+        b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); go() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)go() } };
       onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
         if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb&&live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
-      document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>setPlanMidGame(x.dataset.midplan)));
-      document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
+      document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>pressPlanMidGame(x.dataset.midplan)));
+      document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
         S.watchSpeed=x.dataset.speed;save();render()}));
     }
@@ -3765,8 +3825,8 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=()=>{ if(Date.now()-(liveEndedAt||0)<1200)return; advance() };   // round 100: the side column's Play waits too
-  ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=()=>{simSheet=true;render()} });
+  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; advance() };   // round 100: the side column's Play waits too
+  ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=e=>{ if(strayTap(e))return; simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
     const c=el("simclose"); if(c)c.onclick=()=>{simSheet=false;render()};
@@ -3776,7 +3836,7 @@ function render0(){
   // a tap that was meant for the game screen's controls lands here when the game ends under the finger:
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
   const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
-  ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=()=>{ if(settling())return;
+  ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=e=>{ if(settling()||strayTap(e))return;
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
   }});
@@ -3784,7 +3844,7 @@ function render0(){
     if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"});
   };
-  el("adv").onclick=()=>{ if(settling())return;
+  el("adv").onclick=e=>{ if(settling()||strayTap(e))return;
     if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
     if(SEA.phase!=="week"&&view==="team")view="scores";
@@ -3799,6 +3859,9 @@ function render0(){
   bindGuide();
   document.querySelectorAll("[data-fire]").forEach(b=>b.onclick=()=>
     tapTwice(b,"Tap again to confirm",()=>fireCoord(b.dataset.fire)));
+  // round 107: keeping a coach is a choice too (Instinct: no explicit keep action, so not replacing him read as skipping it)
+  document.querySelectorAll("[data-keepstaff]").forEach(b=>b.onclick=()=>{ const sd=b.dataset.keepstaff, st=sd==="oc"?SEA.oc:SEA.dc, c=st&&st[S.myTeam]; if(!c)return;
+    S.keepStaff=S.keepStaff||{}; S.keepStaff[SEA.year+":"+sd+":"+c.n]=true; save(); render() });
   document.querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
     const h=S.history[+b.dataset.card]; if(h){cardFor=h;cardMsg="";render()}});
   document.querySelectorAll("[data-coord]").forEach(b=>b.onclick=()=>{
@@ -4006,7 +4069,7 @@ function renderTitle(){
              ${s.now?"earlier ":""}season${s.seasons===1?"":"s"}${s.now?"":" done"}${s.seasons?` (${s.rec})`:""}`}${s.titles?" &middot; "+s.titles+"\u00d7 champion":""}</span>
            </button>${replaceAsk
              ?`<button class="slotdel repl" data-repl="${s.n}" aria-label="Replace the career in slot ${s.n} with a new one">Replace</button>`
-             :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}</div>`).join("")}</div>
+             :`<button class="slotdel" data-del="${s.n}" aria-label="Erase the career in slot ${s.n}">Erase</button>`}<button class="slotdel slotbk" data-bk="${s.n}" aria-label="Download a backup of the career in slot ${s.n}">Back up</button></div>`).join("")}</div>
     ${(()=>{ if(!slots.length||slots.some(x=>x.empty||x.broken))return "";
       // every slot full: a way into a new career (Muse: no entry point at all, short of erasing first)
       return replaceAsk
@@ -4023,6 +4086,8 @@ function renderTitle(){
     tapTwice(b,"Tap again to erase",async()=>{
       try{await store.delete(KEYFOR(+b.dataset.del))}catch(e){} await bumpRev(+b.dataset.del);
       S._slots=await allSlots(); render() }) });
+  document.querySelectorAll("[data-bk]").forEach(b=>b.onclick=async(ev)=>{ ev.stopPropagation();
+    const ok=await downloadSlot(+b.dataset.bk); b.textContent=ok?"Saved":"Couldn't"; setTimeout(()=>{ b.textContent="Back up" },2000) });
   const tn=el("tnew"); if(tn)tn.onclick=()=>{ replaceAsk=true; render() };
   const tx=el("tnewx"); if(tx)tx.onclick=()=>{ replaceAsk=false; render() };
   document.querySelectorAll("[data-repl]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const n=+b.dataset.repl;

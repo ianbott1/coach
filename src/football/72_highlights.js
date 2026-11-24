@@ -20,7 +20,10 @@ const HL_SPORT=(function(){
         if(!sk||(!sk.all&&dc.plays.length))out=[dc].concat(out);
         // round 101: the live game keeps what the screen showed of this drive, from its first clip, for the box score
         if(typeof live!=="undefined"&&live&&L===live){ const rec=dc.rec; if(sk){ d.pbShown=true; d._pb=rec } else if(out.length)out[0].onStart=()=>{ d.pbShown=true; d._pb=rec } } } }
-    out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+(n>=0?n+1:(L.drives||[]).length); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
+    // round 107: the clip's header carries the game clock at the drive's start, as the header between drives does (the
+    // clock went missing while plays ran: Muse)
+    const di=n>=0?n:Math.max(0,(L.drives||[]).length-1), ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,di,DRIVES_PER_TEAM*2):"";
+    out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+ck+" \u00b7 drive "+(di+1); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
     const close=Math.abs((d.h||0)-(d.a||0))<=8;
@@ -413,12 +416,16 @@ const HL_SPORT=(function(){
     const two=stg==="two", d={home:r.side==="home",q:P.q,start:P.start,n:st.i+1,kind:two?"TD":P.res.kind,pts:two?6:0,h:st.h,a:st.a,stall:two?100:P.res.stall,togo:two?null:(P.res.togo||3),aggr:P.aggr};
     if(!two&&P.res.kind!=="PUNT"&&P.res.kind!=="DOWNS"&&P.res.kind!=="FG"&&P.res.kind!=="MISS")return null;
     const L2={g:L.g,drives:(L.drives||[]).concat([d]),restAt:L.restAt}, out=clips0(L2,d,"full"), dc=mkDrive(L2,d,out); if(!dc)return null;
-    const n=L2.drives.length; [dc].concat(out).forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+" \u00b7 drive "+n; c.scores=two });
+    const n=L2.drives.length, ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,Math.max(0,n-1),DRIVES_PER_TEAM*2):""; [dc].concat(out).forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+ck+" \u00b7 drive "+n; c.scores=two });
     const clips=two?[dc].concat(out.filter(c=>c.kind==="td")):[dc];
     if(!dc.plays.length&&!two)return null;
     return {clips:clips.filter(c=>c.kind!=="drive"||c.plays.length),hold:two,key:{n:d.n,start:d.start,home:d.home,k:dc.plays.length,all:two,plays:dc.plays,end:dc.plays.reduce((t,p)=>t+p.g,dc.start),left:dc.left,forced:dc.forced}} }
   const headClock=c=>c&&c.hd||null;
+  // round 107: the line under the field names the drive on the field (it named the last drive drawn: a drive behind, Muse)
+  // the header's clock and drive set in place while the drive plays (a render would show the drive chart's result early)
+  const headLive=(e,k)=>{ e.innerHTML='<span class="live"></span>'+esc(k)+(typeof fbVenueTag==="function"?fbVenueTag():"") };
+  const footText=c=>c&&c.kind==="drive"&&c.start!=null&&c.tm?`${c.tm} ball \u00b7 started ${fbYd(c.start)}`:null;
   return {replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
-           clips, pitch, idle, frame, headClock, goalsLabel:"Late touchdowns",
+           clips, pitch, idle, frame, headClock, footText, headLive, goalsLabel:"Late touchdowns",
            namesOf:(L,d)=>d&&Array.isArray(d._pb)?d._pb:null, playText, leadUp, playsFor:(L,d)=>{ const out=clips0(L,d,"full"); const c=mkDrive(L,d,out); return c?{plays:c.plays,start:c.start,end:c.end,left:c.left,forced:c.forced,conv:c.conv,rec:c.rec,next:out.map(o=>({kind:o.kind,los:o.los,togo:o.togo,len:o.len}))}:null }};
 })();

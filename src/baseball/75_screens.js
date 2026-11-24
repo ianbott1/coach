@@ -104,7 +104,9 @@ function lineScore(g,drives,now){
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
   const held=live.hold&&!live.ask, last=held?live.drives[live.hold.n-1]:live.drives[live.drives.length-1];   // round 93: while the score is held, the clock is the held one (pro basketball read END OF Q4 at 84-94, then finished 105-106)
-  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):!last?"FIRST PITCH":"After the "+esc(segLabel(last))}
+  // round 107: on a call inside an inning, the header is the call's inning (Grokbot: "After the 6th" over a card headed
+  // "7th inning, tied")
+  const lab=`<span class="live"></span>${live.hold&&!live.ask&&live.hold.clock?esc(live.hold.clock):live.ask&&live.ask.dp&&live.ask.dp.inn?esc(ordw(live.ask.dp.inn))+" inning":!last?"FIRST PITCH":"After the "+esc(segLabel(last))}
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   return scoreTop(g,H,A,lab,"",lineScore(g,live.drives,{h:H,a:A}));
 }
@@ -263,7 +265,7 @@ function readTextBase(e){
   if(e.k==="read")return e.right?`Your read was right: their hitters were ${A(e.truth)}.`
     :`Their hitters were ${A(e.truth)}: the plan was "${ANSWERS[APPROACH[e.truth].counter].l}".`;
   if(e.k==="prep")return e.right?`Your plan was right: they came out ${A(e.truth)}.`
-    :`You planned for the wrong lineup: they came out ${A(e.truth)}.`;
+    :e.followed?`You set up for what the report said most; they came out ${A(e.truth)} instead.`:`You planned for another approach: they came out ${A(e.truth)}.`;   // round 107: it said "the wrong lineup" when the plan matched the report (Grokbot)
   return "";
 }
 

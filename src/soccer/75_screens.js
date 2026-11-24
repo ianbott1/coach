@@ -10,7 +10,9 @@ function scPlayer(team,unit,u){
   const i=SC_UNIT[unit], hurt=new Set(typeof ENGINE_V!=="undefined"&&ENGINE_V<4?[]:SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);   // (a season begun before round 74: as it was)
   const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // round 74: an injured man isn't on the pitch (as in hockey)
   // the bench gets a game now and then (rotation, a knock)
-  const pick=(b&&(u%10)<2)||!p?b:p; return pick?pick.n:null;
+  // round 107: never the keeper: one keeper plays the match (Muse: "Nunez gets down to keep out Gentry", Nunez the backup,
+  // Varga in goal on the pitch and in the box)
+  const pick=(b&&(u%10)<2&&!(unit==="GK"&&(typeof ENGINE_V==="undefined"||ENGINE_V>=21)))||!p?b:p; return pick?pick.n:null;
 }
 // a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
 const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
@@ -146,7 +148,8 @@ function liveScoreboard(){
       ${g.label?" &middot; "+esc(g.label):g.title?" &middot; "+esc(g.title)+(g.neutral?"":(g.home===my?", at home":", away")):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   // round 103: the match's numbers so far (the full match brings them up to its clock as it plays)
   let st=""; try{ if(HL_SPORT.spTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.spTallyHTML(HL_SPORT.spTally(live,upto,null,null))}</div>` } }catch(e){}
-  return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives)+st+`</div>`;
+  const pb2=live.pb&&live.pb.d&&!live.done, up2=pb2?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length;   // round 107: the bars stop at the stretches shown
+  return scoreTop(g,H,A,lab)+momentumHTML(g,live.drives.slice(0,up2>=0?up2:live.drives.length))+st+`</div>`;
 }
 /* the momentum bar: a bar for each five minutes, above the line for the home
    side when it was on top, below for the away side; the size is how much */
@@ -210,6 +213,10 @@ function finalSub(my,o){
   const R=SEA&&SEA.roster&&SEA.roster[my]; if(!R)return "";
   const nm=i=>R[i]&&R[i].n?surname(R[i].n):null, P=p=>POS.findIndex(x=>x.p===p);
   const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")], press:[BK(P("W")),P("CM")], probe:[BK(P("CM")),P("W")]}[o]; if(!sw)return "";
+  // round 107: only a man on the bench comes on, and only a man on the pitch goes off (Muse: "Dimitrov on, Odom off" with
+  // Dimitrov in from the start, in for a hurt starter). A starter out hurt: his backup is playing, so neither is named.
+  const hurt=new Set(SEA.talent&&typeof SEA.talent.active==="function"?SEA.talent.active(my).map(x=>x.idx):[]);
+  if(hurt.has(sw[1])||hurt.has(sw[0])||hurt.has(sw[0]-POS.length))return "";
   const on=nm(sw[0]), off=nm(sw[1]); return on&&off?`${on} on, ${off} off`:"";
 }
 /* round 95: the 80' call's evidence, each back line's legs as the staff read them (a little off) */

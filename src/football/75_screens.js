@@ -69,7 +69,7 @@ function driveScript(g,drives,rosters){
         let ri; if(!v14)ri=!v4?(u<0.62?2:3):u<0.42?2:u<0.68?3:u<0.86?BK(2):BK(3);
         else { const I=[2,3,BK(2),BK(3)], W=[0.42,0.26,0.18,0.14].map((w,j)=>w*fbLean(pl(I[j]),["hnd","spd"])), T=W.reduce((a,b)=>a+b,0); let x=u*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } ri=I[j] }
         who={k:"pass",i:ri,y:y}; text=`${nm(0)} ${y}-yd TD pass to ${nm(ri)}` }   // round 74: the backups catch some (a tight end, the slot): one receiver caught 30 in a season
-      else if(rng.r()<0.8){ who={k:"run",i:1}; text=`${nm(1)} ${y}-yd TD run` }
+      else if(rng.r()<0.8){ who={k:"run",i:1,y:y}; text=`${nm(1)} ${y}-yd TD run` }
       else { const yq=Math.round(rng.range(1,12)); who={k:"run",i:0}; text=`${nm(0)} ${v19&&d.start!=null&&d.start<100?Math.max(1,Math.min(yq,100-d.start)):yq}-yd TD run` }
     } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${kickerName(d.home?g.home:g.away)} ${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
     else if(d.kind==="INT"){ let di=typeof ENGINE_V!=="undefined"&&ENGINE_V<4?8:FB_PICKER[(d.n||0)%FB_PICKER.length];
@@ -115,7 +115,7 @@ function watchView(){
     </div>
     ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,cur,teamColor(g.home),teamColor(g.away),venue)}
-    ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started own ${cur.start}
+    ${cur?`<div class="fpos">${esc(cur.team)} ball &middot; started ${fbYd(cur.start)}
       &middot; ${cur.yards} yards</div>`
       :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
     <div class="grouphead">Drive chart</div>
@@ -139,6 +139,9 @@ function watchView(){
     </div></div>`;
 }
 
+/* round 107: a yard line in words, from the side with the ball: own 45, midfield, their 45 ("own 55": Muse) */
+function fbYd(n){ n=Math.round(n); return n<50?"own "+n:n===50?"midfield":"their "+(100-n) }
+function fbVenueTag(){ const g=live.g, my=S.myTeam; return g.label?" &middot; "+esc(g.label):(g.neutral?" &middot; neutral site"+(g.site?", "+esc(g.site):""):(g.home===my?" &middot; at home":" &middot; on the road")) }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam;
   const H=liveH(), A=liveA();
@@ -150,7 +153,7 @@ function liveScoreboard(){
   const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
     <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":(q>=5?"OT":"Q"+q)+(ENGINE_V>=7&&q<5?" "+fbClock(q,Math.max(0,live.drives.length-(ask?0:1))+(ask&&live.ask.dp&&live.ask.dp.k!=="prep"?0.7:0),DRIVES_PER_TEAM*2):"")+" &middot; drive "+(live.drives.length+(ask?1:0))}
-      ${g.label?" &middot; "+esc(g.label):(g.neutral?" &middot; neutral site"+(g.site?", "+esc(g.site):""):(g.home===my?" &middot; at home":" &middot; on the road"))}</div>
+      ${fbVenueTag()}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
         <span class="wn">${A}</span></div>
@@ -170,7 +173,7 @@ function liveView(){
     ${liveScoreboard()}
     ${typeof hlBox==="function"?hlBox():""}
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
-    ${last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started own ${last.start}</div>`
+    ${typeof HL!=="undefined"&&HL.foot&&HL.footG===g&&!live.done?`<div class="fpos">${esc(HL.foot)}</div>`:last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started ${fbYd(last.start)}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
     <div class="grouphead">Drive chart</div>
     <div class="plays">${live.drives.slice().reverse().map(d=>{

@@ -319,7 +319,8 @@ const HL_SPORT=(function(){
     return o }
   // round 103: the match's numbers so far, as the screen has shown them: every stretch before this one whole, this one up
   // to the clock (possession from the engine's lean, the read's own figure)
-  function spTally(L,upto,d,f){ const o=[{sh:0,sot:0,corner:0,foul:0,off:0},{sh:0,sot:0,corner:0,foul:0,off:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&!x.ot);
+  function spTally(L,upto,d,f){ if(!(upto>=0))upto=(L.drives||[]).length;   /* round 107: a stretch still being played (a partial, not yet among the drives) counts every stretch before it: it read 0-0 for that stretch (measured, 37 times in two soccer matches) */
+    const o=[{sh:0,sot:0,corner:0,foul:0,off:0},{sh:0,sot:0,corner:0,foul:0,off:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&!x.ot);
     let last=null; D.forEach((x,k)=>{ const di=L.drives.indexOf(x); if(di>=upto)return; last=x; let c=null; try{ c=spCounts(L,x) }catch(e){} if(c)[0,1].forEach(s=>{ o[s].corner+=c[s].corner; o[s].foul+=c[s].foul; o[s].off+=c[s].off }) });
     if(last&&last.st)[["home",0],["away",1]].forEach(([sd,s])=>{ o[s].sh=last.st[sd][0]; o[s].sot=last.st[sd][1] });
     if(d&&f!=null){ let P=null; try{ P=spPlan(L,d) }catch(e){}

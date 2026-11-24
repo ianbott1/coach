@@ -1,5 +1,5 @@
 {
- "fp": "2c8c496afc68c997",
+ "fp": "89de386f0ca7cda3",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -230,6 +230,16 @@
    "fp": "2c8c496afc68c997",
    "from": "02e3bb983aa63af8",
    "note": "Round 106 (engine 20): the engine number in the universe only (STRIP=engV equal to round 105's)"
+  },
+  {
+   "fp": "afabd12e9f82322f",
+   "from": "2c8c496afc68c997",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "89de386f0ca7cda3",
+   "from": "afabd12e9f82322f",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "result": {
@@ -243,8 +253,8 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "fd64034a4fd3d2ad",
-    "universe": "7d087044c2fd39e1",
-    "screens": "2e1a2b141a9b0bbd"
+    "universe": "324418115a2852f6",
+    "screens": "f9f68e65d73b3ea8"
    },
    {
     "year": 2027,
@@ -254,9 +264,9 @@
     "rec": "c4e613880ca2a9ed",
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
-    "history": "6eb635fcda3a4496",
-    "universe": "ec5b4b357257ab42",
-    "screens": "6b620bcd77c2ebbf"
+    "history": "4bab8c7eb00e4b7e",
+    "universe": "ecd9bc058d964032",
+    "screens": "7e58bc1b468f6f44"
    }
   ],
   "Colorado#777": [
@@ -269,8 +279,8 @@
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
     "history": "7fc71e187a31d02c",
-    "universe": "63cffa422e64653d",
-    "screens": "dcb23abca29fac79"
+    "universe": "4591916769b350ee",
+    "screens": "95ae506b0e7845d5"
    },
    {
     "year": 2027,
@@ -281,8 +291,8 @@
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
     "history": "12462c1fdf09ce32",
-    "universe": "5aea38a7c54e59a6",
-    "screens": "56c80b0e07479a05"
+    "universe": "ae0005fac3d7ac23",
+    "screens": "8ed677cba68ef950"
    }
   ],
   "schedules#60": [

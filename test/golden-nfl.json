@@ -1,5 +1,5 @@
 {
- "fp": "06f8291fd4953fe0",
+ "fp": "bf7077d78bbe2329",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -640,6 +640,16 @@
    "fp": "06f8291fd4953fe0",
    "from": "1d9aa189f3ef6295",
    "note": "Round 106 revised: engine 20 without the kick inside their 28 (it widened the pro chance's miss to 14 points on a pair); fourth and N and own-half punts stay. ENGINE_NOW=19 gives d5adcd9's fingerprints"
+  },
+  {
+   "fp": "69c8ca238e4083d0",
+   "from": "06f8291fd4953fe0",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "bf7077d78bbe2329",
+   "from": "69c8ca238e4083d0",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "result": {
@@ -652,45 +662,45 @@
     "rec": "9e0100c131c9cc8f",
     "poll": "44f7189f05bd9377",
     "heis": "ac04dcfdb5834804",
-    "history": "5ba9addeb9fff599",
-    "universe": "b4e0c4ad3e32a69f",
-    "screens": "b20a7bb4f694f319"
+    "history": "509f74bb6a73f72b",
+    "universe": "c3cb4f0c99bcda3c",
+    "screens": "53c729f6acc751b9"
    },
    {
     "year": 2027,
-    "games": "701934cfa6b98be2",
-    "post": "a8d973ec265c6ad0",
-    "champion": "LA Rams",
-    "rec": "3b0f802bc2f58c54",
-    "poll": "d0f65f4b8b3e0808",
-    "heis": "fcb5fb7640029dfe",
-    "history": "126d0431988edd62",
-    "universe": "0749946b9024dcc7",
-    "screens": "25e533aebdf0db33"
+    "games": "e6db043ee9504634",
+    "post": "6c2a925112d0391e",
+    "champion": "Philadelphia",
+    "rec": "0b30e8392530b552",
+    "poll": "b7dbca07486e89a9",
+    "heis": "8c2e06f310194e3b",
+    "history": "57214d651bc19c31",
+    "universe": "a4b8bc7fb74204f4",
+    "screens": "45725154274d2a4f"
    },
    {
     "year": 2028,
-    "games": "0a9b7644a6a1c9c0",
-    "post": "40ae7d2fa21e2bf6",
+    "games": "1e8e42d7e3a51aa2",
+    "post": "682c28955bda4370",
     "champion": "Philadelphia",
-    "rec": "eb7ee63d01c15f18",
-    "poll": "01fc2232bdbec58f",
-    "heis": "35e28a6644cb0375",
-    "history": "c140b666a5683d31",
-    "universe": "bb0198dd5d3ed56f",
-    "screens": "3f2633495b36ecf6"
+    "rec": "bb730d553ea95d47",
+    "poll": "64ffc51c070e01ff",
+    "heis": "6f7fa045a13e6729",
+    "history": "e59f19989aec9378",
+    "universe": "798ab9a10795557d",
+    "screens": "19564bff99ababdd"
    },
    {
     "year": 2029,
-    "games": "13f0cb2c2aea4803",
-    "post": "0927fa12a94a7aa3",
-    "champion": "Cleveland",
-    "rec": "26470200f705861c",
-    "poll": "246b2c846a26140c",
-    "heis": "41b815d289f62f33",
-    "history": "5815aa35b2c2a084",
-    "universe": "1367172d9b15d5a5",
-    "screens": "9fdbba98d6bc6596"
+    "games": "c28c43ce4e5ca3e5",
+    "post": "1418a82033aa0b5f",
+    "champion": "Philadelphia",
+    "rec": "1aa752004ea28199",
+    "poll": "2dbb1cc55a32c422",
+    "heis": "df5a2d25714cc5cb",
+    "history": "d9e07763e0a96646",
+    "universe": "17e7d3e64fc62c5c",
+    "screens": "ec9b55f948d52441"
    }
   ],
   "Tennessee#2024": [
@@ -701,46 +711,46 @@
     "champion": "Kansas City",
     "rec": "64de18e3ff1c1da3",
     "poll": "de0d96778f342a23",
-    "heis": "64de56455b4cde81",
-    "history": "28d34118759305fc",
-    "universe": "637c662e1bd5e5dc",
-    "screens": "9bfe07302ecf01bd"
+    "heis": "a8ae8a893a6a477a",
+    "history": "34c8cb84a37b4179",
+    "universe": "b5268e4989b70444",
+    "screens": "4df7877cf4c7793a"
    },
    {
     "year": 2027,
-    "games": "89e946ef0fa3781c",
-    "post": "38454d318ee57efb",
+    "games": "8118db20aa69c884",
+    "post": "c6b2e70d405cc7e7",
     "champion": "LA Rams",
-    "rec": "054636d3d3c5fd7f",
-    "poll": "2d263816e5294e02",
-    "heis": "6e8da0837c59bc1f",
-    "history": "6bae7eb98303aba3",
-    "universe": "b8994751e98d957f",
-    "screens": "06b4f5156bb8d806"
+    "rec": "d93c12808cd25e55",
+    "poll": "7653c7df1ea9e7f5",
+    "heis": "bc3e14154d33fa5b",
+    "history": "7a2bd9ad1c503dcd",
+    "universe": "baccc618aa67ee63",
+    "screens": "85d6d52d63ff8885"
    },
    {
     "year": 2028,
-    "games": "2a244cab1db9f13f",
-    "post": "211d48dfe7ea3dcc",
-    "champion": "Baltimore",
-    "rec": "a028025aef643329",
-    "poll": "e596d4340fdeb983",
-    "heis": "bebb2d5a795be9c2",
-    "history": "80cd516a1e8eddbc",
-    "universe": "0b61e235dc71ca0d",
-    "screens": "60bb69ead05ce808"
+    "games": "7cd4dc785740ffcc",
+    "post": "bd0322bb65b46359",
+    "champion": "San Francisco",
+    "rec": "83a576ae57f2e835",
+    "poll": "4a1c99d05703fcfb",
+    "heis": "e03e33df0b2de7f2",
+    "history": "55550292aa6a827f",
+    "universe": "61930fc688710955",
+    "screens": "8ace542d4e471a31"
    },
    {
     "year": 2029,
-    "games": "a91ba21499e15c74",
-    "post": "6e7eddf545230748",
-    "champion": "NY Giants",
-    "rec": "6c791b2b877cbda3",
-    "poll": "38eb7f14c9d41988",
-    "heis": "df33c28ac3092a67",
-    "history": "c9309e732b284459",
-    "universe": "2605077177af220d",
-    "screens": "d555056c3d877a4f"
+    "games": "8e676f6cdd99130f",
+    "post": "6e4382031d0a7edc",
+    "champion": "Tennessee",
+    "rec": "4de2d14d7ae674a2",
+    "poll": "c76a0e2eafe1c1a9",
+    "heis": "3c81c31a800681d7",
+    "history": "2ffdac770979cbd1",
+    "universe": "779e7f52f8b9a644",
+    "screens": "1b5e37e818a62ca7"
    }
   ],
   "Detroit#777": [
@@ -751,10 +761,10 @@
     "champion": "Seattle",
     "rec": "342d0461d81bd1f2",
     "poll": "c596a8e7a88b099f",
-    "heis": "99ab80491ac511bf",
-    "history": "f80f1c6cbe47bd37",
-    "universe": "ac6b3ff7e32616a2",
-    "screens": "7ab9c7e8e79945c4"
+    "heis": "496b8d610ad88711",
+    "history": "73d458b03e8d8dc3",
+    "universe": "c6aa9ada2b33cb06",
+    "screens": "41a276135751fb5d"
    },
    {
     "year": 2027,
@@ -763,10 +773,10 @@
     "champion": "Denver",
     "rec": "bfb06c9145f2a7a2",
     "poll": "331d4590f7b46acd",
-    "heis": "66ecda8ace181f43",
-    "history": "04d5c0aba73db994",
-    "universe": "170bdfd6a1946a1c",
-    "screens": "fcd0466a375a86e9"
+    "heis": "4b2536c4fe266f31",
+    "history": "ae98188996c522d3",
+    "universe": "fd53d69582a96586",
+    "screens": "ef2873ab708ecf57"
    },
    {
     "year": 2028,
@@ -775,10 +785,10 @@
     "champion": "Tampa Bay",
     "rec": "3209b060565e7cd7",
     "poll": "3df09c86f86199b5",
-    "heis": "7b4daa216a54a8c7",
-    "history": "2df4e2d996fca1f7",
-    "universe": "624d78b77be6f266",
-    "screens": "b72df4e2ce93c5fe"
+    "heis": "a1d5e4fdae6e23c1",
+    "history": "4ddd0139692621a0",
+    "universe": "e20ee067338d68a2",
+    "screens": "2088583351acc038"
    }
   ],
   "NY Giants#31337": [
@@ -789,10 +799,10 @@
     "champion": "Miami",
     "rec": "c1e4f357c2c3f894",
     "poll": "7cb5785c1f87d8c6",
-    "heis": "c0820695711673ff",
+    "heis": "f0f0b8e16ed1d653",
     "history": "229c51209e3ff47c",
-    "universe": "dbb0de0b72555654",
-    "screens": "ff7d587c8798beb5"
+    "universe": "c6aeddfadea7195c",
+    "screens": "27715e88d9d976e3"
    },
    {
     "year": 2027,
@@ -801,10 +811,10 @@
     "champion": "Kansas City",
     "rec": "99ef4abb7925b5ae",
     "poll": "b12e275c0da8ac28",
-    "heis": "b17720924cf728e9",
-    "history": "4db0b324f952af4e",
-    "universe": "390beb37927286d3",
-    "screens": "b2ec411af8bc5a26"
+    "heis": "5c1d67f0e8ebe73f",
+    "history": "d961d85771d90c9c",
+    "universe": "34029203d5ffbe83",
+    "screens": "8d11dc3c42ee4ba3"
    },
    {
     "year": 2028,
@@ -813,10 +823,10 @@
     "champion": "Indianapolis",
     "rec": "5254ae30b68ff6aa",
     "poll": "b6d09dfd96c0a70f",
-    "heis": "b993853c25c620c8",
-    "history": "ab7e79c00163e07a",
-    "universe": "056c17f2b5882f7c",
-    "screens": "1688ff503e7c3c4b"
+    "heis": "ec6b0e72c4acde46",
+    "history": "5b49f76372b8ca91",
+    "universe": "6878b6b6d2a02c79",
+    "screens": "c43a8c68f34c9deb"
    }
   ],
   "schedules#60": [

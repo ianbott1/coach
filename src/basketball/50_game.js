@@ -149,6 +149,12 @@ function styleMod(off,def,prepd){
     if(prepd){ const P=DEFENSES[def].beats===off?BB.prepped:BB.misprep; m.p2+=P.p2; m.p3+=P.p3 } }
   return m;
 }
+/* round 107: what the read card marks, from the same counts and the same marks it shows. A pick that answers a marked
+   style fits the evidence and is never graded wrong, like the best fit (Grokbot: two marks on the card and a hard cross;
+   soccer's card marked crosses and the grade went by going long) */
+function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1,T.n), fa=Math.max(1,T.fga), share=100*T.tpa/fa, paint=T.paint/n*2, f=[];
+  if(Math.round(share)>=45)f.push("threes"); if(+paint.toFixed(1)>=bbPaintMark()[0])f.push("paint"); if(T.pnr/n>=3.4)f.push("pnr");
+  return f }
 function bbRead(T){
   // the share of shots from three, and the ball screens: which style fits best
   const n=Math.max(1,T.n), f=Math.max(1,T.fga), r=T.tpa/f;
@@ -409,8 +415,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].off, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
-    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,fe:DEFENSES[X.def].beats===dp.best,unclear:!ok&&!shownOf(dp,t)}); return }
-    if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ok,evid:dp.best,fe:DEFENSES[v].beats===dp.best,unclear:!ok&&!shownOf(dp,t)}) }
+    if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,fe:DEFENSES[X.def].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(DEFENSES[X.def].beats)),unclear:!ok&&!shownOf(dp,t)}); return }
+    if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ok,evid:dp.best,fe:DEFENSES[v].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(DEFENSES[v].beats)),unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else { const was=X.def; readIt(side,dp.stage===2?0.3:0.45); st.autoDid=X.def!==was&&DEFENSES[X.def]?"read them himself and switched to "+DEFENSES[X.def].l.split(":")[0].toLowerCase():"read them himself and kept the defense as it was" } return }
     if(dp.k==="fouls"){ if(v!=="play"){ sitStar(X,dp.half); st.pendEv=(st.pendEv||[]).concat([{side:side,k:"sit",f:X.f,u:rng.int(100)}]) } return }   // judged on the card against your assistant's (he sits him), like the other situation calls
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; if(v!=="push"&&v!=="sit")st.autoDid="kept the pace as it was"; return }

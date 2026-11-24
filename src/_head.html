@@ -44,6 +44,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .scstats .sct{display:inline-flex;align-items:baseline;gap:6px}.scstats .sct b{color:#E9ECF2;font-weight:600;min-width:1.4em;text-align:center}.scstats .sct i{font-style:normal;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
 .actionbar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:14px 16px 16px;
  background:linear-gradient(180deg,transparent,var(--ink) 14px)}
+/* round 107: the bar's fade and the gaps between its buttons pass a tap through to what shows there (Grokbot: a tap on a
+   plan seen through the top of the bar went to the bar, and the game started on the old plan) */
+.actionbar{pointer-events:none}.actionbar>*{pointer-events:auto}
 .actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */
 .advance{display:block;width:100%;max-width:728px;margin:0 auto;background:var(--sodium);
  color:#10131C;border:none;font-family:var(--cond);font-weight:700;font-size:19px;
@@ -550,6 +553,9 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);
  padding:3px 6px}
 .slotdel:hover{color:var(--flag);border-color:var(--flag)}
+.slotbk{top:auto;bottom:12px}
+.attnbtns{display:flex;flex-direction:column;gap:6px}
+.slotbk:hover{color:var(--bone);border-color:var(--bone)}
 .titlebtns{width:100%;margin-top:40px;display:flex;flex-direction:column;gap:9px}
 .titlebtns .advance{margin:0}
 .advance.ghost{background:none;border:1px solid var(--line);color:var(--bone)}

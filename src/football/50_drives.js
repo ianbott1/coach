@@ -387,6 +387,11 @@ const FB_READ=Object.assign({right:{td:+0.090,fg:0,to:-0.030}, wrong:{td:-0.056,
   favW:3, scouted:6, sw:0.30, swBehind:0.50, tell:2.1, base:0.8}, (LEAGUE.tuning&&LEAGUE.tuning.fbRead)||{});
 // per drive of yours, what their defense leaves in the numbers: blitzes, deep safeties, men in the box
 const FB_TELL={blitz:[FB_READ.tell,FB_READ.base,FB_READ.base],shell:[FB_READ.base,FB_READ.tell,FB_READ.base],box:[FB_READ.base,FB_READ.base,FB_READ.tell]};
+/* round 107: what the read card marks (each count per drive of the whole game at 1.5 or more): a pick answering a marked
+   scheme fits the evidence and isn't graded wrong (Grokbot: halftime reads graded wrong on what the screen didn't show;
+   the second read's best fit is from the counts since the break, the marks from the whole game) */
+function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1,T.n), k=["bl","sh","bx"], f=[];
+  k.forEach((x,i)=>{ if(T[x]/n>=1.5)f.push(SCHEME_KEYS[i]) }); return f }
 function fbRead(T){ const n=Math.max(1,T.n), v=[T.bl/n,T.sh/n,T.bx/n]; return SCHEME_KEYS[v.indexOf(Math.max(...v))] }
 /* round 72 (engV 3, new seasons): a defense keeps to its usual scheme 5 games in 7 (was 3 in 5). Following the
    scouting report was right 55% of the time in college, 54% in the pros (measured, 200 games each; the most it could be
@@ -424,9 +429,13 @@ function fbPrepCall(rep){
     opts:Object.keys(FB_ANSWERS).map(a=>[a,FB_ANSWERS[a].l]).concat([["normal","Wait and see: leave it to your assistant"]]),
     report:Object.assign({},rep), n:FB_READ.scouted, pearl:top};
 }
-function fbReadCall(stage,T,T2,last,cur){
-  const D=T2&&T2.n?T2:null;
-  return {k:"read",stage:stage,h:stage===1?"Second quarter: their defense":"After half-time: their defense",
+/* round 107: the header names the quarter it's asked in. The second read waits for two of your drives after the
+   break (the evidence it reads), so it came in the third or fourth quarter headed "After half-time" (both testers,
+   Nov 23: "After half-time" at Q4 12:33); the first read can come in the third too */
+const FB_QN=["","First","Second","Third","Fourth"];
+function fbReadCall(stage,T,T2,last,cur,q){
+  const D=T2&&T2.n?T2:null, qn=q>=5?"Overtime":(FB_QN[q]||"Second")+" quarter";
+  return {k:"read",stage:stage,h:stage===1?qn+": their defense":qn+": their defense since the break",
     b:stage===1?"How are they defending you? Pick your answer.":"Anything changed since the break? Adjust, or leave it.",
     opts:(cur&&FB_ANSWERS[cur]?[["keep","Keep it: "+FB_ANSWERS[cur].l]]:[]).concat(Object.keys(FB_ANSWERS).filter(a=>a!==cur).map(a=>[a,FB_ANSWERS[a].l])).concat([FB_ASSIST]),
     tell:Object.assign({},T), tell2:D?Object.assign({},D):null, best:fbRead(D||T), pearl:last?fbRead(last):fbRead(T)};
@@ -605,7 +614,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         const pick=choice==="keep"?st.ans[side]:FB_ANSWERS[choice]?choice:null;
         if(pick&&FB_ANSWERS[pick]){
           const e={side:side,h:dp.h,k:dp.k,pick:pick,truth:D.sch,right:FB_ANSWERS[pick].beats===D.sch};
-          if(dp.k==="read"){ e.evid=dp.best; if(FB_ANSWERS[pick]&&FB_ANSWERS[pick].beats===dp.best)e.fe=true } if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true; const ks=Object.keys(dp.report).sort((x,y)=>dp.report[y]-dp.report[x]); if(!e.unclear&&FB_ANSWERS[pick].beats===ks[0]){ e.followed=true; e.fav=ks[0] } }   // round 71: followed the report
+          if(dp.k==="read"){ e.evid=dp.best; if(FB_ANSWERS[pick]&&(FB_ANSWERS[pick].beats===dp.best||ENGINE_V>=21&&readFlags(dp).includes(FB_ANSWERS[pick].beats)))e.fe=true } if(dp.k==="prep"){ const a=Object.values(dp.report).sort((x,y)=>y-x); if(a[0]===a[1])e.unclear=true; const ks=Object.keys(dp.report).sort((x,y)=>dp.report[y]-dp.report[x]); if(!e.unclear&&FB_ANSWERS[pick].beats===ks[0]){ e.followed=true; e.fav=ks[0] } }   // round 71: followed the report
           st.log.push(e); st.ans[side]=pick }
         else if(dp.k==="prep"&&dp.report){   // waiting is graded too: right when the report's favourite was wrong (round 42; the
           const ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);   // other four games had it from round 39)
@@ -670,8 +679,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)] } }) }
     if(isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
       if(!D.asked.prep&&D.fav){ D.asked.prep=true; dp=fbPrepCall(fbReport(D.fav,(ctx.seed||0)+(side==="home"?2:1))); if(i>0)dp.h="Before your first drive: the scouting report" }   // round 79: they had the ball first ("Before kickoff" came after their score: Ian)
-      else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side]) }
-      else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side]) }
+      else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side],q) }
+      else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side],q) }
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
     // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----

@@ -15,7 +15,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||20);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||21);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -26,6 +26,7 @@ let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&p
                                       // 13: round 90, hockey's goals and assists credited with less lean and more rating (HK13)
                                       // 19: round 101, football: a touchdown's yards never longer than the field the drive had
                                       // 20: round 106, football: a stalled drive's fourth and N follows how far it got (10 - gain from a fresh first down at least; the goal line when goal to go)
+                                      // 21: round 107, the box score's lines agree with its own scoring (football: a man's touchdown yards inside his yards)
 function schedOrder(pool,left,rng){
   if(SCHED_V<2){ pool.sort((x,y)=>(left[y.home]+left[y.away])-(left[x.home]+left[x.away])+rng.gauss(0,0.8)); return pool }
   const key=pool.map((g,i)=>({g:g,i:i,k:left[g.home]+left[g.away]+rng.gauss(0,0.8)}));

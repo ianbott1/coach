@@ -208,6 +208,12 @@ function readScore(T){
     out[k]=s; });
   return out;
 }
+/* round 107: what the read card marks, from the same counts and the same marks it shows. A pick that answers a marked
+   style fits the evidence and is never graded wrong, like the best fit (Grokbot: two marks on the card and a hard cross;
+   soccer's card marked crosses and the grade went by going long) */
+function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1,T.n), f=[];
+  if(T.to/n>=1.15||T.pos>=56)f.push("press"); if(T.cr/n>=1.05)f.push("wing"); if(T.lb/n>=1.3)f.push("direct"); if(T.pos<=42)f.push("block");
+  return f }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
 function readCall(stage,T,hint,cur,early){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
@@ -415,8 +421,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
-    if(dp.k==="read"&&v==="keep"&&COUNTERS[X.ctr]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:X.ctr,truth:t,right:COUNTERS[X.ctr].beats===t,evid:dp.best,fe:COUNTERS[X.ctr].beats===dp.best}); return }
-    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best,fe:COUNTERS[v].beats===dp.best}) }
+    if(dp.k==="read"&&v==="keep"&&COUNTERS[X.ctr]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:X.ctr,truth:t,right:COUNTERS[X.ctr].beats===t,evid:dp.best,fe:COUNTERS[X.ctr].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(COUNTERS[X.ctr].beats))}); return }
+    if(dp.k==="read"&&COUNTERS[v]){ const t=st.S[other(side)].app; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:COUNTERS[v].beats===t,evid:dp.best,fe:COUNTERS[v].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(COUNTERS[v].beats))}) }
     // a near-even count is a coin flip: not graded (Grokbot: Left 10, Right 9, graded on the truth behind it)
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak, F=dp.flank||[0,0], near=Math.abs(F[0]-F[1])<=Math.max(1,0.12*(F[0]+F[1]));
       st.log.push({side:side,h:dp.h,k:"flank",pick:v,truth:t,right:v===t,unclear:near}) }

@@ -1,5 +1,5 @@
 {
- "fp": "0badedb686aabacd",
+ "fp": "32a8fcd0b28207d3",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -380,6 +380,16 @@
    "fp": "0badedb686aabacd",
    "from": "8aeac894dfe8f294",
    "note": "Round 106 revised: engine 20 without the kick inside their 28; ENGINE_NOW=19 gives d5adcd9's"
+  },
+  {
+   "fp": "32a8fcd0b28207d3",
+   "from": "0badedb686aabacd",
+   "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "32a8fcd0b28207d3",
+   "from": "32a8fcd0b28207d3",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "out": [
@@ -393,7 +403,7 @@
       "result": "No bowl game",
       "grade": "F"
      },
-     "book": "e77fac9a2c2717fb"
+     "book": "28ccf88599b03aa7"
     },
     {
      "team": "Rice",
@@ -402,7 +412,7 @@
       "result": "No bowl game",
       "grade": "C+"
      },
-     "book": "7e4c1bb6d8350a13"
+     "book": "791b367e20628950"
     }
    ]
   },
@@ -416,7 +426,7 @@
       "result": "Won the Gasparilla Bowl",
       "grade": "C-"
      },
-     "book": "b3d5e94a1c473a86"
+     "book": "90fe9e98ccc9d7e2"
     },
     {
      "team": "Rice",
@@ -425,7 +435,7 @@
       "result": "Lost the Hawaii Bowl",
       "grade": "A-"
      },
-     "book": "6af64ec21cd27748"
+     "book": "1f9fbf522418a70c"
     }
    ]
   },
@@ -439,7 +449,7 @@
       "result": "Lost the Holiday Bowl",
       "grade": "C+"
      },
-     "book": "88b98178c86319df"
+     "book": "8370994afe185c85"
     },
     {
      "team": "Rice",
@@ -448,7 +458,7 @@
       "result": "Lost the New Mexico Bowl",
       "grade": "A"
      },
-     "book": "510ccbb95a40e6c5"
+     "book": "08ab6b33b6ffb4dd"
     }
    ]
   }

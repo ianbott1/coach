@@ -99,10 +99,12 @@ function pickFresh(a,u,key,used){
   return a[u%a.length];
 }
 const HK_PENS=["hooking","tripping","holding","high-sticking","slashing","interference","roughing"];
+// round 107: third person, naming the other side, as soccer's (Muse: "Toronto on our D before he can turn: iced it
+// again", of her own Toronto): the cue's side can be yours
 const HK_CUE={
-  forecheck:["{t} two men in deep on the forecheck again; we can't get it out","{t} hem us in our own end: another giveaway","{t} pressure the puck carrier behind our net","{t} on our D before he can turn: iced it again"],
-  trap:["{t} sit back in a 1-3-1; we can't get through the middle","Another failed zone entry against {t}'s trap","{t} clog up the neutral zone and wait","We dump it in again; {t} won't let us carry it"],
-  cycle:["{t} cycle it low below our goal line for a whole shift","{t} grind down the boards and won't give it up","{t} work it low-to-high and get it to the point","{t} win another battle along the wall and keep it in"]
+  forecheck:["{t} two men in deep on the forecheck again; {o} can't get it out","{t} hem {o} in their own end: another giveaway","{t} pressure the puck carrier behind {o}'s net","{t} on {o}'s D before he can turn: iced it again"],
+  trap:["{t} sit back in a 1-3-1; {o} can't get through the middle","Another failed zone entry against {t}'s trap","{t} clog up the neutral zone and wait","{o} dump it in again; {t} won't let them carry it"],
+  cycle:["{t} cycle it low below {o}'s goal line for a whole shift","{t} grind down the boards and won't give it up","{t} work it low-to-high and get it to the point","{t} win another battle along the wall and keep it in"]
 };
 function pickOf(a,u){return a[u%a.length]}
 function hkEventText(g,e,swapped,used){
@@ -121,7 +123,7 @@ function hkEventText(g,e,swapped,used){
   if(e.k==="pen"){ const n=hkSkater(tm,u); return {team:tm,tag:"PENALTY",text:`${n} two minutes for ${pickOf(HK_PENS,u>>2)}`} }
   if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:pickFresh(HK_SAVE,u,"save",used).replace("{g}",surname(gk)).replace("{s}",surname(hkSkater(opp,u)))} }
   if(e.k==="pull")return {team:tm,tag:"",text:`pull the goalie for an extra attacker`};
-  if(e.k==="cue")return {team:tm,tag:"",text:pickFresh(HK_CUE[e.cue],u,"cue"+e.cue,used).replace("{t}",tm),cue:true};
+  if(e.k==="cue")return {team:tm,tag:"",text:pickFresh(HK_CUE[e.cue],u,"cue"+e.cue,used).replace("{t}",tm).replace(/\{o\}/g,opp),cue:true};
   if(e.k==="swap"){ return {team:tm,tag:"",text:`${hkGoalie(tm,true)} comes in for ${surname(hkGoalie(tm,false))}`} }
   return {team:tm,tag:"",text:""};
 }
@@ -201,7 +203,7 @@ function shotBars(g,drives){
   return `<div class="mom"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Shots by five minutes">
     <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="var(--line)"/>
     ${[1,2].map(k=>`<line x1="${k*W/3}" y1="2" x2="${k*W/3}" y2="${H-2}" stroke="var(--line)" stroke-dasharray="2 3"/>`).join("")}${bars}</svg>
-    <div class="momkey"><span style="color:${ac}">${esc(g.away)}${sog?" "+sog[1]:""}</span><span>shots</span><span style="color:${hc}">${sog?sog[0]+" ":""}${esc(g.home)}</span></div></div>`;
+    <div class="momkey"><span style="color:${ac}">${esc(g.away)}</span><span>shots, each stretch</span><span style="color:${hc}">${esc(g.home)}</span></div></div>`;
 }
 function liveScoreboard(){
   const g=live.g, my=S.myTeam, H=liveH(), A=liveA();
@@ -210,7 +212,10 @@ function liveScoreboard(){
       ${g.label?" &middot; "+esc(liveLabel(g)):(g.neutral?"":(g.home===my?" &middot; at home":" &middot; on the road"))}`;
   // round 104: the game's numbers so far (the full match brings them up to its clock as it plays)
   let st=""; try{ if(HL_SPORT.hpTally){ const pb=live.pb&&live.pb.d&&!live.done, upto=pb?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length; st=`<div class="scstats">${HL_SPORT.hpTallyHTML(HL_SPORT.hpTally(live,upto,null,null))}</div>` } }catch(e){}
-  return scoreTop(g,H,A,lab,"",shotBars(g,live.drives)+st);
+  // round 107: the shot bars stop at the stretches shown, as the numbers do (Instinct: at 7' the bars read 4-5, the live
+  // totals 2-4: the bars had the stretch's end)
+  const pb2=live.pb&&live.pb.d&&!live.done, up2=pb2?live.drives.indexOf(live.pb.d):held?live.hold.n:live.drives.length, shown=live.drives.slice(0,up2>=0?up2:live.drives.length);
+  return scoreTop(g,H,A,lab,"",shotBars(g,shown)+st);   /* the totals are the numbers below the bars, which run with the clock */
 }
 
 /* ---- the evidence ---- */

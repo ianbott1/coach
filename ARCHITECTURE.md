@@ -409,6 +409,69 @@ Round 92: club styles from rosters (engine 15, all seven). Design addition agree
 - Not built: computer clubs drafting, signing and trading for fit (Ian: a round of its own); basketball's crunch-time
   habit stays on the hash; a kicker.
 
+Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse and Instinct). Work in progress.
+- Backups: Muse found no export in college football once a career existed. Measured: every game, college football too,
+  had one under "?" inside the career (test/backup-reach.js presses it, laptop and phone, and reads the file back); she
+  was on the title screen. Each career on the title screen now has its own Back up.
+- Football's defense reads are headed by the quarter they come in. The second waits for two of your drives after the
+  break (the evidence it reads), so "After half-time" came at Q3 0:30 and Q4 12:33 (both testers). 0 of 164 reads in six
+  seasons now name a quarter other than the header's. Not changed: when it comes.
+- Engine 21 (football, stats only, no draws): a receiver's touchdown catches and a back's touchdown runs are inside his
+  own yards. Receivers' yards were a split of the passer's drawn apart from the scoring (Muse: 203 yards of touchdown
+  catches on a 169-yard line). 12 of 70 receivers with a touchdown catch were under in a season of games, worst 60 on 7;
+  now 0 (boxscore.js checks it). Each gets his touchdown yards and 2 a catch for the rest, from the catches the roster
+  doesn't carry first, then added to the passer.
+- Football's full match: the header and the line under the field follow the drive on the field. The header ran a drive
+  behind in 26 of 44 samples and lost its clock in 18 (the first clip's clock never drew; your own drive's lead-up had no
+  held score to draw it); the field line was a drive behind in all 44. Now 0, 0, 0 (test/fb-header.js, both games). Yard
+  lines past midfield read "their 45", not "own 55". HL_SPORT.headLive and footText set them in place: a render would
+  show the drive chart's result early.
+- Result cards: a postseason game is never an NBA Cup game (the pro basketball golden had a game 7 read "NBA Cup group
+  game: lost"; Instinct's play-in win). The Film Room measures a lost football call against the best option and now
+  names it (it named the assistant's: "cost seven relative to punting", seven being kicking's edge). A season's best or
+  costliest call where the assistant made the same call that night says it's compared with leaving it to him, replayed.
+- Pro football's division clause reads the standings once the regular season ends and before the champions are
+  written (Instinct's won-and-not-won; not reproduced in 640 team-seasons and 25 sims ahead: a guard).
+- Goldens re-recorded for engine 21; on ENGINE_NOW=20 only the result-card and call lines above move.
+- Grokbot's round 13 review (Nov 23) added to the round. Each item reproduced on the released build before it was
+  changed, and each has a test that fails there and passes here unless said:
+  - A plan change in a live game takes a second tap on the same button (test/plan-confirm.js). The action bar's fade and
+    gaps pass a tap through to what shows there.
+  - A tap that began on the game screen does nothing on the screen after it (test/stray-tap.js). Baseball on a phone:
+    one Skip in the eighth started the next game, its result card unseen. The click came 1.1s after the press, and the
+    1.2s wait was measured from the start of the ending (LAST_PD, strayTap).
+  - A baseball call inside an inning is headed by its inning (test/bs-call-head.js).
+  - Hockey's shooters' shots come to the team's (ev-full.js checks it). The full match showed a logged big save as
+    well as the stop it stood for when they were a minute or more apart. An empty-net or extra-man goal is a shot on
+    goal for the team too (engine 21). The first cap took shots off what the screen had shown; the suite caught it.
+  - A read answering a style the card marks fits the evidence and is never graded wrong (readFlags, engine 21; all
+    five games with reads; test/read-marks.js).
+  - Moves made before the day's game survive a reload (test/promo-reload.js). The replay applied each day's
+    promotions, trades and firings only before playing that day, so the day still to play lost them.
+  - Shirt numbers stay with the man: who chooses first goes by position and name (engine 21), and p.sh keeps a number
+    once given (test/shirts.js).
+  - A rewatch on Slow takes 102s for a college basketball game (35s before; live Slow is about three minutes).
+  - The Needs a decision card comes before the team card in the desktop side column, above the pinned Play button
+    (test/side-decision.js). A staff card has Keep him.
+  - The summer plan's hire is the candidate graded best of those shown (staffDefault, engine 21; test/staff-default.js).
+  - Soccer's save line names the keeper who played (test/sc-keeper.js). Soccer's and hockey's running numbers count
+    every stretch before one still being played (a partial stretch read 0-0), and their bars stop at the stretches shown.
+  - Pro basketball's win chance follows the score patched in place during a stretch (lwRefresh; test/ot-wp.js; seed 75's
+    overtime read 45% while down 5).
+  - Hockey's even-strength goals are never timed inside the other side's penalty, by the minutes shown (engine 21, no
+    draws; test/hk-pp-goal.js). Hockey's cue lines are written in the third person.
+  - The board's verdict is said once the regular season ends: the grade and what it weighs (no test).
+  - Soccer's late change is named only when the man coming on is on the bench and the man going off is on the pitch.
+- Measured, not changed: pro basketball live scoring by plan 108-114 a team (target 114.6). Baseball earned runs:
+  engines 20 and 21 attribute the same in 56 games; Muse's case reads as the rule (a starter's runner scoring after he
+  left). Who put a runner on is now kept for the half-inning only. Speed resetting after calls: not reproduced. A
+  rebound/assist swap: no swap in the code; 5 of 3,943 lines had a big man with five more assists than rebounds.
+  College football's opponent field goal credited to your kicker: not reproduced (29 field goals, kicker's team right).
+- Hockey's overtime is drawn three-on-three, four on a power play (hpOut; test/hk-ot.js: 12 men a frame before, 8 now).
+  Baseball's scouting verdict doesn't say "the wrong lineup" for a plan that followed the report.
+- Left for later: the pitch applying soccer's late change, the hockey rink on a
+  phone, red-zone punts (round 106), kicks against going for it (a model question).
+
 Round 106: football's fourth and N follows the drive (engine 20; Ian: its own round).
 - rollDrive drew a stalled drive's fourth and N apart from how far it got, so 9.8% (college) and 10.9% (pro) of stalled
   live drives ended on a state no series of downs reaches (fourth and 1 after 2 yards from a fresh first down), and the

@@ -126,6 +126,30 @@ on numbers they can't trust and a sport they read rather than watch.
 - Next: round 89, hockey and soccer's engine hooks; then football; ceilings and breakouts; computer clubs picking a plan
   for their shape (round 91). Watch: college live chance 30-50 band; March 1 seeds in the Final Four (old).
 
+## Round 107 (in progress): the game agrees with itself (the November 23 reviews: Muse, Instinct, Grokbot)
+- Done: a backup from the title screen; football reads headed by their quarter; touchdown yards inside a man's yards;
+  football's header and field line follow the drive; a postseason game never an NBA Cup game; the Film Room names what
+  a call is measured against; a live plan change takes two taps; a tap as a game ends never starts the next; baseball
+  call headers; hockey shots add up; marked reads never graded wrong; moves survive a reload; shirt numbers kept; Slow
+  rewatch; decision cards above the pinned Play button, Keep him; the summer hire defaults to the best; soccer's keeper
+  and running numbers; the win chance in overtime; hockey's even-strength goals outside penalties, third-person cues,
+  bars on the clock; the board's verdict said; soccer's late change named only when possible.
+- Also done: hockey overtime drawn three-on-three; football reads by the card's marks too.
+- Left in 107: red-zone punts (needs its own fit tables); the residual soccer
+  number drop (one in two matches); re-record goldens, the full suite, release.
+- Round 108: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
+  Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
+  box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five
+  minutes a game) and Full as the default. Hockey's power plays in the right end, college basketball using both halves,
+  the soccer pitch applying the late change, hockey's rink on a phone.
+- Round 109: the roster and the plan matter (Grokbot's second and third asks). Measure what a 15-25 point downgrade does
+  to the chance and the recommended plan in each sport now (only college football moves), set targets by sport and
+  position, then make plan edges depend on the opponent so no plan wins every night (Work it inside, Skate with them).
+  Soccer moved the wrong way (a weaker midfielder made Attack look better). Check against the calibration targets.
+  Live agency between calls belongs here.
+- Later: the career layer (Grokbot's list): development you can see, injuries and form that change the next month,
+  recruiting and contracts, job security and rivalries, history, news.
+
 ## Rounds 103-106 (done): every sport played as it happened
 - Soccer touch by touch: the engine's crosses, long balls, balls won high and bookings, every man named, the scoreboard's
   match numbers, assists as shown. Hockey touch by touch: forechecks, killed entries, cycles, penalties with the man in
