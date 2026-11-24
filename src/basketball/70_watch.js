@@ -6,6 +6,9 @@ const PLANS={
   balanced:  {sd:1.0, edge:0, l:"Balanced",         d:""},
   aggressive:{sd:1.3, edge:0, l:"Shorten the game", d:"Slow it down and let it fly from three. Fewer possessions, more variance \u2014 best when you're outgunned."}
 };
+/* round 108 (engine 22): instructions in a live game beyond the three plans, from the next stretch: the half-time call's
+   own two (AGGR push and sit), any time you choose; the pace now plays from the stretch it's set (50_game.js). */
+const LIVE_EXTRA={push:{l:"Push the pace",d:"Run on every miss and let it fly. More possessions, more threes."},sit:{l:"Milk the clock",d:"Use the shot clock. Fewer possessions, fewer threes."}};
 function isBigGame(g,team,seaRankMap,rivalName){
   if(!g)return false;
   if(rivalName)return true;

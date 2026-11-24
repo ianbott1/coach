@@ -127,7 +127,7 @@ const HL_SPORT=(function(){
   const BASES=[[0.5,0.9],[0.62,0.72],[0.5,0.54],[0.38,0.72],[0.5,0.9]];
   const along=k=>{ const f=Math.max(0,Math.min(4,k)), i=Math.min(3,Math.floor(f)), s=f-i; return [hlLerp(BASES[i][0],BASES[i+1][0],s),hlLerp(BASES[i][1],BASES[i+1][1],s)] };
   const sur=n=>n?String(n).split(" ").slice(-1)[0]:"";
-  let pbKey="";
+  let pbKey=""; const BS_VMAX=1.4;   // of the field (its width) a unit of playback at most (round 108)
   function pbDraw(x,W,H){
     const PB=live.pb, d=PB.d, it=pbItems(d,PB.from||0,PB.to), el=PB.frozen!=null?PB.frozen:Date.now()-PB.at, f=Math.max(0,Math.min(0.9999,el/Math.max(1,PB.ms))), T=f*it.tot;
     let ci=it.P.findIndex(q=>T<q.at+q.w); if(ci<0)ci=it.P.length-1; const C=it.P[ci];
@@ -194,7 +194,8 @@ const HL_SPORT=(function(){
         end=o==="k"?`Strikeout: ${sur(q.nm)}`:o==="bb"?`Walk: ${sur(q.nm)}${rn}`:o==="hbp"?`Hit by pitch: ${sur(q.nm)}${rn}`
           :o==="hr"?(q.runs===4?`GRAND SLAM! ${sur(q.nm)}`:`HOME RUN! ${sur(q.nm)}${q.runs>1?", "+q.runs+" in":""}`)
           :hitN?`${sur(q.nm)}: ${H_[hitN]}${rn}`:q.dp?`Double play${rn}`:q.sf?`Sac fly: ${sur(q.nm)}, a run scores`:`${sur(q.nm)} ${fly?"flies out":"grounds out"}${rn}`;
-        endInk=o==="k"||o==="out"?dink:ink }
+        endInk=o==="k"||o==="out"?dink:ink;
+        if(typeof ENGINE_V==="undefined"||ENGINE_V>=22)top=`${half} ${ordw(inn)} · ${outs} out`+(outs<3?` · ${onTxt(q.post||[null,null,null])}`:"") }   // round 108: the line says the state the play left (it said the one before, beside a bug with the new outs)
     }
     // round 105: a pitch before the last: to the plate, then the call (into the mitt, or a foul off the bat)
     let call="";
@@ -205,9 +206,17 @@ const HL_SPORT=(function(){
       if(pj!=null||u<tr)top=top+` · ${cb}-${cs}`+(call?` · ${call}`:"");
       if(pj==null&&u<tr&&u>=tp){ const lastP=C.ps[C.ps.length-1]; const lc=lastP==="KC"?"Called strike three":lastP==="KS"?"Swinging strike three":lastP==="B4"?"Ball four":""; if(lc)top=top+` · ${lc}` } }
     if(C.k!=="change"&&u>=tr&&q&&q.h!=null){ hs=q.h; as=q.a }   // the score moves once the play is done
+    // round 108 (engine 22): nobody outruns his legs. A fielder who ran the ball down jogs back to his place over the next
+    // pitches (he was back in a frame), a runner moves to his base at running speed; the cap is on the playback's own
+    // clock (BS_VMAX of the field a unit of it), so Fast keeps up. Seeking starts afresh.
+    const rpos=runners.map(([k,nm])=>({nm,p:along(k)}));
+    if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=pbDraw.st, dt=Q&&Q.d===d&&Q.from===(PB.from||0)?el-Q.el:-1; let nCl=0, lagM=0;
+      if(dt>=0&&dt<400){ const lim=BS_VMAX*dt/Math.max(1,PB.ms)*it.tot, cap=(o,q)=>{ const dx=q[0]-o[0], dy=(q[1]-o[1])*H/W, m=Math.hypot(dx,dy); if(m>lim&&m>0){ nCl++; lagM+=m-lim; return [o[0]+dx*lim/m,o[1]+dy*lim/m*W/H] } return q };
+        fpos.forEach((p,i)=>{ if(Q.f[i])fpos[i]=cap(Q.f[i],p) }); rpos.forEach(R=>{ const o=Q.r[R.nm]; if(o)R.p=cap(o,R.p) }) }
+      pbDraw.st={d,from:PB.from||0,el,f:fpos.map(p=>p.slice()),r:Object.fromEntries(rpos.map(R=>[R.nm,R.p.slice()]))}; pbDraw.pos={f:fpos,r:rpos,nCl,lagM,upf:it.tot/Math.max(1,PB.ms),W,H} }
     // draw: the fielders, the runners, the ball
     fpos.forEach((p,i)=>{ const [px,py]=Pp(p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",fn&&fn[i]?{num:fn[i][0],sub:fn[i][1]}:null) });
-    if(C.k==="change"){} else runners.forEach(([k,nm,show,isB])=>{ if(!show)return; const [rx,ry]=Pp(...along(k)); hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)","",{num:noOf(nm),sub:sur(nm)}) });
+    if(C.k==="change"){} else runners.forEach(([k,nm,show,isB],j)=>{ if(!show)return; const [rx,ry]=Pp(...rpos[j].p); hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)","",{num:noOf(nm),sub:sur(nm)}) });
     if(ball){ const [qx,qy]=Pp(ball[0],ball[1]); hlBall(x,qx,qy,r*0.55,lift,null,{ring:"#C8102E"}) }
     const clock=`${half==="Top"?"▲":"▼"}${inn} · ${outs} out`;
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:clock});
@@ -311,5 +320,5 @@ const HL_SPORT=(function(){
 
   // round 72: the header says the inning a clip shows ("After the 1st" stayed up through the 2nd's home run)
   const headClock=c=>c&&c.inn&&c.half?`${c.half} of the ${ordw(c.inn)}`:null;
-  return {reveal:0.72, collapseIdle:true, ambient:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, playback, goalsLabel:"Big home runs", bsPitches, bsCount};
+  return {drawPos:()=>pbDraw.pos||null, reveal:0.72, collapseIdle:true, ambient:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, playback, goalsLabel:"Big home runs", bsPitches, bsCount};
 })();

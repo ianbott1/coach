@@ -309,7 +309,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]); return M[pl]=(planAmp(f,BB17)-f)*(humans[sd]?BB17.hg:1) };   // hg: a person's plan also sets his offence, so his path plays the extra louder (scratch r94 person.js: the pros 1.61x the shown change at 1, college 1.14x)
   const starOn=(X,s)=>!X.out&&!(s<X.sitTo);
   const playSeg=(s)=>{
-    const n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
+    let n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
     const g=gameState(Math.min(s,SEGS-1),st.h-st.a,eH,planH,planA);
     let mH=g.mH, mA=g.mA;
     // a person's calls override the computer's game management for their side
@@ -319,6 +319,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(humans.home&&st.late.home!=="auto")mH=lm(st.late.home,st.mode.home)||st.mode.home;
     if(humans.away&&st.late.away!=="auto")mA=lm(st.late.away,st.mode.away)||st.mode.away;
     if(s>=SEGS){mH="urgent";mA="urgent"}
+    // engine 22 (round 108): a person's pace plays from the stretch it's set. The game's possessions are drawn at tip-off
+    // from the two starting plans; a person's mode now (a live instruction, the half-time call, a late call kept) scales
+    // this stretch's count by its tempo against the plan he started on. The computer's sides, and a side left to the
+    // assistant, count as their starting plan: a computer-only game draws and plays exactly as before.
+    if(ENGINE_V>=22&&s<SEGS){ const t0=sd=>(AGGR[sd==="home"?planH:planA]||AGGR.balanced).tempo,
+        tNow=(sd,m)=>humans[sd]&&st.late[sd]!=="auto"?(AGGR[m]||AGGR.balanced).tempo:t0(sd), f=(tNow("home",mH)+tNow("away",mA))/(t0("home")+t0("away"));
+      if(Math.abs(f-1)>1e-9)n=Math.max(1,Math.round(n*f)) }
     const H=st.S.home, A=st.S.away;
     // stars off the floor: in foul trouble, or fouled out
     const onH=starOn(H,s), onA=starOn(A,s);
