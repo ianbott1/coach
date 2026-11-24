@@ -190,6 +190,8 @@ const HL_SPORT=(function(){
      Drawn from the stretch and how far through it the clock is (d, f): the same frame however it's reached, paused
      or not. No game dice. */
   const SP_RATE={foul:0.58,corner:0.28,off:0.1};
+  /* round 108: the match engine's football (more passes, shorter, timed as they take); engine 22 seasons */
+  const SP2=()=>typeof ENGINE_V==='undefined'||ENGINE_V>=22;
   const SP_PART={FB:4,CB:3,W:8,CM:7,ST:10};   // each line's second man in the eleven   // a side's fouls, corners and offsides in five minutes (EPL: about 10.5, 5, 1.8 a match)
   const SP_POS=["the keeper","the full back","the centre back","the centre back","the full back","the winger","the midfielder","the midfielder","the winger","the striker","the striker"];
   const SP_UNIT=["GK","FB","CB","CB","FB","W","CM","CM","W","ST","ST"];
@@ -209,7 +211,7 @@ const HL_SPORT=(function(){
   // where each side stands for a ball at (bx,by) in the home frame (0 the home goal line), the side on it pushed on
   function spShape(bx,by,has){ return [true,false].map(home=>{ const a=home?bx:1-bx, y=home?by:1-by, on=has===home;
     const P=BASE.map((p,i)=>{ if(i===0)return [0.04+0.05*a,0.5+(y-0.5)*0.12];
-      const push=on?Math.max(0,a-0.3)*0.75:Math.max(0,a-0.42)*0.5-(on?0:Math.max(0,0.55-a)*0.25), depth=i<5?0.62:i<9?0.88:1;
+      const v2=SP2(), push=on?Math.max(0,a-0.3)*(v2?0.55:0.75):Math.max(0,a-0.42)*0.5-(on?0:Math.max(0,0.55-a)*0.25), depth=i<5?0.62:i<9?(v2?0.75:0.88):1;
       return [Math.max(0.06,Math.min(0.95,p[0]+push*depth+(on?0.05:-0.03))),0.5+(p[1]-0.5)*(on?1:0.8)+(y-0.5)*(i<5?0.18:0.3)] });
     return P.map(p=>home?p:[1-p[0],1-p[1]]) }) }
   // the man nearest, the named one of a pair a little more often (the squad's man for the line is its first choice)
@@ -260,7 +262,7 @@ const HL_SPORT=(function(){
       fl.filter(m=>m.side===s&&m.end!=="high").forEach(m=>{ if(l>0){ m.lb=1; l-- } });
       while(c>0||l>0){ const m={side:s,end:r()<0.75?"lost":"out"}; if(c>0){ m.cr=1; c-- } if(l>0){ m.lb=1; l-- } fl.push(m) }
       // enough moves to share the ball as the read has it: about seven a side in an even five minutes
-      const mine=fl.filter(m=>m.side===s).length+anchors.filter(a=>a.side===s).length, tgt=Math.round(6*(s?1-pH:pH));
+      const mine=fl.filter(m=>m.side===s).length+anchors.filter(a=>a.side===s).length, tgt=Math.round((SP2()?11:6)*(s?1-pH:pH));
       for(let k=mine;k<tgt;k++)fl.push({side:s,end:r()<0.65?"lost":"out"}) });
     for(let i=fl.length-1;i>0;i--){ const j=ri(i+1); [fl[i],fl[j]]=[fl[j],fl[i]] }
     // the floats share out between the anchors by the room each gap has
@@ -268,8 +270,8 @@ const HL_SPORT=(function(){
     const room=gaps.map(q=>Math.max(0.0001,q.f1-q.f0)), tot=room.reduce((s,x)=>s+x,0);
     fl.forEach(m=>{ let x=r()*tot, j=0; while(j<gaps.length-1&&x>room[j]){ x-=room[j]; j++ } gaps[j].m.push(m) });
     // a gap holds the moves it has room for (about a fortieth of the stretch each); the rest go on to the next with room
-    for(let j=0;j<gaps.length;j++){ const q=gaps[j], cap=Math.max(0,Math.floor(room[j]/0.026)-(q.a?1:0));
-      while(q.m.length>cap){ const m=q.m.pop(); let k=-1; for(let z=1;z<gaps.length&&k<0;z++){ for(const jj of [j+z,j-z]){ if(jj>=0&&jj<gaps.length&&gaps[jj].m.length<Math.max(0,Math.floor(room[jj]/0.026)-(gaps[jj].a?1:0))){ k=jj; break } } } if(k<0){ q.m.push(m); break } gaps[k].m.push(m) } }
+    for(let j=0;j<gaps.length;j++){ const q=gaps[j], cap=Math.max(0,Math.floor(room[j]/(SP2()?0.02:0.026))-(q.a?1:0));
+      while(q.m.length>cap){ const m=q.m.pop(); let k=-1; for(let z=1;z<gaps.length&&k<0;z++){ for(const jj of [j+z,j-z]){ if(jj>=0&&jj<gaps.length&&gaps[jj].m.length<Math.max(0,Math.floor(room[jj]/(SP2()?0.02:0.026))-(gaps[jj].a?1:0))){ k=jj; break } } } if(k<0){ q.m.push(m); break } gaps[k].m.push(m) } }
     // where the stretch starts: a kick-off to begin each half, else where the stretch before left it
     let ball=d.seg===0?{side:0,kind:"kickoff",x:0.5,y:0.5}:d.seg===9?{side:1,kind:"kickoff",x:0.5,y:0.5}:null;
     if(!ball){ let q=null; try{ q=pv&&pv.seg===d.seg-1?spPlan(L,pv).last:null }catch(e){} ball=q?Object.assign({},q):{side:r()<pH?0:1,kind:"won",x:0.5,y:0.5} }
@@ -279,7 +281,8 @@ const HL_SPORT=(function(){
     seqs.forEach(G=>{ const pool=G.q.m.slice();   // the side on the ball plays its next move if it has one (fewer balls lost just to hand it over)
       while(pool.length){ let j=pool.findIndex(m=>m.side===side); if(j<0){ j=0; G.seq.push({side:side,end:"lost"}); side=1-side } const m=pool.splice(j,1)[0]; G.seq.push(m); side=spAfter(m).side }
       if(G.q.a){ if(G.q.a.side!==side){ G.seq.push({side:side,end:"lost"}); side=1-side } G.seq.push(G.q.a); side=spAfter(G.q.a).side }
-      G.seq.forEach(m=>{ m.nT=m.end==="clip"?2+ri(2):2+(m.cr?1:0)+(m.lb?1:0)+(r()<0.45?1:0) }) });
+      G.seq.forEach(m=>{ m.nT=m.end==="clip"?2+ri(2):SP2()?Math.min(16,2+Math.floor(-Math.log(1-r()*0.999)*(m.end==="lost"||m.end==="high"?2.3:3.4))+(m.cr?1:0)+(m.lb?1:0)):2+(m.cr?1:0)+(m.lb?1:0)+(r()<0.45?1:0);
+        m.wt=SP2()?6+m.nT*2:m.nT }) });
     const moves=[];
     const push=(m,fA,fB)=>{ const s=m.side, A=x=>s?1-x:x;   // A: our attacking frame <-> the home frame (y too: x and y both flip)
       const st=[A(ball.x),A(ball.y)];
@@ -296,19 +299,32 @@ const HL_SPORT=(function(){
       const mid=m.nT-1-(m.cr?2:0); let cur=st;
       if(m.lb){ const lx=Math.min(cur[0],0.45), ly=0.2+r()*0.6; if(cur[0]>0.45||Math.hypot(lx-cur[0],ly-cur[1])>0.05)pts.push({x:lx,y:ly,k:"long"}); else pts[0].lk=1; cur=[Math.min(0.85,lx+0.3+r()*0.15),0.15+r()*0.7]; pts.push({x:cur[0],y:cur[1],k:"pass"}) }
       const tgt=m.cr?[0.74+r()*0.08,r()<0.5?0.07+r()*0.06:0.87+r()*0.06]:sp;
-      for(let k=pts.length;k<mid;k++){ const t=(k-pts.length+1)/(mid-pts.length+1); pts.push({x:cl(hlLerp(cur[0],tgt[0],t)+(r()-0.5)*0.06),y:cl(hlLerp(cur[1],tgt[1],t)+(r()-0.5)*0.24),k:"pass"}) }
+      if(SP2()){ // round 108: each pass to a team-mate where the shape has him (in our attacking frame), mostly 8-25 m, drifting on toward the move's end
+        let c0=cur.slice(), prev=-1; const n0=pts.length;
+        for(let k=n0;k<mid;k++){ const t=(k-n0+1)/(mid-n0+1), H=s?[1-c0[0],1-c0[1]]:c0, Sh=spShape(H[0],H[1],s===0)[s].map(q=>s?[1-q[0],1-q[1]]:q);
+          let best=null, bs=-1e9; for(let j=1;j<11;j++){ if(j===prev)continue; const q=Sh[j], dm=Math.hypot((q[0]-c0[0])*105,(q[1]-c0[1])*68); if(dm<5||dm>40)continue;
+            const rec=((k*31+j*7+n0*13)%100)<34, want=rec?[c0[0]-0.06,c0[1]+(c0[1]<0.5?0.18:-0.18)]:[hlLerp(c0[0],tgt[0],1/Math.max(1,mid-k)),hlLerp(c0[1],tgt[1],1/Math.max(1,mid-k))], dw=Math.hypot((q[0]-want[0])*105,(q[1]-want[1])*68);
+            const sc=-Math.abs(dm-15)*0.12-dw*0.06+(r()-0.5)*2.2; if(sc>bs){ bs=sc; best=[q[0],q[1],j] } }
+          if(!best)best=[cl(hlLerp(c0[0],tgt[0],t)+(r()-0.5)*0.05),cl(hlLerp(c0[1],tgt[1],t)+(r()-0.5)*0.2),-1];
+          const nx=[cl(best[0]+(r()-0.5)*0.03),cl(best[1]+(r()-0.5)*0.04)]; pts.push({x:nx[0],y:nx[1],k:"pass"}); prev=best[2]; c0=nx }
+        cur=c0 }
+      else for(let k=pts.length;k<mid;k++){ const t=(k-pts.length+1)/(mid-pts.length+1); pts.push({x:cl(hlLerp(cur[0],tgt[0],t)+(r()-0.5)*0.06),y:cl(hlLerp(cur[1],tgt[1],t)+(r()-0.5)*0.24),k:"pass"}) }
       if(m.cr){ pts.push({x:tgt[0],y:tgt[1],k:"cross"}) }
+      if(SP2()&&(m.end==="lost"||m.end==="out")&&!m.cr){ const c1=pts[pts.length-1]; sp=m.end==="out"?[cl(c1.x+0.03+r()*0.08),c1.y<0.5?0.005:0.995]:[cl(c1.x+0.02+r()*0.1),cl(c1.y+(r()-0.5)*0.25)] }
       pts.push({x:sp[0],y:sp[1],k:"end"});
       // timing by touch; who: the man nearest each spot in the shape we hold there (the clip's own first receiver at its end)
-      const T=pts.map((p,k)=>({x:A(p.x),y:A(p.y),f:hlLerp(fA,fB,k/(pts.length-1)),k:p.lk&&(p.k==="pass"||p.k==="won")?"long":p.k,lk:p.lk?1:0}));
+      let fr=pts.map((p,k)=>k/(pts.length-1));
+      if(SP2()&&pts.length>1){ const DEAD={throw:6,gk:9,free:12,corner:15,kickoff:20}, dt=[DEAD[pts[0].k]||0.5]; for(let k=1;k<pts.length;k++){ const a=pts[k-1], b=pts[k], dm=Math.hypot((b.x-a.x)*105,(b.y-a.y)*68); dt.push(dm/15+0.9+((k*7+pts.length*13)%10)/10*1.2+(a.k==="long"||a.k==="cross"?0.8:0)) }
+        const tot=dt.reduce((x,y)=>x+y,0); let acc=0; fr=dt.map((v,k)=>{ acc+=v; return k===0?(dt[0]/tot):acc/tot }); fr[pts.length-1]=1 }
+      const T=pts.map((p,k)=>({x:A(p.x),y:A(p.y),f:hlLerp(fA,fB,fr[k]),k:p.lk&&(p.k==="pass"||p.k==="won")?"long":p.k,lk:p.lk?1:0}));
       T.forEach((t,k)=>{ if(k===0&&t.k==="gk"){ t.s=0; return } if(k===0&&ball.by!=null){ t.s=ball.by; return } const S=spShape(t.x,t.y,s===0)[s]; t.s=k===T.length-1&&m.slot!=null?m.slot:spNear(S,t.x,t.y,k>0?T[k-1].s:-1,offK(s,t.f)) });
       // the man who won it or fouled
       const e=T[T.length-1], o=1-s; if(m.end!=="clip"&&m.end!=="out"&&m.end!=="off"){ const S=spShape(e.x,e.y,s===0)[o]; m.by=m.byFixed!=null?m.byFixed:spNear(S,e.x,cl(e.y),-1,offK(o,e.f)) }
       moves.push({side:s,end:m.end,m:m,T:T,f0:fA,f1:fB});
       const nx=spAfter(m); ball={side:nx.side,kind:nx.kind,x:e.x,y:e.y,by:nx.kind==="won"?m.by:null};
       if(nx.kind==="kickoff"){ ball.x=0.5; ball.y=0.5 } else if(nx.kind==="gk"){ ball.x=nx.side?0.94:0.06; ball.y=0.5 } else if(nx.kind==="corner"&&m.end==="clip"){ ball.x=s?0.015:0.985; ball.y=((m.c.e.u||0)%2)?0.03:0.97 } };
-    seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+m.nT,0); let at=q.f0;
-      G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*m.nT/W2; push(m,at,fB); at=fB }) });
+    seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+(m.wt||m.nT),0); let at=q.f0;
+      G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*(m.wt||m.nT)/W2; push(m,at,fB); at=fB }) });
     const out={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball),offAt,offSlot};
     Object.defineProperty(d,"_sp",{value:out,writable:true,configurable:true,enumerable:false});   // never saved with the game (it holds the live game)
     return out }
@@ -399,7 +415,7 @@ const HL_SPORT=(function(){
     if(Date.now()-(spDraw.t||0)>500){ spDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=spTallyHTML(spTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
-  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>20000,   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
+  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>(SP2()?40000:20000),   /* round 108: forty seconds a stretch at the base (Normal plays about 65s: a match in about twenty minutes, every pass at a pace you can follow; Ian: "I would watch full 90 minute matches in Football Manager") */   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);
