@@ -462,7 +462,10 @@ const HL_SPORT=(function(){
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const X=P.XI[si], kt=kits[si], gk=hlKit("",gks[si]);
       pos[si].forEach((p,i)=>{ if(i===P.offSlot[si]&&P.offAt(si,f))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
-        hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]&&(W>=520||on)?{sub:X.nm[i]}:{},on?{hot:true}:{})) }) });   // a phone's pitch names the man on the ball (twenty-two names piled up)
+        hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]&&(W>=520||on)?{sub:X.nm[i]}:{},on?{hot:true}:{}));
+        // round 108: legs you can see. Under each of your men a bar of his unit's legs once they start to go (amber, then red)
+        if(SP2()&&i&&P.ctx&&P.ctx.E&&W>=420&&si===(L.userIsHome?0:1)){ const u=SP_UNIT[i]==="ST"?2:SP_UNIT[i]==="W"||SP_UNIT[i]==="CM"?1:0, v=P.ctx.E[si][u];
+          if(v<78){ const bw=r*1.8, bh=Math.max(2,r*0.28), bx0=px-bw/2, by0=py-r*1.25-bh-1; x.save(); x.fillStyle="rgba(0,0,0,.55)"; x.fillRect(bx0-1,by0-1,bw+2,bh+2); x.fillStyle=v<60?"#FF6B5B":"#F4C95D"; x.fillRect(bx0,by0,bw*Math.max(0.05,v/100),bh); x.restore() } } }) });   // a phone's pitch names the man on the ball (twenty-two names piled up)
     // the ball's last moments
     const trail=[]; if(a.k!=="pass"||tr<1)for(let q=6;q>=1;q--){ const tq=Math.max(0,tr-q*0.04), eq=lf?tq:hlEase(tq), zq=lf&&tq<1?Math.sin(Math.PI*tq)*lf:0, pp=toS(hlLerp(a.x,b.x,eq),hlLerp(a.y,b.y,eq)); trail.push([pp[0],pp[1]-zq*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,trail.length>1?trail:null);

@@ -365,6 +365,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(!st.drives.length&&(st.S.home.startedBk||st.S.away.startedBk))d.bk={home:!!st.S.home.startedBk,away:!!st.S.away.startedBk};
     // who is in net now, for the highlights' rink (round 71, Muse: the rink showed the starter in all four games the backup played)
     if(st.S.home.backupIn||st.S.away.backupIn)d.gIn={home:!!st.S.home.backupIn,away:!!st.S.away.backupIn};
+    if(ENGINE_V>=22)d.md={home:mH,away:mA};   // round 108: the mode each side played the stretch in, for the rink (no draws)
     st.drives.push(d); return d;
   };
   const overtime=()=>{

@@ -409,6 +409,10 @@ const HL_SPORT=(function(){
     if(sh0||sh1)txt=(txt?txt+" · ":"")+"Power play, "+(sh0?g.away:g.home);
     if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
     if(mv.end==="pen"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"PENALTY",{fill:"#F2C14E"},(u-0.7)/0.3);
+    // round 108: the bench changes how it plays (the computer pushing in the third or locking it down, your call)
+    else if(HP2()&&f<0.16&&d.md){ const di=(L.drives||[]).indexOf(d), pv=di>0?L.drives[di-1]:null;
+      if(pv&&pv.md&&pv.seg===d.seg-1)for(let si=0;si<2;si++){ const sd=si?"away":"home", a0=pv.md[sd], b0=d.md[sd], SAY={push:"%s PINCH THE D AND PUSH",sit:"%s LOCK IT DOWN",safe:"%s OPEN IT UP",aggressive:"%s CLOG THE MIDDLE"};
+        if(a0!==b0&&SAY[b0]){ hlBanner(x,W,H,SAY[b0].replace("%s",String(si?g.away:g.home).toUpperCase()),kits[si],Math.min(1,f/0.04)*(f>0.13?(0.16-f)/0.03:1)); break } } }
     if(Date.now()-(hpDraw.t||0)>500){ hpDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=hpTallyHTML(hpTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
