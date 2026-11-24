@@ -512,8 +512,9 @@ engine 22: at ENGINE_NOW=21 all seven goldens match round 107's byte for byte, a
   a play is done.
 - Roster, measured read-only for round 109 (each team's best starter out hurt before game one): the chance moves 0.5-9
   points; the recommended plan flips only in pro basketball (balanced to safe, threes down 14) and hockey (aggressive
-  to safe; backwards for a weaker side, to look at). A rating changed mid-season reaches team strength only through
-  injuries: strength is fixed at the season's start.
+  to safe; backwards for a weaker side, to look at). That probe set ratings directly, which nothing in the game does
+  mid-season; a depth-chart swap (swapDepth) and a trade already move team strength by the change in rosterElo. An
+  earlier note here said only injuries reach it: wrong.
 - Soccer changes any time (test/sc-subs.js): fresh legs at the back, in midfield or up front, each unit's legs on its
   button; two a match, as your assistant makes at 60' and 70' (he still does when you make none), and once you make one
   the bench is yours. Recorded with the plan changes (pm "sub:<unit>"). Each pm entry is now made once in each game
