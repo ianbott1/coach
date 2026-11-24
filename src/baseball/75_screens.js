@@ -265,7 +265,7 @@ function readTextBase(e){
   if(e.k==="read")return e.right?`Your read was right: their hitters were ${A(e.truth)}.`
     :`Their hitters were ${A(e.truth)}: the plan was "${ANSWERS[APPROACH[e.truth].counter].l}".`;
   if(e.k==="prep")return e.right?`Your plan was right: they came out ${A(e.truth)}.`
-    :`You planned for the wrong lineup: they came out ${A(e.truth)}.`;
+    :e.followed?`You set up for what the report said most; they came out ${A(e.truth)} instead.`:`You planned for another approach: they came out ${A(e.truth)}.`;   // round 107: it said "the wrong lineup" when the plan matched the report (Grokbot)
   return "";
 }
 
