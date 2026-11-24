@@ -1,5 +1,5 @@
 {
- "fp": "a9b14102974f25c2",
+ "fp": "d54bc662f75c4191",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -110,6 +110,11 @@
    "fp": "a9b14102974f25c2",
    "from": "bcb09a99c1a405bd",
    "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "d54bc662f75c4191",
+   "from": "a9b14102974f25c2",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "result": {
@@ -124,7 +129,7 @@
     "heis": "c15cc548db28d6ea",
     "history": "103a796d2863e60b",
     "universe": "2f13b301310bb63a",
-    "screens": "56801cdd46c0d2df"
+    "screens": "8440d6a4acf362c1"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "24084afa855a0a1e",
+ "fp": "dc7ac367366af5f0",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -330,6 +330,11 @@
    "fp": "24084afa855a0a1e",
    "from": "24084afa855a0a1e",
    "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "dc7ac367366af5f0",
+   "from": "24084afa855a0a1e",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "out": [
@@ -366,7 +371,7 @@
       "result": "Finished 16th in the Premier League",
       "grade": "D"
      },
-     "book": "b1d3497b4e198f28"
+     "book": "79b40b2a0106bc04"
     },
     {
      "team": "Tottenham Hotspur",
@@ -389,7 +394,7 @@
       "result": "Finished 8th in the Premier League",
       "grade": "C+"
      },
-     "book": "b2155b7a13d46046"
+     "book": "b121e3a9e5d5d732"
     },
     {
      "team": "Tottenham Hotspur",
