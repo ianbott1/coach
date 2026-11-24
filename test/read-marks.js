@@ -4,10 +4,10 @@
      node test/read-marks.js [distDir]      last line: MATCH or MISMATCH */
 const path=require('path');const {load}=require('./harness.js');
 const DIR=process.argv[2]||process.env.DIST||path.join(__dirname,'..','dist'); let bad=0;
-const G=[['soccer-coach.html','Southampton','COUNTERS'],['basketball-coach-pro.html','Orlando','DEFENSES'],['basketball-coach.html','Minnesota','DEFENSES'],['hockey-coach-pro.html','Florida','ANSWERS']];
+const G=[['football-coach.html','TCU','FB_ANSWERS'],['football-coach-pro.html','Green Bay','FB_ANSWERS'],['soccer-coach.html','Southampton','COUNTERS'],['basketball-coach-pro.html','Orlando','DEFENSES'],['basketball-coach.html','Minnesota','DEFENSES'],['hockey-coach-pro.html','Florida','ANSWERS']];
 for(const [f,t,AN] of G){ const A=load({file:path.join(DIR,f),expose:['S','SEA','newDynasty','doAdvance','live','liveTick','answerLive','readFlags',AN]});
-  A.newDynasty(t,9,'T'); let reads=0, marked=0, alt=0, ok=0, wrongNow=0; const ex=[];
-  for(let w=0;w<14;w++){ A.doAdvance(); if(!A.live)continue; let m=0; const mine=[];
+  A.newDynasty(t,9,'T'); const W=/football/.test(f)?24:14; let reads=0, marked=0, alt=0, ok=0, wrongNow=0; const ex=[];
+  for(let w=0;w<W;w++){ A.doAdvance(); if(!A.live)continue; let m=0; const mine=[];
     while(A.live&&!A.live.done&&m++<5000){ const L=A.live; if(L.ask){ const dp=L.ask.dp; let pick=dp.opts[0][0];
         if(dp.k==="read"&&dp.tell){ reads++; const fl=A.readFlags(dp), AW=A[AN]; if(fl.length)marked++;
           const o=dp.opts.map(x=>x[0]).find(k=>AW[k]&&fl.includes(AW[k].beats)&&AW[k].beats!==dp.best);
