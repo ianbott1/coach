@@ -88,7 +88,7 @@ function milestoneNews(my){
 /* ---- shirt numbers (round 67: Ian, "not easy to identify the players"; Football Manager numbers its dots) ----
    Each player's number is fixed by his name and team and kept unique on the roster: starters choose first, in roster
    order, from the numbers their position wears (a keeper 1, a lineman in the 50s-70s); the rest by a hash of the name
-   in that range. Nothing is drawn from the game's dice and nothing is saved: the same roster numbers the same way. */
+   in that range. Nothing is drawn from the game's dice. Round 107: the number is kept with the man (p.sh). */
 const SHIRT_RANGE={
   soccer:{GK:{l:[1,13,31]},CB:{l:[5,4,6,15,23]},FB:{l:[2,3,12,22,24]},CM:{l:[8,14,16,25,26]},W:{l:[7,11,17,19,21]},ST:{l:[9,10,18,20,27]}},
   football:{QB:[1,19],RB:[20,49],WR:[10,19,80,89],WR2:[10,19,80,89],OT:[50,79],EDGE:[90,99,50,59],DT:[90,99,60,79],LB:[40,59],CB:[20,49],S:[20,49]},
@@ -99,15 +99,22 @@ function shirtNo(team,idx){
   const R=SEA&&SEA.roster&&SEA.roster[team]; if(!R||!R[idx])return null;
   const key=team+"|"+R.map(p=>p?p.n:"").join(","); let M=_SHIRT[team];
   if(!M||M.key!==key){ M=_SHIRT[team]={key:key,no:{}}; const used={}, sp=(typeof SPORT!=="undefined"&&SHIRT_RANGE[SPORT.id])||{};
-    const order=R.map((p,i)=>i).filter(i=>R[i]).sort((a,b)=>(a<POS.length?0:1)-(b<POS.length?0:1)||a-b);
-    order.forEach(i=>{ const pos=POS[i%POS.length].p, rg=sp[pos], h=strHash(team+"|"+R[i].n); let n=null;
+    // round 107 (engine 21): who chooses first goes by position and name, not by the depth chart, so the numbers come out
+    // the same whoever is starting, and after a reload (the roster is rebuilt from the season's start, p.sh with it)
+    const v21=typeof ENGINE_V==="undefined"||ENGINE_V>=21, P0=POS.length;
+    const order=R.map((p,i)=>i).filter(i=>R[i]).sort(v21?((a,b)=>(a%P0)-(b%P0)||strHash(team+"|"+R[a].n)-strHash(team+"|"+R[b].n)||a-b):((a,b)=>(a<POS.length?0:1)-(b<POS.length?0:1)||a-b));
+    // round 107: a man keeps the number he was given (the numbers reshuffled when the depth chart changed: starters chose
+    // first, so a swap changed who got which: Grokbot, three games). Numbers already worn are kept first; a man without
+    // one, or whose number another now wears, chooses as before, and keeps what he gets (p.sh, saved with him)
+    order.forEach(i=>{ const v=R[i].sh; if(v!=null&&!used[v]){ used[v]=1; M.no[i]=v } });
+    order.forEach(i=>{ if(M.no[i]!=null)return; const pos=POS[i%POS.length].p, rg=sp[pos], h=strHash(team+"|"+R[i].n); let n=null;
       if(rg&&rg.l){ n=rg.l.find(v=>!used[v]); if(n===undefined)n=null }   // a list of numbers: the first free
       if(n==null&&!(rg&&rg.l)){ const lo=rg?rg[0]:(SPORT.id==="basketball"?0:1), hi=rg?rg[1]:(SPORT.id==="hockey"?98:99), span=hi-lo+1;
         for(let k=0;k<100&&n==null;k++){ const v=lo+((h+k*7)%span); if(!used[v])n=v }
         if(n==null&&rg&&rg.length>=4){ const lo2=rg[2], sp2=rg[3]-rg[2]+1; for(let k=0;k<100&&n==null;k++){ const v=lo2+((h+k*7)%sp2); if(!used[v])n=v } }
         }
       for(let v=1;n==null&&v<100;v++)if(!used[v])n=v;
-      used[n]=1; M.no[i]=n }) }
+      used[n]=1; M.no[i]=n; if(typeof ENGINE_V==='undefined'||ENGINE_V>=21)R[i].sh=n }) }
   return M.no[idx] }
 
 /* ---- the player's page and the leaders (round 69: Ian, "when you click on a player you can see all of their

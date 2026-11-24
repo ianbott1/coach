@@ -616,6 +616,10 @@ function rebuild(){
     SEA.advance();
     SEA.forcedList=[]; SEA.forced=null;
   }
+  // round 107: and the moves made on the day still to play (a man started, a trade, a coordinator fired before this
+  // week's game): the loop replays each day's moves only before playing it, so these were lost on a reload and the depth
+  // chart went back (measured: ten promotions before week 1, none there after a reload)
+  { const i=SEA.step; if(!SEA.half)coachMoves().forEach(([tm,P,F])=>{ if(P&&P[i])P[i].forEach(k=>swapDepth(SEA,k,tm)); if(F&&F[i])F[i].forEach(sd=>SEA.fireCoordinator(tm,sd)) }) }
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;   // and now, what's chosen now
   SEA.plan=plan;
   replayCarousel();
