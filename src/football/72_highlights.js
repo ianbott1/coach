@@ -324,8 +324,13 @@ const HL_SPORT=(function(){
       x.strokeStyle="rgba(80,150,255,.85)"; x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); if(los+pl.togo<100){ x.strokeStyle="rgba(242,210,75,.9)"; x.beginPath(); x.moveTo(g1[0],g1[1]); x.lineTo(g2[0],g2[1]); x.stroke() } x.restore() }
     if(pl.t==="pen"){   // the snap, a whistle, a yellow flag at the line; the ball moves on and the chains with it
       const m=Math.min(1,s*3)*(1-Math.max(0,(s-0.5)*2)), bxp=los+(u>=done?gain:0);
-      DEF.forEach((p,k)=>{ const [px,py]=P(W,H,c,bxp+p[0]+m*(k<4?-0.6:0.8),p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[k]}:null) });
-      OFF.forEach((p,k)=>{ const [px,py]=P(W,H,c,bxp+p[0]+m*(k>=6?0.6:k>=2?1.5:0),p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",c.offN?{num:c.offN[k]}:null) });
+      const dP=DEF.map((p,k)=>[bxp+p[0]+m*(k<4?-0.6:0.8),p[1]]), oP=OFF.map((p,k)=>[bxp+p[0]+m*(k>=6?0.6:k>=2?1.5:0),p[1]]);
+      // round 108: a flag's men walk to their places too (the cap below), and leave the next play where they stood
+      if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=driveFrame.st, dt=Q&&Q.c===c&&t>=Q.t?(t-Q.t)*n:-1;
+        if(dt>=0&&dt<0.25){ const lim=FB_VMAX*dt, cap=(o,q)=>{ const dx=q[0]-o[0], dy=(q[1]-o[1])*53.3, mm=Math.hypot(dx,dy); return mm>lim&&mm>0?[o[0]+dx*lim/mm,o[1]+dy*lim/mm/53.3]:q }; dP.forEach((q,k)=>dP[k]=cap(Q.def[k],q)); oP.forEach((q,k)=>oP[k]=cap(Q.off[k],q)) }
+        driveFrame.st={c,t,off:oP.map(q=>q.slice()),def:dP.map(q=>q.slice())}; driveFrame.pos={off:oP,def:dP,nCl:0,lagM:0,n} }
+      dP.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[k]}:null) });
+      oP.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",c.offN?{num:c.offN[k]}:null) });
       const [qx,qy]=P(W,H,c,bxp,0.5); hlBall(x,qx,qy,r*0.55,0,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
       if(u>=snap+0.08){ const k=Math.min(1,(u-snap-0.08)/0.25), [fx,fy]=P(W,H,c,los+1.5,hlLerp(0.15,0.42,k)); x.save(); x.fillStyle="#F2D24B"; x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=1;
         const sz=Math.max(5,W/90); x.translate(fx,fy-Math.sin(k*Math.PI)*H*0.08); x.rotate(k*6); x.fillRect(-sz/2,-sz/2,sz,sz); x.strokeRect(-sz/2,-sz/2,sz,sz); x.restore() }
@@ -348,11 +353,20 @@ const HL_SPORT=(function(){
     if(pl.t==="sack"){ const k=pl.by||0, w=Math.min(1,s/0.7); def[k]=[hlLerp(los+DEF[k][0],carrier[0]+0.6,w),hlLerp(DEF[k][1],0.5+0.02,w)] }
     else if(pl.t==="inc"&&u>=snap){ const k=carrier[1]<0.5?7:8; def[k]=[carrier[0]+0.9,carrier[1]+(carrier[1]<0.5?0.03:-0.03)] }   // the man on him, there when it arrives
     else if(u>=done){ const k=pl.t==="pass"?(carrier[1]<0.5?7:8):5; def[k]=[carrier[0]+0.6,carrier[1]+0.02] }   // and he's brought down
+    // round 108 (engine 22): between snaps the men walk back to the line and set (they were at the next snap in a frame:
+    // the carrier forty yards downfield one frame, in the backfield the next); in a play nobody outruns his legs. The cap
+    // is in yards a play of the drive's own clock, so every speed keeps up; seeking starts afresh.
+    if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=driveFrame.st, dt=Q&&Q.c===c&&t>=Q.t?(t-Q.t)*n:-1; let nCl=0, lagM=0;
+      if(dt>=0&&dt<0.25){ const lim=FB_VMAX*dt, cap=(o,q)=>{ const dx=q[0]-o[0], dy=(q[1]-o[1])*53.3, m=Math.hypot(dx,dy); if(m>lim&&m>0){ nCl++; lagM+=m-lim; return [o[0]+dx*lim/m,o[1]+dy*lim/m/53.3] } return q };
+        off.forEach((p,k)=>{ off[k]=cap(Q.off[k],p) }); def.forEach((p,k)=>{ def[k]=cap(Q.def[k],p) });
+        if(u>=snap&&(pl.t==="run"||pl.t==="scr"||pl.t==="sack"||(pl.t==="pass"&&s>=0.78))&&off[j]){ bx=off[j][0]; by=off[j][1] } }   // the ball stays in his hands
+      driveFrame.st={c,t,off:off.map(p=>p.slice()),def:def.map(p=>p.slice())}; driveFrame.pos={off,def,nCl,lagM,n} }
     def.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[k]}:null) });
     off.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const num=k===j&&pl.alt?c.rb2n:c.offN?c.offN[k]:null; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",num!=null?{num}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
     hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} · ${c.tm} · ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):null,null) }
+  const FB_VMAX=200;   // yards a play of the drive's clock at most (round 108)
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
     if(c.kind==="drive")return driveFrame(x,W,H,c,t);
@@ -425,7 +439,7 @@ const HL_SPORT=(function(){
   // the header's clock and drive set in place while the drive plays (a render would show the drive chart's result early)
   const headLive=(e,k)=>{ e.innerHTML='<span class="live"></span>'+esc(k)+(typeof fbVenueTag==="function"?fbVenueTag():"") };
   const footText=c=>c&&c.kind==="drive"&&c.start!=null&&c.tm?`${c.tm} ball \u00b7 started ${fbYd(c.start)}`:null;
-  return {replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
+  return {drivePos:()=>driveFrame.pos||null, replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
            clips, pitch, idle, frame, headClock, footText, headLive, goalsLabel:"Late touchdowns",
            namesOf:(L,d)=>d&&Array.isArray(d._pb)?d._pb:null, playText, leadUp, playsFor:(L,d)=>{ const out=clips0(L,d,"full"); const c=mkDrive(L,d,out); return c?{plays:c.plays,start:c.start,end:c.end,left:c.left,forced:c.forced,conv:c.conv,rec:c.rec,next:out.map(o=>({kind:o.kind,los:o.los,togo:o.togo,len:o.len}))}:null }};
 })();
