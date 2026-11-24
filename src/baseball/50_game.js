@@ -186,7 +186,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 17 (round 94): the plan your lineup suits, through its own outcomes (one-sided: twice the gap's log-odds a point)
     if(planAmpV()){ p.s1*=BS17.g; p.s2*=BS17.g; p.s3*=BS17.g; p.hr*=BS17.g; p.bb*=BS17.g }
-    if(ctx.lz&&planAmpV()){ const pl=st.mode[bat], E=bsFitZ(ctx.lz[bat],pl), xe=2*E*BS.edge, w=BS17.w, Ef=bsFitZ(ctx.lz[fs],st.mode[fs]),
+    if(ctx.lz&&planAmpV()){ const pl=st.mode[bat], E=ctx.spz&&humans[bat]&&planVsV()?planVsTot(bsFitZ(ctx.lz[bat],pl),-bsVsZ(ctx.spz[fs],pl),BS17.cap):bsFitZ(ctx.lz[bat],pl), xe=2*E*BS.edge,   /* engine 23: a person's plan against the day's starter */ w=BS17.w, Ef=ctx.spz&&humans[fs]&&planVsV()?planVsTot(bsFitZ(ctx.lz[fs],st.mode[fs]),-bsVsZ(ctx.spz[bat],st.mode[fs]),BS17.cap):bsFitZ(ctx.lz[fs],st.mode[fs]),
         xg=(1-w)*BS17.u*((1-BS17.d)*xe-BS17.d*2*Ef*BS.edge);
       if(xg){ p.s1*=Math.exp(xg*2.2); p.s2*=Math.exp(xg*2.2); p.hr*=Math.exp(xg*2.2); p.bb*=Math.exp(xg*2.2); p.k*=Math.exp(-xg*1.6) }
       if(E&&w&&pl==="aggressive")p.hr*=Math.exp(w*BS17.ga*2.2*xe); else if(E&&w&&pl==="safe"){ p.s1*=Math.exp(w*BS17.gs*2.2*xe); p.bb*=Math.exp(w*BS17.gs*2.2*xe); p.k*=Math.exp(-w*BS17.gs*1.6*xe) } }
@@ -432,9 +432,18 @@ function bsLeanZ(t){ if(!planAmpV()||typeof SEA==="undefined"||!SEA||!SEA.roster
 function bsFitZ(z,pl){ if(!z||!pl||pl==="balanced")return 0; const v=BS17.e*(pl==="aggressive"?z:-z); return Math.max(-BS17.cap,Math.min(BS17.cap,v)) }
 function sportPlanFit(t,pl){ return planAmpV()?bsFitZ(bsLeanZ(t),pl):0 }
 function sportPlanFitC(t,pl){ return sportPlanFit(t,pl) }
+/* round 109 (engine 23): the plan against the day's starter (Grokbot: "real counters tied to the opponent's scouting").
+   A power arm (Stuff over Control) punishes Swing for the fences; a control artist, who walks no one, Small ball. His
+   lean in league spreads (r109 bsp.js, 450 starters over three seasons: Stuff less Control, mean 0.3, sd 6.96), a spread
+   worth a spread of lineup fit (BS17.e), held with the fit to the cap. Kept with the game (ctx.spz) so a replay plays it */
+function bsSpZ(t,step){ try{ const sp=spCtx(t,step), R=SEA.roster[t], p=sp&&R.find(x=>x&&x.n===sp.n), A=p&&attrOf(p); return A?Math.round((A.stf-A.ctl-0.3)/6.96*1000)/1000:0 }catch(e){ return 0 } }
+function bsVsZ(z,pl){ return !z||!pl||pl==="balanced"?0:PLAN_VS_K*BS17.e*(pl==="aggressive"?-z:z) }
+function sportPlanVsC(o,pl){ return planVsV()?bsVsZ(bsSpZ(o,SEA.step),pl):0 }
+function sportPlanCap(){ return BS17.cap }
+function sportPlanVsWhy(o,k,v){ const sp=spCtx(o,SEA.step), nm=sp?esc(sp.n):"their starter"; return k==="aggressive"?(v<0?`${nm} starts for ${esc(o)}, a power arm who misses bats`:`${nm} starts for ${esc(o)} and doesn't miss many bats`):(v<0?`${nm} starts for ${esc(o)}, a control artist who walks no one`:`${nm} starts for ${esc(o)} and gives up walks`) }
 const PLAN_LEAN={safe:"contact and eye",aggressive:"power"};   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return planAmpV()?planFitWords(t,pl,{safe:"contact and eye",aggressive:"power"}):"" }
-function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {lz:planAmpV()?{home:Math.round(bsLeanZ(h)*1000)/1000,away:Math.round(bsLeanZ(a)*1000)/1000}:undefined, fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
+function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {lz:planAmpV()?{home:Math.round(bsLeanZ(h)*1000)/1000,away:Math.round(bsLeanZ(a)*1000)/1000}:undefined, spz:planVsV()?{home:bsSpZ(h,step),away:bsSpZ(a,step)}:undefined, fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
   lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
   rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h,step,LH,BH),away:bsAttrs(a,step,LA,BA)}:undefined} }
 /* engine 10: the attributes of the men the engine reads today (the nine, the bench bat, the day's starter, the long man

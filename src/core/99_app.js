@@ -2278,6 +2278,7 @@ function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
 function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f, vs=C.opp?planVs(my,C.opp,k):0;
   const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
   // round 109 (engine 23): tonight's opponent, when what their roster suits is the biggest part
+  if(vs&&Math.abs(vs)>Math.abs(f)&&Math.abs(vs)>=Math.abs(sh)&&typeof sportPlanVsWhy==="function")return sportPlanVsWhy(C.opp,k,vs);
   if(vs&&Math.abs(vs)>Math.abs(f)&&Math.abs(vs)>=Math.abs(sh)&&typeof PLAN_VS_WORDS!=="undefined"&&PLAN_VS_WORDS[k])return `${esc(C.opp)} ${PLAN_VS_WORDS[k][vs<0?0:1]}`;
   if(vs&&Math.abs(vs)>Math.abs(f)&&Math.abs(vs)>=Math.abs(sh))return vs<0?`${esc(C.opp)} have the ${PLAN_LEAN[k]} to play that game too`:`${esc(C.opp)} don't have the ${PLAN_LEAN[k]} to play that game`;
   return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) }

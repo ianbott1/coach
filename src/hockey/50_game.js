@@ -258,7 +258,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const ampE=(sd,m)=>{ if(!SH||!planAmpV()||!m||m==="balanced"||!HK12_FIT[m])return 0; const M=ampMemo[sd]; if(M[m]!==undefined)return M[m];
     const f=hkFitOf((humans[sd]?HK12_FIT:HK12_FITC)[m],SH[sd]);
     // engine 23 (round 109): a person's plan against tonight's opponent's roster (planVs), played on the same channel
-    if(humans[sd]&&planVsV())return M[m]=planVsTot(planAmp(f,HK17),planAmp(hkFitOf(HK12_FIT[m],SH[other(sd)]),HK17),HK17.cap)-f;
+    // (that part plays 1.14x its Elo: r109 vs2.js, the change from engine 22 on common dice; played at 0.88)
+    if(humans[sd]&&planVsV()){ const fa=planAmp(f,HK17); return M[m]=fa-f+0.88*(planVsTot(fa,planAmp(hkFitOf(HK12_FIT[m],SH[other(sd)]),HK17),HK17.cap)-fa) }
     return M[m]=planAmp(f,HK17)-f };
   const ampF=(sd,mX,mY)=>{ let f=1; if(mX==="safe")f*=1+HK17.gs*ampE(sd,mX)*HK12.c.pas/R_SLOPE; if(mY==="aggressive")f*=1-HK17.ga*ampE(other(sd),mY)*HK12.c.chk/R_SLOPE; return Math.max(0.3,f)*(planAmpV()?HK17.g:1) };
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
