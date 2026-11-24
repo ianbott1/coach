@@ -1,5 +1,5 @@
 {
- "fp": "263e1ef366c85dc9",
+ "fp": "ee412d91393a7147",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -580,6 +580,11 @@
    "fp": "263e1ef366c85dc9",
    "from": "34d7205a24ad6ca5",
    "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "ee412d91393a7147",
+   "from": "263e1ef366c85dc9",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "result": {
@@ -594,7 +599,7 @@
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
     "universe": "a8cfb55b751e8b36",
-    "screens": "2d8c0fca282ec81a"
+    "screens": "cf978dd5b7dd58ff"
    },
    {
     "year": 2027,
@@ -606,7 +611,7 @@
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
     "universe": "90269ebe17c9b5e1",
-    "screens": "bf187fd363c8179e"
+    "screens": "46069db2b702c383"
    }
   ],
   "Coppin State#2024": [
@@ -620,7 +625,7 @@
     "heis": "942c9abdaed040d4",
     "history": "df81ab6f6095ef61",
     "universe": "571f1386e2e52c60",
-    "screens": "55896d854427fd8b"
+    "screens": "c5a521d05c260329"
    },
    {
     "year": 2027,
@@ -632,7 +637,7 @@
     "heis": "ef6bde742321790a",
     "history": "29b9279493cb5e15",
     "universe": "7935b8a80855900c",
-    "screens": "7aeb9fd8bf290a7f"
+    "screens": "3aee36c087219098"
    }
   ],
   "Gonzaga#777": [
@@ -646,7 +651,7 @@
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
     "universe": "03be4fb9597890fa",
-    "screens": "99f2e457a5e0f6d3"
+    "screens": "dbdf903bc8835f99"
    },
    {
     "year": 2027,
@@ -657,8 +662,8 @@
     "poll": "2acaa39089e082dd",
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
-    "universe": "3526b3ba2ee839f1",
-    "screens": "6d9f8d0a882ca8bb"
+    "universe": "b516f3ebe7478e47",
+    "screens": "d8b2cc1873b11d1a"
    }
   ],
   "schedules#60": [

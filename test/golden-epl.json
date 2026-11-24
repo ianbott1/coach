@@ -1,5 +1,5 @@
 {
- "fp": "bf145361199e5f30",
+ "fp": "c13f3b2e00f7571e",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -555,6 +555,11 @@
    "fp": "bf145361199e5f30",
    "from": "0835603141eba57e",
    "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "c13f3b2e00f7571e",
+   "from": "bf145361199e5f30",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "result": {
@@ -569,7 +574,7 @@
     "heis": "01dd37bc7325f176",
     "history": "6384997958515063",
     "universe": "01a4af398753b9a2",
-    "screens": "be26003f14cd3e66"
+    "screens": "f5c0a56915bfdb1e"
    },
    {
     "year": 2027,
@@ -581,7 +586,7 @@
     "heis": "eb3ac9729b9218e4",
     "history": "90dec017a25fa243",
     "universe": "4317bba460565046",
-    "screens": "bd41f69353ce6cbf"
+    "screens": "9fbf4b10a2add11d"
    }
   ],
   "Wrexham#777": [
@@ -595,7 +600,7 @@
     "heis": "c3ba80646ca3f1fd",
     "history": "4c6b5a840a49e7ee",
     "universe": "79fef02269e2b685",
-    "screens": "a1e9fb7930f40a27"
+    "screens": "3a755a6078aaf470"
    },
    {
     "year": 2027,
@@ -607,7 +612,7 @@
     "heis": "6a9f17a496fb041d",
     "history": "6412fe9f0c0ffec9",
     "universe": "88ca9293175b32f3",
-    "screens": "b12294925ae1408d"
+    "screens": "73ba44d47d45cb69"
    }
   ],
   "schedules#60": [

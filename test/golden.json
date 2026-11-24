@@ -1,5 +1,5 @@
 {
- "fp": "517cb12537835933",
+ "fp": "b78f56a8b2f77aad",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -619,6 +619,11 @@
    "fp": "517cb12537835933",
    "from": "11cefb2524ed2b3b",
    "note": "Round 107, engine 21: football touchdown yards inside a man's yards, reads headed by their quarter; result cards (a postseason game is never an NBA Cup game; a call compared with leaving it to the assistant says so). On ENGINE_NOW=20 only those screen lines move."
+  },
+  {
+   "fp": "b78f56a8b2f77aad",
+   "from": "517cb12537835933",
+   "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
   }
  ],
  "result": {
@@ -633,7 +638,7 @@
     "heis": "c15cc548db28d6ea",
     "history": "103a796d2863e60b",
     "universe": "2f13b301310bb63a",
-    "screens": "56801cdd46c0d2df"
+    "screens": "8440d6a4acf362c1"
    },
    {
     "year": 2027,
@@ -645,7 +650,7 @@
     "heis": "b4ffa259dc110758",
     "history": "30df8c6a5ac63bbf",
     "universe": "b38ee98fed5528be",
-    "screens": "5bdcf9b2dc147482"
+    "screens": "40d141ba658481b0"
    },
    {
     "year": 2028,
@@ -657,7 +662,7 @@
     "heis": "0ecf830bfdd27cc0",
     "history": "4b9bc405bf369f59",
     "universe": "153b7a6ed6f9adf9",
-    "screens": "1bd57a27a9277183"
+    "screens": "dd2d3ec4f68bc9b8"
    },
    {
     "year": 2029,
@@ -669,7 +674,7 @@
     "heis": "fe3d6add077d3b3a",
     "history": "de8d929d1f3b8644",
     "universe": "8193384f9960d5de",
-    "screens": "739762f8f37afb44"
+    "screens": "7d4385a0aafbd0f7"
    }
   ],
   "Rice#2024": [
@@ -683,7 +688,7 @@
     "heis": "b89539bc2c4bcbb7",
     "history": "fc979bb915dccb48",
     "universe": "8045b0113435535a",
-    "screens": "7767612c0833f32f"
+    "screens": "95d1e5a549f940ed"
    },
    {
     "year": 2027,
@@ -695,7 +700,7 @@
     "heis": "36ad73b9d62626c0",
     "history": "009bc31800100414",
     "universe": "c73a1c4aa4fffaef",
-    "screens": "540dc4967bd78258"
+    "screens": "b5c87fef26ebd0d5"
    },
    {
     "year": 2028,
@@ -707,7 +712,7 @@
     "heis": "17c5af403a8337ba",
     "history": "4edf71f14797fbda",
     "universe": "9da6da0869355ebd",
-    "screens": "8f857d24a05d3e79"
+    "screens": "c9ea37a25964d550"
    },
    {
     "year": 2029,
@@ -719,7 +724,7 @@
     "heis": "b3be9cd4b4705edb",
     "history": "fde71f70effd7d1a",
     "universe": "096ffd235bb43a6f",
-    "screens": "d125c85f23d7147a"
+    "screens": "e80ee4c2628d346a"
    }
   ],
   "Oregon#777": [
@@ -733,7 +738,7 @@
     "heis": "aaf603a2b017fcb9",
     "history": "f70a72a9432aa85d",
     "universe": "900fdc6bb186fd50",
-    "screens": "c0222c111b67f35e"
+    "screens": "247f334808cb81f2"
    },
    {
     "year": 2027,
@@ -745,7 +750,7 @@
     "heis": "a40126271010c989",
     "history": "7593cd2a0a921770",
     "universe": "c7b6827fdd151031",
-    "screens": "a3dbefd1d88562f2"
+    "screens": "11bf99fd1381ebb1"
    },
    {
     "year": 2028,
@@ -757,7 +762,7 @@
     "heis": "ca42131ae5a8e697",
     "history": "7cea5946a0f6c571",
     "universe": "d4478dbbbb14cfa5",
-    "screens": "c04cca8f0b55112a"
+    "screens": "4c361a50b72ddb35"
    }
   ],
   "Kent State#31337": [
@@ -771,7 +776,7 @@
     "heis": "7e6ab209b6e3cd69",
     "history": "5cc17e4324c8dc52",
     "universe": "f66b2cc7252e42e2",
-    "screens": "f5da8b1ee41de54b"
+    "screens": "f341a6125d3c2b62"
    },
    {
     "year": 2027,
@@ -783,7 +788,7 @@
     "heis": "1623f5028a1836a6",
     "history": "a6f7e7a44f13b990",
     "universe": "b4cb4ea5cbff6279",
-    "screens": "d18a2ec6101a5e29"
+    "screens": "7499e3fe4068c230"
    },
    {
     "year": 2028,
@@ -795,7 +800,7 @@
     "heis": "a50d1a5323e697ab",
     "history": "2ed3ee225d93d2ea",
     "universe": "7c79467446a4418b",
-    "screens": "184036a9e31fdc2c"
+    "screens": "65a691d6612f0f5b"
    }
   ],
   "schedules#60": [
