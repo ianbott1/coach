@@ -110,7 +110,7 @@ function fbSideMods(ctx,planH,planA,hum){ const S=ctx&&ctx.sh; if(!fbV14()||!S||
   // playing it safe keeps more drives going (a point of Arm adds c.arm to the touchdown rate and is worth FB14.a rating
   // points: c.arm/(a R_SLOPE) a touchdown point per Elo; Accuracy's drives the same through c.accS)
   if(planAmpV())[["home",planH],["away",planA]].forEach(([sd,pl])=>{ if(!M[sd]||!pl||pl==="balanced")return;
-    const F=fbLg(hum&&hum[sd]?FB14_FIT:FB14_FITC)[pl]; if(!F)return; const f=fbFitOf(F,S[sd]), E=planAmp(f,FB17)-f, u=E/(FB14.a*R_SLOPE);
+    const F=fbLg(hum&&hum[sd]?FB14_FIT:FB14_FITC)[pl]; if(!F)return; const f=fbFitOf(F,S[sd]), o=sd==="home"?"away":"home", E=(hum&&hum[sd]&&planVsV()?planVsTot(planAmp(f,FB17),-fbVsOf(S[o].d,pl),FB17.cap):planAmp(f,FB17))-f, u=E/(FB14.a*R_SLOPE);   // engine 23 (round 109): a person's plan against their defence
     if(pl==="aggressive")M[sd].td+=FB17.ga*u*FB14.c.arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*FB14.c.accS });
   return M }
 /* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
@@ -135,6 +135,17 @@ const FB17=Object.assign({cfb:{m:1.6,cap:111,gs:1.6,ga:1.1,g:0.967}, nfl:{m:1.8,
   FB14_ENV("FB17_M")?{m:+FB14_ENV("FB17_M")}:{}, FB14_ENV("FB17_GS")?{gs:+FB14_ENV("FB17_GS")}:{}, FB14_ENV("FB17_GA")?{ga:+FB14_ENV("FB17_GA")}:{}, FB14_ENV("FB17_G")?{g:+FB14_ENV("FB17_G")}:{});
 function sportPlanFit(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FIT)[pl],fbShapeT(t)),FB17):0 }
 function sportPlanFitC(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FITC)[pl],fbShapeT(t)),FB17):0 }
+/* round 109 (engine 23): taking risks against their coverage and pass rush, playing it safe against their tackling and
+   speed in space; each a mean of the two in league spreads (r109 spread.js: the pros cov 0.154 rsh 0.185 tkl 0.138 spd
+   0.113, college 0.270 0.360 0.288 0.216), a spread worth two spreads of the plan's fit (the pros 39 and 37 Elo, college 52
+   and 54), against you when they're good at it */
+const FB23_VS={nfl:{aggressive:[["cov",0.154],["rsh",0.185],78], safe:[["tkl",0.138],["spd",0.113],74]},
+               cfb:{aggressive:[["cov",0.270],["rsh",0.360],104], safe:[["tkl",0.288],["spd",0.216],108]}};   // doubled (r109 modal.js: at one
+   // spread the gap's own shift kept a club's usual plan the card's pick in 71% (pros) and 80% (college) of live games; at two, 55-57%)
+function fbVsOf(D,pl){ const V=D&&fbLg(FB23_VS)[pl]; if(!V)return 0; return -PLAN_VS_K*V[2]*((D[V[0][0]]||0)/V[0][1]+(D[V[1][0]]||0)/V[1][1])/2 }
+function sportPlanVsC(o,pl){ return fbV14()?fbVsOf(fbShapeT(o).d,pl):0 }
+function sportPlanCap(){ return FB17.cap }
+const PLAN_VS_WORDS={aggressive:["cover deep and rush the passer","can't cover deep or rush the passer"], safe:["tackle well in space","miss tackles in space"]};
 function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
 function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
 /* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */

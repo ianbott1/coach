@@ -165,8 +165,12 @@ function planVsV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23 }
 /* the total a person's plan is worth from rosters, given his amplified fit f and the opponent's fo, held to cap */
 function planVsTot(f,fo,cap){ const v=f-PLAN_VS_K*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
 /* in the chance: the opponent's part (the total less your own fit), 0 before engine 23 or where a sport has no counter */
+/* basketball and football plan your offence, so there the opponent's part is their defence against it (sportPlanVsC: in
+   Elo, a league spread of the defence that answers the plan worth a spread of fit); hockey and soccer play one game
+   both ways, so there it is how well their roster suits the same plan */
+function planVsOpp(o,pl){ return typeof sportPlanVsC==="function"?sportPlanVsC(o,pl):-PLAN_VS_K*sportPlanFit(o,pl) }
 function planVs(t,o,pl){ if(!planVsV()||!t||!o||!pl||pl==="balanced"||typeof sportPlanFit!=="function"||typeof sportPlanCap!=="function")return 0;
-  const f=sportPlanFit(t,pl), fo=sportPlanFit(o,pl); return planVsTot(f,fo,sportPlanCap())-f }
+  const f=sportPlanFit(t,pl); return planVsTot(f,-planVsOpp(o,pl),sportPlanCap())-f }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
 function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||0)):0 }
 /* what your plan is worth tonight on your own path, in Elo on the balanced curve: your roster's fit, and (engine 12,

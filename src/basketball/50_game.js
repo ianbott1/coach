@@ -306,7 +306,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s<SEGS){ const pl=st.mode[sd], E=ampE(sd,pl); if(E){ if(pl==="safe")m.p2+=BB17.gs*E*c.fin/R_SLOPE; else if(pl==="aggressive")m.p3+=BB17.ga*E*c.sht/R_SLOPE } } };
   const ampMemo={home:{},away:{}};
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!BB11_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
-    const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]); return M[pl]=(planAmp(f,BB17)-f)*(humans[sd]?BB17.hg:1) };   // hg: a person's plan also sets his offence, so his path plays the extra louder (scratch r94 person.js: the pros 1.61x the shown change at 1, college 1.14x)
+    const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]);
+    // engine 23 (round 109): against their defence; college plays that part 1.20x its Elo (r109 vs2.js, the change from
+    // engine 22 on common dice, 16 matchups x 3,000 games), so it's played at 1/1.2 there; the pros 0.79x, played at 1.27
+    if(humans[sd]&&planVsV()){ const fa=planAmp(f,BB17); return M[pl]=(fa-f+BB23_PLAY[LEAGUE.id]*(planVsTot(fa,-bbVsOf(SH[other(sd)],pl),BB17.cap)-fa))*BB17.hg }
+    return M[pl]=(planAmp(f,BB17)-f)*(humans[sd]?BB17.hg:1) };   // hg: a person's plan also sets his offence, so his path plays the extra louder (scratch r94 person.js: the pros 1.61x the shown change at 1, college 1.14x)
   const starOn=(X,s)=>!X.out&&!(s<X.sitTo);
   const playSeg=(s)=>{
     let n=s<SEGS?Math.floor(poss/SEGS)+(s<poss%SEGS?1:0):Math.round(poss/SEGS);
@@ -526,6 +530,15 @@ const BB17=Object.assign({ncaab:{m:2.0,cap:113,gs:1,ga:0.87,k:0.014,hg:0.85}, nb
 function bbFitSh(F,T){ return F&&T?R_SLOPE*BB11.a*(F.sht*T.sht+F.fin*T.fin):0 }
 function sportPlanFit(t,pl){ return planAmp(bbFitOf(BB11_FIT[pl],t),BB17) }
 function sportPlanFitC(t,pl){ return planAmp(bbFitOf(BB11_FITC[pl],t),BB17) }
+/* round 109 (engine 23): working it inside against their rim protection, shortening the game against their perimeter
+   defence: a league spread of it (r109 spread.js, three seasons: the pros id 0.188 pd 0.180, college 0.361 0.375) worth a
+   spread of the plan's fit (the pros 41 and 43 Elo, college 55 and 59), against you when they're good at it */
+const BB23_PLAY={nba:1.27,ncaab:0.83};
+const BB23_VS={nba:{safe:["id",218],aggressive:["pd",240]}, ncaab:{safe:["id",152],aggressive:["pd",157]}};
+function bbVsOf(T,pl){ const V=T&&typeof LEAGUE!=="undefined"&&BB23_VS[LEAGUE.id]&&BB23_VS[LEAGUE.id][pl]; return V?-PLAN_VS_K*V[1]*(T[V[0]]||0):0 }
+function sportPlanVsC(o,pl){ return bbVsOf(bbShapeT(o),pl) }
+function sportPlanCap(){ return BB17.cap }
+const PLAN_VS_WORDS={safe:["protect the rim","don't protect the rim"], aggressive:["guard the three-point line","don't guard the three-point line"]};
 function sportShape(t){ return bbV11()?bbShapeT(t):null }
 /* round 89 (engine 12, the computer's plan): a plan's own worth at a gap, no lean, in wins: Elo on the balanced curve
    [at even, per Elo of gap] (scratch r89 pv.js, 40,000 games a point) */

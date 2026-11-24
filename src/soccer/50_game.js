@@ -83,6 +83,7 @@ const SC17_ENV=k=>SC12_ENV(k)&&+SC12_ENV(k);
 const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||0.95};   // g: the league's goals held (2.81 a game on 17 before, 2.66 on 16)   // g: the league's chances back to 2.7 goals (more clubs sit deep on 17)
 function sportPlanFit(t,pl){ return scV12()?planAmp(scFitOf(SC12_FIT[pl],scShapeT(t)),SC17):0 }
 function sportPlanFitC(t,pl){ return scV12()?planAmp(scFitOf(SC12_FITC[pl],scShapeT(t)),SC17):0 }
+function sportPlanCap(){ return SC17.cap }   // round 109: planVs holds a person's plan to the same cap
 function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
 /* the same on a person's path (the plan also sets your approach: a press, a low block), measured (r89 pvh.js, 60,000
    games a point): Ian (round 89) chose to put it in the chance before a game */
@@ -282,7 +283,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   // Passing moves chances made by a*c.pas and is worth a rating points: c.pas/R_SLOPE a chance factor per Elo)
   const ampMemo={home:{},away:{}};
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!SC12_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
-    const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]); return M[pl]=planAmp(f,SC17)-f };
+    const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]);
+    // engine 23 (round 109): a person's plan against tonight's opponent's roster (planVs), played on the same channel
+    if(humans[sd]&&planVsV())return M[pl]=planVsTot(planAmp(f,SC17),planAmp(scFitOf(SC12_FIT[pl],SH[other(sd)]),SC17),SC17.cap)-f;
+    return M[pl]=planAmp(f,SC17)-f };
   const ampF=sd=>{ if(!SH||!planAmpV())return 1; let f=SC17.g; const o=other(sd); if(st.mode[sd]==="safe")f*=1+SC17.gs*ampE(sd,"safe")*SC12.c.pas/R_SLOPE;
     if(st.mode[sd]==="aggressive")f*=1+SC17.ga*ampE(sd,"aggressive")*SC12.c.pac/R_SLOPE; return Math.max(0.3,f) };   // sitting deep: the extra is the counter, chances on the break (cutting theirs drew 32% of games)
   // Stamina: the legs go slower, and the last half hour's chances are a fitter side's (a drain alone saturated: no legs to lose)
