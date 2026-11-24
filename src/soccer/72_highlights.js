@@ -219,7 +219,7 @@ const HL_SPORT=(function(){
   const SP_BASE_Y=[0.5,0.12,0.36,0.64,0.88,0.12,0.4,0.6,0.88,0.43,0.57];
   function spShape2(bx,by,has){ const C=spCtx||{ap:["",""],pl:["balanced","balanced"]}, cl=(v,a,b)=>Math.max(a,Math.min(b,v));
     return [0,1].map(s=>{ const home=s===0, a=home?bx:1-bx, y=home?by:1-by, on=has===home, ap=C.ap[s]||"", pl=C.pl[s]||"balanced";
-      const up=(pl==="safe"?0.05:pl==="aggressive"?-0.06:0)+(ap==="press"?0.05:ap==="block"?-0.07:0), wide=ap==="wing"?1.12:ap==="block"?0.82:1;
+      const up=(pl==="safe"?0.05:pl==="aggressive"?-0.06:pl==="push"?0.1:pl==="sit"?-0.1:0)+(ap==="press"?0.05:ap==="block"?-0.07:0), wide=ap==="wing"?1.12:ap==="block"?0.82:1;
       let P;
       if(on){ const dl=cl(a-0.32+up,0.13,0.5), fb=dl+0.07+(a>0.5?0.12:0)+(ap==="wing"?0.06:0), cm=dl+0.19, wg=Math.min(0.9,dl+0.37), st=Math.min(0.93,dl+0.44+(ap==="direct"?0.04:0)), deep=a<0.3;
         const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*w+(y-0.5)*(i>=2&&i<=3||i>=6?0.14:0.06),0.03,0.97);
@@ -423,7 +423,7 @@ const HL_SPORT=(function(){
     // round 108: off the ball the nearest man closes the ball down (two on a press), the next covers; on it a striker
     // runs in behind when the ball's in the middle third, a full back overlaps when it's wide in theirs
     if(SP2()){ const o=1-s, C=P.ctx||{ap:["",""],pl:["",""]}, near=pos[o].map((q,i)=>[i?Math.hypot((q[0]-bx)*105,(q[1]-by)*68):1e9,i]).sort((x,y)=>x[0]-y[0]);
-      const press=C.ap[o]==="press"||C.pl[o]==="safe", n=press?2:1;
+      const press=C.ap[o]==="press"||C.pl[o]==="safe"||C.pl[o]==="push", n=press?2:1;
       near.slice(0,n).forEach(([dd,i],q)=>{ if(dd>(press?28:18))return; const w=(q===0?0.62:0.36)*(1-Math.min(1,dd/40)), q0=pos[o][i], tx=bx+(q0[0]-bx)*0.12, ty=by+(q0[1]-by)*0.12; pos[o][i]=[hlLerp(q0[0],tx,w),hlLerp(q0[1],ty,w)] });
       const ax=s?1-bx:bx, ay=s?1-by:by, fr=q=>s?[1-q[0],1-q[1]]:q, dir=s?-1:1, t2=(d.seg*5+f*5)*60;
       if(ax>0.35&&ax<0.8){ const k=Math.sin(t2/7)>0?9:10, q=pos[s][k]; if(q&&k!==a.s&&k!==b.s)pos[s][k]=[Math.max(0.02,Math.min(0.98,q[0]+dir*0.05*(0.6+0.4*Math.sin(t2/3)))),q[1]] }

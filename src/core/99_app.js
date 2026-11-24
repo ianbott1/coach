@@ -295,15 +295,19 @@ function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":
    arming lapses after a few seconds or on a tap anywhere else (Grokbot: a click meant for Full match landed on
    Shorten the game as the screen moved, and the plan changed with nothing said) */
 let PLAN_ARM=null; const PLAN_ARM_MS=4000;
+// round 108: a sport's extra live instructions (soccer: all-out attack, park the bus), engine 22
+function liveExtra(){ return typeof LIVE_EXTRA!=="undefined"&&(typeof ENGINE_V==="undefined"||ENGINE_V>=22)?LIVE_EXTRA:{} }
+function livePlanOk(p){ return !!(PLANS[p]||liveExtra()[p]) }
+function livePlanLabel(p){ return (PLANS[p]||liveExtra()[p]||{}).l||p }
 function planArmed(p){ return !!(PLAN_ARM&&PLAN_ARM.p===p&&live&&PLAN_ARM.ck===live.ckey&&Date.now()-PLAN_ARM.at<PLAN_ARM_MS) }
 function pressPlanMidGame(p){
-  if(!live||live.done||!PLANS[p]||live.h2h)return; if(livePlanNow()===p){ PLAN_ARM=null; render(); return }
+  if(!live||live.done||!livePlanOk(p)||live.h2h)return; if(livePlanNow()===p){ PLAN_ARM=null; render(); return }
   if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setPlanMidGame(p); return }
   if(planArmed(p))return;
   PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
   setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
 function setPlanMidGame(p){
-  if(!live||live.done||!PLANS[p]||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
+  if(!live||live.done||!livePlanOk(p)||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
   const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side)live.pm.splice(i,1);
   live.pm.push([n,side,p]); setLivePlan(live.eng,side,p);
   S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
@@ -312,7 +316,7 @@ function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
   const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
   return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
-    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(PLANS[k].l)}</button>`).join("")}</div>`}
+    <div class="wspeed">${Object.keys(PLANS).concat(Object.keys(liveExtra())).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(livePlanLabel(k))}</button>`).join("")}</div>`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" id="hl-${v}" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
@@ -2281,14 +2285,14 @@ function planPreKeep(step,half,ug){ if(!PLANLINE_ON||!planAmpV()||typeof PLAN_LE
   K[planPreKey(step,half)]=q }
 function planLineHTML(step,half){ if(!PLANLINE_ON||step===undefined||step===null||!S.planPre)return "";
   const q=S.planPre[planPreKey(step,half)]; if(!q||!PLANS[q.p]||planFor(step,half)!==q.p)return "";   // simmed ahead on your assistant's plan: no line
-  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), nm=k=>esc(PLANS[k].l), jw=w=>/^as /.test(w)?" "+w:": "+w;
+  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), nm=k=>esc(livePlanLabel(k)), jw=w=>/^as /.test(w)?" "+w:": "+w;
   let t;
   if(q.p==="balanced")t=q.vb>=2?`You started on <b>${nm("balanced")}</b>. <b>${nm(q.b)}</b> would have added <b>${q.vb}</b> before the game${jw(q.wb)}.`
     :`You started on <b>${nm("balanced")}</b>, and neither other plan added anything tonight.`;
   else if(q.v===0)t=`You started on <b>${nm(q.p)}</b>: no better than <b>${nm("balanced")}</b> before the game.`+(q.b!==q.p&&q.vb>0?` <b>${nm(q.b)}</b> would have added ${q.vb}${jw(q.wb)}.`:"");
   else { t=`You started on <b>${nm(q.p)}</b>: <b>${sg(q.v)}</b> before the game (${q.c}% to win, against ${q.c-q.v}% on ${nm("balanced")}), ${q.w}.`;
     if(q.v<0&&q.b!==q.p&&q.vb>0)t+=` <b>${nm(q.b)}</b> would have been ${sg(q.vb)}.`; else if(q.v<0)t+=` <b>${nm("balanced")}</b> was the better plan.` }
-  const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&PLANS[x[2]]);
+  const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&livePlanOk(x[2]));
   if(mine.length)t+=` You changed to <b>${nm(mine[mine.length-1][2])}</b> during the game.`;
   return `<div class="planpost">${t}</div>` }
 function planFitOld(wp,kept){

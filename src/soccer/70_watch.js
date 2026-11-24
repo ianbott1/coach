@@ -6,6 +6,9 @@ const PLANS={
   balanced:  {sd:1.0,  edge:0, l:"Balanced",              d:""},
   aggressive:{sd:1.2,  edge:0, l:"Sit deep and counter",  d:"Two banks of four, hit them on the break. Fewer chances, more luck \u2014 best when you're outgunned."}
 };
+/* round 108 (engine 22): instructions in a live game beyond the three plans, from the next five minutes: the computer's
+   own late modes (AGGR push and sit, calibrated for the league's late games), any time you choose. */
+const LIVE_EXTRA={push:{l:"All-out attack",d:"Everyone forward. More chances, and more against."},sit:{l:"Park the bus",d:"Ten behind the ball. Few chances either way."}};
 function isBigGame(g,team,seaRankMap,rivalName){
   if(!g)return false;
   if(rivalName)return true;
