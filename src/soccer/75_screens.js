@@ -213,6 +213,10 @@ function finalSub(my,o){
   const R=SEA&&SEA.roster&&SEA.roster[my]; if(!R)return "";
   const nm=i=>R[i]&&R[i].n?surname(R[i].n):null, P=p=>POS.findIndex(x=>x.p===p);
   const sw={push:[BK(P("ST")),P("CB")], sit:[BK(P("CB")),P("ST")], win:[BK(P("W")),P("CM")], press:[BK(P("W")),P("CM")], probe:[BK(P("CM")),P("W")]}[o]; if(!sw)return "";
+  // round 107: only a man on the bench comes on, and only a man on the pitch goes off (Muse: "Dimitrov on, Odom off" with
+  // Dimitrov in from the start, in for a hurt starter). A starter out hurt: his backup is playing, so neither is named.
+  const hurt=new Set(SEA.talent&&typeof SEA.talent.active==="function"?SEA.talent.active(my).map(x=>x.idx):[]);
+  if(hurt.has(sw[1])||hurt.has(sw[0])||hurt.has(sw[0]-POS.length))return "";
   const on=nm(sw[0]), off=nm(sw[1]); return on&&off?`${on} on, ${off} off`:"";
 }
 /* round 95: the 80' call's evidence, each back line's legs as the staff read them (a little off) */
