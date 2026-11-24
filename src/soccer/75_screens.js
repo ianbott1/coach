@@ -10,7 +10,9 @@ function scPlayer(team,unit,u){
   const i=SC_UNIT[unit], hurt=new Set(typeof ENGINE_V!=="undefined"&&ENGINE_V<4?[]:SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);   // (a season begun before round 74: as it was)
   const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // round 74: an injured man isn't on the pitch (as in hockey)
   // the bench gets a game now and then (rotation, a knock)
-  const pick=(b&&(u%10)<2)||!p?b:p; return pick?pick.n:null;
+  // round 107: never the keeper: one keeper plays the match (Muse: "Nunez gets down to keep out Gentry", Nunez the backup,
+  // Varga in goal on the pitch and in the box)
+  const pick=(b&&(u%10)<2&&!(unit==="GK"&&(typeof ENGINE_V==="undefined"||ENGINE_V>=21)))||!p?b:p; return pick?pick.n:null;
 }
 // a surname shared on the ice or pitch gets its initial ("Sissoko scored on Sissoko": Instinct)
 const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };

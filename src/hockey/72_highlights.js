@@ -335,7 +335,8 @@ const HL_SPORT=(function(){
     return o }
   // round 104: the game's numbers so far, as the screen has shown them (shots on goal the engine's; power plays, the
   // penalties drawn and the goals scored on them; hits as shown)
-  function hpTally(L,upto,d,f){ const o=[{sog:0,pp:0,ppg:0,pim:0,hit:0},{sog:0,pp:0,ppg:0,pim:0,hit:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&x.seg<SEGS);
+  function hpTally(L,upto,d,f){ if(!(upto>=0))upto=(L.drives||[]).length;   /* round 107: a stretch still being played (a partial, not yet among the drives) counts every stretch before it: it read 0-0 for that stretch (measured, 37 times in two soccer matches) */
+    const o=[{sog:0,pp:0,ppg:0,pim:0,hit:0},{sog:0,pp:0,ppg:0,pim:0,hit:0}], D=(L.drives||[]).filter(x=>x&&typeof x.seg==="number"&&x.seg<SEGS);
     let last=null; D.forEach(x=>{ const di=L.drives.indexOf(x); if(di>=upto)return; last=x;
       (x.ev||[]).forEach(e=>{ const s=e.side==="home"?0:1; if(e.k==="pen"){ o[s].pim+=2; o[1-s].pp++ } if(e.k==="goal"&&e.pp)o[s].ppg++ });
       let c=null; try{ c=hpCounts(L,x) }catch(e){} if(c)[0,1].forEach(s=>o[s].hit+=c[s].hit) });
