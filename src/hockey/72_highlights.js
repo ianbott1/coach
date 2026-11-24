@@ -395,7 +395,7 @@ const HL_SPORT=(function(){
       if(df>=0&&df<0.02){ const lim=HP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*60, dy=(q[1]-o[1])*26, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.6:1);
         return m>L2&&m>0?[o[0]+dx*L2/m/60,o[1]+dy*L2/m/26]:q })) }
       pos=pos.map(A=>A.map(q=>[Math.max(0.01,Math.min(0.99,q[0])),Math.max(0.02,Math.min(0.98,q[1]))]));
-      hpDraw.st={d,di,f,pos:pos.map(A=>A.map(q=>q.slice()))} }
+      hpDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))} }
     hpDraw.pos=pos; hpDraw.dbg={s,as:a.s,bs:b.s,u,bx,by};
     const g=L.g, kits=hlKits(g.home,g.away), inks=kits.map(k=>k.fill), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks), r=Math.max(5,W/80);
     const [qx,qy]=toS(bx,by);
@@ -429,10 +429,16 @@ const HL_SPORT=(function(){
       if(c.nD!=null?hpOut(c.nD).has(i):(c.pp||c.shortD)&&i===5)return null;   // a man short (overtime: two)
       return [hlLerp(p[0]-0.1,p[0],prog),p[1]+(by-0.5)*0.25] });
     // round 104: in the full match the shot's move grows out of the play before it (each man from where it had him)
-    if(c.pbFrom&&t<0.16&&!c.so){ const w=1-hlEase(t/0.16), S=hpShape(c.W[0][0],c.W[0][1]);
+    // round 108: from where the rink last drew them, when it just did, and back to it after (sc-clipjoin's rules)
+    const sA=c.home?0:1, flip=q=>q?(c.home?[1-q[0],1-q[1]]:[q[0],q[1]]):q;
+    if(HP2()&&c.pbFrom&&t<0.05&&!c._from&&!c.so){ const Q=hpDraw.st; if(Q&&Date.now()-Q.at<800&&Math.abs(Q.f-c.f)<0.06)Object.defineProperty(c,"_from",{value:{A:Q.pos[sA].map(flip),D:Q.pos[1-sA].map(flip)},writable:true,configurable:true,enumerable:false}) }
+    if(c.pbFrom&&t<0.16&&!c.so){ const w=1-hlEase(t/0.16), S=HP2()&&c._from?c._from:hpShape(c.W[0][0],c.W[0][1]);
       att.forEach((p,i)=>{ if(p&&S.A[i])att[i]=[hlLerp(p[0],S.A[i][0],w),hlLerp(p[1],S.A[i][1],w)] }); def.forEach((p,i)=>{ if(p&&S.D[i])def[i]=[hlLerp(p[0],S.D[i][0],w),hlLerp(p[1],S.D[i][1],w)] }) }
     let nr=[]; def.forEach((p,i)=>{ if(p&&i)nr.push([Math.hypot(p[0]-bx,p[1]-by),i]) }); nr.sort((a,b)=>a[0]-b[0]);
     nr.slice(0,1).forEach(([d,i])=>{ const p=def[i]; def[i]=[hlLerp(p[0],bx,0.5),hlLerp(p[1],by,0.5)] });
+    frame.dbg={att,def,home:c.home};
+    if(HP2()&&c.pbFrom&&!c.so&&hpDraw.st&&typeof live!=="undefined"&&live&&live.pb&&live.pb.d===hpDraw.st.d){ const Q=hpDraw.st;
+      att.forEach((p,i)=>{ if(p)Q.pos[sA][i]=flip(p) }); def.forEach((p,i)=>{ if(p)Q.pos[1-sA][i]=flip(p) }); Q.f=Math.max(Q.f,c.f); Q.at=Date.now() }
     const r=Math.max(5,W/80), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     def.forEach((p,i)=>{ if(!p||c.so&&i)return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?dink:c.gk[1],"rgba(0,0,0,.6)","",c.dn&&c.dn[i]?{num:c.dn[i][0],sub:c.dn[i][1]}:null) });
     att.forEach((p,i)=>{ if(i===0&&c.en||c.so&&i!==c.rec[n-1]||(c.nA!=null?hpOut(c.nA).has(i):c.shortA&&i===5))return; const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,i?ink:c.gk[0],"rgba(0,0,0,.6)",i===c.rec[n-1]&&t>=ts?c.nm:"",c.an&&c.an[i]?{num:c.an[i][0],sub:c.an[i][1]}:null) });
@@ -447,5 +453,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
+  return {frameDbg:()=>frame.dbg||null, drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
 })();
