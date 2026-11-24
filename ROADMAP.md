@@ -146,8 +146,8 @@ on numbers they can't trust and a sport they read rather than watch.
 - Round 108 (Nov 24, on its branch, engine 22): soccer, hockey and basketball move like their sports (no jumps, shots
   growing out of the play), tired legs and the benches show, live instructions and soccer changes any time; the play
   by play is one line. See ARCHITECTURE. Not yet: the full suite on this branch; basketball's live instructions (its
-  pace is fixed at tip-off, so the half-time push and sit change only the shot mix); football and baseball looked at
-  only.
+  pace is fixed at tip-off, so the half-time push and sit change only the shot mix); football looked at only, baseball
+  not at all; hockey's instruction effects measured for direction only; tired legs drawn, not measured.
 - Round 108 as first planned: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
   Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
   box, feeds that narrate every play in order and keep up with the scoreboard. A condensed Full match (three to five

@@ -487,13 +487,14 @@ engine 22: at ENGINE_NOW=21 all seven goldens match round 107's byte for byte, a
 - A shot grows out of the play and the play goes on from it (test/sc-clipjoin.js, hk-clipjoin.js): a clip starts from
   where the pitch last drew each man and hands back where it leaves them. Before: soccer 130 men more than 8 m off at a
   clip's start in 19 clips (to 48 m) and 371 after (to 79 m); hockey 71 and 255. Now none.
-- Tired legs show: a tired unit follows the play from further back, a tired back line drops off and the team stretches,
+- Tired legs show (drawn, not measured): a tired unit follows the play from further back, a tired back line drops off and the team stretches,
   and a bar over each of your men once his unit's legs go (amber, then red). The benches and the touchline: a change
   (d.sub) and a side changing how it plays show as banners as the stretch begins (soccer and hockey).
 - Live instructions, any time, from the next five minutes: soccer All-out attack and Park the bus, hockey Pour it on
   and Lock it down (the computer's own late modes, AGGR push and sit, so the league's calibration doesn't move). The
-  latest word wins: a plan change after the late call was kept in a mode the late answer overruled, so it did nothing
-  from 65'. Soccer from 60', every call answered "keep" (your own plan as it stands), 96-149 games an arm: behind,
+  latest word wins (soccer and hockey, where the late call is a mode; basketball's late holds a press and the assistant's
+  close-out, left alone): a plan change after the late call was kept in a mode the late answer overruled, so it did
+  nothing from 65'. Hockey's numbers so far are direction only (22-39 games an arm, calls answered by the assistant). Soccer from 60', every call answered "keep" (your own plan as it stands), 96-149 games an arm: behind,
   All-out attack 0.70 for and 0.47 against after (lost 77%) against 0.51/0.42 (83%); level, Park the bus 0.46/0.35
   (drawn 53%) against 0.56/0.41 (43%); ahead, Park the bus 0.48/0.49 (won 82%) against 0.63/0.57 (79%). The first table
   sent to Ian answered the late call with the assistant, so its "as it was" was the assistant playing the score.
