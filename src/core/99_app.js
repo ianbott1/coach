@@ -320,7 +320,10 @@ function liveGap(){
   if(typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient&&typeof hlCan==="function"&&hlCan())return Math.round(Math.max(1200,(HL_SPORT.fullMs||4200)/Math.sqrt(speedMult())));   // round 99: each sport its own length (Ian: "Full match is not showing the full match")
   if(typeof liveGapFor==="function")return liveGapFor(live,speedMult());   // the sport paces it (soccer: by what happened)
   const n=DRIVES_PER_TEAM*2;
-  return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
+  // round 107: Slow is slow enough to study. A whole rewatch took 7.2s of rows over the speed (21s on Slow), where the
+  // live game takes minutes (Instinct: on Slow the clock went from 16:15 to 8:00 in about six seconds, some eight times
+  // the live Slow pace). Now 30s at Fast, about 70s at Normal and 110s on Slow; Very fast as quick as before.
+  const m=speedMult(); return Math.max(120,Math.min(4000,Math.round((m>=2?7200/m:30000/Math.pow(m,1.2))/n)));
 }
 function answerLive(v){
   if(!live||live.done||!live.ask)return;    // a second click on a call already answered
@@ -1403,7 +1406,10 @@ function speedMult(){
 }
 function watchGap(){
   const n=Math.max(1,watch.script.length);
-  return Math.max(120,Math.min(2600,Math.round(7200/n/speedMult())));
+  // round 107: Slow is slow enough to study. A whole rewatch took 7.2s of rows over the speed (21s on Slow), where the
+  // live game takes minutes (Instinct: on Slow the clock went from 16:15 to 8:00 in about six seconds, some eight times
+  // the live Slow pace). Now 30s at Fast, about 70s at Normal and 110s on Slow; Very fast as quick as before.
+  const m=speedMult(); return Math.max(120,Math.min(4000,Math.round((m>=2?7200/m:30000/Math.pow(m,1.2))/n)));
 }
 /* playback speeds for watching a game (live or a replay) */
 const SPEEDS=[["slow",0.34,"Slow"],["normal",0.52,"Normal"],["fast",1.0,"Fast"],["rapid",2.1,"Very fast"]];
