@@ -218,7 +218,12 @@ const HL_SPORT=(function(){
     fpos.forEach((p,i)=>{ const [px,py]=Pp(p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",fn&&fn[i]?{num:fn[i][0],sub:fn[i][1]}:null) });
     if(C.k==="change"){} else runners.forEach(([k,nm,show,isB],j)=>{ if(!show)return; const [rx,ry]=Pp(...rpos[j].p); hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)","",{num:noOf(nm),sub:sur(nm)}) });
     if(ball){ const [qx,qy]=Pp(ball[0],ball[1]); hlBall(x,qx,qy,r*0.55,lift,null,{ring:"#C8102E"}) }
-    const clock=`${half==="Top"?"▲":"▼"}${inn} · ${outs} out`;
+    // round 108 (engine 22): the pitcher's count, as a manager watches it (every pitch he has thrown this game as shown)
+    let pcTxt=""; if((typeof ENGINE_V==="undefined"||ENGINE_V>=22)&&pn&&pn!=="bullpen"){ const cnt=(dd,upto)=>{ let k=0; (dd.pl||[]).forEach((qq,ii)=>{ if(ii>=upto||!qq||qq.t!=="pa"||qq.p!==q.p||qq.s!==batS)return; k+=bsPitches(qq,strHash("bs|"+dd.seg+"|"+ii+"|"+(qq.nm||""))).length }); return k };
+      let tot=0; const di0=live.drives.indexOf(d); live.drives.slice(0,di0<0?live.drives.length:di0).forEach(dd=>{ tot+=cnt(dd,1e9) }); tot+=cnt(d,C.i);
+      if(C.ps&&C.k!=="change")tot+=pj!=null?pj+(pu>=0.5?1:0):(u>=tp?C.ps.length:C.ps.length-1);
+      pcTxt=` · ${sur(pn)} ${tot}p`; pbDraw.pc=tot }
+    const clock=`${half==="Top"?"▲":"▼"}${inn} · ${outs} out${pcTxt}`;
     hlBug(x,W,H,{home:g.home,away:g.away,hs:hs,as:as,hk:kits[0],ak:kits[1],clock:clock});
     hlTicker(x,W,H,top,8.01);
     if(end){ const key=ci+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
