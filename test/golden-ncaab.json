@@ -1,5 +1,5 @@
 {
- "fp": "ee412d91393a7147",
+ "fp": "4a8d1fe7a35dbccd",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -585,6 +585,11 @@
    "fp": "ee412d91393a7147",
    "from": "263e1ef366c85dc9",
    "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
+  },
+  {
+   "fp": "4a8d1fe7a35dbccd",
+   "from": "ee412d91393a7147",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
   }
  ],
  "result": {
@@ -598,7 +603,7 @@
     "poll": "2a55a0cfd29942e4",
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
-    "universe": "a8cfb55b751e8b36",
+    "universe": "7e513c9ed0e5b3aa",
     "screens": "cf978dd5b7dd58ff"
    },
    {
@@ -610,7 +615,7 @@
     "poll": "6104f50439b52067",
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
-    "universe": "90269ebe17c9b5e1",
+    "universe": "6dc6fc9a65b03a21",
     "screens": "46069db2b702c383"
    }
   ],
@@ -624,7 +629,7 @@
     "poll": "26edc4b624e67dc9",
     "heis": "942c9abdaed040d4",
     "history": "df81ab6f6095ef61",
-    "universe": "571f1386e2e52c60",
+    "universe": "6043eaa40bf4141d",
     "screens": "c5a521d05c260329"
    },
    {
@@ -636,7 +641,7 @@
     "poll": "9a4ecb50cbc55f8a",
     "heis": "ef6bde742321790a",
     "history": "29b9279493cb5e15",
-    "universe": "7935b8a80855900c",
+    "universe": "f8e59da3c2a431a8",
     "screens": "3aee36c087219098"
    }
   ],
@@ -650,7 +655,7 @@
     "poll": "dbdd18f0523ce927",
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
-    "universe": "03be4fb9597890fa",
+    "universe": "243cb506046494ec",
     "screens": "dbdf903bc8835f99"
    },
    {
@@ -662,7 +667,7 @@
     "poll": "2acaa39089e082dd",
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
-    "universe": "b516f3ebe7478e47",
+    "universe": "5cd9c31deefdaf76",
     "screens": "d8b2cc1873b11d1a"
    }
   ],

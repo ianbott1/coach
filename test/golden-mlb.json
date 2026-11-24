@@ -1,5 +1,5 @@
 {
- "fp": "89de386f0ca7cda3",
+ "fp": "981b66450a464c68",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -240,6 +240,11 @@
    "fp": "89de386f0ca7cda3",
    "from": "afabd12e9f82322f",
    "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
+  },
+  {
+   "fp": "981b66450a464c68",
+   "from": "89de386f0ca7cda3",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
   }
  ],
  "result": {
@@ -253,7 +258,7 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "fd64034a4fd3d2ad",
-    "universe": "324418115a2852f6",
+    "universe": "9955f148c79d31b8",
     "screens": "f9f68e65d73b3ea8"
    },
    {
@@ -265,7 +270,7 @@
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
     "history": "4bab8c7eb00e4b7e",
-    "universe": "ecd9bc058d964032",
+    "universe": "af197e3bf7db59dd",
     "screens": "7e58bc1b468f6f44"
    }
   ],
@@ -279,7 +284,7 @@
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
     "history": "7fc71e187a31d02c",
-    "universe": "4591916769b350ee",
+    "universe": "ca5eec366af46877",
     "screens": "95ae506b0e7845d5"
    },
    {
@@ -291,7 +296,7 @@
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
     "history": "12462c1fdf09ce32",
-    "universe": "ae0005fac3d7ac23",
+    "universe": "8955791d04365727",
     "screens": "8ed677cba68ef950"
    }
   ],

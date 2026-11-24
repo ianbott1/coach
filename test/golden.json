@@ -1,5 +1,5 @@
 {
- "fp": "b78f56a8b2f77aad",
+ "fp": "393a29dcee14a8d1",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -624,6 +624,11 @@
    "fp": "b78f56a8b2f77aad",
    "from": "517cb12537835933",
    "note": "Round 107 (Grokbot round 13, Muse, Instinct): marked reads fit the evidence, shirt numbers kept, the board verdict said, Keep him, staff default, baseball call headers, hockey overtime three-on-three and shots, soccer keeper; engine 21."
+  },
+  {
+   "fp": "393a29dcee14a8d1",
+   "from": "b78f56a8b2f77aad",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
   }
  ],
  "result": {
@@ -637,7 +642,7 @@
     "poll": "b598e68e8e87dfc2",
     "heis": "c15cc548db28d6ea",
     "history": "103a796d2863e60b",
-    "universe": "2f13b301310bb63a",
+    "universe": "b75a163ab2ff670a",
     "screens": "8440d6a4acf362c1"
    },
    {
@@ -649,7 +654,7 @@
     "poll": "f91f24608bdb3ab7",
     "heis": "b4ffa259dc110758",
     "history": "30df8c6a5ac63bbf",
-    "universe": "b38ee98fed5528be",
+    "universe": "c125bfd055f7e63d",
     "screens": "40d141ba658481b0"
    },
    {
@@ -661,7 +666,7 @@
     "poll": "e98b397192cd8375",
     "heis": "0ecf830bfdd27cc0",
     "history": "4b9bc405bf369f59",
-    "universe": "153b7a6ed6f9adf9",
+    "universe": "f74fb510285b0b8b",
     "screens": "dd2d3ec4f68bc9b8"
    },
    {
@@ -673,7 +678,7 @@
     "poll": "00dd6d3b78a6c846",
     "heis": "fe3d6add077d3b3a",
     "history": "de8d929d1f3b8644",
-    "universe": "8193384f9960d5de",
+    "universe": "a008a6bd2319be9d",
     "screens": "7d4385a0aafbd0f7"
    }
   ],
@@ -687,7 +692,7 @@
     "poll": "e8df93a47f14aab5",
     "heis": "b89539bc2c4bcbb7",
     "history": "fc979bb915dccb48",
-    "universe": "8045b0113435535a",
+    "universe": "3628c11c91a25f45",
     "screens": "95d1e5a549f940ed"
    },
    {
@@ -699,7 +704,7 @@
     "poll": "ff328881f5a89df3",
     "heis": "36ad73b9d62626c0",
     "history": "009bc31800100414",
-    "universe": "c73a1c4aa4fffaef",
+    "universe": "55932607c1c90da6",
     "screens": "b5c87fef26ebd0d5"
    },
    {
@@ -711,7 +716,7 @@
     "poll": "3b51ce396b7df806",
     "heis": "17c5af403a8337ba",
     "history": "4edf71f14797fbda",
-    "universe": "9da6da0869355ebd",
+    "universe": "07d9095b12e8b514",
     "screens": "c9ea37a25964d550"
    },
    {
@@ -723,7 +728,7 @@
     "poll": "1c7821e3c4644b1a",
     "heis": "b3be9cd4b4705edb",
     "history": "fde71f70effd7d1a",
-    "universe": "096ffd235bb43a6f",
+    "universe": "042959c372b423d4",
     "screens": "e80ee4c2628d346a"
    }
   ],
@@ -737,7 +742,7 @@
     "poll": "9a7a339f16319c39",
     "heis": "aaf603a2b017fcb9",
     "history": "f70a72a9432aa85d",
-    "universe": "900fdc6bb186fd50",
+    "universe": "f4e247992689a909",
     "screens": "247f334808cb81f2"
    },
    {
@@ -749,7 +754,7 @@
     "poll": "80cae25378b4c9c2",
     "heis": "a40126271010c989",
     "history": "7593cd2a0a921770",
-    "universe": "c7b6827fdd151031",
+    "universe": "1f70efdcb57d3e1d",
     "screens": "11bf99fd1381ebb1"
    },
    {
@@ -761,7 +766,7 @@
     "poll": "c9c1e779c21c080d",
     "heis": "ca42131ae5a8e697",
     "history": "7cea5946a0f6c571",
-    "universe": "d4478dbbbb14cfa5",
+    "universe": "a98948095d3e3c4d",
     "screens": "4c361a50b72ddb35"
    }
   ],
@@ -775,7 +780,7 @@
     "poll": "c360086425af6120",
     "heis": "7e6ab209b6e3cd69",
     "history": "5cc17e4324c8dc52",
-    "universe": "f66b2cc7252e42e2",
+    "universe": "b01d7fcab3c44239",
     "screens": "f341a6125d3c2b62"
    },
    {
@@ -787,7 +792,7 @@
     "poll": "ace7e3e1ff36179d",
     "heis": "1623f5028a1836a6",
     "history": "a6f7e7a44f13b990",
-    "universe": "b4cb4ea5cbff6279",
+    "universe": "45098c235a660238",
     "screens": "7499e3fe4068c230"
    },
    {
@@ -799,7 +804,7 @@
     "poll": "81b6a35275c5170a",
     "heis": "a50d1a5323e697ab",
     "history": "2ed3ee225d93d2ea",
-    "universe": "7c79467446a4418b",
+    "universe": "301c7f04b98ff575",
     "screens": "65a691d6612f0f5b"
    }
   ],
