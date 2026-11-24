@@ -284,7 +284,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const occ=[2,1,0].filter(i=>b[i]); while(q.length>occ.length)q.shift(); H.bn=[null,null,null]; occ.forEach((i,k)=>{ H.bn[i]=q[k]||null });
     const Xf=st.S[fs], pn=Xf.closer?"closer":Xf.pen?(bsV6()?relief(fs).n:"bullpen"):Xf.sp.n;
     H.ev.slice(ev0).forEach(e=>{ if(e.k!=="ph"){ e.r=[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null]; e.p=pn } });
-    bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0));
+    bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0),inn()+bat);
     // round 101: the full match's at-bat log (the game on screen only; read off what just happened, no draws)
     if(D&&D.pl){ const E=H.ev.slice(ev0), ph=E.find(e=>e.k==="ph");
       D.pl.push({t:"pa",s:bat==="home"?0:1,nm:nm,slot:slot,o:o,dp:dp,sf:E.some(e=>e.k==="rbi"&&e.hit===0),out0:out0,outs:H.outs,
@@ -483,13 +483,17 @@ function bsPinchEdge(batR,benchR){ if(batR==null||benchR==null)return BS.pinch; 
    five and left ahead and the lead held; his loss if he left behind and they never caught up; the closer's save if he
    came in to protect one to three runs and finished it. Read by the season (teamLines, baseball 10_players). */
 function bsBoxSide(st,sd){ st.box=st.box||{home:{bat:{},pit:{},seq:[]},away:{bat:{},pit:{},seq:[]}}; return st.box[sd] }
-function bsCount(st,bat,fs,nm,o,run0,pre,preB,outs,pn,evs){
+function bsCount(st,bat,fs,nm,o,run0,pre,preB,outs,pn,evs,half){
   const B=bsBoxSide(st,bat), F=bsBoxSide(st,fs);
   const runs=(bat==="home"?st.h:st.a)-run0;
   if(nm){ const b=B.bat[nm]=B.bat[nm]||{ab:0,h:0,hr:0,rbi:0,r:0,bb:0,sb:0,k:0};
     if(o==="bb"||o==="hbp")b.bb++; else b.ab++;
     if(o==="s1"||o==="s2"||o==="s3"||o==="hr")b.h++; if(o==="hr")b.hr++; if(o==="k")b.k++;
     evs.forEach(e=>{ if((e.k==="rbi"||e.k==="hr")&&e.side===bat)b.rbi+=e.n||1 }) }
+  // round 107 (engine 21): who put each runner on is kept for the half-inning only. A man left on base stayed down to the
+  // pitcher who put him on, and when he next reached on an out and scored, the run went to that pitcher (Muse: a starter
+  // charged a run over six scoreless innings, the 7th's two runs already his reliever's)
+  if(ENGINE_V>=21&&half!=null&&F.respK!==half){ F.resp={}; F.respK=half }
   const P=F.pit[pn]=F.pit[pn]||{outs:0,er:0,k:0,bb:0}, resp=F.resp=F.resp||{};
   // a run is charged to the pitcher who put that runner on (a reliever's inherited runners are the starter's); the
   // extra-inning runner on second is nobody's, so his run is unearned

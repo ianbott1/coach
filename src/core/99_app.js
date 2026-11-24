@@ -771,6 +771,13 @@ function unsaveDup(d){
 }
 /* which game a save belongs to: new saves say; older ones are told apart by
    their players (pro players have contracts; basketball players play PG-C) */
+/* round 107: the summer plan's hire is the candidate rated best of those shown, not the first listed (Instinct: the plan
+   had picked a man marked "in over his head", and the season began at -37 with a prompt to fire him). By the grade the
+   screen shows; level grades, the first. Nothing is drawn. */
+const STAFF_GRADE_RANK=["in over his head","unproven","solid","highly regarded","one of the best"];
+function staffDefault(L){ if(!L||!L.length||typeof ENGINE_V!=="undefined"&&ENGINE_V<21)return null;
+  const rk=c=>{ const g=String(c.grade||""); for(let i=STAFF_GRADE_RANK.length-1;i>=0;i--)if(g.indexOf(STAFF_GRADE_RANK[i])===0)return i; return 1 };
+  let b=0; L.forEach((c,i)=>{ if(rk(c)>rk(L[b]))b=i }); return b }
 function saveLeague(d){
   if(!d)return null;
   if(d.league)return d.league;
@@ -1173,7 +1180,7 @@ function openOffseason(){
   const poach=A.userOpen?[]:(LEAGUE.poachOffers?LEAGUE.poachOffers(U,rng,C.rep,openJ,my):poachOffers(U,rng,C.rep,openJ,my));
   const LO=LEAGUE.offseason.open(U,my,SEA.rec[my][0]);   // the league's own choices
   S.off={year:SEA.year,act:A,jobs:jobs,poach:poach,move:null,pool:LO.pool,staff:staffCands,
-    picks:Object.assign({phil:(U.phil||"balanced"),oc:null,dc:null},LO.picks),
+    picks:Object.assign({phil:(U.phil||"balanced"),oc:staffDefault(staffCands.oc),dc:staffDefault(staffCands.dc)},LO.picks),
     rngA:[rng.a,rng.sp]};
   flash=null; save(); render();
 }
