@@ -456,7 +456,7 @@ const HL_SPORT=(function(){
       if(Q&&Q.d===d&&f>=Q.f)df=f-Q.f; else if(Q&&Q.di===di-1&&Q.f>0.97&&f<0.03&&d.seg!==9)df=f+1-Q.f;
       if(df>=0&&df<0.02){ const lim=SP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*105, dy=(q[1]-o[1])*68, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.7:1);
         return m>L2&&m>0?[o[0]+dx*L2/m/105,o[1]+dy*L2/m/68]:q })) }
-      spDraw.st={d,di,f,pos:pos.map(A=>A.map(q=>q.slice()))} }
+      spDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))} }
     spDraw.pos=pos; spDraw.dbg={mi:P.moves.indexOf(mv),k,as:a.s,bs:b.s,s:mv.side,tr,u,bx,by};   // for test/sc-motion.js
     const kits=hlKits(g.home,g.away), r=Math.max(5,W/80), gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],[kits[0].fill,kits[1].fill]);
     const [qx,qy]=toS(bx,by);
@@ -600,10 +600,17 @@ const HL_SPORT=(function(){
     const att=lag(tt=>attAt(c,tt)), def=lag(tt=>defAt(c,tt,att));
     // round 103: in the full match the shot's move grows out of the play before it: each man starts from where the
     // touch-by-touch play had him (found by his shirt) and runs into the move's shape over its first moments
-    if(c.pbFrom&&t<0.16){ const w=1-hlEase(t/0.16), s0=c.home?0:1, w0=c.W[0], hx=s0?1-w0[0]:w0[0], hy=s0?1-w0[1]:w0[1], S=spShape(hx,hy,s0===0), fr=q=>s0?[1-q[0],1-q[1]]:q;
+    // round 108: from where the pitch last drew them, when it just did (the shape's spot was a jump of its own)
+    if(c.pbFrom&&t<0.05&&!c._from){ const Q=spDraw.st; if(Q&&Date.now()-Q.at<800&&Math.abs(Q.f-c.f)<0.06)Object.defineProperty(c,"_from",{value:Q.pos.map(A=>A.map(q=>q.slice())),writable:true,configurable:true,enumerable:false}) }
+    if(c.pbFrom&&t<0.16){ const w=1-hlEase(t/0.16), s0=c.home?0:1, w0=c.W[0], hx=s0?1-w0[0]:w0[0], hy=s0?1-w0[1]:w0[1], S=SP2()&&c._from?c._from:spShape(hx,hy,s0===0), fr=q=>s0?[1-q[0],1-q[1]]:q;
       const XA=spXI(c.pbFrom,c.tm), XD=spXI(c.pbFrom,c.opp);
       att.forEach((q,i)=>{ if(!q)return; const j=c.numsA?XA.nums.indexOf(c.numsA[i]):i, src=fr(S[s0][j>=0?j:i]); att[i]=[hlLerp(q[0],src[0],w),hlLerp(q[1],src[1],w)] });
       def.forEach((q,i)=>{ if(!q)return; const j=c.numsD?XD.nums.indexOf(c.numsD[i]):i, src=fr(S[1-s0][j>=0?j:i]); def[i]=[hlLerp(q[0],src[0],w),hlLerp(q[1],src[1],w)] }) }
+    frame.dbg={att,def,home:c.home,numsA:c.numsA,numsD:c.numsD};   // for test/sc-clipjoin.js
+    // round 108: the play after the clip starts where the clip leaves them (it cut back to the shape, up to 80 m a man)
+    if(SP2()&&c.pbFrom&&spDraw.st&&typeof live!=="undefined"&&live&&live.pb&&live.pb.d===spDraw.st.d){ const Q=spDraw.st, sA=c.home?0:1, hm=q=>c.home?q:[1-q[0],1-q[1]];
+      const XA=spXI(c.pbFrom,c.tm), XD=spXI(c.pbFrom,c.opp), put=(s,X,arr,nums)=>X.nums.forEach((nn,j)=>{ const i=nums?nums.indexOf(nn):-1; if(i>=0&&arr[i])Q.pos[s][j]=hm(arr[i]) });
+      put(sA,XA,att,c.numsA); put(1-sA,XD,def,c.numsD); Q.f=Math.max(Q.f,c.f); Q.at=Date.now() }
     const kick=t>=tb&&t<ts+0.02, sIdx=c.rec[n-1];
     const r=Math.max(5,W/80), [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
     // the move so far, faint, and the shot once it's struck
@@ -634,5 +641,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's minute
   const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, frameDbg:()=>frame.dbg||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
 })();
