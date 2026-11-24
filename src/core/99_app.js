@@ -1875,6 +1875,14 @@ function seatWhy(prev){
   const t=prev.exp?String(prev.exp).replace(/^Target:\s*/i,"").toLowerCase():"";
   return `You missed last year's target${t?` (${t})`:""}. Miss this year's too and the job goes.`;
 }
+/* round 107: the board's verdict on the season as it stands, in a sentence that says what it weighs (Instinct, hockey:
+   Secure straight after a second-round exit the objectives called short, and a B-minus, with nothing saying why) */
+function seatVerdict(my){
+  try{ my=my||S.myTeam; if(!SEA||SEA.phase==="week"||typeof SEA.seasonResult!=="function")return "";
+    const r=SEA.seasonResult(my)||"", w=SEA.rec[my][0], l=SEA.rec[my][1], exp=S.expNow||expectations(); if(!exp)return "";
+    const g=seasonGrade(w,l,r,exp); if(!g||!g.g)return "";
+    const aim=exp.l?String(exp.l).replace(/\.$/,""):"";
+    return `The board's verdict so far: ${g.g}, ${String(g.l||"").replace(/\.$/,"").toLowerCase()}. It weighs the season together: ${w} wins${exp.w?` against the ${exp.w} it hoped for`:""}${r?`, and ${r.replace(/\.$/,"").replace(/^[A-Z](?=[a-z])/,c=>c.toLowerCase())}`:""}${aim?` against its aim (${aim})`:""}. ${g.miss?"That's short, and the job is under pressure.":"Taken together, the job is safe."}` }catch(e){ return "" } }
 function seatWhyNow(){ return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
 /* where you stand against that rule: missed last year here, you're on the
    hot seat all season; on pace to miss this year, you're under pressure */
@@ -1912,7 +1920,7 @@ function seatBadge(){
       g=seasonGrade(w,l,r2,exp) }
     else g=seasonGrade(paceW,games-paceW,res,exp) }
   if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
-  return `<span class="seat cool">Secure</span>`;
+  return `<span class="seat cool"${seatVerdict()?` title="${esc(seatVerdict())}"`:""}>Secure</span>`;
 }
 
 let ROLE_SEL=null;   // round 82: the first of two pitchers tapped to trade roles

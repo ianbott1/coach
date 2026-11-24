@@ -154,8 +154,8 @@ function objectivesHTML(my){
   if(SEA.phase==="done"&&!S.obj)return "";
   reaimObjectives(my);
   const L=objectivesAll(my); if(!L.length)return "";
-  const why=typeof seatWhyNow==="function"&&SEA.phase!=="done"?seatWhyNow():"";
-  return `<div class="grouphead">The board's objectives</div><div class="objs">${why?`<div class="objnote hotwhy">${esc(why)}</div>`:""}${L.map(o=>{const st=objStatus(o,my);
+  const why=typeof seatWhyNow==="function"&&SEA.phase!=="done"?seatWhyNow():"", vd=typeof seatVerdict==="function"?seatVerdict(my):"";   // round 107: the board's verdict, said
+  return `<div class="grouphead">The board's objectives</div><div class="objs">${why?`<div class="objnote hotwhy">${esc(why)}</div>`:""}${vd?`<div class="objnote">${esc(vd)}</div>`:""}${L.map(o=>{const st=objStatus(o,my);
     return `<div class="obj ${st.s}"><span class="objmark">${st.s==="met"?"&#10003;":st.s==="miss"?"&#10007;":"&#9675;"}</span>
       <span class="objl">${o.re0!==undefined?`<b class="objre">Re-aimed</b> `:""}${esc(o.l)}</span><span class="objt">${esc(st.t)}</span></div>`}).join("")}
     <div class="objnote">Each one met is worth reputation: the next job, and the board's patience.${L.some(o=>o.re0!==undefined)?" A re-aimed one counts in place of one missed.":""}</div></div>`;
