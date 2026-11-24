@@ -209,7 +209,27 @@ const HL_SPORT=(function(){
     return spXI.c[key]={L:L,idx,nm,nums} }
   const spWho=(X,s)=>X.nm[s]||SP_POS[s];
   // where each side stands for a ball at (bx,by) in the home frame (0 the home goal line), the side on it pushed on
-  function spShape(bx,by,has){ return [true,false].map(home=>{ const a=home?bx:1-bx, y=home?by:1-by, on=has===home;
+  /* round 108 (engine 22): a team's shape as a team plays it. On the ball: the back line set off the ball, full backs
+     pushing on, a midfield three lines up and wingers wide, strikers on the last man. Off it: two banks, compact and
+     shifted to the ball's side, between the ball and goal. How each side plays moves it: a press holds a high line and
+     its front men go to the ball; a low block sits deep and narrow; overloading the flanks pushes the full backs and
+     wingers wide; going direct keeps a striker on the shoulder. Your plan too: Take the game to them pushes everyone
+     up, Sit deep and counter drops them. spCtx: the stretch's approaches and plans, set by spPlan and spDraw. */
+  let spCtx=null;
+  const SP_BASE_Y=[0.5,0.12,0.36,0.64,0.88,0.12,0.4,0.6,0.88,0.43,0.57];
+  function spShape2(bx,by,has){ const C=spCtx||{ap:["",""],pl:["balanced","balanced"]}, cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+    return [0,1].map(s=>{ const home=s===0, a=home?bx:1-bx, y=home?by:1-by, on=has===home, ap=C.ap[s]||"", pl=C.pl[s]||"balanced";
+      const up=(pl==="safe"?0.05:pl==="aggressive"?-0.06:0)+(ap==="press"?0.05:ap==="block"?-0.07:0), wide=ap==="wing"?1.12:ap==="block"?0.82:1;
+      let P;
+      if(on){ const dl=cl(a-0.32+up,0.13,0.5), fb=dl+0.07+(a>0.5?0.12:0)+(ap==="wing"?0.06:0), cm=dl+0.19, wg=Math.min(0.9,dl+0.37), st=Math.min(0.93,dl+0.44+(ap==="direct"?0.04:0)), deep=a<0.3;
+        const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*w+(y-0.5)*(i>=2&&i<=3||i>=6?0.14:0.06),0.03,0.97);
+        P=[[0.04+0.06*a,0.5+(y-0.5)*0.1],[fb,Y(1,1.05*wide)],[dl,Y(2,deep?1.4:1.1)],[dl,Y(3,deep?1.4:1.1)],[fb,Y(4,1.05*wide)],[wg,Y(5,1.02*wide)],[deep?dl+0.11:cm,Y(6,1)],[cm+0.04,Y(7,1)],[wg,Y(8,1.02*wide)],[st+(ap==="direct"?0.03:0),Y(9,1)],[st-0.04,Y(10,1)]] }
+      else { const b=a, dl=cl(b-0.24+up,0.14,0.46), ml=dl+(ap==="block"||pl==="aggressive"?0.11:0.14), fl=dl+0.29;
+        const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*0.7*w+(y-0.5)*0.34,0.04,0.96);
+        P=[[0.03+0.03*b,0.5+(y-0.5)*0.12],[dl+0.01,Y(1,wide)],[dl,Y(2,wide)],[dl,Y(3,wide)],[dl+0.01,Y(4,wide)],[ml+0.01,Y(5,wide)],[ml,Y(6,wide)],[ml,Y(7,wide)],[ml+0.01,Y(8,wide)],
+           [ap==="press"||pl==="safe"?Math.min(fl+0.06,b-0.04):fl,Y(9,wide)],[fl,Y(10,wide)]] }
+      return P.map(p=>home?[p[0],p[1]]:[1-p[0],1-p[1]]) }) }
+  function spShape(bx,by,has){ if(SP2())return spShape2(bx,by,has); return [true,false].map(home=>{ const a=home?bx:1-bx, y=home?by:1-by, on=has===home;
     const P=BASE.map((p,i)=>{ if(i===0)return [0.04+0.05*a,0.5+(y-0.5)*0.12];
       const v2=SP2(), push=on?Math.max(0,a-0.3)*(v2?0.55:0.75):Math.max(0,a-0.42)*0.5-(on?0:Math.max(0,0.55-a)*0.25), depth=i<5?0.62:i<9?(v2?0.75:0.88):1;
       return [Math.max(0.06,Math.min(0.95,p[0]+push*depth+(on?0.05:-0.03))),0.5+(p[1]-0.5)*(on?1:0.8)+(y-0.5)*(i<5?0.18:0.3)] });
@@ -228,6 +248,8 @@ const HL_SPORT=(function(){
     const r=mulberry32(strHash("sp|"+g.home+"|"+g.away+"|"+d.seg+"|"+d.sh+"|"+d.sa)), ri=n=>Math.floor(r()*n), cl=v=>Math.max(0.02,Math.min(0.98,v));
     const pois=lam=>{ const Lx=Math.exp(-lam); let k=0,p=1; do{ k++; p*=r() }while(p>Lx&&k<9); return k-1 };
     const XI=[spXI(L,g.home),spXI(L,g.away)];
+    const planAt=sd=>{ let v=L.args?L.args[sd==="home"?2:3]:"balanced"; (L.pm||[]).forEach(x=>{ if(x[1]===sd&&x[0]<=Math.max(0,di))v=x[2] }); return v||"balanced" };
+    const ctx={ap:[d.ap?d.ap.home:"",d.ap?d.ap.away:""],pl:[planAt("home"),planAt("away")]}, ctx0=spCtx; spCtx=ctx;
     // the stretch's numbers
     const dl=(sd,k)=>{ const a=d.TA&&d.TA[sd], b=pv&&pv.TA&&pv.TA[sd]; return a?Math.max(0,Math.round((a[k]||0)-(b?b[k]||0:0))):null };
     const N={}; ["home","away"].forEach(sd=>{ const a=d.TA&&d.TA[sd], b=pv&&pv.TA&&pv.TA[sd], posL=a?((a.pos||0)-(b?b.pos||0:0))/Math.max(1,(a.n||0)-(b?b.n||0:0)):0;
@@ -325,7 +347,7 @@ const HL_SPORT=(function(){
       if(nx.kind==="kickoff"){ ball.x=0.5; ball.y=0.5 } else if(nx.kind==="gk"){ ball.x=nx.side?0.94:0.06; ball.y=0.5 } else if(nx.kind==="corner"&&m.end==="clip"){ ball.x=s?0.015:0.985; ball.y=((m.c.e.u||0)%2)?0.03:0.97 } };
     seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+(m.wt||m.nT),0); let at=q.f0;
       G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*(m.wt||m.nT)/W2; push(m,at,fB); at=fB }) });
-    const out={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball),offAt,offSlot};
+    const out={L:L,n:nD,moves,N,pH,XI,ctx,last:Object.assign({},ball),offAt,offSlot}; spCtx=ctx0;
     Object.defineProperty(d,"_sp",{value:out,writable:true,configurable:true,enumerable:false});   // never saved with the game (it holds the live game)
     return out }
   // the counts the screen shows for the stretch (test/sc-pb.js checks them against the engine's)
@@ -382,7 +404,7 @@ const HL_SPORT=(function(){
       out.push({k:d.seg+"|"+i, m:Math.min(90,Math.floor(d.seg*5+z.f*5)+1), team:mv.side?g.away:g.home, text:ln.text, big:ln.big}) });
     return out }
   function spDraw(x,W,H,d,f){
-    const L=live, P=spPlan(L,d); let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
+    const L=live, P=spPlan(L,d); spCtx=P.ctx||null; let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
     const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
     // the ball travels in the first part of the interval, then the man it reached carries it a little
@@ -569,5 +591,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's minute
   const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spXI, spTally, spTallyHTML};
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spXI, spTally, spTallyHTML};
 })();

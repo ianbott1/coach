@@ -398,6 +398,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       T2:{home:H.tell2?Object.assign({},H.tell2):null,away:A.tell2?Object.assign({},A.tell2):null},
       TA:{home:H.tellAll?Object.assign({},H.tellAll):null,away:A.tellAll?Object.assign({},A.tellAll):null},
       st:{home:[H.sh,H.sot],away:[A.sh,A.sot]}};
+    if(ENGINE_V>=22)d.ap={home:H.app,away:A.app};   // round 108: how each side is playing, for the pitch (no draws)
     st.drives.push(d); return d;
   };
   const extraTime=()=>{
