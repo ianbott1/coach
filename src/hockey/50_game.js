@@ -101,6 +101,7 @@ const HK17_ENV=k=>HK12_ENV(k)&&+HK12_ENV(k);
 const HK17={m:HK17_ENV("HK17_M")||12.5, cap:HK17_ENV("HK17_CAP")||176, gs:HK17_ENV("HK17_GS")||1.25, ga:HK17_ENV("HK17_GA")||1.52, g:HK17_ENV("HK17_G")||1.02};   // g: the league's shots back to 6.1 goals (more clubs clog it up on 17)
 function sportPlanFit(t,pl){ return hkV12()?planAmp(hkFitOf(HK12_FIT[pl],hkShapeT(t)),HK17):0 }
 function sportPlanFitC(t,pl){ return hkV12()?planAmp(hkFitOf(HK12_FITC[pl],hkShapeT(t)),HK17):0 }
+function sportPlanCap(){ return HK17.cap }   // round 109: planVs holds a person's plan to the same cap
 function sportPlanShift(pl,gap){ return planShiftAt(HK12_SHIFT[pl],gap) }
 /* the same on a person's path (the plan also sets your system: skating with them is a forecheck, clogging it up a trap),
    measured (r89 pvh.js, 60,000 games a point): Ian (round 89) chose to put it in the chance before a game */
@@ -255,7 +256,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   // (a point of Passing moves shots by c.pas and is worth HK12.a rating points: c.pas/R_SLOPE a shot factor per Elo)
   const ampMemo={home:{},away:{}};
   const ampE=(sd,m)=>{ if(!SH||!planAmpV()||!m||m==="balanced"||!HK12_FIT[m])return 0; const M=ampMemo[sd]; if(M[m]!==undefined)return M[m];
-    const f=hkFitOf((humans[sd]?HK12_FIT:HK12_FITC)[m],SH[sd]); return M[m]=planAmp(f,HK17)-f };
+    const f=hkFitOf((humans[sd]?HK12_FIT:HK12_FITC)[m],SH[sd]);
+    // engine 23 (round 109): a person's plan against tonight's opponent's roster (planVs), played on the same channel
+    if(humans[sd]&&planVsV())return M[m]=planVsTot(planAmp(f,HK17),planAmp(hkFitOf(HK12_FIT[m],SH[other(sd)]),HK17),HK17.cap)-f;
+    return M[m]=planAmp(f,HK17)-f };
   const ampF=(sd,mX,mY)=>{ let f=1; if(mX==="safe")f*=1+HK17.gs*ampE(sd,mX)*HK12.c.pas/R_SLOPE; if(mY==="aggressive")f*=1-HK17.ga*ampE(other(sd),mY)*HK12.c.chk/R_SLOPE; return Math.max(0.3,f)*(planAmpV()?HK17.g:1) };
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's system: the better side forechecks, the weaker traps

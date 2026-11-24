@@ -154,11 +154,24 @@ function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||
    the box score carries it. Balanced is untouched. */
 function planAmpV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=17 }
 function planAmp(f,A){ if(!planAmpV()||!A||!f)return f||0; const v=A.m*f; return Math.max(-A.cap,Math.min(A.cap,v)) }
+/* round 109 (engine 23; Grokbot, round 13: "in Football Manager, a tactic that is right against one side is wrong against
+   another. Until that is true here, the plan is a setting, not a decision"). On a person's side a plan is worth what his
+   roster suits it over what tonight's opponent's roster suits it (PLAN_VS_K of theirs), held to the sport's cap: skating
+   with a quicker side is worth less, with a slower one more. Averaged over the league the opponent's part is the
+   league's mean fit, so a person who picks blind gains nothing; the computer's games are untouched (no calibration
+   moves). Each sport plays it where it plays the amplified fit (planAmp's extra), so the box score carries it. */
+const PLAN_VS_K=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K)||1);
+function planVsV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23 }
+/* the total a person's plan is worth from rosters, given his amplified fit f and the opponent's fo, held to cap */
+function planVsTot(f,fo,cap){ const v=f-PLAN_VS_K*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
+/* in the chance: the opponent's part (the total less your own fit), 0 before engine 23 or where a sport has no counter */
+function planVs(t,o,pl){ if(!planVsV()||!t||!o||!pl||pl==="balanced"||typeof sportPlanFit!=="function"||typeof sportPlanCap!=="function")return 0;
+  const f=sportPlanFit(t,pl), fo=sportPlanFit(o,pl); return planVsTot(f,fo,sportPlanCap())-f }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
 function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||0)):0 }
 /* what your plan is worth tonight on your own path, in Elo on the balanced curve: your roster's fit, and (engine 12,
    Ian round 89) the plan's own measured worth at tonight's gap. gap: your edge before plans */
-function planEdge(t,pl,gap){ if(!pl||pl==="balanced")return 0; return (typeof sportPlanFit==="function"?sportPlanFit(t,pl):0)+(typeof sportPlanShiftH==="function"?sportPlanShiftH(pl,gap||0):0) }
+function planEdge(t,pl,gap,o){ if(!pl||pl==="balanced")return 0; return (typeof sportPlanFit==="function"?sportPlanFit(t,pl):0)+(typeof sportPlanShiftH==="function"?sportPlanShiftH(pl,gap||0):0)+(o?planVs(t,o,pl):0) }
 /* your edge in your next game before any plan, for the plan rows */
 function planGapNow(t){ try{ const g=SEA.nextGame?SEA.nextGame(t):null; if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
