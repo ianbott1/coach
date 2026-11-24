@@ -1953,9 +1953,12 @@ function teamPanel(){
   const inj=SEA.talent.active(my);
   const co=U&&U.coach?U.coach[my]:null;
   let h=heroResult();
+  // round 107: a decision comes before the team card, where it's seen with the Play button: below the card, the side
+  // column's pinned Play button sat over it (Instinct: "the sticky PLAY WEEK area covers part of the Needs a decision cards")
+  const att=reveal==="half"?"":attentionHTML(my);   // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
+  h+=att;
   h+=teamCardHTML(my,rk,co);
   if(reveal==="half")return h;
-  h+=attentionHTML(my);      // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
   h+=injuryHTML(inj);
   h+=nextUpHTML(my,rk);
   return h;
