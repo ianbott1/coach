@@ -223,7 +223,8 @@ const HL_SPORT=(function(){
       let P;
       if(on){ const dl=cl(a-0.32+up,0.13,0.5), fb=dl+0.07+(a>0.5?0.12:0)+(ap==="wing"?0.06:0), cm=dl+0.19, wg=Math.min(0.9,dl+0.37), st=Math.min(0.93,dl+0.44+(ap==="direct"?0.04:0)), deep=a<0.3;
         const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*w+(y-0.5)*(i>=2&&i<=3||i>=6?0.14:0.06),0.03,0.97);
-        P=[[0.04+0.06*a,0.5+(y-0.5)*0.1],[fb,Y(1,1.05*wide)],[dl,Y(2,deep?1.4:1.1)],[dl,Y(3,deep?1.4:1.1)],[fb,Y(4,1.05*wide)],[wg,Y(5,1.02*wide)],[deep?dl+0.11:cm,Y(6,1)],[cm+0.04,Y(7,1)],[wg,Y(8,1.02*wide)],[st+(ap==="direct"?0.03:0),Y(9,1)],[st-0.04,Y(10,1)]] }
+        const hi=a>0.5, fy=hi?1.2:0.95, wy=hi?0.62:1.02;   // a full back high on the overlap takes the touchline; his winger comes inside
+        P=[[0.04+0.06*a,0.5+(y-0.5)*0.1],[fb,Y(1,fy*wide)],[dl,Y(2,deep?1.4:1.1)],[dl,Y(3,deep?1.4:1.1)],[fb,Y(4,fy*wide)],[wg,Y(5,wy*wide)],[deep?dl+0.11:cm,Y(6,1)],[cm+0.04,Y(7,1)],[wg,Y(8,wy*wide)],[st+(ap==="direct"?0.03:0),Y(9,1)],[st-0.04,Y(10,1)]] }
       else { const b=a, dl=cl(b-0.24+up,0.14,0.46), ml=dl+(ap==="block"||pl==="aggressive"?0.11:0.14), fl=dl+0.29;
         const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*0.7*w+(y-0.5)*0.34,0.04,0.96);
         P=[[0.03+0.03*b,0.5+(y-0.5)*0.12],[dl+0.01,Y(1,wide)],[dl,Y(2,wide)],[dl,Y(3,wide)],[dl+0.01,Y(4,wide)],[ml+0.01,Y(5,wide)],[ml,Y(6,wide)],[ml,Y(7,wide)],[ml+0.01,Y(8,wide)],
@@ -419,6 +420,14 @@ const HL_SPORT=(function(){
     const s=mv.side; if(u<0.62){ pos[s][a.s]=[hlLerp(pos[s][a.s][0],a.x,0.85*(1-tr)),hlLerp(pos[s][a.s][1],a.y,0.85*(1-tr))] }
     pos[s][b.s]=[hlLerp(pos[s][b.s][0],b.x,0.4+0.55*tr),hlLerp(pos[s][b.s][1],b.y,0.4+0.55*tr)];
     if(k===T.length-2&&mv.m.by!=null&&mv.end!=="clip"&&tr>0.5){ const o=1-s; pos[o][mv.m.by]=[hlLerp(pos[o][mv.m.by][0],b.x,(tr-0.5)*1.6),hlLerp(pos[o][mv.m.by][1],b.y,(tr-0.5)*1.6)] }
+    // round 108: off the ball the nearest man closes the ball down (two on a press), the next covers; on it a striker
+    // runs in behind when the ball's in the middle third, a full back overlaps when it's wide in theirs
+    if(SP2()){ const o=1-s, C=P.ctx||{ap:["",""],pl:["",""]}, near=pos[o].map((q,i)=>[i?Math.hypot((q[0]-bx)*105,(q[1]-by)*68):1e9,i]).sort((x,y)=>x[0]-y[0]);
+      const press=C.ap[o]==="press"||C.pl[o]==="safe", n=press?2:1;
+      near.slice(0,n).forEach(([dd,i],q)=>{ if(dd>(press?28:18))return; const w=(q===0?0.62:0.36)*(1-Math.min(1,dd/40)), q0=pos[o][i], tx=bx+(q0[0]-bx)*0.12, ty=by+(q0[1]-by)*0.12; pos[o][i]=[hlLerp(q0[0],tx,w),hlLerp(q0[1],ty,w)] });
+      const ax=s?1-bx:bx, ay=s?1-by:by, fr=q=>s?[1-q[0],1-q[1]]:q, dir=s?-1:1, t2=(d.seg*5+f*5)*60;
+      if(ax>0.35&&ax<0.8){ const k=Math.sin(t2/7)>0?9:10, q=pos[s][k]; if(q&&k!==a.s&&k!==b.s)pos[s][k]=[Math.max(0.02,Math.min(0.98,q[0]+dir*0.05*(0.6+0.4*Math.sin(t2/3)))),q[1]] }
+      if(ax>0.6&&(ay<0.3||ay>0.7)){ const k=ay<0.5?(s?4:1):(s?1:4), q=pos[s][k]; if(q&&k!==a.s&&k!==b.s)pos[s][k]=[Math.max(0.02,Math.min(0.98,q[0]+dir*0.08)),q[1]] } }
     const kits=hlKits(g.home,g.away), r=Math.max(5,W/80), gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],[kits[0].fill,kits[1].fill]);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const X=P.XI[si], kt=kits[si], gk=hlKit("",gks[si]);
