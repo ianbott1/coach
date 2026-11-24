@@ -467,7 +467,9 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
   left). Who put a runner on is now kept for the half-inning only. Speed resetting after calls: not reproduced. A
   rebound/assist swap: no swap in the code; 5 of 3,943 lines had a big man with five more assists than rebounds.
   College football's opponent field goal credited to your kicker: not reproduced (29 field goals, kicker's team right).
-- Left for later: overtime drawn three-on-three (hockey), the pitch applying soccer's late change, the hockey rink on a
+- Hockey's overtime is drawn three-on-three, four on a power play (hpOut; test/hk-ot.js: 12 men a frame before, 8 now).
+  Baseball's scouting verdict doesn't say "the wrong lineup" for a plan that followed the report.
+- Left for later: the pitch applying soccer's late change, the hockey rink on a
   phone, red-zone punts (round 106), kicks against going for it (a model question).
 
 Round 106: football's fourth and N follows the drive (engine 20; Ian: its own round).

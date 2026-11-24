@@ -134,7 +134,8 @@ on numbers they can't trust and a sport they read rather than watch.
   rewatch; decision cards above the pinned Play button, Keep him; the summer hire defaults to the best; soccer's keeper
   and running numbers; the win chance in overtime; hockey's even-strength goals outside penalties, third-person cues,
   bars on the clock; the board's verdict said; soccer's late change named only when possible.
-- Left in 107: hockey overtime drawn three-on-three; red-zone punts (needs its own fit tables); the residual soccer
+- Also done: hockey overtime drawn three-on-three; football reads by the card's marks too.
+- Left in 107: red-zone punts (needs its own fit tables); the residual soccer
   number drop (one in two matches); re-record goldens, the full suite, release.
 - Round 108: watching. A named play-by-play feed you can read at Normal speed (Grokbot's first ask, Muse and
   Instinct's every man named): baseball's relievers and pitching changes, basketball's bench and fouls, football's full
