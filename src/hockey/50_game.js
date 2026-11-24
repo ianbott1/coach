@@ -124,6 +124,11 @@ const SYSTEM = {
   trap:     {l:"a neutral-zone trap",     own:0.88, opp:0.86, counter:"dump"},
   cycle:    {l:"a grinding cycle",        own:1.03, opp:0.98, counter:"collapse"}
 };
+/* round 107: what the read card marks, from the same counts and the same marks it shows. A pick that answers a marked
+   style fits the evidence and is never graded wrong, like the best fit (Grokbot: two marks on the card and a hard cross;
+   soccer's card marked crosses and the grade went by going long) */
+function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1,T.n), f=[];
+  if(T.to/n>=1.2)f.push("forecheck"); if(T.fe/n>=1.2)f.push("trap"); if(T.cy/n>=1.2)f.push("cycle"); return f }
 const SYSTEM_KEYS=["forecheck","trap","cycle"];
 const ANSWERS = {
   stretch: {beats:"forecheck", l:"Stretch passes: beat the first man", d:"Quick, direct breakouts before their forwards arrive"},
@@ -381,7 +386,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].sys, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
         st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:t,right:ks[0]!==t,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) } return }
-    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best,fe:ANSWERS[v].beats===dp.best}) }
+    if(dp.k==="read"&&ANSWERS[v]){ const t=st.S[other(side)].sys; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ANSWERS[v].beats===t,evid:dp.best,fe:ANSWERS[v].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(ANSWERS[v].beats))}) }
     if(dp.k==="goalie"&&(v==="swap"||v==="keep")){ const off=X.form>HK.offBy/2; st.log.push({side:side,h:dp.h,k:"goalie",pick:v,truth:off?"off":"ok",right:(v==="swap")===off}) }
     if(dp.k==="read"){ if(ANSWERS[v]){ if(v!==X.ans)X.prepd=false; X.ans=v } else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the system as it was" } return }
     if(dp.k==="third"){ const t=st.S[other(side)].sys, pick=v==="keep"?X.ans:ANSWERS[v]?v:null;
