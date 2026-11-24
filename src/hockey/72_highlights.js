@@ -248,6 +248,12 @@ const HL_SPORT=(function(){
     if(a>0.66){ A[1]=[0.67,lane(0.3)]; A[2]=[0.67,lane(0.7)]; A[3]=[0.8,0.5+(y-0.5)*0.35]; A[4]=[0.86,lane(0.22+(y-0.5)*0.4)]; A[5]=[0.86,lane(0.78+(y-0.5)*0.4)] }
     const d=Math.min(1,Math.max(0,(a-0.3)/0.5)), back=hlLerp(0.55,0.9,d);
     let D=[[0.92,0.5+(y-0.5)*0.12],[Math.min(0.97,back+0.03),0.5+(y-0.5)*0.35-0.1],[Math.min(0.97,back+0.03),0.5+(y-0.5)*0.35+0.1],[Math.min(0.95,a+0.06),hlLerp(0.5,y,0.6)],[Math.min(0.93,back-0.08),0.24+(y-0.5)*0.2],[Math.min(0.93,back-0.08),0.76+(y-0.5)*0.2]];
+    // round 108 (engine 22): deep in its own end the side with the puck breaks out (wingers up the boards, the centre low
+    // in support, the D in the corners), and the other side forechecks it (one on the puck, two high, the D at the blue
+    // line) where it stood back at centre ice and let them out
+    if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const fc=Math.max(0,Math.min(1,(0.42-a)/0.22)), bl=(P,Q)=>P.map((p,i)=>i&&Q[i]?[hlLerp(p[0],Q[i][0],fc),hlLerp(p[1],Q[i][1],fc)]:p);
+      if(fc>0){ A=bl(A,[null,[Math.max(0.05,a-0.05),lane(0.28)],[Math.max(0.05,a-0.05),lane(0.72)],[a+0.07,0.5+(y-0.5)*0.4],[a+0.16,0.1],[a+0.16,0.9]]);
+        D=bl(D,[null,[Math.max(0.36,a+0.3),0.3],[Math.max(0.36,a+0.3),0.7],[a+0.045,hlLerp(0.5,y,0.9)],[a+0.14,y<0.5?0.32:0.22],[a+0.17,y<0.5?0.78:0.68]]) } }
     return {A,D} }   // both in the attacking side's frame
   const hpNear=(P,a,y,skip,short)=>{ let b=3,bd=9; const O=hpOut(short); for(let k=1;k<6;k++){ if(k===skip||O.has(k))continue; const dd=Math.hypot(P[k][0]-a,P[k][1]-y); if(dd<bd){bd=dd;b=k} } return b };
   function hpAfter(m){ const s=m.side, o=1-s, c=m.c;
@@ -361,6 +367,9 @@ const HL_SPORT=(function(){
     if(t.hit!=null)return `Big hit on ${a} by ${hpWho(O,t.hit)}`;
     if(t.k==="faceoff")return `${a} wins the faceoff`; if(t.k==="cycle")return `${a} cycles it low`; if(t.k==="ice")return `${a} fires it down the ice`;
     if(t.k==="won")return `${a} has it`; return `${a} to ${b}` }
+  // round 108 (engine 22): the rink moves like hockey (sc-motion's rules): a longer, even lag behind the puck, the man
+  // it goes to skating onto it, and nobody faster than his legs frame to frame (metres a stretch; the rink 60 by 26)
+  const HP2=()=>typeof ENGINE_V==="undefined"||ENGINE_V>=22, HP_VMAX=1000;
   function hpDraw(x,W,H,d,f){
     const L=live, P=hpPlan(L,d); let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
@@ -370,17 +379,24 @@ const HL_SPORT=(function(){
     // the shapes a moment behind the puck
     const shapeAt=fq=>{ const mm=P.moves.find(q=>fq>=q.f0&&fq<=q.f1)||mv, TT=mm.T; let kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++; const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.6));
       const sh=hpShape(hlLerp(A.a,B.a,tt),hlLerp(A.ay,B.ay,tt)); return {s:mm.side,A:sh.A.map(p=>toR(mm.side,p[0],p[1])),D:sh.D.map(p=>toR(mm.side,p[0],p[1]))} };
-    const acc=[[],[]]; [0,0.005,0.01,0.015].forEach((dt,q)=>{ const w=4-q, S=shapeAt(Math.max(0,f-dt)); [[S.s,S.A],[1-S.s,S.D]].forEach(([si,arr])=>arr.forEach((p,i)=>{ if(!acc[si][i])acc[si][i]=[0,0,0]; acc[si][i][0]+=p[0]*w; acc[si][i][1]+=p[1]*w; acc[si][i][2]+=w })) });
-    const pos=[0,1].map(si=>acc[si].map(o=>[o[0]/o[2],o[1]/o[2]]));
+    const acc=[[],[]]; (HP2()?[0,0.0025,0.005,0.0075,0.01,0.0125,0.015,0.0175,0.02,0.0225]:[0,0.005,0.01,0.015]).forEach((dt,q)=>{ const w=HP2()?1:4-q, S=shapeAt(Math.max(0,f-dt)); [[S.s,S.A],[1-S.s,S.D]].forEach(([si,arr])=>arr.forEach((p,i)=>{ if(!acc[si][i])acc[si][i]=[0,0,0]; acc[si][i][0]+=p[0]*w; acc[si][i][1]+=p[1]*w; acc[si][i][2]+=w })) });
+    let pos=[0,1].map(si=>acc[si].map(o=>[o[0]/o[2],o[1]/o[2]]));
     const [bx,by]=toR(s,pa,py);
     // a faceoff: both lines set at the dot, centres over the puck, wings on the hash marks, the D behind, until it's won
     if(k===0&&a.k==="faceoff"&&u<0.45){ const w=1-hlEase(u/0.45), a0=a.a, y0=a.ay, o=1-s;
       const FA=[null,[a0-0.13,y0-0.12],[a0-0.13,y0+0.12],[a0-0.014,y0],[a0-0.025,y0-0.09],[a0-0.025,y0+0.09]], FD=[null,[a0+0.13,y0-0.12],[a0+0.13,y0+0.12],[a0+0.014,y0],[a0+0.025,y0-0.09],[a0+0.025,y0+0.09]];
       for(let i=1;i<6;i++){ const pA=toR(s,FA[i][0],FA[i][1]), pD=toR(s,FD[i][0],FD[i][1]); pos[s][i]=[hlLerp(pos[s][i][0],pA[0],w),hlLerp(pos[s][i][1],pA[1],w)]; pos[o][i]=[hlLerp(pos[o][i][0],pD[0],w),hlLerp(pos[o][i][1],pD[1],w)] } }
     if(tr<1){ const [ax,ay]=toR(s,a.a,a.ay); pos[s][a.s]=[hlLerp(pos[s][a.s][0],ax,0.85*(1-tr)),hlLerp(pos[s][a.s][1],ay,0.85*(1-tr))] }
-    { const [tx,ty]=toR(s,b.a,b.ay); pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,0.4+0.55*tr),hlLerp(pos[s][b.s][1],ty,0.4+0.55*tr)] }
+    { const [tx,ty]=toR(s,b.a,b.ay), wb=HP2()?0.95*hlEase(tr):0.4+0.55*tr; pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,wb),hlLerp(pos[s][b.s][1],ty,wb)] }
     if(b.hit!=null&&tr>0.6){ const o=1-s; pos[o][b.hit]=[hlLerp(pos[o][b.hit][0],bx,0.8),hlLerp(pos[o][b.hit][1],by,0.8)] }
     if(k===T.length-2&&mv.m.by!=null&&tr>0.5){ const o=1-s; pos[o][mv.m.by]=[hlLerp(pos[o][mv.m.by][0],bx,(tr-0.5)*1.6),hlLerp(pos[o][mv.m.by][1],by,(tr-0.5)*1.6)] }
+    if(HP2()){ const Q=hpDraw.st, di=(L.drives||[]).indexOf(d); let df=-1;
+      if(Q&&Q.d===d&&f>=Q.f)df=f-Q.f; else if(Q&&Q.di===di-1&&Q.f>0.97&&f<0.03&&d.seg%4!==0)df=f+1-Q.f;
+      if(df>=0&&df<0.02){ const lim=HP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*60, dy=(q[1]-o[1])*26, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.6:1);
+        return m>L2&&m>0?[o[0]+dx*L2/m/60,o[1]+dy*L2/m/26]:q })) }
+      pos=pos.map(A=>A.map(q=>[Math.max(0.01,Math.min(0.99,q[0])),Math.max(0.02,Math.min(0.98,q[1]))]));
+      hpDraw.st={d,di,f,pos:pos.map(A=>A.map(q=>q.slice()))} }
+    hpDraw.pos=pos; hpDraw.dbg={s,as:a.s,bs:b.s,u,bx,by};
     const g=L.g, kits=hlKits(g.home,g.away), inks=kits.map(k=>k.fill), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks), r=Math.max(5,W/80);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const S=si===s?mv.six:mv.oSix, short=si===s?P.shortAt(s,f):P.shortAt(si,f);
@@ -431,5 +447,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
+  return {drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
 })();
