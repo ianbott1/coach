@@ -1,5 +1,5 @@
 {
- "fp": "b9f2c62c0ec5146e",
+ "fp": "4d085cb93511b9d4",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -350,6 +350,11 @@
    "fp": "b9f2c62c0ec5146e",
    "from": "b9f2c62c0ec5146e",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
+  },
+  {
+   "fp": "4d085cb93511b9d4",
+   "from": "b9f2c62c0ec5146e",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
   }
  ],
  "out": [
@@ -409,7 +414,7 @@
       "result": "Missed the NCAA tournament",
       "grade": "D"
      },
-     "book": "6ad5721e39c2ba20"
+     "book": "8520f59f5a7d9031"
     },
     {
      "team": "North Carolina",
@@ -418,7 +423,7 @@
       "result": "Lost in the First Round",
       "grade": "B-"
      },
-     "book": "514f95afb0269408"
+     "book": "aa403501c83a6d10"
     }
    ]
   }

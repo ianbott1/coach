@@ -1,5 +1,5 @@
 {
- "fp": "7bd9dda11bef64a5",
+ "fp": "d9c452b4879407ca",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -340,6 +340,11 @@
    "fp": "7bd9dda11bef64a5",
    "from": "7bd9dda11bef64a5",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
+  },
+  {
+   "fp": "d9c452b4879407ca",
+   "from": "7bd9dda11bef64a5",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
   }
  ],
  "out": [
@@ -349,20 +354,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-52",
+      "rec": "34-48",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "384bde5565155325"
+     "book": "57d8be836875e857"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "45-37",
+      "rec": "40-42",
       "result": "Lost in the first round",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "e2d2ee6c10e0fbf9"
+     "book": "4e5bf18ae892a5ce"
     }
    ]
   },
@@ -372,20 +377,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "21-61",
+      "rec": "29-53",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "5fe9ffdc1ae99482"
+     "book": "c4be8b5dd12f81bf"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "31-51",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "36-46",
+      "result": "Lost in the first round",
+      "grade": "C-"
      },
-     "book": "0b90d15f87aa9e58"
+     "book": "5a69c15acc87110d"
     }
    ]
   },
@@ -396,19 +401,19 @@
      "team": "Boston",
      "last": {
       "rec": "40-42",
-      "result": "Lost in the play-in",
-      "grade": "C-"
+      "result": "Lost in the first round",
+      "grade": "C"
      },
-     "book": "edef8ed9701c779f"
+     "book": "05225029811faefa"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "47-35",
-      "result": "Lost in the first round",
+      "rec": "45-37",
+      "result": "Lost in the conference semifinals",
       "grade": "B-"
      },
-     "book": "4e7d7800c11424d6"
+     "book": "43e7f8eab4c175a3"
     }
    ]
   }

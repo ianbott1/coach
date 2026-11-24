@@ -1,5 +1,5 @@
 {
- "fp": "998273564cb6a48d",
+ "fp": "d43526b19025b069",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -110,21 +110,26 @@
    "fp": "998273564cb6a48d",
    "from": "c4562befabd2fb44",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
+  },
+  {
+   "fp": "d43526b19025b069",
+   "from": "998273564cb6a48d",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e8f9c772284261ac",
-    "post": "bff9b4ef4f4e4b5c",
-    "champion": "New York",
-    "rec": "e36bf236ef0f38ed",
-    "poll": "80114e27e1f5f6de",
-    "heis": "65e742e6ca5bcee2",
-    "history": "8d67ccb9859a8a92",
-    "universe": "ab0b55df9be3fb7e",
-    "screens": "c26a2980f4f510e6"
+    "games": "466eba38045fb0ae",
+    "post": "51a7b9ee928aa9fa",
+    "champion": "Boston",
+    "rec": "aa929acbb3d41009",
+    "poll": "f7d6b103e4e40c76",
+    "heis": "2c98bc6f5fc13050",
+    "history": "238e72fb17299dd5",
+    "universe": "9583486986d250ff",
+    "screens": "0f1baf802822b6f9"
    }
   ]
  }

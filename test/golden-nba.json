@@ -1,5 +1,5 @@
 {
- "fp": "63c09b074a4af9d6",
+ "fp": "731fb01af5e43c51",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -565,59 +565,64 @@
    "fp": "63c09b074a4af9d6",
    "from": "a340132f5cca5000",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey) and soccer changes any time; at ENGINE_NOW=21 all fourteen matched round 107."
+  },
+  {
+   "fp": "731fb01af5e43c51",
+   "from": "63c09b074a4af9d6",
+   "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e8f9c772284261ac",
-    "post": "bff9b4ef4f4e4b5c",
-    "champion": "New York",
-    "rec": "e36bf236ef0f38ed",
-    "poll": "80114e27e1f5f6de",
-    "heis": "65e742e6ca5bcee2",
-    "history": "8d67ccb9859a8a92",
-    "universe": "ab0b55df9be3fb7e",
-    "screens": "c26a2980f4f510e6"
+    "games": "466eba38045fb0ae",
+    "post": "51a7b9ee928aa9fa",
+    "champion": "Boston",
+    "rec": "aa929acbb3d41009",
+    "poll": "f7d6b103e4e40c76",
+    "heis": "2c98bc6f5fc13050",
+    "history": "238e72fb17299dd5",
+    "universe": "9583486986d250ff",
+    "screens": "0f1baf802822b6f9"
    },
    {
     "year": 2027,
-    "games": "285a578a5a0ab954",
-    "post": "cb561904908f7f61",
-    "champion": "San Antonio",
-    "rec": "d75657ada3dce741",
-    "poll": "17ab7b8b95b3c167",
-    "heis": "3c35d2cd6df6f75d",
-    "history": "eab5b7c7bee2a93a",
-    "universe": "6f78044cdd3bc105",
-    "screens": "38b1c00c2b4cd26e"
+    "games": "899826989fbd818c",
+    "post": "8780356bb1bf5799",
+    "champion": "Sacramento",
+    "rec": "4e57bfc4bc60432a",
+    "poll": "ce81856e9e87c2d1",
+    "heis": "02ebadf6932b7f6a",
+    "history": "01efbe25cfd940ee",
+    "universe": "98d5366b2a0c7416",
+    "screens": "9560f60778ea8a9a"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "d35759eef046322a",
-    "post": "7bab53ac573120e8",
-    "champion": "Golden State",
-    "rec": "7ea0f8be8717f447",
-    "poll": "adccfa6b914c9558",
+    "games": "5ae0d55b8fedaf30",
+    "post": "bc0e6de8d734c0ed",
+    "champion": "New York",
+    "rec": "a57c9276f2b2f4b1",
+    "poll": "6a2e8da5986046a7",
     "heis": "635d996bb8c406fc",
-    "history": "814c3f190e949f80",
-    "universe": "b955b613ac65d1a8",
-    "screens": "4e5afd403418b9da"
+    "history": "e96eb46ec64147d8",
+    "universe": "bda2ea30b2786136",
+    "screens": "43719dc672091e27"
    },
    {
     "year": 2027,
-    "games": "49cf6cca65964952",
-    "post": "90ee6ac931ff1efe",
+    "games": "79af3b7241d7dfc7",
+    "post": "2a4afd9e8e820781",
     "champion": "Houston",
-    "rec": "3506b5addbe4860f",
-    "poll": "68fdca3967845594",
-    "heis": "785a75d5474ca8ef",
-    "history": "1ae15d058a38da0f",
-    "universe": "4a82975cd26f37c1",
-    "screens": "64dcceeafc59762c"
+    "rec": "a5064622f237ee7d",
+    "poll": "0b46b8960550d70e",
+    "heis": "746e3a3070225b55",
+    "history": "0eaf33ad660bf773",
+    "universe": "2c06bfeec5edaa70",
+    "screens": "8453be2717273d7c"
    }
   ],
   "schedules#60": [
