@@ -521,8 +521,18 @@ play exactly as before (the opponent's part is on a person's side only), except 
   108's 1,318 at 18.6, top-two season-enders 155 against 189); stakes' Manchester City seed 17 now settles the title
   on the last day (checked against the points: open until then), so seed 12 (4 to spare, marked the week it settled).
   March vs history failed once and passed on the resume, as before.
-- Seen in a browser (laptop and phone, all seven, no page errors): the card's reason names tonight, e.g. "Swing for
-  the fences would add 10: Nico Padilla starts for Seattle and doesn't miss many bats."
+- Seen in a browser (laptop and phone, all seven, no page errors; 13 of 14 captures show the card, the 14th a
+  college bye week): the card's reason names tonight, e.g. "Swing for the fences would add 10: Nico Padilla starts
+  for Seattle and doesn't miss many bats."
+- Found in that look and fixed (cardGame, core 93_attrs): hockey and baseball play through your days off (skipIdle),
+  so the card names your next game, but the plan's reason and gap read today's (none) and fell back to the roster-only
+  line, "Your roster leans to its skaters: Skate with them suits it", even where Clog it up was tonight's best.
+  Measured over four seasons (scratch r109 idle.js): hockey 129 cards of 240 on that line, 96 naming a plan that
+  wasn't tonight's best; baseball 28 of 240, all of them. Now 0; basketball unaffected. Display only (nothing that
+  plays a game reads planGapNow or planChances on a day off): hockey and baseball goldens differ in screens alone,
+  diffed line by line, re-recorded; the other five match. The full suite was run again on it.
+- An existing career (measured: a round 108 hockey save loaded in round 109) plays its season on engine 22 and turns
+  to 23 at the next; the tester note says to start a new career.
 
 Round 108: watching, and managing in real time (engine 22; Ian: "I should feel like I'm managing the team in
 real-time"; "I often would watch full 90 minute soccer matches in football manager"). Every change below is gated on
