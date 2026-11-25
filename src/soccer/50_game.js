@@ -79,6 +79,7 @@ function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T
 /* round 94 (engine 17): one spread of fit (11-17 Elo across the pyramid: scratch r94 fitsd.js) to 8 points on soccer's
    W/D/L model (123 Elo: soccer's draws flatten win chance), held to 15 points (226); played through the plan's channel: taking the game to them makes more
    chances, sitting deep makes more on the break */
+const SC24_PLAY=+((typeof process!=="undefined"&&process.env&&process.env.SC24_PLAY)||1.18);   // round 110: see ampE
 const SC17_ENV=k=>SC12_ENV(k)&&+SC12_ENV(k);
 const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||0.95};   // g: the league's goals held (2.81 a game on 17 before, 2.66 on 16)   // g: the league's chances back to 2.7 goals (more clubs sit deep on 17)
 function sportPlanFit(t,pl){ return scV12()?planAmp(scFitOf(SC12_FIT[pl],scShapeT(t)),SC17):0 }
@@ -285,7 +286,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!SC12_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
     const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]);
     // engine 23 (round 109): a person's plan against tonight's opponent's roster (planVs), played on the same channel
-    if(humans[sd]&&planVsV())return M[pl]=planVsTot(planAmp(f,SC17),planAmp(scFitOf(SC12_FIT[pl],SH[other(sd)]),SC17),SC17.cap)-f;
+    // engine 24 (round 110): the opponent's part at double weight played 0.85 of what the card's chance said (scratch r110
+    // vs2-soccer-coach.txt, 4 clubs x 3,000 games on common dice): played up by SC24_PLAY on that part alone
+    if(humans[sd]&&planVsV()){ const a=planAmp(f,SC17), t=planVsTot(a,planAmp(scFitOf(SC12_FIT[pl],SH[other(sd)]),SC17),SC17.cap); return M[pl]=a-f+(ENGINE_V>=24?SC24_PLAY:1)*(t-a) }
     return M[pl]=planAmp(f,SC17)-f };
   const ampF=sd=>{ if(!SH||!planAmpV())return 1; let f=SC17.g; const o=other(sd); if(st.mode[sd]==="safe")f*=1+SC17.gs*ampE(sd,"safe")*SC12.c.pas/R_SLOPE;
     if(st.mode[sd]==="aggressive")f*=1+SC17.ga*ampE(sd,"aggressive")*SC12.c.pac/R_SLOPE; return Math.max(0.3,f) };   // sitting deep: the extra is the counter, chances on the break (cutting theirs drew 32% of games)

@@ -1423,6 +1423,49 @@ function gameLine(g,mine,step){
       :side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)+side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
     ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}${watchBtnHTML(g,step)}</div></article>`;
 }
+/* round 110 (Ian: "Box scores are still drop down ... a page to see a box score in a more engaging form like the ones I
+   check on ESPN"; "it would be cool to see one of those graphs that shows teams probability of winning over time"): a
+   game's own page, opened from a score in the schedule. The score by period, the win chance over the game (the live
+   chance's own model, liveChance, read after each stretch or drive), both sides' team stats and players, and Watch. A
+   computer game keeps no play-by-play: it's played again from its own dice (replayGame), as Watch does; nothing kept. */
+let gameSel=null;
+function gamePageGame(){ if(!gameSel||!SEA||!SEA.weeks)return null; const W=SEA.weeks[gameSel.w]; if(!W)return null;
+  const g=W.games.find(x=>x.home===gameSel.home&&x.away===gameSel.away&&!!x.cup===!!gameSel.cup); return g?{g,w:gameSel.w}:null }
+const GP_PER={nba:[4,"Q"],ncaab:[2,"H"],nhl:[3,"P"],epl:[2,"H"],mlb:[9,""]};
+function gpLineScore(g){ const D=g.drives||[]; if(!D.length)return "";
+  let cols=[], H=[], A=[];
+  if(D[0].q!==undefined){ cols=["1","2","3","4"]; H=[0,0,0,0]; A=[0,0,0,0]; let ot=0,oth=0,ota=0;
+    D.forEach(d=>{ const q=d.q>=5?4:d.q-1; if(q>=4){ ot=1; if(d.home)oth+=d.pts||0; else ota+=d.pts||0; return } if(d.home)H[q]+=d.pts||0; else A[q]+=d.pts||0 });
+    if(ot){ cols.push("OT"); H.push(oth); A.push(ota) } }
+  else { const P=GP_PER[LEAGUE.id]; if(!P||typeof SEGS==="undefined")return ""; const per=SEGS/P[0]; cols=[...Array(P[0])].map((_,i)=>P[1]+(i+1)); H=cols.map(()=>0); A=cols.map(()=>0);
+    let ph=0, pa=0, ot=false, oh=0, oa=0;
+    D.forEach(d=>{ const sh=d.sh, sa=d.sa; if(sh==null)return; const dh=sh-ph, da=sa-pa; ph=sh; pa=sa;
+      if(d.ot||d.so||(d.seg||0)>=SEGS){ ot=true; oh+=dh; oa+=da; return } const k=Math.min(P[0]-1,Math.floor((d.seg||0)/per)); H[k]+=dh; A[k]+=da });
+    if(ot){ cols.push(LEAGUE.id==="mlb"?"X":"OT"); H.push(oh); A.push(oa) } }
+  const T=v=>v.reduce((a,b)=>a+b,0), row=(t,v,sc)=>`<tr><td class="gpt">${esc(tAb(t))}</td>${v.map(x=>`<td>${x}</td>`).join("")}<td class="gptot">${sc}</td></tr>`;
+  return `<table class="gpline"><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join("")}<th>T</th></tr>${row(g.away,A,g.ap)}${row(g.home,H,g.hp)}</table>` }
+function gpWinChart(g,w){ const D=g.drives||[]; if(!D.length||typeof liveChance!=="function")return "";
+  let pre; try{ pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(g.home,g.away,true,!!g.neutral)):[withPlan("balanced",()=>winProb(g.home,g.away,true,!!g.neutral)),0] }catch(e){ return "" }
+  const kept=S.planPre&&S.planPre[planPreKey(w,g.cup?1:0)];   // your game: the chance the card showed before it
+  if(kept&&kept.c!=null&&(g.home===S.myTeam||g.away===S.myTeam)){ const c=kept.c/100; pre=[g.home===S.myTeam?c:1-c,0] }
+  const sig=LIVE_SIG[LEAGUE.id]||10, pts=[[0,pre[0]+(pre[1]||0)/2]];
+  D.forEach((d,i)=>{ const sc=liveScore(d); if(sc[0]==null)return; const tau=liveTau(d), poss=d.q!==undefined?(d.home?1:-1):0;
+    const c=i===D.length-1?(g.hp>g.ap?1:g.hp<g.ap?0:0.5):liveChance(sc[0]-sc[1],tau,pre,sig,poss); const p=Array.isArray(c)?c[0]+(c[1]||0)/2:c;
+    pts.push([Math.min(1,1-tau),p]) });
+  const W=600,Hh=150,x=t=>(t*W).toFixed(1),y=p=>((1-p)*Hh).toFixed(1), path=pts.map((q,i)=>(i?"L":"M")+x(q[0])+","+y(q[1])).join(" ");
+  return `<div class="gpwin"><div class="gpwinlab"><span>${esc(g.home)}</span><span>win chance through the game</span></div>
+    <svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" class="gpwinsvg" role="img" aria-label="${esc(g.home)}'s chance to win through the game"><line x1="0" y1="${Hh/2}" x2="${W}" y2="${Hh/2}" class="gpmid"/><path d="${path}" class="gpline1" vector-effect="non-scaling-stroke"/></svg>
+    <div class="gpwinlab"><span>${esc(g.away)}</span><span>start ${Math.round(pts[0][1]*100)}% ${esc(tAb(g.home))}${kept?"":" (about: from the rosters now)"}</span></div></div>` }
+function gamePageView(){ const G=gamePageGame(); if(!G)return `<button class="skip small" data-gameback>&larr; Back</button><p>That game isn't in this season's record.</p>`;
+  const g0=G.g, g=g0.drives?g0:(replayGame(g0,G.w)||g0), when=LEAGUE.dates&&LEAGUE.dates[G.w]||"";
+  const tail=g0.pens?" (pens)":g0.ot?(g0.so?" (SO)":" (OT)"):"";
+  let box=""; try{ box=boxHTML(g,true,G.w).replace('<details class="boxscore" open><summary>Box score</summary>','<div class="boxscore gpbox">').replace(/<\/details>$/,"</div>") }catch(e){}
+  const canWatch=!!(g0.drives||(SEA._rp&&SEA._rp.has([G.w,g0.home,g0.away,g0.cup?1:0].join("|"))));
+  return `<div class="gpage"><button class="skip small" data-gameback>&larr; Back</button>
+    <div class="gphead"><div class="gpteam"><span>${esc(g0.away)}</span><b>${g0.ap}</b></div><div class="gpmeta">FINAL${esc(tail)}<br><span>${esc(when)}${g0.title?" &middot; "+esc(g0.title):""}</span></div><div class="gpteam"><b>${g0.hp}</b><span>${esc(g0.home)}</span></div></div>
+    ${gpLineScore(g)}${gpWinChart(g,G.w)}
+    ${canWatch?`<button class="rewatch" data-gpwatch="1">Watch the game</button>`:""}
+    ${box||`<p class="fnote">No box score was kept for this game.</p>`}</div>` }
 /* round 81: watch any game in the league: a computer game this season is played again from its own dice on the tap
    (replayGame) and shown as a rewatch; nothing is kept */
 function watchBtnHTML(g,step){ if(step===undefined||step===null||g.drives||g.hp===undefined||!SEA||!SEA._rp||!SEA.roster)return "";
@@ -2122,7 +2165,7 @@ function myTeamView(){
    the top bar opens its page: the club's page (its schedule and history), the standings at its group, the ranking, the
    coach's page. Keyboard too (Enter or Space on the focused figure). */
 const GO=(k,inner,title)=>`<span class="golink" role="link" tabindex="0" data-go="${k}"${title?` title="${esc(title)}"`:""}>${inner}</span>`;
-function goTo(k){ const my=S.myTeam; flash=null; playerSel=null;
+function goTo(k){ const my=S.myTeam; flash=null; playerSel=null; gameSel=null;
   if(k==="team"||k==="record"){ openTeam(my); return }
   if(k==="group"){ view="stand"; standTab="table"; if(LEAGUE.conf.order.length>4&&!LEAGUE.groupFilter)stConf=CONF[my] }
   else if(k==="rank"){ view="poll" }
@@ -2544,7 +2587,7 @@ function scheduleHTML(team,compact){
       rows.push(`<div class="srow"><span class="spos ${won?'wl-w':drew||otl?'wl-o':'wl-l'}">${won?"W":drew?"D":otl?"OTL":"L"}</span>
         <span class="steam">${haWord(g,team)} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
+        <button class="sconf gplink" data-gamepage="${w}|${esc(g.home)}|${esc(g.away)}|${g.cup?1:0}" title="Box score">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</button></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
         <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${ranksMean()||!SEA.rec[opp]?"":` <span class="srec" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:4px">${recStr(opp)}</span>`}${
@@ -3831,7 +3874,7 @@ function render0(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
+      (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -3847,10 +3890,13 @@ function render0(){
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
               :"Begin "+(SEA.year+1)+" season"):advLabel()+advPlanTag()}</button>
     </div>`;
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;gameSel=null;render()});
   // round 69: players' pages, the leaders
   document.querySelectorAll("[data-player]").forEach(x=>x.onclick=e=>{ e.stopPropagation(); const k=x.dataset.player.split("|"); openPlayer(k[0],k.slice(1).join("|")) });
   document.querySelectorAll("[data-plback]").forEach(x=>x.onclick=()=>{ playerSel=null; render() });
+  document.querySelectorAll("[data-gamepage]").forEach(x=>x.onclick=(ev)=>{ ev.stopPropagation(); const [w,h,a,c]=x.dataset.gamepage.split("|"); gameSel={w:+w,home:h,away:a,cup:c==="1"}; window.scrollTo({top:0}); render() });
+  document.querySelectorAll("[data-gameback]").forEach(x=>x.onclick=()=>{ gameSel=null; render() });
+  document.querySelectorAll("[data-gpwatch]").forEach(x=>x.onclick=()=>{ const G=gamePageGame(); if(!G)return; const g=G.g.drives?G.g:replayGame(G.g,G.w); if(!g)return; gameSel=null; startWatch(g); if(watch)watch.step=G.w });
   document.querySelectorAll("[data-sttab]").forEach(x=>x.onclick=()=>{ standTab=x.dataset.sttab; render() });
   document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
