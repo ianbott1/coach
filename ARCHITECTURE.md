@@ -501,6 +501,16 @@ play exactly as before (the opponent's part is on a person's side only), except 
   baseball's card counts today's starter (853 Elo a unit of q, spq.js 20,000 games a cell; the engine always played
   him, the card read the rotation's average); soccer's keeper weighs 0.20 of a side (was 0.14, from the back line and
   wings; a 20-point worse keeper 4.2 points, was 3.6; calibrate.js 60 seasons unchanged, epl-predict MATCH, PL 0.87).
+- Your path's level following the card (level.js, six clubs x six nearest, 300-400 games each, 23 against 22): wins up
+  0-3 points (reading the matchup pays), points a game about level: pro basketball 227.9 (229.7), college 147.0
+  (146.7), hockey 6.76 (7.00), soccer 2.75 (3.01), pro football 46.3 (45.9), college 55.0 (54.4), baseball 8.74 (8.67).
+- What it did not do: a single swap flips the card's plan less often than before (probe.js, swaps of 12-30 points at
+  even): pro football 3 of 37 (11 on 22), college 4 of 40 (9), pro basketball 0 of 23 (7), college 3 of 26 (8), hockey 1
+  of 16 (1), soccer 0 of 21 (4), baseball 7 of 56 (17). The flips on 22 were the gap's shift (a weaker side leans to
+  risk); tonight's opponent now outweighs it. The chance still moves with a swap as measured above.
+- Tried and taken out: centring baseball's lineup lean on the league's mean (0.13 of a spread, about 10 Elo). It moves
+  the computer's games too: bs-calibrate failed the spread of wins (15.3) and the best record (116), bs-players two
+  ranges. Without it bs-calibrate is identical to engine 22 but for the stamp.
 - Open: baseball pairs play a few points under the card on your path at engine 22 too (Seattle v Houston 32 shown, 25
   played): not this round's change, to look at.
 

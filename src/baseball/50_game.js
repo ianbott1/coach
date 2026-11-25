@@ -427,12 +427,8 @@ function bsLeanOf(R){ const o=sportStyleScores(R); return o.pull-(o.patient+o.co
 function sportLeanSD(S,T){ const v=T.filter(t=>S[t]).map(t=>S[t].pull-(S[t].patient+S[t].contact)/2), m=v.reduce((a,b)=>a+b,0)/(v.length||1);
   return Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/(v.length||1)) }
 function bsLeanSD(){ return typeof SEA!=="undefined"&&SEA&&SEA._styles&&SEA._styles.leanSD||0 }
-/* round 109 (engine 23): the lean taken against the league's mean too (it was divided by the spread only, so a league
-   leaning to power, 0.13 of a spread at one seed, tilted every club toward Swing for the fences) */
-function sportLeanMean(S,T){ const v=T.filter(t=>S[t]).map(t=>S[t].pull-(S[t].patient+S[t].contact)/2); return v.reduce((a,b)=>a+b,0)/(v.length||1) }
-function bsLeanMean(){ return planVsV()&&typeof SEA!=="undefined"&&SEA&&SEA._styles&&SEA._styles.leanMean||0 }
 /* the lineup's lean in league spreads (positive: power) */
-function bsLeanZ(t){ if(!planAmpV()||typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return 0; const sd=bsLeanSD(); return sd>0?(bsLeanOf(SEA.roster[t])-bsLeanMean())/sd:0 }
+function bsLeanZ(t){ if(!planAmpV()||typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return 0; const sd=bsLeanSD(); return sd>0?bsLeanOf(SEA.roster[t])/sd:0 }
 function bsFitZ(z,pl){ if(!z||!pl||pl==="balanced")return 0; const v=BS17.e*(pl==="aggressive"?z:-z); return Math.max(-BS17.cap,Math.min(BS17.cap,v)) }
 function sportPlanFit(t,pl){ return planAmpV()?bsFitZ(bsLeanZ(t),pl):0 }
 function sportPlanFitC(t,pl){ return sportPlanFit(t,pl) }
