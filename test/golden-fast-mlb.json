@@ -1,5 +1,5 @@
 {
- "fp": "c9b4b754bc762fa8",
+ "fp": "9c2e255a4fcc700a",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -130,6 +130,11 @@
    "fp": "c9b4b754bc762fa8",
    "from": "f091ec1dc37fb9b8",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "9c2e255a4fcc700a",
+   "from": "c9b4b754bc762fa8",
+   "note": "Round 109: on a day off the plan's reason reads the card's game (cardGame), not the roster-only line; screens only (games, records, universe unchanged; diffed)"
   }
  ],
  "result": {
@@ -144,7 +149,7 @@
     "heis": "7d5b897b0d9b6c32",
     "history": "da15fbfd7101bc37",
     "universe": "0717c8c7bfc996a4",
-    "screens": "18fbc5e9f37c36fe"
+    "screens": "10a6a2c2252f1472"
    }
   ]
  }
