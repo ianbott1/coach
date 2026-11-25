@@ -29,6 +29,10 @@ const state=api=>{ const E=api.SEA, lines={};
     const a=state(A), b=state(B), diffs=Object.keys(a).filter(k=>h(a[k])!==h(b[k]));
     // and on into the season, both builds: the old season keeps its old lines
     for(let i=0;i<4;i++){ step(A); step(B) }
+    // round 110: the new build plays your days off as your game ends (skipOffDaysNow); the older one plays them on the
+    // next Play. The same days, in the same order: bring the older one up to the same day before comparing
+    // (with Play itself: an older build plays a day off a press at a time, so it can have played fewer of your games)
+    { let g=0; while(A.SEA.phase==='week'&&A.SEA.step<B.SEA.step&&g++<40)step(A); g=0; while(B.SEA.phase==='week'&&B.SEA.step<A.SEA.step&&g++<40)step(B) }
     const a2=state(A), b2=state(B), d2=Object.keys(a2).filter(k=>h(a2[k])!==h(b2[k]));
     const ok=!diffs.length&&!d2.length; if(!ok)bad++;
     console.log(`  ${ok?'ok  ':'FAIL'} ${f}: ${steps} steps on the older build, reloaded here${diffs.length?' ('+diffs.join(', ')+' differ)':''}; 4 more on each${d2.length?' ('+d2.join(', ')+' differ)':''}`);
