@@ -1036,7 +1036,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="65f61a4";
+<script>const BUILD_ID="ee1859e";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -8200,7 +8200,14 @@ function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||
    Ian round 89) the plan's own measured worth at tonight's gap. gap: your edge before plans */
 function planEdge(t,pl,gap,o){ if(!pl||pl==="balanced")return 0; return (typeof sportPlanFit==="function"?sportPlanFit(t,pl):0)+(typeof sportPlanShiftH==="function"?sportPlanShiftH(pl,gap||0):0)+(o?planVs(t,o,pl):0) }
 /* your edge in your next game before any plan, for the plan rows */
-function planGapNow(t){ try{ const g=SEA.nextGame?SEA.nextGame(t):null; if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
+/* round 109: the game the card shows. A league with a game most days (LEAGUE.skipIdle: hockey, baseball) plays through
+   the days you're off, so the card names your next game; the plan's reason and gap read the same game (on an off day
+   they read none and fell back to the roster-only line: hockey 129 cards of 240 over four seasons, 96 naming a plan
+   that wasn't tonight's best; baseball 28, all of them) */
+function cardGame(t){ let g=SEA&&SEA.nextGame?SEA.nextGame(t):null;
+  if(!g&&SEA&&SEA.phase==="week"&&LEAGUE.skipIdle)g=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===t||x.away===t)).sort((x,y)=>x.week-y.week)[0]||null;
+  return g }
+function planGapNow(t){ try{ const g=cardGame(t); if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
    worth PLAN_PICK_MIN Elo. lean: what each plan's roster leans to */
 function planFitWords(t,pl,lean){ if(typeof PLANS==="undefined"||typeof sportPlanFit!=="function")return "";
@@ -13496,7 +13503,7 @@ function planFitHTML(wp){
    disagree with the number or with itself, as the fit line and the underdog line did). Whether it's the roster or the
    gap: the fit and the plan's own worth tonight are told apart. */
 function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
-  if(SEA&&SEA.phase==="week"){ const g=SEA.nextGame?SEA.nextGame(my):null; if(!g)return null; opp=g.home===my?g.away:g.home; atH=g.home===my; neu=!!g.neutral }
+  if(SEA&&SEA.phase==="week"){ const g=cardGame(my); if(!g)return null; opp=g.home===my?g.away:g.home; atH=g.home===my; neu=!!g.neutral }
   else { const pn=SEA&&SEA.postNext?SEA.postNext(my):null; if(!pn||!pn.opp)return null; opp=pn.opp; atH=pn.home===my||pn.home===true; neu=!!pn.neutral||pn.home===undefined }   // the postseason card, as it places the game
   if(!opp)return null;
   const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
@@ -13631,9 +13638,9 @@ function nextUpHTML(my,rk){
   if(typeof cpuNewsCard==="function")try{ h+=cpuNewsCard() }catch(e){}   // round 85: deadline deals around the league
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
-  // the days you're off, so the card shows your next game, not an open date
+  // the days you're off, so the card shows your next game, not an open date (cardGame, which the plan line reads too)
   if(!ng&&SEA.phase==="week"&&LEAGUE.skipIdle){
-    const nx=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===my||x.away===my)).sort((x,y)=>x.week-y.week)[0];
+    const nx=cardGame(my);
     if(nx){ng=nx; ngStep=nx.week} }
   if(!ng&&SEA.phase==="week"){
     h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>
