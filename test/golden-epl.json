@@ -585,6 +585,11 @@
    "fp": "970533ca1a8ba026",
    "from": "68ec6258f88a5b9b",
    "note": "Round 110 with Grokbot round 14's trust fixes (screens only; games as recorded)"
+  },
+  {
+   "fp": "970533ca1a8ba026",
+   "from": "970533ca1a8ba026",
+   "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
   }
  ],
  "result": {

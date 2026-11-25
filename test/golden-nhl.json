@@ -625,6 +625,11 @@
    "fp": "5b5b8ddc7dd608c4",
    "from": "d37555d5ed72e1f2",
    "note": "Round 110 with Grokbot round 14's trust fixes: plan card above the team card, plan notes one height, carried plans confirmed, soccer's keep button says whose setup (screens only; games as recorded)"
+  },
+  {
+   "fp": "5b5b8ddc7dd608c4",
+   "from": "5b5b8ddc7dd608c4",
+   "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
   }
  ],
  "result": {
