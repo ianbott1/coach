@@ -1,5 +1,5 @@
 {
- "fp": "4152000ca8c23899",
+ "fp": "1ebdddcc4e20204a",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -265,6 +265,11 @@
    "fp": "4152000ca8c23899",
    "from": "0851e4badec2bb14",
    "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
+  },
+  {
+   "fp": "1ebdddcc4e20204a",
+   "from": "4152000ca8c23899",
+   "note": "Round 110 with Grokbot round 14's trust fixes (screens only; games as recorded)"
   }
  ],
  "result": {
@@ -279,7 +284,7 @@
     "heis": "7d5b897b0d9b6c32",
     "history": "da15fbfd7101bc37",
     "universe": "56c8183973a51f1f",
-    "screens": "5ce409d7842f04f0"
+    "screens": "1612d5c806ff6c05"
    },
    {
     "year": 2027,
@@ -291,7 +296,7 @@
     "heis": "773ec581dad87a9c",
     "history": "6acd7d078226bbb4",
     "universe": "0e503d756a19b330",
-    "screens": "4c5983baab5d5fa2"
+    "screens": "49217556b3802e33"
    }
   ],
   "Colorado#777": [
@@ -305,7 +310,7 @@
     "heis": "c538f6ec29f1dea8",
     "history": "2776d71e098b91d8",
     "universe": "c04512530a010990",
-    "screens": "ccf815057ea0ca58"
+    "screens": "d8c11aef312cc5ae"
    },
    {
     "year": 2027,
@@ -317,7 +322,7 @@
     "heis": "eac2183831bc1117",
     "history": "53e39dd404565cdb",
     "universe": "49e8d24da1631d6f",
-    "screens": "9b2fbe84eb9119b9"
+    "screens": "c9701884af330e6e"
    }
   ],
   "schedules#60": [

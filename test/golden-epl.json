@@ -1,5 +1,5 @@
 {
- "fp": "68ec6258f88a5b9b",
+ "fp": "970533ca1a8ba026",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -580,6 +580,11 @@
    "fp": "68ec6258f88a5b9b",
    "from": "e21104eced5f1765",
    "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
+  },
+  {
+   "fp": "970533ca1a8ba026",
+   "from": "68ec6258f88a5b9b",
+   "note": "Round 110 with Grokbot round 14's trust fixes (screens only; games as recorded)"
   }
  ],
  "result": {
@@ -594,7 +599,7 @@
     "heis": "065f6e734e9dbdc7",
     "history": "8526fe2171a3e13d",
     "universe": "d44bd69fe2f99477",
-    "screens": "1ca4a6f09fcf9dbc"
+    "screens": "7228f63e8e312633"
    },
    {
     "year": 2027,
@@ -606,7 +611,7 @@
     "heis": "2735f143249a7399",
     "history": "acd67544ef71efc8",
     "universe": "a2a520b152264c9c",
-    "screens": "6f91242779d8a9ff"
+    "screens": "6b481aa30a6daf3d"
    }
   ],
   "Wrexham#777": [
@@ -620,7 +625,7 @@
     "heis": "1d71e296053e1251",
     "history": "7cd20a41aa17b4e7",
     "universe": "a12f2c37d16ddcb0",
-    "screens": "4859ea383fa50dcc"
+    "screens": "bc6907771e8e5d27"
    },
    {
     "year": 2027,
@@ -632,7 +637,7 @@
     "heis": "c8945ca94f7edce6",
     "history": "a25e9457bc4c36e7",
     "universe": "98bd4f55404e1e23",
-    "screens": "f9f2a18f383f2793"
+    "screens": "c67d45d0eedef0ee"
    }
   ],
   "schedules#60": [
