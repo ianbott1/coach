@@ -10,7 +10,7 @@ let bad=0;
 for(const f of FILES){
   // basketball has a quarter of football's states a game: twice the games (round 74: 200 college games read 15.9 on one
   // seed, 3 to 8 on three others, 4.6 over 600)
-  const NGf=process.argv[2]?NG:/basketball/.test(f)?NG*2:NG;
+  const NGf=process.argv[2]?NG:/basketball|hockey/.test(f)?NG*2:NG;   // round 110: hockey too, about 9 states a game like basketball (engine 24's 200 read 10.1, 600 read 6.8)
   const rows=[]; let games=0, tries=0, A=null;
   for(let t=0;games<NGf&&t<80;t++){
     A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','NAMES','newDynasty','doAdvance','live','liveTick','answerLive','liveChance','liveTau','liveScore','LEAGUE','LIVE_SIG','LIVE_MU','winProb','withPlan']});
