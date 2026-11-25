@@ -1,5 +1,5 @@
 {
- "fp": "6f2a9ef74eae7be6",
+ "fp": "dbbde37331a49d1c",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -130,6 +130,11 @@
    "fp": "6f2a9ef74eae7be6",
    "from": "f12aedf77a0a3bc8",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "dbbde37331a49d1c",
+   "from": "6f2a9ef74eae7be6",
+   "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
   }
  ],
  "result": {
@@ -143,8 +148,8 @@
     "poll": "b598e68e8e87dfc2",
     "heis": "c15cc548db28d6ea",
     "history": "103a796d2863e60b",
-    "universe": "53062727a1e41b84",
-    "screens": "4beaf49da3fe595c"
+    "universe": "1b20d91c1b4f9bc1",
+    "screens": "a41b2c25441d6b81"
    }
   ]
  }
