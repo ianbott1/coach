@@ -391,7 +391,10 @@ function liveWPHTML(onCall){
      9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */
   if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) }   // round 99: never under half an inning: in extras liveTau is 0 and a one-run lead read 99% (Muse)
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
-    try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
+    // round 110: from the plan you kicked off on (the card before the game reads before your plan, so it can't give the
+    // answer away; once it's played, the plan is in the game: engine 24's bigger counters read 10 points low on Balanced)
+    const pk=PLANS[plan]?plan:"balanced";
+    try{ live.pre=LEAGUE.wdl?withPlan(pk,()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[withPlan(pk,()=>winProb(S.myTeam,opp,meH,!!live.g.neutral)),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,tau,live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
   const early=tau>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
