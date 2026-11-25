@@ -8,7 +8,7 @@ decisions included.
 Round 109's own miss: it measured that the card's numbers played as shown, not that its reasons were true or that the
 advice varied for a given roster (averaged over clubs, 56-75% "usual plan" hid rosters where one plan always wins).
 
-## Round 110: the decision is the player's, and the game is trustworthy
+## Round 110 (built; see ARCHITECTURE.md): the decision is the player's, and the game is trustworthy
 - Plan card: no per-plan win chances or "would add N" before the game. Show the opponent's evidence instead (team-level
   ranks the game publishes: rim protection and perimeter defence; coverage, pass rush, tackling; skating, checking,
   defence, passing; the day's starter's strikeout and walk lines), and an assistant's opinion as good as your staff

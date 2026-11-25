@@ -472,6 +472,40 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
 - Left for later: the pitch applying soccer's late change, the hockey rink on a
   phone, red-zone punts (round 106), kicks against going for it (a model question).
 
+Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
+- Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
+  the answer (planScoutHTML, core 99_app): for each plan, your roster's lean and the opponent's answer to it as league
+  ranks from tonight's rosters, the quantities the engine plays (sportPlanFit; planVsOpp); baseball names the starter,
+  his Stuff and Control (1-20) and his lean. Your assistant's read (assistantPlan, core 93_attrs): each plan's worth plus
+  an error sized to the sport's plan cap, 0.9 of it for the worst staff and 0.3 for the best, drawn from the game, so a
+  reload asks the same; it is also what Sim ahead plays. Measured (probes/r110-asst.js, 8 clubs x 6 nearest x 300
+  games): he picks the best plan 71-88%; following him wins about three quarters of what the best plan adds; the card's
+  pick is the sim's 48 of 48 in all seven. The after-game card still says what each plan was worth (planPre).
+- Ranks are leans: shapes are attributes less the player's rating (round 87's design), so a strong side can lean away
+  from something it does well. The old reason lines read as absolute ("Washington miss tackles in space" for tackling
+  ranked 5th; Oregon's 85 CB "132nd in coverage"): the card and the after-game reason now say "leans Nth of N".
+- Engine 24: the opponent's part counts double against your fit (planVsK, applied once in planVsTot; the sports'
+  counters had it inside too, the same at 1). Measured per roster (scratch r110 modal-K*.txt, 10 rosters a game), the
+  most one-plan roster at strength 1 / 2: nfl 97/71%, ncaab 96/79, nhl 94/87, epl 97/82, mlb 83/79; past 2 adds little.
+  Played on shown (probes/r109-vs2.js, change from engine 22, 4 clubs x 3,000 games): nfl 0.95, cfb 1.11, nba 1.00,
+  ncaab 1.03, nhl 1.06, epl 0.85 then 1.00 with SC24_PLAY 1.18 on its opponent part, mlb 1.02. Computer games unchanged.
+- Hockey and baseball play your days off as soon as your game ends (skipOffDaysNow), and the opening's, stopping on the
+  last day to trade or a day a club brings an offer: the card read the next game on the day off and Play then played
+  those days and started on other numbers (Muse: 47/52 read, 53/57 played). Five of five equal after. The same steps in
+  the same order, earlier. Baseball's card read today's starter, not the game's (cardStepFor).
+- Football's clock holds through a call (12 of 12; it stepped back about two minutes after 5 of 12): the rest of a drive
+  after a fourth-down or two-point call goes on from the call's clock, and a call between drives reads the next start.
+- Reads: every read you make counts, right, fair (followed the report or tonight's numbers, and the night went the other
+  way) or wrong; "Right read: they surprised you" and the uncounted dash are gone (readFair, tallyWords).
+- A game page (gamePageView): a score in the schedule opens the score by period, the win chance through the game
+  (liveChance after each drive or stretch; a computer game played again from its dice as Watch does), both sides' stats
+  and players, Watch. Replays have Exit, always (and Esc).
+- Not reproduced: the 78-yard field goal (current engine: 22,000 spotted kicks, none past 60; overtime kicks unspotted
+  draw at 42) and college basketball's future scores (run of play against the scoreboard at Normal, Fast, Very Fast and
+  the ten-minute call). Need a screenshot or the career.
+- Engine 23 seasons: games, records and the league identical to round 109 in all seven (screens differ: the card, the
+  tally, the clock, days off on game day).
+
 Round 109: the plan is a decision, and the roster moves it (engine 23; Grokbot round 13, asks 2 and 3: "a tactic that is
 right against one side is wrong against another. Until that is true here, the plan is a setting, not a decision").
 Every change is gated on engine 23: at ENGINE_NOW=22 all seven fast goldens match round 108, and the computer's games
