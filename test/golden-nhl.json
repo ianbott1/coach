@@ -1,5 +1,5 @@
 {
- "fp": "66420c11d5bf8381",
+ "fp": "c195eb44d2e863f3",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -610,6 +610,11 @@
    "fp": "66420c11d5bf8381",
    "from": "736d6f6ab3039015",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "c195eb44d2e863f3",
+   "from": "66420c11d5bf8381",
+   "note": "Round 109: on a day off the plan's reason reads the card's game (cardGame), not the roster-only line; screens only (games, records, universe unchanged; diffed)"
   }
  ],
  "result": {
@@ -624,7 +629,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "2e9a5bc1191f38b1",
-    "screens": "5c555a2fba916759"
+    "screens": "4f7bba916a3b6503"
    },
    {
     "year": 2027,
@@ -636,7 +641,7 @@
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
     "universe": "195fabe6e443d7d7",
-    "screens": "4d6cc755687b424f"
+    "screens": "1606b9d7f8e20401"
    }
   ],
   "Edmonton#777": [
@@ -650,7 +655,7 @@
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
     "universe": "bbc5e8c56ea16ea5",
-    "screens": "4c304d23f2b5f42e"
+    "screens": "02919ed0ec7d875d"
    },
    {
     "year": 2027,
@@ -662,7 +667,7 @@
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
     "universe": "d0c7cb63508db1e6",
-    "screens": "479ad012834c0f62"
+    "screens": "57d5d1111caeb2b7"
    }
   ],
   "schedules#60": [
