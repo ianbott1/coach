@@ -513,6 +513,16 @@ play exactly as before (the opponent's part is on a person's side only), except 
   ranges. Without it bs-calibrate is identical to engine 22 but for the stamp.
 - Open: baseball pairs play a few points under the card on your path at engine 22 too (Seattle v Houston 32 shown, 25
   played): not this round's change, to look at.
+- Full suite (three legs, the machine's 2-hour limit): every test passes but draft labels (pro), which gives the same
+  line on round 108 (hockey's "there" band, 1 label out). Three tests were behind engine 23, the game was not:
+  reported cases asked the plan's worth without tonight's opponent (now named; 7,962 checks match); sim ahead's
+  no-stops run met round 94's stop for a top-two man out for the season (Wrexham, a CM out 54 weeks at step 10; the
+  test now checks the stop is true and sims on; injuries over 8 league seasons 1,300 at 17.6 weeks against round
+  108's 1,318 at 18.6, top-two season-enders 155 against 189); stakes' Manchester City seed 17 now settles the title
+  on the last day (checked against the points: open until then), so seed 12 (4 to spare, marked the week it settled).
+  March vs history failed once and passed on the resume, as before.
+- Seen in a browser (laptop and phone, all seven, no page errors): the card's reason names tonight, e.g. "Swing for
+  the fences would add 10: Nico Padilla starts for Seattle and doesn't miss many bats."
 
 Round 108: watching, and managing in real time (engine 22; Ian: "I should feel like I'm managing the team in
 real-time"; "I often would watch full 90 minute soccer matches in football manager"). Every change below is gated on
