@@ -147,7 +147,8 @@ const PLAN_PICK_MIN=12;
    (assistants rated 62) to 40 for the worst (-52), drawn from the game (club, season, step), so a reload asks the same.
    The card says what he'd pick; Sim ahead plays it. */
 function staffReadQ(t){ try{ const o=U&&U.oc&&U.oc[t], d=U&&U.dc&&U.dc[t]; if(!o&&!d)return 0; return ((o?o.q:0)+(d?d.q:0))/((o?1:0)+(d?1:0)) }catch(e){ return 0 } }
-function staffReadSD(t){ const q=Math.max(-52,Math.min(62,staffReadQ(t))); return 40-31*(q+52)/114 }
+const ASST_K=+((typeof process!=="undefined"&&process.env&&process.env.ASST_K)||1);
+function staffReadSD(t){ const q=Math.max(-52,Math.min(62,staffReadQ(t))), cap=typeof sportPlanCap==="function"?sportPlanCap():40; return ASST_K*cap*(0.9-0.6*(q+52)/114) }   // as a share of the sport's plan cap: 0.9 of it for the worst staff, 0.3 for the best
 function assistantPlan(t,gap,opp,step){
   const sd=staffReadSD(t), r=mulberry32(strHash("asst|"+t+"|"+(SEA&&SEA.year)+"|"+(step!=null?step:SEA&&SEA.step)+"|"+(opp||""))>>>0), g=()=>{ let u=0,v=0; while(!u)u=r(); while(!v)v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v) };
   let best="balanced", bv=g()*sd*0.5;
