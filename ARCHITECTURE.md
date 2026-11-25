@@ -505,6 +505,14 @@ Round 110: the decision is the player's, and the game is trustworthy (engine 24;
   the ten-minute call). Need a screenshot or the career.
 - Engine 23 seasons: games, records and the league identical to round 109 in all seven (screens differ: the card, the
   tally, the clock, days off on game day).
+- From Grokbot's round 14 (215.5 of 350): the plan card sits above the team card (the side column's pinned Play button
+  sat over it); every plan's note holds one height (Balanced had none: the buttons moved 60 px on a click; 0 now, three
+  games, four clicks each, test in scratch r110 planclick.js); a plan carried from an earlier game is asked about on the
+  first tap of Play or Sim game ("Keep Take risks from your last game? Tap again"); soccer's late read says whose setup
+  "keep" keeps (his assistant's, when he chose it). Not reproduced on this build: pro football's plan reverting (the
+  buttons, Play's label and the plan agree after every click, laptop and phone). Not yet: the duplicate field on a switch
+  to Full match, an injured man on the field (hlFit swaps in a healthy backup; a man hurt in the game stays on its
+  replay), the pitch's score against the header, pro basketball's read grades against the card: round 111's match view.
 
 Round 109: the plan is a decision, and the roster moves it (engine 23; Grokbot round 13, asks 2 and 3: "a tactic that is
 right against one side is wrong against another. Until that is true here, the plan is a setting, not a decision").

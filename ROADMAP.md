@@ -24,6 +24,19 @@ advice varied for a given roster (averaged over clubs, 56-75% "usual plan" hid r
 - Ian's quick wins: a box score page like ESPN's; a schedule score opens its box score with a replay; an easy exit from
   a replay; a win-probability chart in the box score.
 
+## Grokbot round 14 (Nov 25, 215.5 of 350), folded in
+- Round 15 goals: plan variety (no plan best in more than 5 of 8, every plan best once, reasons that agree with the
+  scouting ranks); player weight (a starter for a backup 15 lower moves the chance 5+ points: Ian agreed to weight by
+  position's real impact instead: goalie, QB, PG, SP, keeper big; a closer can't honestly move 5); layout stability
+  (0 px shift; no sticky bar over the plan, reason or result, 1280x800 and 390x844).
+- Round 111 takes: a named play-by-play log in sync with the score (football snap by snap; Full match captions kept in
+  the log; hockey and baseball lagging up to 17 minutes or half an inning), the duplicate field on a switch to Full
+  match, the pitch's score against the header, hockey's rink crowding one end, baseball's controls under the bar on a
+  phone, Skip to next call that skips, a condensed Full match for soccer.
+- Round 112 takes: player weight by position (hockey's goalie moved 1 point for Grokbot), plans you can see on the
+  field (soccer's shape, hockey's log matching your system), pro basketball scoring (135-141; aim 110-118, 35-40 threes),
+  soccer's odds too even, college basketball's schedule of mismatches.
+
 ## Rounds 111-112: watching
 - Pacing: Slow in real time (90 minutes a soccer match), Normal at a TV pace; basketball's Normal and Slow are far too
   fast. A bigger field. Player stats accumulating live (baseball's scoreboard stats as a batter comes up).
