@@ -31,11 +31,12 @@ const DIST=process.env.DIST||path.join(__dirname,'..','dist');
     drives.forEach(d=>(d.pn||[]).forEach(q=>{ if(q[1]!=="s")return; const tm=q[0]===0?g.home:g.away, p=SEA.roster[tm][q[2]]; if(!p)return; n++; shown[tm+'|'+p.n]=(shown[tm+'|'+p.n]||0)+1 }));
     let short=0, players=0; const ex=[], key=LEAGUE.id==="nhl"?"sog":"shots";
     Object.keys(shown).forEach(k=>{ const [tm,nm]=k.split('|'), p=SEA.roster[tm].find(x=>x&&x.n===nm); if(!p)return; players++;
-      const gl=p.gl||[], w=glStride(), st={}; if(gl.length>=w){ const o=gl.length-w; (STAT_KEYS[POS[gl[o+5]].p]||[]).forEach((kk,i)=>st[kk]=gl[o+6+i]) }
+      // round 110: this game's row, not the latest (the days off now play as the game ends, and the other club may have played again)
+      const gl=p.gl||[], w=glStride(), st={}; let o=-1; for(let j=gl.length-w;j>=0;j-=w){ if(gl[j]===live.step){ o=j; break } if(gl[j]<live.step)break } if(o>=0)(STAT_KEYS[POS[gl[o+5]].p]||[]).forEach((kk,i)=>st[kk]=gl[o+6+i]);
       if((st[key]||0)<shown[k]){ short++; if(ex.length<2)ex.push(`${nm}: shown ${shown[k]}, box ${st[key]||0}`) } });
     // round 107: hockey's shooters' shots come to no more than the team's (Muse: 31 against 30)
     let over=[]; if(LEAGUE.id==="nhl"){ const last=drives[drives.length-1], T=last&&last.sog; if(T)[g.home,g.away].forEach((tm,j)=>{ let sum=0;
-      SEA.roster[tm].forEach(p=>{ if(!p)return; const gl=p.gl||[], w=glStride(); if(gl.length<w)return; const o=gl.length-w; const ks=STAT_KEYS[POS[gl[o+5]].p]||[], i=ks.indexOf("sog"); if(i>=0)sum+=gl[o+6+i] });
+      SEA.roster[tm].forEach(p=>{ if(!p)return; const gl=p.gl||[], w=glStride(); if(gl.length<w)return; let o=-1; for(let j=gl.length-w;j>=0;j-=w){ if(gl[j]===live.step){ o=j; break } if(gl[j]<live.step)break } if(o<0)return; const ks=STAT_KEYS[POS[gl[o+5]].p]||[], i=ks.indexOf("sog"); if(i>=0)sum+=gl[o+6+i] });
       if(sum>T[j]){ short++; ex.push(`${tm}: shooters ${sum}, team ${T[j]}`) } }) }
     return {n:n,players:players,short:short,ex:ex,kept:drives.filter(d=>Array.isArray(d.pn)).length} });
   r.cr=cr;
