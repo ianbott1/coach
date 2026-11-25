@@ -1,5 +1,5 @@
 {
- "fp": "4ba487ad29611ce8",
+ "fp": "6c5696fae0ab8471",
  "log": [
   {
    "fp": "4a0dc082893a99c5",
@@ -660,6 +660,11 @@
    "fp": "4ba487ad29611ce8",
    "from": "4ba487ad29611ce8",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "6c5696fae0ab8471",
+   "from": "4ba487ad29611ce8",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "result": {
@@ -673,8 +678,8 @@
     "poll": "44f7189f05bd9377",
     "heis": "ac04dcfdb5834804",
     "history": "509f74bb6a73f72b",
-    "universe": "98f797e5781a54ff",
-    "screens": "53c729f6acc751b9"
+    "universe": "b55cbcc2b69deb46",
+    "screens": "a323b77a32d82719"
    },
    {
     "year": 2027,
@@ -685,8 +690,8 @@
     "poll": "b7dbca07486e89a9",
     "heis": "8c2e06f310194e3b",
     "history": "57214d651bc19c31",
-    "universe": "3111b28bb5cfa66b",
-    "screens": "45725154274d2a4f"
+    "universe": "6f33836b64041304",
+    "screens": "57da42adcbc9f4aa"
    },
    {
     "year": 2028,
@@ -697,8 +702,8 @@
     "poll": "64ffc51c070e01ff",
     "heis": "6f7fa045a13e6729",
     "history": "e59f19989aec9378",
-    "universe": "528ce36fe285416e",
-    "screens": "19564bff99ababdd"
+    "universe": "559b5f2ea4b16249",
+    "screens": "b8151a9711d2e8d7"
    },
    {
     "year": 2029,
@@ -709,8 +714,8 @@
     "poll": "2dbb1cc55a32c422",
     "heis": "df5a2d25714cc5cb",
     "history": "d9e07763e0a96646",
-    "universe": "7274a5903b87f2fe",
-    "screens": "ec9b55f948d52441"
+    "universe": "c3ccb1f07726f36e",
+    "screens": "ff23101619a92a1c"
    }
   ],
   "Tennessee#2024": [
@@ -723,8 +728,8 @@
     "poll": "de0d96778f342a23",
     "heis": "a8ae8a893a6a477a",
     "history": "34c8cb84a37b4179",
-    "universe": "c2a1a2f03316eede",
-    "screens": "4df7877cf4c7793a"
+    "universe": "76113a6f881dc33a",
+    "screens": "11ad8ead9db7ec30"
    },
    {
     "year": 2027,
@@ -735,8 +740,8 @@
     "poll": "7653c7df1ea9e7f5",
     "heis": "bc3e14154d33fa5b",
     "history": "7a2bd9ad1c503dcd",
-    "universe": "e3069f5cab4de61f",
-    "screens": "85d6d52d63ff8885"
+    "universe": "5ecce41259c41bc3",
+    "screens": "455f76cfec57aab4"
    },
    {
     "year": 2028,
@@ -747,8 +752,8 @@
     "poll": "4a1c99d05703fcfb",
     "heis": "e03e33df0b2de7f2",
     "history": "55550292aa6a827f",
-    "universe": "1a1d75be2d384481",
-    "screens": "8ace542d4e471a31"
+    "universe": "d129f56ea02fbdfb",
+    "screens": "34f90cb8f19f3728"
    },
    {
     "year": 2029,
@@ -759,7 +764,7 @@
     "poll": "c76a0e2eafe1c1a9",
     "heis": "3c81c31a800681d7",
     "history": "2ffdac770979cbd1",
-    "universe": "5f9a87fded400876",
+    "universe": "eabb0dd75f2f88f3",
     "screens": "1b5e37e818a62ca7"
    }
   ],
@@ -773,8 +778,8 @@
     "poll": "c596a8e7a88b099f",
     "heis": "496b8d610ad88711",
     "history": "73d458b03e8d8dc3",
-    "universe": "d1f241b009152151",
-    "screens": "41a276135751fb5d"
+    "universe": "2b1e58123b43a43b",
+    "screens": "05d217ede02be247"
    },
    {
     "year": 2027,
@@ -785,8 +790,8 @@
     "poll": "331d4590f7b46acd",
     "heis": "4b2536c4fe266f31",
     "history": "ae98188996c522d3",
-    "universe": "ecbcf0cb6a3b80e7",
-    "screens": "ef2873ab708ecf57"
+    "universe": "9d28d7965576f6cf",
+    "screens": "31cfee9141ea870a"
    },
    {
     "year": 2028,
@@ -797,8 +802,8 @@
     "poll": "3df09c86f86199b5",
     "heis": "a1d5e4fdae6e23c1",
     "history": "4ddd0139692621a0",
-    "universe": "0275fd3c20e7af20",
-    "screens": "2088583351acc038"
+    "universe": "8bfc25745324e856",
+    "screens": "5bcf5f05861694b0"
    }
   ],
   "NY Giants#31337": [
@@ -811,8 +816,8 @@
     "poll": "7cb5785c1f87d8c6",
     "heis": "f0f0b8e16ed1d653",
     "history": "229c51209e3ff47c",
-    "universe": "802b0c367cabaec6",
-    "screens": "27715e88d9d976e3"
+    "universe": "a3293ef4f8e86939",
+    "screens": "3619838323955b6c"
    },
    {
     "year": 2027,
@@ -823,8 +828,8 @@
     "poll": "b12e275c0da8ac28",
     "heis": "5c1d67f0e8ebe73f",
     "history": "d961d85771d90c9c",
-    "universe": "726e765c3c4898c4",
-    "screens": "8d11dc3c42ee4ba3"
+    "universe": "bb5596ae7abaa950",
+    "screens": "2062cdf689a77b90"
    },
    {
     "year": 2028,
@@ -835,8 +840,8 @@
     "poll": "b6d09dfd96c0a70f",
     "heis": "ec6b0e72c4acde46",
     "history": "5b49f76372b8ca91",
-    "universe": "06727dd84ab1c3f7",
-    "screens": "c43a8c68f34c9deb"
+    "universe": "51ca8bcf5000a94d",
+    "screens": "e2762bc9e1bd44e1"
    }
   ],
   "schedules#60": [

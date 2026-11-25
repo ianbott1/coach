@@ -1,5 +1,5 @@
 {
- "fp": "7d463a3430fbeb01",
+ "fp": "e21104eced5f1765",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -570,59 +570,64 @@
    "fp": "7d463a3430fbeb01",
    "from": "7d463a3430fbeb01",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "e21104eced5f1765",
+   "from": "7d463a3430fbeb01",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "92f83a8e028072f9",
-    "post": "38b04255315ddcdd",
-    "champion": "Manchester United",
-    "rec": "8bbeb8b659813b30",
-    "poll": "a724b4fac2f06904",
-    "heis": "01dd37bc7325f176",
-    "history": "6384997958515063",
-    "universe": "4628d688d9470701",
-    "screens": "ae285a3b1b4eb778"
+    "games": "a535b50304cdfe00",
+    "post": "cec788ef4c6c0e4b",
+    "champion": "Arsenal",
+    "rec": "cf8f89d31ccebf68",
+    "poll": "1654660bd2888ced",
+    "heis": "065f6e734e9dbdc7",
+    "history": "8526fe2171a3e13d",
+    "universe": "6da08ca1887b4c45",
+    "screens": "b035cd907a3b11e6"
    },
    {
     "year": 2027,
-    "games": "a8a4b4bf5bb013da",
-    "post": "42945fc450db6c8e",
+    "games": "667c7cd0185677f6",
+    "post": "d07a475273ac92e0",
     "champion": "Manchester City",
-    "rec": "861dcdfa15362ead",
-    "poll": "46e5862a4e8ce7d7",
-    "heis": "eb3ac9729b9218e4",
-    "history": "90dec017a25fa243",
-    "universe": "baf65c16e253c2bd",
-    "screens": "514067a1a58f15c7"
+    "rec": "91dd098739603a83",
+    "poll": "31da664ac8ef65e3",
+    "heis": "2735f143249a7399",
+    "history": "acd67544ef71efc8",
+    "universe": "d7efbe4c9c8f1708",
+    "screens": "a217922285a91337"
    }
   ],
   "Wrexham#777": [
    {
     "year": 2026,
-    "games": "589343fcd918a64a",
-    "post": "fd09bb65fec9feb9",
+    "games": "1b455d8e9d689509",
+    "post": "661511bcffd32a70",
     "champion": "Manchester City",
-    "rec": "2ec1c1e69f089773",
-    "poll": "bf7f1d88347a9787",
-    "heis": "c3ba80646ca3f1fd",
-    "history": "4c6b5a840a49e7ee",
-    "universe": "e1f955392f87ceef",
-    "screens": "6f5acb6838118624"
+    "rec": "7eda5dbfe088c6fa",
+    "poll": "ce90ced1428535b3",
+    "heis": "1d71e296053e1251",
+    "history": "7cd20a41aa17b4e7",
+    "universe": "31de785cde43b72b",
+    "screens": "7be263e6bda7112e"
    },
    {
     "year": 2027,
-    "games": "855d2d3b04ab7f7a",
-    "post": "cfabbbce4a409b7c",
-    "champion": "Manchester City",
-    "rec": "54301174b00560ad",
-    "poll": "5e70f7b5ad740403",
-    "heis": "6a9f17a496fb041d",
-    "history": "6412fe9f0c0ffec9",
-    "universe": "5bbcdb5d5e133a15",
-    "screens": "25d78584c873cc54"
+    "games": "ca2c4ff11ffbf3f6",
+    "post": "6374dcb63d32455b",
+    "champion": "Aston Villa",
+    "rec": "eb462e34bad98a98",
+    "poll": "3575573eac0d47c3",
+    "heis": "c8945ca94f7edce6",
+    "history": "a25e9457bc4c36e7",
+    "universe": "a3b6de9f1e50a677",
+    "screens": "90816514ffddcd75"
    }
   ],
   "schedules#60": [

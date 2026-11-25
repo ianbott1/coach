@@ -1,5 +1,5 @@
 {
- "fp": "736d6f6ab3039015",
+ "fp": "66420c11d5bf8381",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -605,6 +605,11 @@
    "fp": "736d6f6ab3039015",
    "from": "736d6f6ab3039015",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "66420c11d5bf8381",
+   "from": "736d6f6ab3039015",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "result": {
@@ -618,8 +623,8 @@
     "poll": "3930f4d04e8ea79e",
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
-    "universe": "c9d90591c6f408ff",
-    "screens": "6195bd53f3e07610"
+    "universe": "2e9a5bc1191f38b1",
+    "screens": "5c555a2fba916759"
    },
    {
     "year": 2027,
@@ -630,8 +635,8 @@
     "poll": "9e1437b4306e21ad",
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
-    "universe": "5ecdd4bdd3ccff19",
-    "screens": "37ccf431c57078a9"
+    "universe": "195fabe6e443d7d7",
+    "screens": "4d6cc755687b424f"
    }
   ],
   "Edmonton#777": [
@@ -644,8 +649,8 @@
     "poll": "103fbed1ccbe4635",
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
-    "universe": "cc74326a7bdbdcf7",
-    "screens": "69660a75211f3e7e"
+    "universe": "bbc5e8c56ea16ea5",
+    "screens": "4c304d23f2b5f42e"
    },
    {
     "year": 2027,
@@ -656,8 +661,8 @@
     "poll": "6473ff5c85c28291",
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
-    "universe": "a196285b1b1fc99b",
-    "screens": "e83d7756a4dd491c"
+    "universe": "d0c7cb63508db1e6",
+    "screens": "479ad012834c0f62"
    }
   ],
   "schedules#60": [

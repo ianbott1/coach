@@ -1,5 +1,5 @@
 {
- "fp": "981b66450a464c68",
+ "fp": "8315ac362a1d936b",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -250,6 +250,11 @@
    "fp": "981b66450a464c68",
    "from": "981b66450a464c68",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "8315ac362a1d936b",
+   "from": "981b66450a464c68",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "result": {
@@ -262,9 +267,9 @@
     "rec": "7d949ee2c854cfb8",
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
-    "history": "fd64034a4fd3d2ad",
-    "universe": "9955f148c79d31b8",
-    "screens": "f9f68e65d73b3ea8"
+    "history": "da15fbfd7101bc37",
+    "universe": "0717c8c7bfc996a4",
+    "screens": "18fbc5e9f37c36fe"
    },
    {
     "year": 2027,
@@ -274,9 +279,9 @@
     "rec": "c4e613880ca2a9ed",
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
-    "history": "4bab8c7eb00e4b7e",
-    "universe": "af197e3bf7db59dd",
-    "screens": "7e58bc1b468f6f44"
+    "history": "6acd7d078226bbb4",
+    "universe": "8ca955191d98c403",
+    "screens": "784548bffd19cb6b"
    }
   ],
   "Colorado#777": [
@@ -288,9 +293,9 @@
     "rec": "fb7cecfa7faad8b4",
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
-    "history": "7fc71e187a31d02c",
-    "universe": "ca5eec366af46877",
-    "screens": "95ae506b0e7845d5"
+    "history": "2776d71e098b91d8",
+    "universe": "f99f323786cddf54",
+    "screens": "8a871d1784f2a45e"
    },
    {
     "year": 2027,
@@ -300,9 +305,9 @@
     "rec": "253cfe6202274537",
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
-    "history": "12462c1fdf09ce32",
-    "universe": "8955791d04365727",
-    "screens": "8ed677cba68ef950"
+    "history": "53e39dd404565cdb",
+    "universe": "c86bd28ace3a8dd8",
+    "screens": "a716a8b030ff0f3d"
    }
   ],
   "schedules#60": [

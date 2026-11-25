@@ -1,5 +1,5 @@
 {
- "fp": "dc7ac367366af5f0",
+ "fp": "50d8c2fb77ebe5fb",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -345,6 +345,11 @@
    "fp": "dc7ac367366af5f0",
    "from": "dc7ac367366af5f0",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "50d8c2fb77ebe5fb",
+   "from": "dc7ac367366af5f0",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "out": [
@@ -354,20 +359,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "21-7-10",
-      "result": "Finished 3rd in the Premier League",
-      "grade": "B"
+      "rec": "20-6-12",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "61a25953e3712da6"
+     "book": "05e7371b80236207"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
       "rec": "11-9-18",
-      "result": "Finished 15th in the Premier League",
+      "result": "Finished 16th in the Premier League",
       "grade": "C"
      },
-     "book": "7e0159705b0e5a3c"
+     "book": "60da14195a5b38fd"
     }
    ]
   },
@@ -377,20 +382,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "11-11-16",
-      "result": "Finished 16th in the Premier League",
-      "grade": "D"
+      "rec": "11-14-13",
+      "result": "Finished 12th in the Premier League",
+      "grade": "C-"
      },
-     "book": "79b40b2a0106bc04"
+     "book": "31038064206e47bd"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-12-14",
-      "result": "Finished 13th in the Premier League",
-      "grade": "C+"
+      "rec": "8-10-20",
+      "result": "Relegated (18th)",
+      "grade": "D"
      },
-     "book": "8ab9813d80ed4b9e"
+     "book": "db6bd1fbb6635b90"
     }
    ]
   },
@@ -400,20 +405,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-8-14",
+      "rec": "16-9-13",
       "result": "Finished 8th in the Premier League",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "b121e3a9e5d5d732"
+     "book": "ea199f2cf932c3cc"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "8-14-16",
-      "result": "Finished 15th in the Premier League",
-      "grade": "C"
+      "rec": "15-15-16",
+      "result": "Finished 12th in the Championship",
+      "grade": "D"
      },
-     "book": "74bd5fdce8fec7d5"
+     "book": "5f74d79473b0fbc9"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "f12aedf77a0a3bc8",
+ "fp": "6f2a9ef74eae7be6",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -125,6 +125,11 @@
    "fp": "f12aedf77a0a3bc8",
    "from": "f12aedf77a0a3bc8",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "6f2a9ef74eae7be6",
+   "from": "f12aedf77a0a3bc8",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "result": {
@@ -138,8 +143,8 @@
     "poll": "b598e68e8e87dfc2",
     "heis": "c15cc548db28d6ea",
     "history": "103a796d2863e60b",
-    "universe": "b75a163ab2ff670a",
-    "screens": "8440d6a4acf362c1"
+    "universe": "53062727a1e41b84",
+    "screens": "4beaf49da3fe595c"
    }
   ]
  }

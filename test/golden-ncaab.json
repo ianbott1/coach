@@ -1,5 +1,5 @@
 {
- "fp": "fe581ffa3675d56e",
+ "fp": "7d6238c987532865",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -595,6 +595,11 @@
    "fp": "fe581ffa3675d56e",
    "from": "4a8d1fe7a35dbccd",
    "note": "Round 108 (engine 22): soccer plays football's numbers and shapes, the pitch, rink and court move without jumps, shots grow out of the play, tired legs and the benches show, live instructions (soccer, hockey, basketball, its pace playing from the stretch set), soccer changes any time, football and baseball moving without jumps, the pitcher's count; at ENGINE_NOW=21 all seven fast goldens match round 107."
+  },
+  {
+   "fp": "7d6238c987532865",
+   "from": "fe581ffa3675d56e",
+   "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
   }
  ],
  "result": {
@@ -608,7 +613,7 @@
     "poll": "2a55a0cfd29942e4",
     "heis": "dd994c11b697e524",
     "history": "21cc7906f23c649c",
-    "universe": "7e513c9ed0e5b3aa",
+    "universe": "51d3477aae7c588d",
     "screens": "7abfad536748b87d"
    },
    {
@@ -620,8 +625,8 @@
     "poll": "6104f50439b52067",
     "heis": "28a248eac8caf373",
     "history": "1cfe3e490fe2066c",
-    "universe": "6dc6fc9a65b03a21",
-    "screens": "3856b64b5dd4f4fe"
+    "universe": "9c73391663b4780e",
+    "screens": "38a99bb296aa3d3c"
    }
   ],
   "Coppin State#2024": [
@@ -634,8 +639,8 @@
     "poll": "26edc4b624e67dc9",
     "heis": "942c9abdaed040d4",
     "history": "df81ab6f6095ef61",
-    "universe": "6043eaa40bf4141d",
-    "screens": "197da4f731b674bc"
+    "universe": "2f0b70cae6333b73",
+    "screens": "4319bb4be8927eca"
    },
    {
     "year": 2027,
@@ -646,8 +651,8 @@
     "poll": "9a4ecb50cbc55f8a",
     "heis": "ef6bde742321790a",
     "history": "29b9279493cb5e15",
-    "universe": "f8e59da3c2a431a8",
-    "screens": "a07c7f8d0632ffa9"
+    "universe": "f6921de745b2074c",
+    "screens": "1847e1b84dd35961"
    }
   ],
   "Gonzaga#777": [
@@ -660,8 +665,8 @@
     "poll": "dbdd18f0523ce927",
     "heis": "1ae6b7cab1508080",
     "history": "19307abf6ac1bf1f",
-    "universe": "243cb506046494ec",
-    "screens": "ee7613c61cfd8a13"
+    "universe": "4eec07bfca0c10aa",
+    "screens": "a95f02e7974fd0ac"
    },
    {
     "year": 2027,
@@ -672,8 +677,8 @@
     "poll": "2acaa39089e082dd",
     "heis": "f92ecd8e6f821427",
     "history": "5d5d55ca8c20f031",
-    "universe": "5cd9c31deefdaf76",
-    "screens": "221d729366b42088"
+    "universe": "9bd4bbf30707e267",
+    "screens": "565ef83de1dd8718"
    }
   ],
   "schedules#60": [
