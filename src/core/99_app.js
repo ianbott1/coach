@@ -2269,7 +2269,7 @@ function planFitHTML(wp){
    disagree with the number or with itself, as the fit line and the underdog line did). Whether it's the roster or the
    gap: the fit and the plan's own worth tonight are told apart. */
 function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
-  if(SEA&&SEA.phase==="week"){ const g=SEA.nextGame?SEA.nextGame(my):null; if(!g)return null; opp=g.home===my?g.away:g.home; atH=g.home===my; neu=!!g.neutral }
+  if(SEA&&SEA.phase==="week"){ const g=cardGame(my); if(!g)return null; opp=g.home===my?g.away:g.home; atH=g.home===my; neu=!!g.neutral }
   else { const pn=SEA&&SEA.postNext?SEA.postNext(my):null; if(!pn||!pn.opp)return null; opp=pn.opp; atH=pn.home===my||pn.home===true; neu=!!pn.neutral||pn.home===undefined }   // the postseason card, as it places the game
   if(!opp)return null;
   const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
@@ -2404,9 +2404,9 @@ function nextUpHTML(my,rk){
   if(typeof cpuNewsCard==="function")try{ h+=cpuNewsCard() }catch(e){}   // round 85: deadline deals around the league
   let ng=SEA.nextGame(my), ngStep=SEA.step;
   // a league with a game most days (LEAGUE.skipIdle): the button plays through
-  // the days you're off, so the card shows your next game, not an open date
+  // the days you're off, so the card shows your next game, not an open date (cardGame, which the plan line reads too)
   if(!ng&&SEA.phase==="week"&&LEAGUE.skipIdle){
-    const nx=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===my||x.away===my)).sort((x,y)=>x.week-y.week)[0];
+    const nx=cardGame(my);
     if(nx){ng=nx; ngStep=nx.week} }
   if(!ng&&SEA.phase==="week"){
     h+=`<div class="grouphead">Next up &mdash; ${esc(LEAGUE.dates[SEA.step]||"")}</div>

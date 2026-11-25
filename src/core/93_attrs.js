@@ -178,7 +178,14 @@ function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||
    Ian round 89) the plan's own measured worth at tonight's gap. gap: your edge before plans */
 function planEdge(t,pl,gap,o){ if(!pl||pl==="balanced")return 0; return (typeof sportPlanFit==="function"?sportPlanFit(t,pl):0)+(typeof sportPlanShiftH==="function"?sportPlanShiftH(pl,gap||0):0)+(o?planVs(t,o,pl):0) }
 /* your edge in your next game before any plan, for the plan rows */
-function planGapNow(t){ try{ const g=SEA.nextGame?SEA.nextGame(t):null; if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
+/* round 109: the game the card shows. A league with a game most days (LEAGUE.skipIdle: hockey, baseball) plays through
+   the days you're off, so the card names your next game; the plan's reason and gap read the same game (on an off day
+   they read none and fell back to the roster-only line: hockey 129 cards of 240 over four seasons, 96 naming a plan
+   that wasn't tonight's best; baseball 28, all of them) */
+function cardGame(t){ let g=SEA&&SEA.nextGame?SEA.nextGame(t):null;
+  if(!g&&SEA&&SEA.phase==="week"&&LEAGUE.skipIdle)g=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===t||x.away===t)).sort((x,y)=>x.week-y.week)[0]||null;
+  return g }
+function planGapNow(t){ try{ const g=cardGame(t); if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
    worth PLAN_PICK_MIN Elo. lean: what each plan's roster leans to */
 function planFitWords(t,pl,lean){ if(typeof PLANS==="undefined"||typeof sportPlanFit!=="function")return "";
