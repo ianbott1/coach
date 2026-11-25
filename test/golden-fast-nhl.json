@@ -1,5 +1,5 @@
 {
- "fp": "ec51d476d9e9a3a7",
+ "fp": "55b61b4531d1e1c8",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -150,6 +150,11 @@
    "fp": "ec51d476d9e9a3a7",
    "from": "ba84684e29c600a9",
    "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
+  },
+  {
+   "fp": "55b61b4531d1e1c8",
+   "from": "ec51d476d9e9a3a7",
+   "note": "Round 110 with Grokbot round 14's trust fixes: plan card above the team card, plan notes one height, carried plans confirmed, soccer's keep button says whose setup (screens only; games as recorded)"
   }
  ],
  "result": {
@@ -164,7 +169,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "18a791ee655ca54a",
-    "screens": "6f511f0a7855cea6"
+    "screens": "63be25ea974c0253"
    }
   ]
  }

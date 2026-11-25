@@ -1,5 +1,5 @@
 {
- "fp": "8d972af4a459f8a6",
+ "fp": "e16166e4f2373c43",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -644,6 +644,11 @@
    "fp": "8d972af4a459f8a6",
    "from": "503ce594a1bbfcc7",
    "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
+  },
+  {
+   "fp": "e16166e4f2373c43",
+   "from": "8d972af4a459f8a6",
+   "note": "Round 110 with Grokbot round 14's trust fixes: plan card above the team card, plan notes one height, carried plans confirmed, soccer's keep button says whose setup (screens only; games as recorded)"
   }
  ],
  "result": {
@@ -658,7 +663,7 @@
     "heis": "c15cc548db28d6ea",
     "history": "103a796d2863e60b",
     "universe": "1b20d91c1b4f9bc1",
-    "screens": "a41b2c25441d6b81"
+    "screens": "97bd0fa8c835b056"
    },
    {
     "year": 2027,
@@ -670,7 +675,7 @@
     "heis": "b4ffa259dc110758",
     "history": "30df8c6a5ac63bbf",
     "universe": "4701deea175ac80f",
-    "screens": "8c1e94c0982b6ccb"
+    "screens": "9f48990fb177b1f8"
    },
    {
     "year": 2028,
@@ -682,7 +687,7 @@
     "heis": "0ecf830bfdd27cc0",
     "history": "4b9bc405bf369f59",
     "universe": "c32d86c468e4811f",
-    "screens": "3fb23ebb96625479"
+    "screens": "9157bb1dbd5591b4"
    },
    {
     "year": 2029,
@@ -694,7 +699,7 @@
     "heis": "fe3d6add077d3b3a",
     "history": "de8d929d1f3b8644",
     "universe": "8981d7132350e9c7",
-    "screens": "404222812b703799"
+    "screens": "b4a92056ca3345ab"
    }
   ],
   "Rice#2024": [
@@ -708,7 +713,7 @@
     "heis": "b89539bc2c4bcbb7",
     "history": "fc979bb915dccb48",
     "universe": "10380d9dc9c99622",
-    "screens": "ea4d0d7b60ba3d93"
+    "screens": "82ebbabc3632380b"
    },
    {
     "year": 2027,
@@ -720,7 +725,7 @@
     "heis": "36ad73b9d62626c0",
     "history": "009bc31800100414",
     "universe": "929be6f8a70e2aff",
-    "screens": "0d0a7dc4c4e772eb"
+    "screens": "ae76631fe370b126"
    },
    {
     "year": 2028,
@@ -732,7 +737,7 @@
     "heis": "17c5af403a8337ba",
     "history": "4edf71f14797fbda",
     "universe": "a2bc01741f8ae07f",
-    "screens": "9483f76eed1ff8f7"
+    "screens": "a1cd7bf2f0ad939d"
    },
    {
     "year": 2029,
@@ -744,7 +749,7 @@
     "heis": "b3be9cd4b4705edb",
     "history": "fde71f70effd7d1a",
     "universe": "4ba67dbbdfb33453",
-    "screens": "ff71712aa084b209"
+    "screens": "be241b79f7351b7f"
    }
   ],
   "Oregon#777": [
@@ -758,7 +763,7 @@
     "heis": "aaf603a2b017fcb9",
     "history": "f70a72a9432aa85d",
     "universe": "28c5b9260b2b9abf",
-    "screens": "c7e870b894f23c71"
+    "screens": "7c58ce49bf647f72"
    },
    {
     "year": 2027,
@@ -770,7 +775,7 @@
     "heis": "a40126271010c989",
     "history": "7593cd2a0a921770",
     "universe": "e4803f776b2c1738",
-    "screens": "2ef2b64e4b844e9c"
+    "screens": "cd7ea2a87ed37cce"
    },
    {
     "year": 2028,
@@ -782,7 +787,7 @@
     "heis": "ca42131ae5a8e697",
     "history": "7cea5946a0f6c571",
     "universe": "de358700907a6eac",
-    "screens": "29b41e92b1a43291"
+    "screens": "bec6bc66ce17791b"
    }
   ],
   "Kent State#31337": [
@@ -796,7 +801,7 @@
     "heis": "7e6ab209b6e3cd69",
     "history": "5cc17e4324c8dc52",
     "universe": "353e61e701bbc266",
-    "screens": "2b5737064b0b9f9b"
+    "screens": "49e7ab4931e08d34"
    },
    {
     "year": 2027,
@@ -808,7 +813,7 @@
     "heis": "1623f5028a1836a6",
     "history": "a6f7e7a44f13b990",
     "universe": "4884cb56c26cf29c",
-    "screens": "4677a198b08350d9"
+    "screens": "978eace41487b5f3"
    },
    {
     "year": 2028,
@@ -820,7 +825,7 @@
     "heis": "a50d1a5323e697ab",
     "history": "2ed3ee225d93d2ea",
     "universe": "d3cd8de55789b3f5",
-    "screens": "d86c9b132caa3d97"
+    "screens": "90a7ebd36187107e"
    }
   ],
   "schedules#60": [

@@ -218,10 +218,11 @@ function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1
   if(T.to/n>=1.15||T.pos>=56)f.push("press"); if(T.cr/n>=1.05)f.push("wing"); if(T.lb/n>=1.3)f.push("direct"); if(T.pos<=42)f.push("block");
   return f }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
+// round 110: mine === false: the setup is his assistant's (Grokbot: "Keep your setup" named one he never picked)
 function readCall(stage,T,hint,cur,early,mine){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
-  const opts=(cur&&COUNTERS[cur]?[["keep",(mine===false?"Keep the setup your assistant chose: ":"Keep your setup: ")+COUNTERS[cur].l]]:[])   // round 110: whose it is (Grokbot: "Keep your setup" named one he never picked: his assistant's).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
+  const opts=(cur&&COUNTERS[cur]?[["keep",(mine===false?"Keep the setup your assistant chose: ":"Keep your setup: ")+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
   return {k:"read",stage:stage,h:early?early:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},

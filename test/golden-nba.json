@@ -1,5 +1,5 @@
 {
- "fp": "dce79d8f12df302a",
+ "fp": "b0d4fc8493ebefae",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -580,6 +580,11 @@
    "fp": "dce79d8f12df302a",
    "from": "c24c523e9e7ca2d9",
    "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
+  },
+  {
+   "fp": "b0d4fc8493ebefae",
+   "from": "dce79d8f12df302a",
+   "note": "Round 110 with Grokbot round 14's trust fixes: plan card above the team card, plan notes one height, carried plans confirmed, soccer's keep button says whose setup (screens only; games as recorded)"
   }
  ],
  "result": {
@@ -594,7 +599,7 @@
     "heis": "2c98bc6f5fc13050",
     "history": "238e72fb17299dd5",
     "universe": "ab0d577291777efc",
-    "screens": "e17b4f346b21b442"
+    "screens": "d2b4364c464bd3a4"
    },
    {
     "year": 2027,
@@ -606,7 +611,7 @@
     "heis": "02ebadf6932b7f6a",
     "history": "01efbe25cfd940ee",
     "universe": "bb81ea2771bbbf45",
-    "screens": "c7678a6518687bdd"
+    "screens": "593c82311b570ecc"
    }
   ],
   "Detroit#777": [
@@ -620,7 +625,7 @@
     "heis": "635d996bb8c406fc",
     "history": "e96eb46ec64147d8",
     "universe": "a6287fc5e42e1707",
-    "screens": "a3eeb87dfd0dbbdd"
+    "screens": "888e82025ec3196a"
    },
    {
     "year": 2027,
@@ -632,7 +637,7 @@
     "heis": "746e3a3070225b55",
     "history": "0eaf33ad660bf773",
     "universe": "2a51ad4ab26ac914",
-    "screens": "9d046fb64244ba9d"
+    "screens": "0a726c25a6ad77b4"
    }
   ],
   "schedules#60": [
