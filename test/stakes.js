@@ -5,11 +5,11 @@
    - soccer: a title clinched before the last day is caught on the week it happened (the points can't be caught).
      node test/stakes.js     last line: MATCH or MISMATCH */
 const {load}=require('./harness.js'), path=require('path');
-const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketball-coach.html',5],['basketball-coach-pro.html',3],['hockey-coach-pro.html',5],['soccer-coach.html','Manchester City',17],['baseball-coach-pro.html',5]];
+const GAMES=[['football-coach.html',4],['football-coach-pro.html',5],['basketball-coach.html',5],['basketball-coach-pro.html',3],['hockey-coach-pro.html',5],['soccer-coach.html','Manchester City',12],['baseball-coach-pro.html',5]];
 let bad=0; const ok=(c,m)=>{ if(!c){ bad++; console.log('  FAIL '+m) } };
 for(const [f,team,seed] of GAMES){
   const A=load({file:path.join(__dirname,'..','dist',f),expose:['S','SEA','NAMES','newDynasty','simRun','digestBlock','stakesFor','objectivesHTML','objectivesMet','objectivesAll','seasonObjectives','objStatus','LEAGUE']});
-  const T=typeof team==='string'?team:A.NAMES[team]; A.newDynasty(T,seed||11,'T'); const SEA=A.SEA, S=A.S, my=S.myTeam;   /* round 89: engine 12's seasons; Manchester City take the title with games to spare on seed 12 (seed 11: 21-6, no title). Round 92 (engine 15): seeds 11-21 clinch on 11, 14-17, 20; 17 with 3 to spare (12 no longer wins it) */
+  const T=typeof team==='string'?team:A.NAMES[team]; A.newDynasty(T,seed||11,'T'); const SEA=A.SEA, S=A.S, my=S.myTeam;   /* round 89: engine 12's seasons; Manchester City take the title with games to spare on seed 12 (seed 11: 21-6, no title). Round 92 (engine 15): seeds 11-21 clinch on 11, 14-17, 20; 17 with 3 to spare (12 no longer wins it). Round 109 (engine 23): seeds 11-26 win it on 12, 14, 17, 19, 22-24; 17 now only on the last day (checked against the points: it was open until then), 12 with 4 to spare */
   const W=SEA.sched.reduce((m,g)=>Math.max(m,g.week+1),0); let k=0, stakes=0, means=0, digests=0, inc=0;
   while(SEA.phase==='week'&&k++<20){
     A.simRun(Math.min(W,SEA.step+Math.ceil(W/10)));
