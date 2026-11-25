@@ -531,6 +531,8 @@ play exactly as before (the opponent's part is on a person's side only), except 
   wasn't tonight's best; baseball 28 of 240, all of them. Now 0; basketball unaffected. Display only (nothing that
   plays a game reads planGapNow or planChances on a day off): hockey and baseball goldens differ in screens alone,
   diffed line by line, re-recorded; the other five match. The full suite was run again on it.
+- Ask 2 for baseball's starter (probes/r109-sp20.js, ten clubs, his rating 20 lower): the card's chance falls 4.9-5.8
+  points (median 5.7), inside Grokbot's 5-15; the engine plays it as shown (spq.js above). Soccer's keeper stays 4.2.
 - An existing career (measured: a round 108 hockey save loaded in round 109) plays its season on engine 22 and turns
   to 23 at the next; the tester note says to start a new career.
 
