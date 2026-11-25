@@ -142,7 +142,19 @@ function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.trai
    measured per sport: the Elo on the balanced curve that a plan is worth at a gap, with no lean). gap: this side's edge.
    human: the fit on a person's path (the plan also picks a person's system), for your assistant's pick. */
 const PLAN_PICK_MIN=12;
+/* round 110 (engine 24): your assistant's pick is a read, as good as your staff (Ian: the player shouldn't be told the
+   best plan). Each plan's worth tonight, as the engine has it, plus his error: a spread from 9 Elo for the best staff
+   (assistants rated 62) to 40 for the worst (-52), drawn from the game (club, season, step), so a reload asks the same.
+   The card says what he'd pick; Sim ahead plays it. */
+function staffReadQ(t){ try{ const o=U&&U.oc&&U.oc[t], d=U&&U.dc&&U.dc[t]; if(!o&&!d)return 0; return ((o?o.q:0)+(d?d.q:0))/((o?1:0)+(d?1:0)) }catch(e){ return 0 } }
+function staffReadSD(t){ const q=Math.max(-52,Math.min(62,staffReadQ(t))); return 40-31*(q+52)/114 }
+function assistantPlan(t,gap,opp,step){
+  const sd=staffReadSD(t), r=mulberry32(strHash("asst|"+t+"|"+(SEA&&SEA.year)+"|"+(step!=null?step:SEA&&SEA.step)+"|"+(opp||""))>>>0), g=()=>{ let u=0,v=0; while(!u)u=r(); while(!v)v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v) };
+  let best="balanced", bv=g()*sd*0.5;
+  ["safe","aggressive"].forEach(pl=>{ const v=planEdge(t,pl,gap||0,opp)+g()*sd; if(v>bv){ bv=v; best=pl } });
+  return best }
 function cpuPlanOf(t,gap,human,opp){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
+  if(human&&opp&&ENGINE_V>=24)return assistantPlan(t,gap,opp);
   let best="balanced", bv=0;
   // round 109: your assistant, on your path, reads tonight's opponent too (planVs: 0 before engine 23 or with no opp)
   ["safe","aggressive"].forEach(pl=>{ const f=(human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl))+(human&&opp?planVs(t,opp,pl):0); if(!(f>=PLAN_PICK_MIN))return;
@@ -161,15 +173,20 @@ function planAmp(f,A){ if(!planAmpV()||!A||!f)return f||0; const v=A.m*f; return
    with a quicker side is worth less, with a slower one more. Averaged over the league the opponent's part is the
    league's mean fit, so a person who picks blind gains nothing; the computer's games are untouched (no calibration
    moves). Each sport plays it where it plays the amplified fit (planAmp's extra), so the box score carries it. */
-const PLAN_VS_K=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K)||1);
+const PLAN_VS_K=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K)||0);   // a test's override; 0: the engine's own
+/* round 110 (engine 24): tonight's opponent counts for more against your roster's fit, so the best plan turns with the
+   opponent for every roster (Muse: one plan best against four opponents in pro basketball, baseball and soccer). Applied
+   once, here (the sports' counters had it inside too: the same at 1). */
+const PLAN_VS_K24=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K24)||2);   // measured (scratch r110 modal-K*.txt, 10 rosters a game): the most one-plan roster at 1 / 2: nfl 97/71%, ncaab 96/79, nhl 94/87, epl 97/82, mlb 83/79
+function planVsK(){ return PLAN_VS_K||(typeof ENGINE_V!=="undefined"&&ENGINE_V>=24?PLAN_VS_K24:1) }
 function planVsV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23 }
 /* the total a person's plan is worth from rosters, given his amplified fit f and the opponent's fo, held to cap */
-function planVsTot(f,fo,cap){ const v=f-PLAN_VS_K*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
+function planVsTot(f,fo,cap){ const v=f-planVsK()*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
 /* in the chance: the opponent's part (the total less your own fit), 0 before engine 23 or where a sport has no counter */
 /* basketball and football plan your offence, so there the opponent's part is their defence against it (sportPlanVsC: in
    Elo, a league spread of the defence that answers the plan worth a spread of fit); hockey and soccer play one game
    both ways, so there it is how well their roster suits the same plan */
-function planVsOpp(o,pl){ return typeof sportPlanVsC==="function"?sportPlanVsC(o,pl):-PLAN_VS_K*sportPlanFit(o,pl) }
+function planVsOpp(o,pl){ return typeof sportPlanVsC==="function"?sportPlanVsC(o,pl):-sportPlanFit(o,pl) }
 function planVs(t,o,pl){ if(!planVsV()||!t||!o||!pl||pl==="balanced"||typeof sportPlanFit!=="function"||typeof sportPlanCap!=="function")return 0;
   const f=sportPlanFit(t,pl); return planVsTot(f,-planVsOpp(o,pl),sportPlanCap())-f }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */

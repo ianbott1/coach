@@ -437,7 +437,7 @@ function sportPlanFitC(t,pl){ return sportPlanFit(t,pl) }
    lean in league spreads (r109 bsp.js, 450 starters over three seasons: Stuff less Control, mean 0.3, sd 6.96), a spread
    worth a spread of lineup fit (BS17.e), held with the fit to the cap. Kept with the game (ctx.spz) so a replay plays it */
 function bsSpZ(t,step){ try{ const sp=spCtx(t,step), R=SEA.roster[t], p=sp&&R.find(x=>x&&x.n===sp.n), A=p&&attrOf(p); return A?Math.round((A.stf-A.ctl-0.3)/6.96*1000)/1000:0 }catch(e){ return 0 } }
-function bsVsZ(z,pl){ return !z||!pl||pl==="balanced"?0:PLAN_VS_K*BS17.e*(pl==="aggressive"?-z:z) }
+function bsVsZ(z,pl){ return !z||!pl||pl==="balanced"?0:BS17.e*(pl==="aggressive"?-z:z) }
 function sportPlanVsC(o,pl){ return planVsV()?bsVsZ(bsSpZ(o,cardStepFor(o)),pl):0 }
 function sportPlanCap(){ return BS17.cap }
 /* round 109 (engine 23): today's starter in the chance (the engine always played him: a team's strength is the rotation's
@@ -446,7 +446,12 @@ function sportPlanCap(){ return BS17.cap }
 const BS23_SPQ=853;
 function sportTonightEdge(t){ if(!planVsV()||typeof SEA==="undefined"||!SEA)return 0; const sp=spCtx(t,cardStepFor(t)); return sp&&sp.q?BS23_SPQ*sp.q:0 }
 function sportPlanVsWhy(o,k,v){ const sp=spCtx(o,cardStepFor(o)), nm=sp?esc(sp.n):"their starter"; return k==="aggressive"?(v<0?`${nm} starts for ${esc(o)}, a power arm who misses bats`:`${nm} starts for ${esc(o)} and doesn't miss many bats`):(v<0?`${nm} starts for ${esc(o)}, a control artist who walks no one`:`${nm} starts for ${esc(o)} and gives up walks`) }
-const PLAN_LEAN={safe:"contact and eye",aggressive:"power"};   // round 94: the reason line
+const PLAN_LEAN={safe:"contact and eye",aggressive:"power"};
+/* round 110: the scouting card's line on tonight's starter (his Stuff and Control as shown, 1-20, and which way he leans:
+   a power arm punishes Swing for the fences, a control pitcher Small ball), with his season so far */
+function sportPlanEvidence(o){ try{ const sp=spCtx(o,cardStepFor(o)), R=SEA.roster[o], p=sp&&R.find(x=>x&&x.n===sp.n), A=p&&attrOf(p); if(!A)return null;
+  const z=bsSpZ(o,cardStepFor(o)), lean=z>0.25?"leans to Stuff: misses bats, which hurts Swing for the fences":z<-0.25?"leans to Control: walks few, which hurts Small ball":"no strong lean";
+  return `${esc(sp.n)} starts for ${esc(o)}: Stuff ${attrShow(A.stf)}, Control ${attrShow(A.ctl)}, ${lean} (${esc(bsSeasonLine(o,sp.n))})` }catch(e){ return null } }   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return planAmpV()?planFitWords(t,pl,{safe:"contact and eye",aggressive:"power"}):"" }
 function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {lz:planAmpV()?{home:Math.round(bsLeanZ(h)*1000)/1000,away:Math.round(bsLeanZ(a)*1000)/1000}:undefined, spz:planVsV()?{home:bsSpZ(h,step),away:bsSpZ(a,step)}:undefined, fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
   lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},

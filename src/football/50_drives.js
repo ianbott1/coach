@@ -142,10 +142,11 @@ function sportPlanFitC(t,pl){ return fbV14()?planAmp(fbFitOf(fbLg(FB14_FITC)[pl]
 const FB23_VS={nfl:{aggressive:[["cov",0.154],["rsh",0.185],78], safe:[["tkl",0.138],["spd",0.113],74]},
                cfb:{aggressive:[["cov",0.270],["rsh",0.360],104], safe:[["tkl",0.288],["spd",0.216],108]}};   // doubled (r109 modal.js: at one
    // spread the gap's own shift kept a club's usual plan the card's pick in 71% (pros) and 80% (college) of live games; at two, 55-57%)
-function fbVsOf(D,pl){ const V=D&&fbLg(FB23_VS)[pl]; if(!V)return 0; return -PLAN_VS_K*V[2]*((D[V[0][0]]||0)/V[0][1]+(D[V[1][0]]||0)/V[1][1])/2 }
+function fbVsOf(D,pl){ const V=D&&fbLg(FB23_VS)[pl]; if(!V)return 0; return -V[2]*((D[V[0][0]]||0)/V[0][1]+(D[V[1][0]]||0)/V[1][1])/2 }
 function sportPlanVsC(o,pl){ return fbV14()?fbVsOf(fbShapeT(o).d,pl):0 }
 function sportPlanCap(){ return FB17.cap }
 const PLAN_VS_WORDS={aggressive:["cover deep and rush the passer","can't cover deep or rush the passer"], safe:["tackle well in space","miss tackles in space"]};
+const PLAN_VS_NOUN={aggressive:"coverage and pass rush",safe:"tackling and speed"};   // round 110: the scouting card
 function sportPlanShift(pl,gap){ return planShiftAt(fbLg(FB14_SHIFT)[pl],gap) }
 function sportPlanShiftH(pl,gap){ return fbV14()?planShiftAt(fbLg(FB14_SHIFTH)[pl],gap):0 }
 /* "Your shape": what the engine reads (Speed and Strength at both ends together; Vision is folded into each group's main term) */

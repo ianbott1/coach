@@ -535,10 +535,11 @@ function sportPlanFitC(t,pl){ return planAmp(bbFitOf(BB11_FITC[pl],t),BB17) }
    spread of the plan's fit (the pros 41 and 43 Elo, college 55 and 59), against you when they're good at it */
 const BB23_PLAY={nba:1.27,ncaab:0.83};
 const BB23_VS={nba:{safe:["id",218],aggressive:["pd",240]}, ncaab:{safe:["id",152],aggressive:["pd",157]}};
-function bbVsOf(T,pl){ const V=T&&typeof LEAGUE!=="undefined"&&BB23_VS[LEAGUE.id]&&BB23_VS[LEAGUE.id][pl]; return V?-PLAN_VS_K*V[1]*(T[V[0]]||0):0 }
+function bbVsOf(T,pl){ const V=T&&typeof LEAGUE!=="undefined"&&BB23_VS[LEAGUE.id]&&BB23_VS[LEAGUE.id][pl]; return V?-V[1]*(T[V[0]]||0):0 }
 function sportPlanVsC(o,pl){ return bbVsOf(bbShapeT(o),pl) }
 function sportPlanCap(){ return BB17.cap }
 const PLAN_VS_WORDS={safe:["protect the rim","don't protect the rim"], aggressive:["guard the three-point line","don't guard the three-point line"]};
+const PLAN_VS_NOUN={safe:"rim protection",aggressive:"perimeter defence"};   // round 110: the scouting card
 function sportShape(t){ return bbV11()?bbShapeT(t):null }
 /* round 89 (engine 12, the computer's plan): a plan's own worth at a gap, no lean, in wins: Elo on the balanced curve
    [at even, per Elo of gap] (scratch r89 pv.js, 40,000 games a point) */

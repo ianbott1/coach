@@ -2287,7 +2287,7 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
-  if(planAmpV()&&typeof PLAN_LEAN!=="undefined"){ const r=planReasonHTML(kept&&S.planStep!=null&&S.planStep!==SEA.step); if(r!==null)return r }   // kept: chosen before today's game (a plan picked today isn't "kept")
+  if(planAmpV()&&typeof PLAN_LEAN!=="undefined"){ const r=planScoutHTML(); if(r!==null)return r }   // round 110: the evidence, not the answer
   const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
   if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
   return planFitOld(wp,kept) }
@@ -2321,6 +2321,34 @@ function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P
     return `<div class="pland planfit">${t}</div>` }
   if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
   return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
+/* round 110 (Ian: "The player shouldn't be told which of these decisions is best"; Instinct: the card made the pick "read
+   the max"): before the game the card shows the evidence, not the answer. For each plan, what your roster leans to and
+   what tonight's opponent has against it, as ranks in the league from the rosters as they are now, the same numbers the
+   engine plays (sportPlanFit; planVsOpp); and your assistant's read (assistantPlan: as good as your staff). Ranks are
+   leans: what a side does most and least for its level, not how good it is (a strong side can lean away from something
+   it still does well: Muse found Oregon's 85-rated secondary "132nd in coverage"). After the game the result card says
+   what each plan was worth (planPre). */
+const PLAN_NOUN={skaters:"skating",passers:"passing",finishers:"finishing",shooters:"shooting"};
+function planNoun(k){ const w=PLAN_LEAN[k]; return PLAN_NOUN[w]||w }
+function planVsNoun(k){ return typeof PLAN_VS_NOUN!=="undefined"&&PLAN_VS_NOUN[k]?PLAN_VS_NOUN[k]:planNoun(k) }
+let SCOUT_RANK={key:null};
+function scoutRanks(){ const key=SEA.year+"|"+SEA.step+"|"+S.steps; if(SCOUT_RANK.key===key)return SCOUT_RANK;
+  const R={key, fit:{}, vs:{}}; ["safe","aggressive"].forEach(k=>{
+    const F=NAMES.map(t=>[t,sportPlanFit(t,k)]), V=NAMES.map(t=>[t,-planVsOpp(t,k)]);
+    const rk=A=>{ const o={}; A.slice().sort((a,b)=>b[1]-a[1]).forEach(([t],i)=>o[t]=i+1); return o };
+    R.fit[k]=rk(F); R.vs[k]=rk(V) }); SCOUT_RANK=R; return R }
+function ordN(n){ const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]) }
+function planScoutHTML(){ if(!PLANS.safe||!PLANS.aggressive)return null; const C=planChances(); if(!C||!C.opp)return null;
+  const my=S.myTeam, o=C.opp, N=NAMES.length, R=scoutRanks(), band=r=>r<=Math.ceil(N/3)?"strong":r>N-Math.ceil(N/3)?"weak":"middling";
+  const poss=n=>esc(n)+(/s$/i.test(n)?"'":"'s"), ev=typeof sportPlanEvidence==="function"?sportPlanEvidence(o):null;
+  const rows=["safe","aggressive"].map(k=>{
+    const yr=R.fit[k][my], orr=R.vs[k][o];
+    const them=ev?"":` &middot; ${poss(o)} answer to it (their ${esc(planVsNoun(k))}) leans ${ordN(orr)} of ${N} (${band(orr)})`;
+    return `<div class="scoutrow"><b>${esc(PLANS[k].l)}</b><span>your ${esc(planNoun(k))} leans ${ordN(yr)} of ${N} (${band(yr)})${them}</span></div>` }).join("")+(ev?`<div class="scoutrow"><b>Their starter</b><span>${ev}</span></div>`:"");
+  const g=cardGame(my), pick=ENGINE_V>=24&&typeof assistantPlan==="function"?assistantPlan(my,C.gap,o,g?g.week:SEA.step):null;
+  const who=(U&&U.oc&&U.oc[my]&&U.oc[my].n)||"Your assistant";
+  const asst=pick?`<div class="scoutasst"><b>${esc(who)}</b>, your assistant: ${pick==="balanced"?"I'd keep it balanced tonight.":`I'd go with ${esc(PLANS[pick].l)}.`} <span class="fnote">(a read, as good as your staff)</span></div>`:"";
+  return `<div class="pland planfit scout"><div class="scouthead">Scouting tonight</div>${rows}${asst}<div class="fnote">Ranks are leans, 1st the most: what a side does most and least for its level, not how good it is. A plan suits a roster that leans to it, and a strong answer from them takes it away. Being the underdog or the favourite matters too (each plan's note says how). After the game you'll see what each plan was worth.</div></div>` }
 /* round 95 (Grokbot's point 3: after the game, what the plan did): the plan you started on, its worth as the card
    showed it before the game, and why: kept with the game when it starts (doAdvance), so the line after the game reads the
    same number as the card did, not one worked out again from a later step's injuries and roster. One night's box score is
