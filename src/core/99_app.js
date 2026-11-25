@@ -1805,8 +1805,12 @@ function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
 const PLAN_OUT=[];   // round 88: the plan you picked, under any withPlan (the chance is the balanced curve plus your plan's fit)
 function withPlan(pl,fn){ const was=plan; PLAN_OUT.push(was); plan=pl; try{ return fn() }finally{ plan=was; PLAN_OUT.pop() } }
 function planPicked(){ return PLAN_OUT.length?PLAN_OUT[0]:plan }
+/* round 110: the chance before your plan, for the card before a game (withPlan keeps the plan you picked in the chance,
+   round 88's rule: the card moved with every plan click, and a player read the best plan off it: Grokbot, Muse). Once a
+   game starts the plan is in it (the live bar). */
+function planFree(fn){ const was=plan; PLAN_OUT.unshift("balanced"); plan="balanced"; try{ return fn() }finally{ plan=was; PLAN_OUT.shift() } }
 function oddsHTML(me,opp,atHome,neutral,wp){
-  if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
+  if(LEAGUE.wdl){ const [w,d,l]=planFree(()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
       <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span><span class="olab">before the game</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
@@ -1856,8 +1860,8 @@ function injuredLine(opp,atHome,neutral){
   const g=SEA.nextGame?SEA.nextGame(my):null; if(atHome===null){ atHome=g?g.home===my:true; neutral=g?!!g.neutral:false }
   // on the headline's own basis (the balanced plan): computed under the plan you'd picked, the note read 73% beside a
   // headline of 62% on all six screens of a conference final (Muse, round 21; Instinct, round 16: 24% over 34%)
-  const now=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)), keep=SEA.talent.inj[my];
-  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)) }finally{ SEA.talent.inj[my]=keep }
+  const now=planFree(()=>winProb(my,opp,atHome,neutral)), keep=SEA.talent.inj[my];
+  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=planFree(()=>winProb(my,opp,atHome,neutral)) }finally{ SEA.talent.inj[my]=keep }
   if(fit-now<0.03)return "";
   const names=hurt.slice().sort((a,b)=>a.m-b.m).slice(0,2).map(e=>esc(e.who)).join(" and ");
   return `<div class="oinj">${pctShown(now)}% without ${names} (injured); about ${pctShown(fit)}% with ${hurt.length>1?"them":"him"}.</div>`;
@@ -2499,7 +2503,7 @@ function nextUpHTML(my,rk){
       // where it's played, as the game will be (round 48: the headline took every play-off game as neutral while the
       // injury note under it took it as a home game: 62% over "73% without him; about 81% with him", Muse round 21)
       const atH=pn.home===my||pn.home===true, neu=!!pn.neutral||pn.home===undefined;
-      const wp=pn.opp?withPlan("balanced",()=>winProb(my,pn.opp,atH,neu)):null;
+      const wp=pn.opp?planFree(()=>winProb(my,pn.opp,atH,neu)):null;
       h+=`<div class="grouphead">Next up</div>
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
         <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>${pn.opp&&typeof seriesBookHTML==="function"?seriesBookHTML(pn.opp):""}${pn.opp&&typeof filmLine==="function"?filmLine(pn.opp):""}
@@ -2534,7 +2538,7 @@ function nextUpHTML(my,rk){
     const opp=ng.home===my?ng.away:ng.home;
     // the chance before the game is the same whichever plan you pick: clicking the plans and watching it move gave the
     // answer away (Ian). The plans are judged on the result card.
-    const wp=withPlan("balanced",()=>winProb(my,opp,ng.home===my,ng.neutral));
+    const wp=planFree(()=>winProb(my,opp,ng.home===my,ng.neutral));
     const st=stakesFor(ng);
     const riv=LEAGUE.rivals.name(my,opp);
     const ser=riv?LEAGUE.rivals.series(U,my,opp):null;
@@ -2565,7 +2569,7 @@ function nextUpHTML(my,rk){
   // a cup tie this week too (soccer's FA Cup): its own card, midweek
   if(SEA.phase==="week"&&SEA.gamesFor&&LEAGUE.cup){
     SEA.sched.filter(x=>x.week===SEA.step&&x.cup&&x!==ng&&(x.home===my||x.away===my)).forEach(cg=>{
-      const opp=cg.home===my?cg.away:cg.home, wp=winProb(my,opp,cg.home===my,cg.neutral);
+      const opp=cg.home===my?cg.away:cg.home, wp=planFree(()=>winProb(my,opp,cg.home===my,cg.neutral));
       const line=LEAGUE.cup.stake?LEAGUE.cup.stake(my,opp,cg):"";
       h+=`<div class="grouphead">Midweek &mdash; ${esc(LEAGUE.cup.date(SEA.step))}</div>
         <div class="nextcard cupcard">
