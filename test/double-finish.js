@@ -21,9 +21,11 @@ for(const [f,team] of [['football-coach.html','Michigan State'],['football-coach
     const keys=mine.map(p=>p.other+'|'+!!p.cup); games++;
     ok(new Set(keys).size===keys.length,`${f} step ${step}: the same game recorded ${keys.length} times`);
   }
-  // the tally counts each read or call once: equal to the reads stored (a split report, a call priced in wins, a read left to the assistant and a report followed aren't counted, by design: round 71; round 93: nor a read that answered tonight's numbers and was surprised)
-  const T=A.S.readTally||{n:0}, stored=Object.values(A.S.played||{}).reduce((a,L)=>a+L.filter(p=>p.team===A.S.myTeam).reduce((b,p)=>b+((p.reads||[]).filter(r=>!r.unclear&&r.k!=="call"&&!r.waited&&!(r.k==="prep"&&r.followed)&&!(r.k==="read"&&r.fe&&!r.right)).length),0),0);
+  // the tally counts each read or call once: equal to the reads stored (a split report, a call priced in wins, a read left to the assistant and a report followed aren't counted, by design: round 71; round 93: nor a read that answered tonight's numbers and was surprised; round 110: every read you made counts, right, fair or wrong)
+  const T=A.S.readTally||{n:0}, stored=Object.values(A.S.played||{}).reduce((a,L)=>a+L.filter(p=>p.team===A.S.myTeam).reduce((b,p)=>b+((p.reads||[]).filter(r=>!r.unclear&&r.k!=="call"&&!r.waited).length),0),0);
   ok(T.n===stored,`${f}: the tally counts ${T.n} calls, the games hold ${stored}`);
+  const fairStored=Object.values(A.S.played||{}).reduce((a,L)=>a+L.filter(p=>p.team===A.S.myTeam).reduce((b,p)=>b+((p.reads||[]).filter(r=>!r.right&&!r.unclear&&!r.waited&&((r.k==='prep'&&r.followed)||(r.k==='read'&&r.fe))).length),0),0);
+  ok((T.fair||0)===fairStored,`${f}: the tally's fair reads ${T.fair||0}, the games hold ${fairStored}`);
   console.log(`  ${f.padEnd(26)} ${games} live games, tally ${T.right||0} of ${T.n}`);
 }
 console.log(bad?`MISMATCH ${bad} of ${checks} checks failed`:`MATCH ${checks} checks: every game recorded once`);

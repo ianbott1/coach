@@ -424,10 +424,11 @@ function finishLive(){ liveEndedAt=Date.now();
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
-      const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
+      const T=S.readTally=S.readTally||{n:0,right:0,yr:{},v:110}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0,fair:0,v:110};
+      if(!T.v)T.v=110;   // round 110: counted under the three outcomes from here
       // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
       // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
-      R.forEach(x=>{ if(!readGraded(x))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
+      R.forEach(x=>{ if(!readGraded(x))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++} else if(readFair(x)){T.fair=(T.fair||0)+1; Y.fair=(Y.fair||0)+1} }) } }   // round 71: not a report left to the assistant
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -842,7 +843,14 @@ async function moveForeignSaves(){
 /* a read that counts in the tallies: not a split report, not a call, not one left to the assistant, not a followed report,
    not a surprise after following the screen (round 93: one rule for the season's tally, the month's and the repair; the
    month's counted reads the season's didn't, so hockey's months didn't add up to its season) */
-function readGraded(x){ return !(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe&&!x.right)) }
+/* round 110: every read you make counts, in one of three outcomes (Muse: the tally left out reads the text called wrong;
+   Instinct: "Right read: they surprised you" reads as right and wrong at once). Right; fair (you went with the evidence,
+   the report's favourite or what tonight's numbers showed, and the night went the other way); wrong. A read left to
+   your assistant or one the screen couldn't show isn't yours to count. */
+function readFair(x){ return !!x&&!x.right&&!x.unclear&&((x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe)) }
+function readGraded(x){ return !(x.unclear||x.k==="call"||x.waited) }
+/* the rule before round 110, for the tallies kept under it (a duplicate's reads come back out as they went in) */
+function readGradedOld(x){ return !(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe&&!x.right)) }
 function repairPlayed(d){
   if(!d||!d.played)return d;
   const T=d.readTally;
@@ -850,7 +858,7 @@ function repairPlayed(d){
     d.played[k]=d.played[k].filter(p=>{ const id=p.team+"|"+p.other+"|"+!!p.cup+"|"+p.mine+"-"+p.theirs;
       if(!seen.has(id)){seen.add(id); return true}
       // a copy: take its reads back out of the tally they inflated
-      if(T)(p.reads||[]).forEach(x=>{ if(!readGraded(x))return; T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
+      if(T)(p.reads||[]).forEach(x=>{ if(!(T.v>=110?readGraded(x):readGradedOld(x)))return; if(T.v>=110&&readFair(x)){ T.fair=Math.max(0,(T.fair||0)-1); const Y0=T.yr&&T.yr[yr]; if(Y0)Y0.fair=Math.max(0,(Y0.fair||0)-1) } T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
       return false }) });
   if(T){ T.n=Math.max(0,T.n); T.right=Math.max(0,Math.min(T.right,T.n)) }
   return d;
@@ -1626,6 +1634,9 @@ function firstReadTip(){
   if(S.guide===true&&!(S.seen&&S.seen.g_call_read)&&!GUIDE_SEEN.g_call_read)return "";   // the coach's note says it, once
   return `<div class="evtip">First reads: look for the number marked &#9650; or &#9660;, well away from the league average. That's how they're playing. Pick the answer that beats it, then see if you were right after the game.</div>`;
 }
+/* round 110: right, fair and wrong, every read you made (a season counted before round 110 has no fair: said as it was) */
+function tallyWords(Y){ if(!Y||!Y.n)return "none yet"; if(!Y.v&&Y.fair==null)return `${Y.right} of ${Y.n} right (reads graded before this version)`;
+  const f=Y.fair||0, w=Math.max(0,Y.n-Y.right-f); return `${Y.right} right, ${f} fair, ${w} wrong, of ${Y.n} reads you made (your assistant's aren't counted)` }
 /* the season's tally of your reads and calls, kept on the team page all year */
 function tallyHTML(){
   const T=S.readTally, led=typeof ledgerLine==="function"?ledgerLine():"";
@@ -1635,7 +1646,7 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
+    <div class="fnote">${Y&&Y.n?esc(tallyWords(Y))+" this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} right in your career</div>
     ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}${readsByMonthHTML()}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
@@ -1707,17 +1718,17 @@ function readsHTML(step){
     // round 71 (Muse: "No verdict blames the player for following the shown report"): set up for what the report said most,
     // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
     // not counted either way.
-    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
+    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"Right read.":"Fair read: following the report is the better bet over a season, and tonight it was wrong.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,fair:!x.right,un:false,n:1,lb:lb?[lb]:[]}); return }
     // round 93: an in-game read that answered the style tonight's numbers fit best (dp.best, from the same counts the call
     // shows) is never marked wrong (testers: graded wrong for reading the evidence as it stood); said as a surprise, not counted
-    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", ${ENGINE_V>=21?"an answer to what tonight's numbers showed":"the answer to what tonight's numbers fit best"}. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
+    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", ${ENGINE_V>=21?"an answer to what tonight's numbers showed":"the answer to what tonight's numbers fit best"}. `:"")+"Fair read: the numbers pointed there, and they surprised you. "+readText(x),right:false,fair:true,un:false,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
   // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result
-  const gr=lines.filter(x=>!x.un), last=P[P.length-1], won=last&&last.mine>last.theirs;
+  const gr=lines.filter(x=>!x.un&&!x.fair), last=P[P.length-1], won=last&&last.mine>last.theirs;
   const anyway=won&&gr.length&&gr.every(x=>!x.right)?`<div class="readnone">${gr.length===1?"That read was":"Those reads were"} wrong, and you won anyway.</div>`:"";
-  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${anyway}${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
+  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':x.fair?'fair':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":x.fair?"~":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
+    ${anyway}${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${tallyWords(Y)}</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
