@@ -218,10 +218,10 @@ function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1
   if(T.to/n>=1.15||T.pos>=56)f.push("press"); if(T.cr/n>=1.05)f.push("wing"); if(T.lb/n>=1.3)f.push("direct"); if(T.pos<=42)f.push("block");
   return f }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
-function readCall(stage,T,hint,cur,early){
+function readCall(stage,T,hint,cur,early,mine){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
-  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
+  const opts=(cur&&COUNTERS[cur]?[["keep",(mine===false?"Keep the setup your assistant chose: ":"Keep your setup: ")+COUNTERS[cur].l]]:[])   // round 110: whose it is (Grokbot: "Keep your setup" named one he never picked: his assistant's).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
   return {k:"read",stage:stage,h:early?early:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},
@@ -318,7 +318,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     return L||st.mode[side] };
   /* the computer's reads and changes */
   // it reads the other side right about half the time, and otherwise leaves it
-  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ctr=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false} };
+  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ctr=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false; st.S[side].ctrMine=false} };
   const cpuRead=(side,p)=>{ if(!humans[side])readIt(side,p) };
   const assistantRead=(side,stage)=>readIt(side,stage===2?0.3:0.45);
   // the flank: spotted about four times in ten
@@ -426,7 +426,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
-    if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
+    if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true; X.ctrMine=true;
       st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true } { const L=st.log[st.log.length-1], ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]); if(!L.split&&COUNTERS[v]&&COUNTERS[v].beats===ks[0]){ L.followed=true; L.fav=ks[0] } }   /* round 71: set up for what the report said most */   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
@@ -437,7 +437,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak, F=dp.flank||[0,0], near=Math.abs(F[0]-F[1])<=Math.max(1,0.12*(F[0]+F[1]));
       st.log.push({side:side,h:dp.h,k:"flank",pick:v,truth:t,right:v===t,unclear:near}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
-    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else { const was=X.ctr; assistantRead(side,dp.stage); st.autoDid=X.ctr!==was&&COUNTERS[X.ctr]?"read them himself and switched to "+COUNTERS[X.ctr].l.split(":")[0].toLowerCase():"read them himself and left the setup as it was" } return }
+    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v; X.ctrMine=true } else { const was=X.ctr; assistantRead(side,dp.stage); st.autoDid=X.ctr!==was&&COUNTERS[X.ctr]?"read them himself and switched to "+COUNTERS[X.ctr].l.split(":")[0].toLowerCase():"read them himself and left the setup as it was" } return }
     if(dp.k==="subs"){
       if(v==="wait"){ st.waitSub=st.waitSub||{}; st.waitSub[side]=true; return }
       if(v==="normal"){ assistantSub(side); if(dp.stage===2)assistantSub(side); st.autoDid="changed the most tired unit"; return }
@@ -476,7 +476,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
         if(humans[sd]){ const f=flankCall(st.S[sd].fl,st.S[sd].flLast); queueCall(sd,hc&&humans[sd]?f:mem(sd,f)) } else aimIt(sd) });   // she says it once
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
-      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
+      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr,undefined,st.S[sd].ctrMine); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     // round 108: once you've made a change yourself the bench is yours (your assistant made both at 60' and 70' regardless)
     const benchMine=sd=>ENGINE_V>=22&&humans[sd]&&st.bench&&st.bench[sd];
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
