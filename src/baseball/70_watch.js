@@ -3,7 +3,7 @@ const INTERIM_Q=-18;     // replacement-level coach
 const FEATURE_EDGE=12;   // Elo
 const PLANS={
   safe:      {sd:0.9,  edge:0, l:"Small ball",          d:"Put it in play, move the runners, take the walks: fewer strikeouts and fewer home runs. Steady, and best when you're the better side."},
-  balanced:  {sd:1.0,  edge:0, l:"Balanced",            d:""},
+  balanced:  {sd:1.0,  edge:0, l:"Balanced",            d:"Play it straight: no tilt toward small ball or the long ball. The plan for when neither side's shape gives you an edge."},
   aggressive:{sd:1.15, edge:0, l:"Swing for the fences",d:"Hunt the long ball: more home runs and more strikeouts, a wider spread of results. Best when you're outgunned."}
 };
 function isBigGame(g,team,seaRankMap,rivalName){

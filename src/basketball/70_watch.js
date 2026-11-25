@@ -3,7 +3,7 @@ const INTERIM_Q=-18;     // replacement-level assistant
 const FEATURE_EDGE=16;   // Elo, about two-thirds of a point
 const PLANS={
   safe:      {sd:0.8, edge:0, l:"Work it inside",   d:"Push the pace and take the high-percentage shots. Over forty minutes the better team wins \u2014 best when that's you."},
-  balanced:  {sd:1.0, edge:0, l:"Balanced",         d:""},
+  balanced:  {sd:1.0, edge:0, l:"Balanced",         d:"Play your own game: no tilt toward the paint or the three. The plan for when neither side's shape gives you an edge."},
   aggressive:{sd:1.3, edge:0, l:"Shorten the game", d:"Slow it down and let it fly from three. Fewer possessions, more variance \u2014 best when you're outgunned."}
 };
 /* round 108 (engine 22): instructions in a live game beyond the three plans, from the next stretch: the half-time call's

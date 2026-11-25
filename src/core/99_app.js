@@ -570,6 +570,15 @@ function noteChoice(k,was,now){
     f0:k==="f"?(was===undefined?null:was):(S.featured===undefined?null:S.featured), d0:k==="d"?(was||null):(S.deploy||null)};
   S.chLog.ch.push({s:SEA.step, k:k, v:now===undefined?null:JSON.parse(JSON.stringify(now))});
 }
+/* round 110 (Grokbot: "Plans carry over silently, and PLAY can bypass the plan card": a game started on Work it inside
+   without the card being seen): a plan kept from an earlier game, not chosen for this one, is asked about on the first
+   tap of Play or Sim game ("Keep Take risks?"); the second plays it. Balanced, a plan picked today, a shared seat or a
+   game with no card aren't asked. */
+function planCarried(){ try{ if(isHotSeat()||!SEA||!PLANS[plan]||plan==="balanced"||S.off)return false; const g=SEA.phase==="week"?cardGame(S.myTeam):null; if(SEA.phase==="week"&&!g)return false;
+  const st=g?g.week:SEA.step; return !(S.planStep!=null&&S.planStep>=st)&&S.planOk!==SEA.year+":"+st }catch(e){ return false } }
+function planConfirm(b,go){ if(!b||!planCarried())return go();
+  const g=SEA.phase==="week"?cardGame(S.myTeam):null, st=g?g.week:SEA.step;
+  tapTwice(b,`Keep ${esc(PLANS[plan].l)} from your last game? Tap again`,()=>{ S.planOk=SEA.year+":"+st; go() }) }
 /* a confirm on the page itself: the first tap turns the button into the
    question, the second does it. Browser dialogs (confirm) can be blocked or
    dismissed without a word, and then the button just does nothing (Muse: "Make a
@@ -2066,10 +2075,12 @@ function teamPanel(){
   // column's pinned Play button sat over it (Instinct: "the sticky PLAY WEEK area covers part of the Needs a decision cards")
   const att=reveal==="half"?"":attentionHTML(my);   // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
   h+=att;
-  h+=teamCardHTML(my,rk,co);
-  if(reveal==="half")return h;
-  h+=injuryHTML(inj);
+  if(reveal==="half")return h+teamCardHTML(my,rk,co);
+  // round 110: the next game and its plan card next, above the team card: under it, the pinned Play button sat over the
+  // plan and its scouting (Muse: "covered by the yellow PLAY button"; Grokbot: sticky bars over the reason)
   h+=nextUpHTML(my,rk);
+  h+=teamCardHTML(my,rk,co);
+  h+=injuryHTML(inj);
   return h;
 }
 
@@ -2323,7 +2334,7 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    ${PLANS[plan].d?`<div class="pland">${esc(PLANS[plan].d)}</div>`:""}${planFitHTML(wp)}
+    <div class="pland plandesc">${esc(PLANS[plan].d||"")}</div>${planFitHTML(wp)}
   </div>`;
 }
 /* round 72: the gameplan you last chose carries over; when it doesn't suit tonight, a line says so (Instinct: a 34%
@@ -3968,7 +3979,7 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; advance() };   // round 100: the side column's Play waits too
+  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; planConfirm(e.currentTarget,advance) };   // round 100: the side column's Play waits too
   ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=e=>{ if(strayTap(e))return; simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
@@ -3980,8 +3991,8 @@ function render0(){
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
   const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
   ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=e=>{ if(settling()||strayTap(e))return;
-    if(SEA.phase!=="week"&&view==="team")view="scores";
-    simAdvance(); window.scrollTo({top:0,behavior:"auto"});
+    planConfirm(e.currentTarget,()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
+    simAdvance(); window.scrollTo({top:0,behavior:"auto"}) });
   }});
   if(false)el("simone").onclick=()=>{
     if(SEA.phase!=="week"&&view==="team")view="scores";
@@ -3990,9 +4001,9 @@ function render0(){
   el("adv").onclick=e=>{ if(settling()||strayTap(e))return;
     if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
-    if(SEA.phase!=="week"&&view==="team")view="scores";
+    planConfirm(e.currentTarget,()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
     doAdvance();
-    window.scrollTo({top:0,behavior:"auto"});
+    window.scrollTo({top:0,behavior:"auto"}) });
   };
   document.querySelectorAll("[data-team]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); openTeam(b.dataset.team);});
