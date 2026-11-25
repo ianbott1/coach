@@ -1,5 +1,5 @@
 {
- "fp": "0851e4badec2bb14",
+ "fp": "4152000ca8c23899",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -260,6 +260,11 @@
    "fp": "0851e4badec2bb14",
    "from": "8315ac362a1d936b",
    "note": "Round 109: on a day off the plan's reason reads the card's game (cardGame), not the roster-only line; screens only (games, records, universe unchanged; diffed)"
+  },
+  {
+   "fp": "4152000ca8c23899",
+   "from": "0851e4badec2bb14",
+   "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
   }
  ],
  "result": {
@@ -273,8 +278,8 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "da15fbfd7101bc37",
-    "universe": "0717c8c7bfc996a4",
-    "screens": "10a6a2c2252f1472"
+    "universe": "56c8183973a51f1f",
+    "screens": "5ce409d7842f04f0"
    },
    {
     "year": 2027,
@@ -285,8 +290,8 @@
     "poll": "bee24a447b87d565",
     "heis": "773ec581dad87a9c",
     "history": "6acd7d078226bbb4",
-    "universe": "8ca955191d98c403",
-    "screens": "7280a5d7e4e7d69d"
+    "universe": "0e503d756a19b330",
+    "screens": "4c5983baab5d5fa2"
    }
   ],
   "Colorado#777": [
@@ -299,8 +304,8 @@
     "poll": "8b06c4145b3597e1",
     "heis": "c538f6ec29f1dea8",
     "history": "2776d71e098b91d8",
-    "universe": "f99f323786cddf54",
-    "screens": "a728d16a0ac8ffd2"
+    "universe": "c04512530a010990",
+    "screens": "ccf815057ea0ca58"
    },
    {
     "year": 2027,
@@ -311,8 +316,8 @@
     "poll": "d5ad3a32919dca35",
     "heis": "eac2183831bc1117",
     "history": "53e39dd404565cdb",
-    "universe": "c86bd28ace3a8dd8",
-    "screens": "1c2c25d83026e308"
+    "universe": "49e8d24da1631d6f",
+    "screens": "9b2fbe84eb9119b9"
    }
   ],
   "schedules#60": [

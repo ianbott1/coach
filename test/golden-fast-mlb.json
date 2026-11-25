@@ -1,5 +1,5 @@
 {
- "fp": "9c2e255a4fcc700a",
+ "fp": "cb7261ca4dcd8b17",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -135,6 +135,11 @@
    "fp": "9c2e255a4fcc700a",
    "from": "c9b4b754bc762fa8",
    "note": "Round 109: on a day off the plan's reason reads the card's game (cardGame), not the roster-only line; screens only (games, records, universe unchanged; diffed)"
+  },
+  {
+   "fp": "cb7261ca4dcd8b17",
+   "from": "9c2e255a4fcc700a",
+   "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
   }
  ],
  "result": {
@@ -148,8 +153,8 @@
     "poll": "6b40d8b4cdc9d8de",
     "heis": "7d5b897b0d9b6c32",
     "history": "da15fbfd7101bc37",
-    "universe": "0717c8c7bfc996a4",
-    "screens": "10a6a2c2252f1472"
+    "universe": "56c8183973a51f1f",
+    "screens": "5ce409d7842f04f0"
    }
   ]
  }

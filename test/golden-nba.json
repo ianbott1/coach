@@ -1,5 +1,5 @@
 {
- "fp": "c24c523e9e7ca2d9",
+ "fp": "dce79d8f12df302a",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -575,6 +575,11 @@
    "fp": "c24c523e9e7ca2d9",
    "from": "731fb01af5e43c51",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "dce79d8f12df302a",
+   "from": "c24c523e9e7ca2d9",
+   "note": "Round 110, engine 24: the opponent counts double against your fit, your assistant reads the plan as well as your staff, the card shows evidence, a game page, reads counted right/fair/wrong, the football clock through calls, days off played when your game ends; engine 23 games, records and league identical to round 109 (screens differ)"
   }
  ],
  "result": {
@@ -588,8 +593,8 @@
     "poll": "f7d6b103e4e40c76",
     "heis": "2c98bc6f5fc13050",
     "history": "238e72fb17299dd5",
-    "universe": "d5d34e6191fbbb90",
-    "screens": "79a4efbff5185ac2"
+    "universe": "ab0d577291777efc",
+    "screens": "e17b4f346b21b442"
    },
    {
     "year": 2027,
@@ -600,8 +605,8 @@
     "poll": "ce81856e9e87c2d1",
     "heis": "02ebadf6932b7f6a",
     "history": "01efbe25cfd940ee",
-    "universe": "43f453ba2f996191",
-    "screens": "8171ae516efd5e22"
+    "universe": "bb81ea2771bbbf45",
+    "screens": "c7678a6518687bdd"
    }
   ],
   "Detroit#777": [
@@ -614,8 +619,8 @@
     "poll": "6a2e8da5986046a7",
     "heis": "635d996bb8c406fc",
     "history": "e96eb46ec64147d8",
-    "universe": "f2c446be6f88e4e0",
-    "screens": "d98043352a27fc6c"
+    "universe": "a6287fc5e42e1707",
+    "screens": "a3eeb87dfd0dbbdd"
    },
    {
     "year": 2027,
@@ -626,8 +631,8 @@
     "poll": "0b46b8960550d70e",
     "heis": "746e3a3070225b55",
     "history": "0eaf33ad660bf773",
-    "universe": "398177133918f4e1",
-    "screens": "5a2e4181d7bd7adb"
+    "universe": "2a51ad4ab26ac914",
+    "screens": "9d046fb64244ba9d"
    }
   ],
   "schedules#60": [
