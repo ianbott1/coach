@@ -475,8 +475,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     POS.forEach((_,i)=>{const s=R[i],b=R[BK(i)]; if(b.r>s.r+1){R[i]=b;R[BK(i)]=s}});
     R.forEach((p,i)=>{p.i=i%POS.length});
     const c=u.coach[t];
-    u.trueBase[t]=rosterElo(R)+(c.t<=1?ROOKIE_DIP:0)+rng.gauss(0,ROSTER_NOISE*0.6);
-    u.perceived[t]=0.55*elo[t]+0.45*rosterElo(R)+rng.gauss(0,PERCEPT_N*0.6);
+    const rE=atEngine(ENGINE_NOW,()=>rosterElo(R));   // round 109: the coming season's engine (posW)
+    u.trueBase[t]=rE+(c.t<=1?ROOKIE_DIP:0)+rng.gauss(0,ROSTER_NOISE*0.6);
+    u.perceived[t]=0.55*elo[t]+0.45*rE+rng.gauss(0,PERCEPT_N*0.6);
   });
   if(ut&&choices.phil)u.phil=choices.phil;
   u.year++;

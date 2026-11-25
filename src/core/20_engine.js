@@ -343,6 +343,9 @@ const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
       // program strength's range: a league may set its own (basketball's is wider)
       P_FLOOR=(LEAGUE.tuning&&LEAGUE.tuning.pFloor)||1120,P_CEIL=(LEAGUE.tuning&&LEAGUE.tuning.pCeil)||2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
 
+/* round 109: a team's strength is made before its season's engine is set (a new career; the offseason, still on the
+   finished season's), so a weight gated on the engine (soccer's keeper, posW) is read on the engine the season will play */
+function atEngine(v,fn){ const e=ENGINE_V; ENGINE_V=v||e; try{ return fn() }finally{ ENGINE_V=e } }
 function newUniverse(seed){
   const rng=new RNG(seed);
   const u={seed:seed,year:2026,program:{},perceived:{},trueBase:{},
@@ -354,7 +357,7 @@ function newUniverse(seed){
     u.program[n]=e; u.perceived[n]=e;
     u.roster[n]=LEAGUE.offseason.newRoster(rng,e);
     u.oc[n]=newCoordinator(rng,e,"oc"); u.dc[n]=newCoordinator(rng,e,"dc");
-    u.trueBase[n]=rosterElo(u.roster[n])+rng.gauss(0,26);
+    u.trueBase[n]=atEngine(u.engV,()=>rosterElo(u.roster[n]))+rng.gauss(0,26);   // round 109: on the engine its first season plays (soccer's keeper weight)
     u.tenure[n]=1+rng.int(6); u.bad[n]=0;
     const c=newCoach(rng,e); c.t=u.tenure[n]; c.hired=false;
     u.coach[n]=c;
