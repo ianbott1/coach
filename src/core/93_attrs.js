@@ -185,6 +185,9 @@ function planEdge(t,pl,gap,o){ if(!pl||pl==="balanced")return 0; return (typeof 
 function cardGame(t){ let g=SEA&&SEA.nextGame?SEA.nextGame(t):null;
   if(!g&&SEA&&SEA.phase==="week"&&LEAGUE.skipIdle)g=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===t||x.away===t)).sort((x,y)=>x.week-y.week)[0]||null;
   return g }
+/* round 110: the step of the card's game, for a club in it (baseball named today's starter, not the game's: Instinct, a
+   Probable Starters line and a card naming two different men) */
+function cardStepFor(o){ try{ const g=typeof S!=="undefined"&&S&&S.myTeam?cardGame(S.myTeam):null; return g&&(g.home===o||g.away===o)?g.week:SEA.step }catch(e){ return SEA.step } }
 function planGapNow(t){ try{ const g=cardGame(t); if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
    worth PLAN_PICK_MIN Elo. lean: what each plan's roster leans to */

@@ -477,6 +477,7 @@ function resolveWeek(step){
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
+  skipOffDaysNow();
   if(isHotSeat())plan="balanced";               // one coach: your gameplan stays as you set it
   flash={type:wasPost?"post":"week",step:step,cup:wasCup};     // a live playoff game gets its result card too
   // on a phone the result card is on the Team view: a game finished from Scores showed only the bracket (Instinct,
@@ -951,7 +952,7 @@ function newDynasty(team,seed,coachName,roster){
   attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
-  rebuild(); S.expNow=expectations(); save(); view="team"; render();
+  rebuild(); S.expNow=expectations(); skipOffDaysNow(); save(); view="team"; render();
 }
 
 /* ============ advance ============ */
@@ -1040,6 +1041,20 @@ function skipIdleDays(){
     SEA.advance(); clinchAfter(); S.steps++;
   }
 }
+/* round 110: a league with a game most days plays your days off as soon as your game ends, not on the next Play. The
+   card read the next game's chance on the day off, and Play then played those days (other results, knocks, a goalie's
+   rest) and started the game on other numbers (Muse, hockey: 47/52 read, 53/57 played, a third set on the result card).
+   It stops on a day you can still act on: the last day to trade, or a day a club comes to you with an offer. The same
+   steps in the same order, earlier: a reload replays S.steps as before. */
+function skipOffDaysNow(){
+  if(!LEAGUE.skipIdle||isHotSeat()||!SEA||SEA.phase!=="week")return;
+  let g=0;
+  while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
+    try{ if(typeof tdState==="function"&&tdState().open&&((typeof tdLastOpen==="function"&&SEA.step===tdLastOpen())||(typeof tdIncoming==="function"&&tdIncoming())))break }catch(e){}
+    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
+    SEA.advance(); clinchAfter(); S.steps++;
+  }
+}
 /* In the postseason, a round with no game of yours is the league's, not
    yours: the button sims on until you play again or it's over (it used to
    say "Play the Super Bowl" to a 5-12 team, and walk an eliminated team
@@ -1122,6 +1137,7 @@ function doAdvance(){
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
+  skipOffDaysNow();
   if(isHotSeat())plan="balanced";
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   LEAGUE.ui.afterAdvance(ph);
@@ -1359,7 +1375,7 @@ function endSeason(rng,choices,act,seasonTeam){
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null; S.promos={}; S.fires={}; S.choiceYear=U.year;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
-  S.steps=0; rebuild(); S.expNow=expectations();
+  S.steps=0; rebuild(); S.expNow=expectations(); skipOffDaysNow();   // round 110: the opening day off too
   if(isHotSeat()){
     // a new season: every coach's expectations for the team they now coach,
     // no plans carried over from last year, and coach 1 goes first
