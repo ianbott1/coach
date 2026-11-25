@@ -1538,6 +1538,7 @@ function togglePause(){
   S.watchStep=watch.paused; save();
   tickWatch();
 }
+try{ if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&typeof watch!=="undefined"&&watch){ e.preventDefault(); stopWatch(false) } }) }catch(e){}
 function stopWatch(finish){
   if(watch&&watch.timer)clearTimeout(watch.timer);
   if(watch&&(!live||live.done)&&typeof hlSkip==="function"&&HL.cur){ watch.hlWait=false; hlSkip() }
@@ -2350,6 +2351,11 @@ function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k
   // round 109 (engine 23): the biggest part pushing the way the number goes (fit, tonight's opponent, or the gap), so the
   // reason can't contradict the number (a plus explained by "they have the skaters too")
   if(planVsV()){ const t=f+vs+sh, sg=t>=0?1:-1, top=[["vs",vs],["f",f],["sh",sh]].reduce((a,b)=>b[1]*sg>a[1]*sg?b:a);
+    // round 110: in the card's terms, a lean rank (the old words read as absolute: "Washington miss tackles in space" for a
+    // side whose tackling ranks 5th, the lean being low for its level: Muse)
+    if(top[0]==="vs"&&vs&&typeof scoutRanks==="function"&&typeof sportPlanEvidence!=="function"){ try{ const r=scoutRanks().vs[k][C.opp], N=NAMES.length, poss=esc(C.opp)+(/s$/i.test(C.opp)?"'":"'s");
+      return `${poss} answer to it (their ${esc(planVsNoun(k))}) leans ${ordN(r)} of ${N}` }catch(e){} }
+    if(top[0]==="f"&&typeof scoutRanks==="function"){ try{ const r=scoutRanks().fit[k][my], N=NAMES.length; return `your ${esc(planNoun(k))} leans ${ordN(r)} of ${N}` }catch(e){} }
     if(top[0]==="vs"&&vs){ if(typeof sportPlanVsWhy==="function")return sportPlanVsWhy(C.opp,k,vs);
       if(typeof PLAN_VS_WORDS!=="undefined"&&PLAN_VS_WORDS[k])return `${esc(C.opp)} ${PLAN_VS_WORDS[k][vs<0?0:1]}`;
       return vs<0?`${esc(C.opp)} have the ${PLAN_LEAN[k]} to play that game too`:`${esc(C.opp)} don't have the ${PLAN_LEAN[k]} to play that game` }
@@ -3781,10 +3787,13 @@ function render0(){
     // round 81: how much of it to watch, as on the live screen (Highlights, Every chance: every moment the game had)
     const depth=typeof hlCan==="function"&&hlCan()&&watch.i<watch.script.length?`<div class="liveplan" style="max-width:760px;margin:8px auto 0;padding:0 16px"><div class="fnote" style="margin:6px 0 4px">Watch</div>
       <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
-    el("app").innerHTML=watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
+    // round 110 (Ian: "Once watching a replay of another game it is not easy to just exit out"): Exit, always there (and Esc)
+    const wexit=`<button class="wexit" id="wexit" aria-label="Exit the replay">&times; Exit replay</button>`;
+    el("app").innerHTML=wexit+watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
     if(typeof hlMount==="function")hlMount();
     document.querySelectorAll("[data-whl]").forEach(x=>x.onclick=()=>{ S.highlights=x.dataset.whl; save(); if(typeof hlSkip==="function"&&HL.cur)hlSkip(); watch.hl=undefined; watch.hlWait=false; tickWatch() });
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
+    const wx=el("wexit"); if(wx)wx.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
     const st=el("wstep"); if(st)st.onclick=()=>{watch.paused=true;S.watchStep=true;stepWatch()};
     const sk=el("wskip"); if(sk)sk.onclick=()=>stopWatch(true);

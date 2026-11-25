@@ -445,7 +445,8 @@ function sportPlanCap(){ return BS17.cap }
    starter's q is worth 853 Elo a unit, so ten rating points over his rotation's mean about 43 Elo, 4 points of chance */
 const BS23_SPQ=853;
 function sportTonightEdge(t){ if(!planVsV()||typeof SEA==="undefined"||!SEA)return 0; const sp=spCtx(t,cardStepFor(t)); return sp&&sp.q?BS23_SPQ*sp.q:0 }
-function sportPlanVsWhy(o,k,v){ const sp=spCtx(o,cardStepFor(o)), nm=sp?esc(sp.n):"their starter"; return k==="aggressive"?(v<0?`${nm} starts for ${esc(o)}, a power arm who misses bats`:`${nm} starts for ${esc(o)} and doesn't miss many bats`):(v<0?`${nm} starts for ${esc(o)}, a control artist who walks no one`:`${nm} starts for ${esc(o)} and gives up walks`) }
+function sportPlanVsWhy(o,k,v){ const sp=spCtx(o,cardStepFor(o)), nm=sp?esc(sp.n):"their starter", z=bsSpZ(o,cardStepFor(o));   // round 110: his lean, as the card says it (the old "doesn't miss many bats" read as his strikeouts: Muse, 7 in 5.2 innings)
+  return `${nm} starts for ${esc(o)}, leaning to ${z>=0?"Stuff over Control":"Control over Stuff"}` }
 const PLAN_LEAN={safe:"contact and eye",aggressive:"power"};
 /* round 110: the scouting card's line on tonight's starter (his Stuff and Control as shown, 1-20, and which way he leans:
    a power arm punishes Swing for the fences, a control pitcher Small ball), with his season so far */
