@@ -595,7 +595,7 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     // round 110 (Ian: the player shouldn't be told the best plan): from engine 17 the card shows the evidence, not the
     // answer: the same scouting under every plan, no plan's number, ranks within the league, your assistant's read on
     // engine 24, and a headline chance that doesn't move with the plan (toggling can't read off the best one)
-    if(api.ENGV()>=17){ const cards=PL.map(p=>strip(linesH[p]||'')), N=api.NAMES().length;
+    if(api.ENGV()>=17){ const cards=PL.map(p=>strip(linesH[p]||'')), N=(typeof api.NAMES==="function"?api.NAMES():api.NAMES).length;
       ok(new Set(Object.values(shown)).size===1,`${f} ${tm}: the headline chance moves with the plan (${PL.map(p=>shown[p]).join(' / ')})`);
       ok(cards.every(c=>c===cards[0])&&/Scouting tonight/i.test(cards[0]),`${f} ${tm}: the scouting card changes with the plan or is missing (${cards[0].slice(0,80)})`);
       ok(!/would add|\+\d+ from|&minus;\d+ from|\d+%/.test(cards[0]),`${f} ${tm}: the card gives a plan's number (${cards[0].slice(0,120)})`);
