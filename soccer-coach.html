@@ -46,7 +46,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
  background:linear-gradient(180deg,transparent,var(--ink) 14px)}
 /* round 107: the bar's fade and the gaps between its buttons pass a tap through to what shows there (Grokbot: a tap on a
    plan seen through the top of the bar went to the bar, and the game started on the old plan) */
-.actionbar{pointer-events:none}.actionbar>*{pointer-events:auto}
+.spbtn .lgs{display:inline;padding:0;border:0;background:none;font-family:var(--mono),monospace;margin-left:6px;color:#7CF2A0;font-weight:700}.spbtn .lgs.mid{color:#F4C95D}.spbtn .lgs.low{color:#FF7A6B}.spbtn[disabled]{opacity:.45}.actionbar{pointer-events:none}.actionbar>*{pointer-events:auto}
 .actionbar .skip{background:var(--ink)}   /* opaque: text scrolling under the bar never shows through the buttons (Instinct, 390px) */
 .advance{display:block;width:100%;max-width:728px;margin:0 auto;background:var(--sodium);
  color:#10131C;border:none;font-family:var(--cond);font-weight:700;font-size:19px;
@@ -555,6 +555,16 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .slotdel:hover{color:var(--flag);border-color:var(--flag)}
 .slotbk{top:auto;bottom:12px}
 .attnbtns{display:flex;flex-direction:column;gap:6px}
+/* round 108: the play by play */
+.pbp{margin:4px 16px 10px;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.pbpl{display:flex;gap:10px;padding:6px 10px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.35;color:var(--muted)}
+.pbpl:first-child{border-top:0}.pbpl b{color:var(--bone);font-weight:600}
+.pbpl.now{color:var(--bone);background:rgba(255,255,255,.04)}
+.pbpl.b-att .pbpt{color:var(--bone)}.pbpl.b-shot{color:var(--bone)}.pbpl.b-shot b{color:var(--gold,#F2C14E)}
+.pbpl.b-goal{background:rgba(242,193,78,.14);color:var(--bone)}.pbpl.b-goal .pbpt{font-weight:600}
+.pbpl.b-card .pbpt{color:#F2C14E}
+.pbpm{font-family:var(--mono);font-size:11px;min-width:26px;padding-top:2px;color:var(--muted)}
+.pbpe{padding:8px 10px;color:var(--muted);font-size:13px}
 .slotbk:hover{color:var(--bone);border-color:var(--bone)}
 .titlebtns{width:100%;margin-top:40px;display:flex;flex-direction:column;gap:9px}
 .titlebtns .advance{margin:0}
@@ -1026,7 +1036,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="87b9104";
+<script>const BUILD_ID="445d58f";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -1249,6 +1259,11 @@ const POS=[
   {p:"W",  w:0.15, drop:9,  hz:0.18, bench:0.32},
   {p:"ST", w:0.17, drop:10, hz:0.18, bench:0.28},
 ];
+/* round 109 (engine 23; Ian chose "in between": goalies, starting pitchers and key players matter more, skaters and
+   hitters move moderately): the keeper is one man, and a 20-point worse one moved the chance 3.6 points (r109 probe.js);
+   his share goes to 0.20, taken from the back line and the wings, so the shares still sum to 1 */
+const SC23_W={GK:0.20, CB:0.155, FB:0.12, W:0.135};
+function posW(P){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23&&SC23_W[P.p]!=null?SC23_W[P.p]:P.w }
 const BENCH=0.25;                        // an average, for anything that needs one number
 function pickInjuredPos(rng){
   let x=rng.r(), acc=0;
@@ -1263,15 +1278,15 @@ const BK=i=>i+POS.length;
 function teamRating(roster){
   let s=0;
   POS.forEach((P,i)=>{const st=roster[i], bk=roster[BK(i)]||st;
-    s+=P.w*((1-P.bench)*st.r+P.bench*bk.r)});
+    s+=posW(P)*((1-P.bench)*st.r+P.bench*bk.r)});
   return s;
 }
 function rosterElo(roster){return ratingToElo(teamRating(roster))}
 function injuryCost(roster,idx){
   const P=POS[idx];
-  if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
+  if(!roster||!roster[BK(idx)])return -posW(P)*P.drop*R_SLOPE;
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
-  return -P.w*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
+  return -posW(P)*((1-P.bench)*gap+P.bench*6)*R_SLOPE;
 }
 function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 
@@ -1540,7 +1555,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||21);   // 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||23);   // 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -1868,6 +1883,9 @@ const CARRY=0.45,CHURN_SD=95,RECRUIT=0.16,PROG_NOISE=22,
       // program strength's range: a league may set its own (basketball's is wider)
       P_FLOOR=(LEAGUE.tuning&&LEAGUE.tuning.pFloor)||1120,P_CEIL=(LEAGUE.tuning&&LEAGUE.tuning.pCeil)||2010,HOT_SEAT=0.42,COACH_SD=62,COACH_DIP=-18,PERCEPT_N=34;
 
+/* round 109: a team's strength is made before its season's engine is set (a new career; the offseason, still on the
+   finished season's), so a weight gated on the engine (soccer's keeper, posW) is read on the engine the season will play */
+function atEngine(v,fn){ const e=ENGINE_V; ENGINE_V=v||e; try{ return fn() }finally{ ENGINE_V=e } }
 function newUniverse(seed){
   const rng=new RNG(seed);
   const u={seed:seed,year:2026,program:{},perceived:{},trueBase:{},
@@ -1879,7 +1897,7 @@ function newUniverse(seed){
     u.program[n]=e; u.perceived[n]=e;
     u.roster[n]=LEAGUE.offseason.newRoster(rng,e);
     u.oc[n]=newCoordinator(rng,e,"oc"); u.dc[n]=newCoordinator(rng,e,"dc");
-    u.trueBase[n]=rosterElo(u.roster[n])+rng.gauss(0,26);
+    u.trueBase[n]=atEngine(u.engV,()=>rosterElo(u.roster[n]))+rng.gauss(0,26);   // round 109: on the engine its first season plays (soccer's keeper weight)
     u.tenure[n]=1+rng.int(6); u.bad[n]=0;
     const c=newCoach(rng,e); c.t=u.tenure[n]; c.hired=false;
     u.coach[n]=c;
@@ -2670,8 +2688,9 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     POS.forEach((_,i)=>{const s=R[i],b=R[BK(i)]; if(b.r>s.r+1){R[i]=b;R[BK(i)]=s}});
     R.forEach((p,i)=>{p.i=i%POS.length});
     const c=u.coach[t];
-    u.trueBase[t]=rosterElo(R)+(c.t<=1?ROOKIE_DIP:0)+rng.gauss(0,ROSTER_NOISE*0.6);
-    u.perceived[t]=0.55*elo[t]+0.45*rosterElo(R)+rng.gauss(0,PERCEPT_N*0.6);
+    const rE=atEngine(ENGINE_NOW,()=>rosterElo(R));   // round 109: the coming season's engine (posW)
+    u.trueBase[t]=rE+(c.t<=1?ROOKIE_DIP:0)+rng.gauss(0,ROSTER_NOISE*0.6);
+    u.perceived[t]=0.55*elo[t]+0.45*rE+rng.gauss(0,PERCEPT_N*0.6);
   });
   if(ut&&choices.phil)u.phil=choices.phil;
   u.year++;
@@ -3034,7 +3053,7 @@ function scV12(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=12 }
 function scShapeOf(R,H){ const T={}; SC_SHK.forEach(k=>T[k]=0); if(!R||typeof attrOf!=="function")return T;
   const add=(p,m)=>{ if(!p||!(m>0))return; const A=attrOf(p); if(!A)return; const W=ATTRS.w[attrGrp(p)]||{}; SC_SHK.forEach(k=>{ if(A[k]!=null&&W[k])T[k]+=m*W[k]*(A[k]-p.r) }) };
   POS.forEach((P,i)=>{ const hs=H&&H.has(i), hb=H&&H.has(BK(i));
-    if(hs)add(hb?null:R[BK(i)],P.w); else { add(R[i],P.w*(1-P.bench)); if(!hb)add(R[BK(i)],P.w*P.bench) } });
+    const w=posW(P); if(hs)add(hb?null:R[BK(i)],w); else { add(R[i],w*(1-P.bench)); if(!hb)add(R[BK(i)],w*P.bench) } });
   SC_SHK.forEach(k=>T[k]=Math.round(T[k]*1000)/1000); return T }
 function scShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return scShapeOf(SEA.roster[t],H) }catch(e){ return scShapeOf(null) } }
 /* the plan's fit (round 89): taking the game to them is a passing game, sitting deep a game of pace on the break and of
@@ -3054,6 +3073,7 @@ const SC17_ENV=k=>SC12_ENV(k)&&+SC12_ENV(k);
 const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||0.95};   // g: the league's goals held (2.81 a game on 17 before, 2.66 on 16)   // g: the league's chances back to 2.7 goals (more clubs sit deep on 17)
 function sportPlanFit(t,pl){ return scV12()?planAmp(scFitOf(SC12_FIT[pl],scShapeT(t)),SC17):0 }
 function sportPlanFitC(t,pl){ return scV12()?planAmp(scFitOf(SC12_FITC[pl],scShapeT(t)),SC17):0 }
+function sportPlanCap(){ return SC17.cap }   // round 109: planVs holds a person's plan to the same cap
 function sportPlanShift(pl,gap){ return planShiftAt(SC12_SHIFT[pl],gap) }
 /* the same on a person's path (the plan also sets your approach: a press, a low block), measured (r89 pvh.js, 60,000
    games a point): Ian (round 89) chose to put it in the chance before a game */
@@ -3070,6 +3090,7 @@ const LATE_K=(()=>{ const e=k=>{ const v=typeof process!=="undefined"&&process.e
 const SC18_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
 function scV18(){ return (typeof ENGINE_V!=="undefined"&&ENGINE_V>=18)||SC18_ENV("SC18")===1 }
 const SC18={a0:SC18_ENV("SC18_A0")??1.8, a1:SC18_ENV("SC18_A1")??2.0, ao:SC18_ENV("SC18_AO")??1.6, ao1:SC18_ENV("SC18_AO1")??0.8, k0:SC18_ENV("SC18_K0")??1.25, k1:SC18_ENV("SC18_K1")??0.5, ko:SC18_ENV("SC18_KO")??0.75, ko1:SC18_ENV("SC18_KO1")??0.7, kd:SC18_ENV("SC18_KD")??1.35, noise:SC18_ENV("SC18_N")??8};
+const SC_SUBS=2;   // round 108: the changes a side makes (your assistant's two at 60' and 70', or yours, when you like)
 const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
@@ -3252,7 +3273,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   // Passing moves chances made by a*c.pas and is worth a rating points: c.pas/R_SLOPE a chance factor per Elo)
   const ampMemo={home:{},away:{}};
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!SC12_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
-    const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]); return M[pl]=planAmp(f,SC17)-f };
+    const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]);
+    // engine 23 (round 109): a person's plan against tonight's opponent's roster (planVs), played on the same channel
+    if(humans[sd]&&planVsV())return M[pl]=planVsTot(planAmp(f,SC17),planAmp(scFitOf(SC12_FIT[pl],SH[other(sd)]),SC17),SC17.cap)-f;
+    return M[pl]=planAmp(f,SC17)-f };
   const ampF=sd=>{ if(!SH||!planAmpV())return 1; let f=SC17.g; const o=other(sd); if(st.mode[sd]==="safe")f*=1+SC17.gs*ampE(sd,"safe")*SC12.c.pas/R_SLOPE;
     if(st.mode[sd]==="aggressive")f*=1+SC17.ga*ampE(sd,"aggressive")*SC12.c.pac/R_SLOPE; return Math.max(0.3,f) };   // sitting deep: the extra is the counter, chances on the break (cutting theirs drew 32% of games)
   // Stamina: the legs go slower, and the last half hour's chances are a fitter side's (a drain alone saturated: no legs to lose)
@@ -3369,6 +3393,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       T2:{home:H.tell2?Object.assign({},H.tell2):null,away:A.tell2?Object.assign({},A.tell2):null},
       TA:{home:H.tellAll?Object.assign({},H.tellAll):null,away:A.tellAll?Object.assign({},A.tellAll):null},
       st:{home:[H.sh,H.sot],away:[A.sh,A.sot]}};
+    if(ENGINE_V>=22){ d.ap={home:H.app,away:A.app}; d.md={home:m.home,away:m.away}; if(st.subQ&&(st.subQ.home.length||st.subQ.away.length)){ d.sub=st.subQ; st.subQ=null } }   // round 108: how each side is playing and the mode it played the stretch in (the computer's late push or sit too), for the pitch (no draws)   // round 108: how each side is playing, for the pitch (no draws)
     st.drives.push(d); return d;
   };
   const extraTime=()=>{
@@ -3383,7 +3408,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   };
   // your assistant makes the other change: the most tired unit
   const assistantSub=(side)=>{ const X=st.S[side]; const u=[0,1,2].reduce((a,b)=>X.E[b]<X.E[a]?b:a,0);
-    X.E[u]=1; X.subs++; if(u===0)X.booked=0 };
+    X.E[u]=1; X.subs++; if(u===0)X.booked=0; subMark(side,u) };
+  const subMark=(side,u)=>{ if(ENGINE_V>=22){ st.subQ=st.subQ||{home:[],away:[]}; st.subQ[side].push(u) } };   // round 108: the stretch's changes, for the pitch
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -3438,8 +3464,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
-    if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
-    if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>assistantSub(sd)) }
+    // round 108: once you've made a change yourself the bench is yours (your assistant made both at 60' and 70' regardless)
+    const benchMine=sd=>ENGINE_V>=22&&humans[sd]&&st.bench&&st.bench[sd];
+    if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
+    if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
     if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))>1)return;
       if(scV18()&&humans[sd]){ const rd=X=>Math.round(Math.max(5,Math.min(95,65-25*scLegsZ(X)+rng.gauss(0,SC18.noise))));   // the staff's read of each back line's legs, 0-100; drawn only for a person's side
         queueCall(sd,finalCall18(lead(sd),st.playoff,{mine:rd(st.S[sd]),theirs:rd(st.S[other(sd)])})) }
@@ -3450,6 +3478,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     return {drive:d,h:st.h,a:st.a};
   };
   st.reply=function(v){ st.answer=v; st.waiting=null };
+  /* round 108 (engine 22): a change of your own, any time, from the next five minutes: fresh legs in one unit (0 the back,
+     1 midfield, 2 up front). Two a match, as your assistant makes; once you make one the bench is yours, and he makes none. */
+  st.subsLeft=side=>Math.max(0,SC_SUBS-st.S[side].subs);
+  st.subNow=function(side,u){ if(ENGINE_V<22||!humans[side]||!(u>=0&&u<=2)||st.done)return false; const X=st.S[side];
+    if(X.subs>=SC_SUBS)return false;   // his changes already made count (assistantSub counts them)
+    st.bench=st.bench||{}; st.bench[side]=true; X.E[u]=1; X.subs++; if(u===0)X.booked=0; subMark(side,u); return true };
   return st;
 }
 /* each club's usual approach this season, and the seed for its scouting report */
@@ -3698,6 +3732,9 @@ const PLANS={
   balanced:  {sd:1.0,  edge:0, l:"Balanced",              d:""},
   aggressive:{sd:1.2,  edge:0, l:"Sit deep and counter",  d:"Two banks of four, hit them on the break. Fewer chances, more luck \u2014 best when you're outgunned."}
 };
+/* round 108 (engine 22): instructions in a live game beyond the three plans, from the next five minutes: the computer's
+   own late modes (AGGR push and sit, calibrated for the league's late games), any time you choose. */
+const LIVE_EXTRA={push:{l:"All-out attack",d:"Everyone forward. More chances, and more against."},sit:{l:"Park the bus",d:"Ten behind the ball. Few chances either way."}};
 function isBigGame(g,team,seaRankMap,rivalName){
   if(!g)return false;
   if(rivalName)return true;
@@ -3924,6 +3961,8 @@ const HL_SPORT=(function(){
      Drawn from the stretch and how far through it the clock is (d, f): the same frame however it's reached, paused
      or not. No game dice. */
   const SP_RATE={foul:0.58,corner:0.28,off:0.1};
+  /* round 108: the match engine's football (more passes, shorter, timed as they take); engine 22 seasons */
+  const SP2=()=>typeof ENGINE_V==='undefined'||ENGINE_V>=22;
   const SP_PART={FB:4,CB:3,W:8,CM:7,ST:10};   // each line's second man in the eleven   // a side's fouls, corners and offsides in five minutes (EPL: about 10.5, 5, 1.8 a match)
   const SP_POS=["the keeper","the full back","the centre back","the centre back","the full back","the winger","the midfielder","the midfielder","the winger","the striker","the striker"];
   const SP_UNIT=["GK","FB","CB","CB","FB","W","CM","CM","W","ST","ST"];
@@ -3941,9 +3980,37 @@ const HL_SPORT=(function(){
     return spXI.c[key]={L:L,idx,nm,nums} }
   const spWho=(X,s)=>X.nm[s]||SP_POS[s];
   // where each side stands for a ball at (bx,by) in the home frame (0 the home goal line), the side on it pushed on
-  function spShape(bx,by,has){ return [true,false].map(home=>{ const a=home?bx:1-bx, y=home?by:1-by, on=has===home;
+  /* round 108 (engine 22): a team's shape as a team plays it. On the ball: the back line set off the ball, full backs
+     pushing on, a midfield three lines up and wingers wide, strikers on the last man. Off it: two banks, compact and
+     shifted to the ball's side, between the ball and goal. How each side plays moves it: a press holds a high line and
+     its front men go to the ball; a low block sits deep and narrow; overloading the flanks pushes the full backs and
+     wingers wide; going direct keeps a striker on the shoulder. Your plan too: Take the game to them pushes everyone
+     up, Sit deep and counter drops them. spCtx: the stretch's approaches and plans, set by spPlan and spDraw. */
+  let spCtx=null;
+  // round 108: the mode a side played the stretch in, as the pitch draws it (the computer's late push or sit, your late call)
+  const SP_MODE={upush:"push",usit:"sit",win:"safe",uwin:"safe",point:"aggressive",upoint:"aggressive",upress:"safe",uprobe:"balanced",urgent:"balanced"};
+  const spMode=m=>SP_MODE[m]||m||"balanced";
+  // how tired a unit looks, 0 fresh to 1 gone (the engine's legs: about 85 at the start, 50 at worst, a change back to 100)
+  const spTired=(C,s,u)=>{ const E=C&&C.E&&C.E[s]; return E?Math.max(0,Math.min(1,(88-E[u])/38)):0 };
+  const SP_BASE_Y=[0.5,0.12,0.36,0.64,0.88,0.12,0.4,0.6,0.88,0.43,0.57];
+  function spShape2(bx,by,has){ const C=spCtx||{ap:["",""],pl:["balanced","balanced"]}, cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+    return [0,1].map(s=>{ const home=s===0, a=home?bx:1-bx, y=home?by:1-by, on=has===home, ap=C.ap[s]||"", pl=C.pl[s]||"balanced";
+      const up=(pl==="safe"?0.05:pl==="aggressive"?-0.06:pl==="push"?0.1:pl==="sit"?-0.1:0)+(ap==="press"?0.05:ap==="block"?-0.07:0), wide=ap==="wing"?1.12:ap==="block"?0.82:1;
+      // round 108: tired legs. A tired back line drops off and the gap to the midfield opens; a tired front line doesn't get up
+      const tD=spTired(C,s,0), tM=spTired(C,s,1), tA=spTired(C,s,2);
+      let P;
+      if(on){ const dl=cl(a-0.32+up-0.05*tD,0.13,0.5), fb=dl+0.07+(a>0.5?0.12:0)+(ap==="wing"?0.06:0)-0.04*tD, cm=dl+0.19+0.04*tD, wg=Math.min(0.9,dl+0.37+0.03*tD-0.03*tA), st=Math.min(0.93,dl+0.44+(ap==="direct"?0.04:0)+0.03*tD-0.04*tA), deep=a<0.3;
+        const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*w+(y-0.5)*(i>=2&&i<=3||i>=6?0.14:0.06),0.03,0.97);
+        const hi=a>0.5, fy=hi?1.2:0.95, wy=hi?0.62:1.02;   // a full back high on the overlap takes the touchline; his winger comes inside
+        P=[[0.04+0.06*a,0.5+(y-0.5)*0.1],[fb,Y(1,fy*wide)],[dl,Y(2,deep?1.4:1.1)],[dl,Y(3,deep?1.4:1.1)],[fb,Y(4,fy*wide)],[wg,Y(5,wy*wide)],[deep?dl+0.11:cm,Y(6,1)],[cm+0.04,Y(7,1)],[wg,Y(8,wy*wide)],[st+(ap==="direct"?0.03:0),Y(9,1)],[st-0.04,Y(10,1)]] }
+      else { const b=a, dl=cl(b-0.24+up-0.05*tD,0.12,0.46), ml=dl+(ap==="block"||pl==="aggressive"?0.11:0.14)+0.06*tD+0.03*tM, fl=dl+0.29+0.06*tD+0.04*tM-0.03*tA;
+        const Y=(i,w)=>cl(0.5+(SP_BASE_Y[i]-0.5)*0.7*w+(y-0.5)*0.34,0.04,0.96);
+        P=[[0.03+0.03*b,0.5+(y-0.5)*0.12],[dl+0.01,Y(1,wide)],[dl,Y(2,wide)],[dl,Y(3,wide)],[dl+0.01,Y(4,wide)],[ml+0.01,Y(5,wide)],[ml,Y(6,wide)],[ml,Y(7,wide)],[ml+0.01,Y(8,wide)],
+           [ap==="press"||pl==="safe"?Math.min(fl+0.06,b-0.04):fl,Y(9,wide)],[fl,Y(10,wide)]] }
+      return P.map(p=>home?[p[0],p[1]]:[1-p[0],1-p[1]]) }) }
+  function spShape(bx,by,has){ if(SP2())return spShape2(bx,by,has); return [true,false].map(home=>{ const a=home?bx:1-bx, y=home?by:1-by, on=has===home;
     const P=BASE.map((p,i)=>{ if(i===0)return [0.04+0.05*a,0.5+(y-0.5)*0.12];
-      const push=on?Math.max(0,a-0.3)*0.75:Math.max(0,a-0.42)*0.5-(on?0:Math.max(0,0.55-a)*0.25), depth=i<5?0.62:i<9?0.88:1;
+      const v2=SP2(), push=on?Math.max(0,a-0.3)*(v2?0.55:0.75):Math.max(0,a-0.42)*0.5-(on?0:Math.max(0,0.55-a)*0.25), depth=i<5?0.62:i<9?(v2?0.75:0.88):1;
       return [Math.max(0.06,Math.min(0.95,p[0]+push*depth+(on?0.05:-0.03))),0.5+(p[1]-0.5)*(on?1:0.8)+(y-0.5)*(i<5?0.18:0.3)] });
     return P.map(p=>home?p:[1-p[0],1-p[1]]) }) }
   // the man nearest, the named one of a pair a little more often (the squad's man for the line is its first choice)
@@ -3960,6 +4027,8 @@ const HL_SPORT=(function(){
     const r=mulberry32(strHash("sp|"+g.home+"|"+g.away+"|"+d.seg+"|"+d.sh+"|"+d.sa)), ri=n=>Math.floor(r()*n), cl=v=>Math.max(0.02,Math.min(0.98,v));
     const pois=lam=>{ const Lx=Math.exp(-lam); let k=0,p=1; do{ k++; p*=r() }while(p>Lx&&k<9); return k-1 };
     const XI=[spXI(L,g.home),spXI(L,g.away)];
+    const planAt=sd=>{ let v=L.args?L.args[sd==="home"?2:3]:"balanced"; (L.pm||[]).forEach(x=>{ if(x[1]===sd&&x[0]<=Math.max(0,di)&&String(x[2]).indexOf("sub:")!==0)v=x[2] }); return v||"balanced" };
+    const ctx={ap:[d.ap?d.ap.home:"",d.ap?d.ap.away:""],pl:d.md?[spMode(d.md.home),spMode(d.md.away)]:[planAt("home"),planAt("away")],E:d.E?[d.E.home,d.E.away]:null}, ctx0=spCtx; spCtx=ctx;
     // the stretch's numbers
     const dl=(sd,k)=>{ const a=d.TA&&d.TA[sd], b=pv&&pv.TA&&pv.TA[sd]; return a?Math.max(0,Math.round((a[k]||0)-(b?b[k]||0:0))):null };
     const N={}; ["home","away"].forEach(sd=>{ const a=d.TA&&d.TA[sd], b=pv&&pv.TA&&pv.TA[sd], posL=a?((a.pos||0)-(b?b.pos||0:0))/Math.max(1,(a.n||0)-(b?b.n||0:0)):0;
@@ -3994,7 +4063,7 @@ const HL_SPORT=(function(){
       fl.filter(m=>m.side===s&&m.end!=="high").forEach(m=>{ if(l>0){ m.lb=1; l-- } });
       while(c>0||l>0){ const m={side:s,end:r()<0.75?"lost":"out"}; if(c>0){ m.cr=1; c-- } if(l>0){ m.lb=1; l-- } fl.push(m) }
       // enough moves to share the ball as the read has it: about seven a side in an even five minutes
-      const mine=fl.filter(m=>m.side===s).length+anchors.filter(a=>a.side===s).length, tgt=Math.round(6*(s?1-pH:pH));
+      const mine=fl.filter(m=>m.side===s).length+anchors.filter(a=>a.side===s).length, tgt=Math.round((SP2()?11:6)*(s?1-pH:pH));
       for(let k=mine;k<tgt;k++)fl.push({side:s,end:r()<0.65?"lost":"out"}) });
     for(let i=fl.length-1;i>0;i--){ const j=ri(i+1); [fl[i],fl[j]]=[fl[j],fl[i]] }
     // the floats share out between the anchors by the room each gap has
@@ -4002,8 +4071,8 @@ const HL_SPORT=(function(){
     const room=gaps.map(q=>Math.max(0.0001,q.f1-q.f0)), tot=room.reduce((s,x)=>s+x,0);
     fl.forEach(m=>{ let x=r()*tot, j=0; while(j<gaps.length-1&&x>room[j]){ x-=room[j]; j++ } gaps[j].m.push(m) });
     // a gap holds the moves it has room for (about a fortieth of the stretch each); the rest go on to the next with room
-    for(let j=0;j<gaps.length;j++){ const q=gaps[j], cap=Math.max(0,Math.floor(room[j]/0.026)-(q.a?1:0));
-      while(q.m.length>cap){ const m=q.m.pop(); let k=-1; for(let z=1;z<gaps.length&&k<0;z++){ for(const jj of [j+z,j-z]){ if(jj>=0&&jj<gaps.length&&gaps[jj].m.length<Math.max(0,Math.floor(room[jj]/0.026)-(gaps[jj].a?1:0))){ k=jj; break } } } if(k<0){ q.m.push(m); break } gaps[k].m.push(m) } }
+    for(let j=0;j<gaps.length;j++){ const q=gaps[j], cap=Math.max(0,Math.floor(room[j]/(SP2()?0.02:0.026))-(q.a?1:0));
+      while(q.m.length>cap){ const m=q.m.pop(); let k=-1; for(let z=1;z<gaps.length&&k<0;z++){ for(const jj of [j+z,j-z]){ if(jj>=0&&jj<gaps.length&&gaps[jj].m.length<Math.max(0,Math.floor(room[jj]/(SP2()?0.02:0.026))-(gaps[jj].a?1:0))){ k=jj; break } } } if(k<0){ q.m.push(m); break } gaps[k].m.push(m) } }
     // where the stretch starts: a kick-off to begin each half, else where the stretch before left it
     let ball=d.seg===0?{side:0,kind:"kickoff",x:0.5,y:0.5}:d.seg===9?{side:1,kind:"kickoff",x:0.5,y:0.5}:null;
     if(!ball){ let q=null; try{ q=pv&&pv.seg===d.seg-1?spPlan(L,pv).last:null }catch(e){} ball=q?Object.assign({},q):{side:r()<pH?0:1,kind:"won",x:0.5,y:0.5} }
@@ -4013,7 +4082,8 @@ const HL_SPORT=(function(){
     seqs.forEach(G=>{ const pool=G.q.m.slice();   // the side on the ball plays its next move if it has one (fewer balls lost just to hand it over)
       while(pool.length){ let j=pool.findIndex(m=>m.side===side); if(j<0){ j=0; G.seq.push({side:side,end:"lost"}); side=1-side } const m=pool.splice(j,1)[0]; G.seq.push(m); side=spAfter(m).side }
       if(G.q.a){ if(G.q.a.side!==side){ G.seq.push({side:side,end:"lost"}); side=1-side } G.seq.push(G.q.a); side=spAfter(G.q.a).side }
-      G.seq.forEach(m=>{ m.nT=m.end==="clip"?2+ri(2):2+(m.cr?1:0)+(m.lb?1:0)+(r()<0.45?1:0) }) });
+      G.seq.forEach(m=>{ m.nT=m.end==="clip"?2+ri(2):SP2()?Math.min(16,2+Math.floor(-Math.log(1-r()*0.999)*(m.end==="lost"||m.end==="high"?2.3:3.4))+(m.cr?1:0)+(m.lb?1:0)):2+(m.cr?1:0)+(m.lb?1:0)+(r()<0.45?1:0);
+        m.wt=SP2()?6+m.nT*2:m.nT }) });
     const moves=[];
     const push=(m,fA,fB)=>{ const s=m.side, A=x=>s?1-x:x;   // A: our attacking frame <-> the home frame (y too: x and y both flip)
       const st=[A(ball.x),A(ball.y)];
@@ -4030,20 +4100,33 @@ const HL_SPORT=(function(){
       const mid=m.nT-1-(m.cr?2:0); let cur=st;
       if(m.lb){ const lx=Math.min(cur[0],0.45), ly=0.2+r()*0.6; if(cur[0]>0.45||Math.hypot(lx-cur[0],ly-cur[1])>0.05)pts.push({x:lx,y:ly,k:"long"}); else pts[0].lk=1; cur=[Math.min(0.85,lx+0.3+r()*0.15),0.15+r()*0.7]; pts.push({x:cur[0],y:cur[1],k:"pass"}) }
       const tgt=m.cr?[0.74+r()*0.08,r()<0.5?0.07+r()*0.06:0.87+r()*0.06]:sp;
-      for(let k=pts.length;k<mid;k++){ const t=(k-pts.length+1)/(mid-pts.length+1); pts.push({x:cl(hlLerp(cur[0],tgt[0],t)+(r()-0.5)*0.06),y:cl(hlLerp(cur[1],tgt[1],t)+(r()-0.5)*0.24),k:"pass"}) }
+      if(SP2()){ // round 108: each pass to a team-mate where the shape has him (in our attacking frame), mostly 8-25 m, drifting on toward the move's end
+        let c0=cur.slice(), prev=-1; const n0=pts.length;
+        for(let k=n0;k<mid;k++){ const t=(k-n0+1)/(mid-n0+1), H=s?[1-c0[0],1-c0[1]]:c0, Sh=spShape(H[0],H[1],s===0)[s].map(q=>s?[1-q[0],1-q[1]]:q);
+          let best=null, bs=-1e9; for(let j=1;j<11;j++){ if(j===prev)continue; const q=Sh[j], dm=Math.hypot((q[0]-c0[0])*105,(q[1]-c0[1])*68); if(dm<5||dm>40)continue;
+            const rec=((k*31+j*7+n0*13)%100)<34, want=rec?[c0[0]-0.06,c0[1]+(c0[1]<0.5?0.18:-0.18)]:[hlLerp(c0[0],tgt[0],1/Math.max(1,mid-k)),hlLerp(c0[1],tgt[1],1/Math.max(1,mid-k))], dw=Math.hypot((q[0]-want[0])*105,(q[1]-want[1])*68);
+            const sc=-Math.abs(dm-15)*0.12-dw*0.06+(r()-0.5)*2.2; if(sc>bs){ bs=sc; best=[q[0],q[1],j] } }
+          if(!best)best=[cl(hlLerp(c0[0],tgt[0],t)+(r()-0.5)*0.05),cl(hlLerp(c0[1],tgt[1],t)+(r()-0.5)*0.2),-1];
+          const nx=[cl(best[0]+(r()-0.5)*0.03),cl(best[1]+(r()-0.5)*0.04)]; pts.push({x:nx[0],y:nx[1],k:"pass"}); prev=best[2]; c0=nx }
+        cur=c0 }
+      else for(let k=pts.length;k<mid;k++){ const t=(k-pts.length+1)/(mid-pts.length+1); pts.push({x:cl(hlLerp(cur[0],tgt[0],t)+(r()-0.5)*0.06),y:cl(hlLerp(cur[1],tgt[1],t)+(r()-0.5)*0.24),k:"pass"}) }
       if(m.cr){ pts.push({x:tgt[0],y:tgt[1],k:"cross"}) }
+      if(SP2()&&(m.end==="lost"||m.end==="out")&&!m.cr){ const c1=pts[pts.length-1]; sp=m.end==="out"?[cl(c1.x+0.03+r()*0.08),c1.y<0.5?0.005:0.995]:[cl(c1.x+0.02+r()*0.1),cl(c1.y+(r()-0.5)*0.25)] }
       pts.push({x:sp[0],y:sp[1],k:"end"});
       // timing by touch; who: the man nearest each spot in the shape we hold there (the clip's own first receiver at its end)
-      const T=pts.map((p,k)=>({x:A(p.x),y:A(p.y),f:hlLerp(fA,fB,k/(pts.length-1)),k:p.lk&&(p.k==="pass"||p.k==="won")?"long":p.k,lk:p.lk?1:0}));
+      let fr=pts.map((p,k)=>k/(pts.length-1));
+      if(SP2()&&pts.length>1){ const DEAD={throw:6,gk:9,free:12,corner:15,kickoff:20}, dt=[DEAD[pts[0].k]||0.5]; for(let k=1;k<pts.length;k++){ const a=pts[k-1], b=pts[k], dm=Math.hypot((b.x-a.x)*105,(b.y-a.y)*68); dt.push(dm/15+0.9+((k*7+pts.length*13)%10)/10*1.2+(a.k==="long"||a.k==="cross"?0.8:0)) }
+        const tot=dt.reduce((x,y)=>x+y,0); let acc=0; fr=dt.map((v,k)=>{ acc+=v; return k===0?(dt[0]/tot):acc/tot }); fr[pts.length-1]=1 }
+      const T=pts.map((p,k)=>({x:A(p.x),y:A(p.y),f:hlLerp(fA,fB,fr[k]),k:p.lk&&(p.k==="pass"||p.k==="won")?"long":p.k,lk:p.lk?1:0}));
       T.forEach((t,k)=>{ if(k===0&&t.k==="gk"){ t.s=0; return } if(k===0&&ball.by!=null){ t.s=ball.by; return } const S=spShape(t.x,t.y,s===0)[s]; t.s=k===T.length-1&&m.slot!=null?m.slot:spNear(S,t.x,t.y,k>0?T[k-1].s:-1,offK(s,t.f)) });
       // the man who won it or fouled
       const e=T[T.length-1], o=1-s; if(m.end!=="clip"&&m.end!=="out"&&m.end!=="off"){ const S=spShape(e.x,e.y,s===0)[o]; m.by=m.byFixed!=null?m.byFixed:spNear(S,e.x,cl(e.y),-1,offK(o,e.f)) }
       moves.push({side:s,end:m.end,m:m,T:T,f0:fA,f1:fB});
       const nx=spAfter(m); ball={side:nx.side,kind:nx.kind,x:e.x,y:e.y,by:nx.kind==="won"?m.by:null};
       if(nx.kind==="kickoff"){ ball.x=0.5; ball.y=0.5 } else if(nx.kind==="gk"){ ball.x=nx.side?0.94:0.06; ball.y=0.5 } else if(nx.kind==="corner"&&m.end==="clip"){ ball.x=s?0.015:0.985; ball.y=((m.c.e.u||0)%2)?0.03:0.97 } };
-    seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+m.nT,0); let at=q.f0;
-      G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*m.nT/W2; push(m,at,fB); at=fB }) });
-    const out={L:L,n:nD,moves,N,pH,XI,last:Object.assign({},ball),offAt,offSlot};
+    seqs.forEach(G=>{ const q=G.q, n=G.seq.length; if(!n)return; const W2=G.seq.reduce((t,m)=>t+(m.wt||m.nT),0); let at=q.f0;
+      G.seq.forEach((m,k)=>{ const fB=k===n-1?q.f1:at+(q.f1-q.f0)*(m.wt||m.nT)/W2; push(m,at,fB); at=fB }) });
+    const out={L:L,n:nD,moves,N,pH,XI,ctx,last:Object.assign({},ball),offAt,offSlot}; spCtx=ctx0;
     Object.defineProperty(d,"_sp",{value:out,writable:true,configurable:true,enumerable:false});   // never saved with the game (it holds the live game)
     return out }
   // the counts the screen shows for the stretch (test/sc-pb.js checks them against the engine's)
@@ -4080,8 +4163,34 @@ const HL_SPORT=(function(){
     if(t.k==="free")return `${a} takes the free kick`; if(t.k==="throw")return `${a} takes the throw`;
     if(t.k==="cross")return `${a} crosses`; if(t.k==="long")return `${a} goes long for ${b}`; if(t.k==="won")return `${a} on the ball`;
     return `${a} to ${b}` }
+  /* round 108: the play by play. Every move of the stretch as a line once it has been played: who moved it, the touch
+     that mattered (a cross, a ball over the top, a set piece), how it ended. A shot or goal is the clip's own line. */
+  function spLine(P,mv,g){
+    const X=P.XI[mv.side], T=mv.T, who=s=>{ const n=spWho(X,s); return String(n).split(" ").slice(-1)[0] };
+    if(mv.end==="clip"){ const c=mv.m.c; if(!c||c.kind==="red")return null; let t=""; try{ t=c.e?scEventText(g,c.e,{}).text:"" }catch(e){}
+      return {text:t||(c.kind==="goal"?"Goal":"A chance"), big:c.kind==="goal"?"goal":"shot"} }
+    const nm=k=>who(T[k].s), ded=a=>a.filter((x,q)=>q===0||x!==a[q-1]), cap=x=>x.replace(/^(\w)/,c=>c.toUpperCase());
+    let ki=-1; for(let k=T.length-2;k>=0;k--){ const t=T[k]; if(t.k==="cross"||t.k==="long"||t.k==="corner"||t.k==="free"||t.lk){ ki=k; break } }
+    const VERB={cross:"crosses",long:"goes long",corner:"swings in the corner",free:"takes the free kick"};
+    let lead;
+    if(ki>=0){ const pre=ded(T.slice(0,ki+1).map((t,k)=>nm(k))), kn=pre.pop(), v=VERB[T[ki].k]||"goes long"; lead=pre.length?pre.slice(-2).join(" to ")+" to "+kn+", who "+v:kn+" "+v }
+    else { const ch=ded(T.slice(0,-1).map((t,k)=>nm(k))); lead=ch.length>1?ch.slice(-3).join(" to "):ch.length?ch[0]+" on the ball":"" }
+    const end=spText(P,mv,T.length-1)||"";
+    const big=mv.end==="card"?"card":ki>=0&&(T[ki].k==="cross"||T[ki].k==="corner")||mv.end==="corner"?"att":"";
+    return {text:[lead,end].filter(Boolean).map(cap).join(". "),big} }
+  function spFeed(L,d,f){ const P=spPlan(L,d), g=L.g, out=[];
+    P.moves.forEach((mv,i)=>{ const z=mv.T[mv.T.length-1]; if(z.f>f)return; const ln=spLine(P,mv,g); if(!ln||!ln.text)return;
+      out.push({k:d.seg+"|"+i, m:Math.min(90,Math.floor(d.seg*5+z.f*5)+1), team:mv.side?g.away:g.home, text:ln.text, big:ln.big}) });
+    return out }
+  const SP_UNITW=["at the back","in midfield","up front"];
+  const SP_SAYS={push:"%s throw men forward",sit:"%s drop deep to hold on",safe:"%s go for it",aggressive:"%s sit deep"};
+  function spBench(g,pv,d){ if(!pv||!d||pv===d||pv.seg!==d.seg-1||!pv.E||!d.E)return null; const teams=[g.home,g.away], up=s=>String(teams[s]).toUpperCase();
+    for(let s=0;s<2;s++){ const sd=s?"away":"home"; for(let u=0;u<3;u++)if(d.sub?d.sub[sd].indexOf(u)>=0:d.E[sd][u]-pv.E[sd][u]>12)return {t:"CHANGE: "+up(s)+", FRESH LEGS "+SP_UNITW[u].toUpperCase(),side:s} }
+    if(pv.md&&d.md)for(let s=0;s<2;s++){ const sd=s?"away":"home", a=spMode(pv.md[sd]), b=spMode(d.md[sd]); if(a!==b&&SP_SAYS[b])return {t:SP_SAYS[b].replace("%s",up(s)).toUpperCase(),side:s} }
+    return null }
+  const SP_VMAX=1500;   // metres a stretch at most: 3 m a 500th of it (about a tenth of a second at Normal); it holds a man back only on a jump (5% of man-frames, 0.26 m behind on average; test/sc-motion.js)
   function spDraw(x,W,H,d,f){
-    const L=live, P=spPlan(L,d); let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
+    const L=live, P=spPlan(L,d); spCtx=P.ctx||null; let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
     const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
     // the ball travels in the first part of the interval, then the man it reached carries it a little
@@ -4091,16 +4200,43 @@ const HL_SPORT=(function(){
     // each side's shape, a moment behind the ball (players take a moment to react); the man on it, and the man it's going to
     const lagS=(fq)=>{ let mm=P.moves.find(m=>fq>=m.f0&&fq<=m.f1)||mv, TT=mm.T, kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++; const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.62));
       return spShape(hlLerp(A.x,B.x,tt),hlLerp(A.y,B.y,tt),mm.side===0) };
-    const sh=[[],[]]; const dq=[0,0.006,0.012,0.018]; dq.forEach((dt,q)=>{ const w=4-q, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sh[s][i])sh[s][i]=[0,0,0]; sh[s][i][0]+=p[0]*w; sh[s][i][1]+=p[1]*w; sh[s][i][2]+=w })) });
-    const pos=[0,1].map(s=>sh[s].map(o=>[o[0]/o[2],o[1]/o[2]]));
+    const sh=[[],[]]; const dq=SP2()?[0,0.003,0.006,0.009,0.012,0.015,0.018,0.021,0.024,0.027]:[0,0.006,0.012,0.018]; dq.forEach((dt,q)=>{ const w=SP2()?1:4-q, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sh[s][i])sh[s][i]=[0,0,0]; sh[s][i][0]+=p[0]*w; sh[s][i][1]+=p[1]*w; sh[s][i][2]+=w })) });
+    let pos=[0,1].map(s=>sh[s].map(o=>[o[0]/o[2],o[1]/o[2]]));
+    // round 108: tired legs are slow to get back into shape: a tired unit's men follow the play from further behind
+    if(SP2()&&P.ctx&&P.ctx.E){ const tq=[0,1].map(s=>[0,1,2].map(u=>spTired(P.ctx,s,u)));
+      if(tq.some(a=>a.some(v=>v>0.05))){ const sl=[[],[]]; [0.02,0.026,0.032,0.038,0.044,0.05,0.056].forEach((dt,q)=>{ const w=1, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sl[s][i])sl[s][i]=[0,0,0]; sl[s][i][0]+=p[0]*w; sl[s][i][1]+=p[1]*w; sl[s][i][2]+=w })) });
+        pos=pos.map((A,s)=>A.map((p,i)=>{ const u=SP_UNIT[i]==="GK"?-1:SP_UNIT[i]==="ST"?2:SP_UNIT[i]==="W"||SP_UNIT[i]==="CM"?1:0, t=u<0?0:tq[s][u]*0.85, o=sl[s][i]; return t?[hlLerp(p[0],o[0]/o[2],t),hlLerp(p[1],o[1]/o[2],t)]:p })) } }
     const s=mv.side; if(u<0.62){ pos[s][a.s]=[hlLerp(pos[s][a.s][0],a.x,0.85*(1-tr)),hlLerp(pos[s][a.s][1],a.y,0.85*(1-tr))] }
-    pos[s][b.s]=[hlLerp(pos[s][b.s][0],b.x,0.4+0.55*tr),hlLerp(pos[s][b.s][1],b.y,0.4+0.55*tr)];
+    { const wb=SP2()?0.95*hlEase(Math.min(1,u/0.62)):0.4+0.55*tr; pos[s][b.s]=[hlLerp(pos[s][b.s][0],b.x,wb),hlLerp(pos[s][b.s][1],b.y,wb)] }   // round 108: he moves to meet it from where he was (he jumped 40% of the way at each pass)
     if(k===T.length-2&&mv.m.by!=null&&mv.end!=="clip"&&tr>0.5){ const o=1-s; pos[o][mv.m.by]=[hlLerp(pos[o][mv.m.by][0],b.x,(tr-0.5)*1.6),hlLerp(pos[o][mv.m.by][1],b.y,(tr-0.5)*1.6)] }
+    // round 108: off the ball the nearest man closes the ball down (two on a press), the next covers; on it a striker
+    // runs in behind when the ball's in the middle third, a full back overlaps when it's wide in theirs
+    if(SP2()){ const o=1-s, C=P.ctx||{ap:["",""],pl:["",""]}, near=pos[o].map((q,i)=>[i?Math.hypot((q[0]-bx)*105,(q[1]-by)*68):1e9,i]).sort((x,y)=>x[0]-y[0]);
+      const press=C.ap[o]==="press"||C.pl[o]==="safe"||C.pl[o]==="push", n=press?2:1;
+      near.slice(0,n).forEach(([dd,i],q)=>{ const R0=press?28:18; if(dd>R0)return; const w=(q===0?0.62:0.36)*(1-Math.min(1,dd/40))*Math.min(1,(R0-dd)/6), q0=pos[o][i], tx=bx+(q0[0]-bx)*0.12, ty=by+(q0[1]-by)*0.12; pos[o][i]=[hlLerp(q0[0],tx,w),hlLerp(q0[1],ty,w)] });
+      const ax=s?1-bx:bx, ay=s?1-by:by, fr=q=>s?[1-q[0],1-q[1]]:q, dir=s?-1:1, t2=(d.seg*5+f*5)*60;
+      // round 108: each run fades in and out (they snapped on and off, 5-8 m in a frame)
+      const ramp=(v,a0,a1)=>Math.max(0,Math.min(1,(v-a0)/(a1-a0)));
+      { const zone=ramp(ax,0.35,0.43)*(1-ramp(ax,0.72,0.8)); [9,10].forEach(k=>{ const q=pos[s][k], ph=k===9?Math.max(0,Math.sin(t2/7)):Math.max(0,-Math.sin(t2/7)); if(q&&k!==a.s&&k!==b.s&&zone*ph>0)pos[s][k]=[q[0]+dir*0.05*(0.6+0.4*Math.sin(t2/3))*zone*ph,q[1]] }) }
+      { const wide=Math.max(ramp(0.3-ay,0,0.06),ramp(ay-0.7,0,0.06)), zone=ramp(ax,0.6,0.68)*wide, k=ay<0.5?(s?4:1):(s?1:4), q=pos[s][k]; if(q&&k!==a.s&&k!==b.s&&zone>0)pos[s][k]=[q[0]+dir*0.08*zone,q[1]] } }
+    pos=pos.map(A=>A.map(q=>[Math.max(0.01,Math.min(0.99,q[0])),Math.max(0.01,Math.min(0.99,q[1]))]));
+    // round 108: nobody outruns his legs. Frame to frame each man covers at most what a sprint allows on this clock
+    // (a man the shape wanted 40 m away jumped there in a frame: 551 steps over 8 m in a match, 0.3% of them); the man
+    // the ball is going to gets a little more. Seeking (a rewatch, a reload) starts afresh.
+    if(SP2()){ const Q=spDraw.st, di=(L.drives||[]).indexOf(d); let df=-1;
+      if(Q&&Q.d===d&&f>=Q.f)df=f-Q.f; else if(Q&&Q.di===di-1&&Q.f>0.97&&f<0.03&&d.seg!==9)df=f+1-Q.f;
+      let nCl=0, lagM=0; if(df>=0&&df<0.02){ const lim=SP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*105, dy=(q[1]-o[1])*68, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.7:1);
+        if(m>L2&&m>0){ nCl++; lagM+=m-L2; return [o[0]+dx*L2/m/105,o[1]+dy*L2/m/68] } return q })) }
+      spDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))}; spDraw.cl={nCl,lagM} }
+    spDraw.pos=pos; spDraw.dbg={mi:P.moves.indexOf(mv),k,as:a.s,bs:b.s,s:mv.side,tr,u,bx,by,cl:spDraw.cl};   // for test/sc-motion.js
     const kits=hlKits(g.home,g.away), r=Math.max(5,W/80), gks=hlFar(["#E8F56B","#C9A0FF","#F2F2F2","#FF9F43","#7CF2D0","#111318"],[kits[0].fill,kits[1].fill]);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const X=P.XI[si], kt=kits[si], gk=hlKit("",gks[si]);
       pos[si].forEach((p,i)=>{ if(i===P.offSlot[si]&&P.offAt(si,f))return; const [px,py]=toS(p[0],p[1]), on=si===s&&(i===b.s&&tr>=1||i===a.s&&tr<1);
-        hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]&&(W>=520||on)?{sub:X.nm[i]}:{},on?{hot:true}:{})) }) });   // a phone's pitch names the man on the ball (twenty-two names piled up)
+        hlPlayer(x,px,py,r,i?kt:gk,Object.assign({num:X.nums[i],dir:Math.atan2(qy-py,qx-px)},X.nm[i]&&(W>=520||on)?{sub:X.nm[i]}:{},on?{hot:true}:{}));
+        // round 108: legs you can see. Under each of your men a bar of his unit's legs once they start to go (amber, then red)
+        if(SP2()&&i&&P.ctx&&P.ctx.E&&W>=420&&si===(L.userIsHome?0:1)){ const u=SP_UNIT[i]==="ST"?2:SP_UNIT[i]==="W"||SP_UNIT[i]==="CM"?1:0, v=P.ctx.E[si][u];
+          if(v<78){ const bw=r*1.8, bh=Math.max(2,r*0.28), bx0=px-bw/2, by0=py-r*1.25-bh-1; x.save(); x.fillStyle="rgba(0,0,0,.55)"; x.fillRect(bx0-1,by0-1,bw+2,bh+2); x.fillStyle=v<60?"#FF6B5B":"#F4C95D"; x.fillRect(bx0,by0,bw*Math.max(0.05,v/100),bh); x.restore() } } }) });   // a phone's pitch names the man on the ball (twenty-two names piled up)
     // the ball's last moments
     const trail=[]; if(a.k!=="pass"||tr<1)for(let q=6;q>=1;q--){ const tq=Math.max(0,tr-q*0.04), eq=lf?tq:hlEase(tq), zq=lf&&tq<1?Math.sin(Math.PI*tq)*lf:0, pp=toS(hlLerp(a.x,b.x,eq),hlLerp(a.y,b.y,eq)); trail.push([pp[0],pp[1]-zq*W]) }
     hlBall(x,qx,qy,r*0.55,z*W,trail.length>1?trail:null);
@@ -4109,11 +4245,16 @@ const HL_SPORT=(function(){
     const txt=spText(P,mv,k===T.length-2&&u>0.62?T.length-1:k);
     if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
     if(mv.end==="card"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"YELLOW CARD",{fill:"#F2C14E"},(u-0.7)/0.3);
+    // round 108: the benches and the touchline. A change (a unit's legs back up) and a side changing how it plays (the
+    // computer chasing or sitting on it late, your assistant's late call) show as the stretch begins
+    else if(SP2()&&f<0.16){ const di=(L.drives||[]).indexOf(d), pv=di>0?L.drives[di-1]:(L.hold&&L.drives.length?L.drives[L.drives.length-1]:null), msg=spBench(g,pv,d);
+      if(msg)hlBanner(x,W,H,msg.t,msg.side?kits[1]:kits[0],Math.min(1,f/0.04)*(f>0.13?(0.16-f)/0.03:1)) }
     // the numbers on the scoreboard, as far as the clock
+    if(typeof hlFeedTick==="function")hlFeedTick(()=>spFeed(L,d,f));
     if(Date.now()-(spDraw.t||0)>500){ spDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=spTallyHTML(spTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
-  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>20000,   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
+  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>(SP2()?40000:20000),   /* round 108: forty seconds a stretch at the base (Normal plays about 65s: a match in about twenty minutes, every pass at a pace you can follow; Ian: "I would watch full 90 minute matches in Football Manager") */   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);
@@ -4233,10 +4374,17 @@ const HL_SPORT=(function(){
     const att=lag(tt=>attAt(c,tt)), def=lag(tt=>defAt(c,tt,att));
     // round 103: in the full match the shot's move grows out of the play before it: each man starts from where the
     // touch-by-touch play had him (found by his shirt) and runs into the move's shape over its first moments
-    if(c.pbFrom&&t<0.16){ const w=1-hlEase(t/0.16), s0=c.home?0:1, w0=c.W[0], hx=s0?1-w0[0]:w0[0], hy=s0?1-w0[1]:w0[1], S=spShape(hx,hy,s0===0), fr=q=>s0?[1-q[0],1-q[1]]:q;
+    // round 108: from where the pitch last drew them, when it just did (the shape's spot was a jump of its own)
+    if(c.pbFrom&&t<0.05&&!c._from){ const Q=spDraw.st; if(Q&&Date.now()-Q.at<800&&Math.abs(Q.f-c.f)<0.06)Object.defineProperty(c,"_from",{value:Q.pos.map(A=>A.map(q=>q.slice())),writable:true,configurable:true,enumerable:false}) }
+    if(c.pbFrom&&t<0.16){ const w=1-hlEase(t/0.16), s0=c.home?0:1, w0=c.W[0], hx=s0?1-w0[0]:w0[0], hy=s0?1-w0[1]:w0[1], S=SP2()&&c._from?c._from:spShape(hx,hy,s0===0), fr=q=>s0?[1-q[0],1-q[1]]:q;
       const XA=spXI(c.pbFrom,c.tm), XD=spXI(c.pbFrom,c.opp);
       att.forEach((q,i)=>{ if(!q)return; const j=c.numsA?XA.nums.indexOf(c.numsA[i]):i, src=fr(S[s0][j>=0?j:i]); att[i]=[hlLerp(q[0],src[0],w),hlLerp(q[1],src[1],w)] });
       def.forEach((q,i)=>{ if(!q)return; const j=c.numsD?XD.nums.indexOf(c.numsD[i]):i, src=fr(S[1-s0][j>=0?j:i]); def[i]=[hlLerp(q[0],src[0],w),hlLerp(q[1],src[1],w)] }) }
+    frame.dbg={att,def,home:c.home,numsA:c.numsA,numsD:c.numsD};   // for test/sc-clipjoin.js
+    // round 108: the play after the clip starts where the clip leaves them (it cut back to the shape, up to 80 m a man)
+    if(SP2()&&c.pbFrom&&spDraw.st&&typeof live!=="undefined"&&live&&live.pb&&live.pb.d===spDraw.st.d){ const Q=spDraw.st, sA=c.home?0:1, hm=q=>c.home?q:[1-q[0],1-q[1]];
+      const XA=spXI(c.pbFrom,c.tm), XD=spXI(c.pbFrom,c.opp), put=(s,X,arr,nums)=>X.nums.forEach((nn,j)=>{ const i=nums?nums.indexOf(nn):-1; if(i>=0&&arr[i])Q.pos[s][j]=hm(arr[i]) });
+      put(sA,XA,att,c.numsA); put(1-sA,XD,def,c.numsD); Q.f=Math.max(Q.f,c.f); Q.at=Date.now() }
     const kick=t>=tb&&t<ts+0.02, sIdx=c.rec[n-1];
     const r=Math.max(5,W/80), [qx,qy]=P(W,H,c,Math.min(1.03,bx),by);
     // the move so far, faint, and the shot once it's struck
@@ -4267,7 +4415,7 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's minute
   const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spXI, spTally, spTallyHTML};
+  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, frameDbg:()=>frame.dbg||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
 })();
 /* Soccer's big moments (round 73, core 96_moments): a hat-trick, and a late winner. From the game's own events, the
    same ones the run of play and the box score name. */
@@ -4575,7 +4723,7 @@ function liveView(){
   return `<div class="watchwrap">
     ${liveScoreboard()}
     ${typeof hlBox==="function"?hlBox():""}
-    ${statStrip(g,last)}
+    ${statStrip(g,last)}${typeof hlFeedHTML==="function"&&hlFeedHTML()?"\n    "+hlFeedHTML():""}
     <div class="grouphead">Run of play</div>
     <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Kick-off at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">
@@ -4841,7 +4989,7 @@ class Season{
     // engine 12 (round 89): "auto" is your assistant's pick (Sim ahead leaves it to him), the plan your roster suits. A
     // simmed game is played as the computer plays it (no person's path), so he picks by the computer's measure: simming
     // is then exactly the computer coaching your club (Ian's rule, round 43)
-    const plan=this.plan==="auto"?cpuPlanOf(this.userTeam,this.userTeam===a?eloH-eloA:eloA-eloH,!!this.decideHook):PLANS[this.plan]?this.plan:"balanced";
+    const plan=this.plan==="auto"?cpuPlanOf(this.userTeam,this.userTeam===a?eloH-eloA:eloA-eloH,!!this.decideHook,this.userTeam===a?b:a):PLANS[this.plan]?this.plan:"balanced";
     // and the computer's clubs pick the plan their roster suits (a person's club in a shared seat keeps balanced)
     const hum=t=>this.humans&&this.humans.indexOf(t)>=0;
     const planH=this.userTeam===a?plan:hum(a)?"balanced":cpuPlanOf(a,eloH-eloA), planA=this.userTeam===b?plan:hum(b)?"balanced":cpuPlanOf(b,eloA-eloH);
@@ -6095,9 +6243,10 @@ function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.trai
    measured per sport: the Elo on the balanced curve that a plan is worth at a gap, with no lean). gap: this side's edge.
    human: the fit on a person's path (the plan also picks a person's system), for your assistant's pick. */
 const PLAN_PICK_MIN=12;
-function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
+function cpuPlanOf(t,gap,human,opp){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
   let best="balanced", bv=0;
-  ["safe","aggressive"].forEach(pl=>{ const f=human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl); if(!(f>=PLAN_PICK_MIN))return;
+  // round 109: your assistant, on your path, reads tonight's opponent too (planVs: 0 before engine 23 or with no opp)
+  ["safe","aggressive"].forEach(pl=>{ const f=(human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl))+(human&&opp?planVs(t,opp,pl):0); if(!(f>=PLAN_PICK_MIN))return;
     const v=f+(typeof sportPlanShift==="function"?sportPlanShift(pl,gap||0):0); if(v>bv){ bv=v; best=pl } });
   return best }
 /* round 94 (engine 17): the plan your roster suits is worth about 8 points of win chance at even for a roster one league
@@ -6107,11 +6256,28 @@ function cpuPlanOf(t,gap,human){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||
    the box score carries it. Balanced is untouched. */
 function planAmpV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=17 }
 function planAmp(f,A){ if(!planAmpV()||!A||!f)return f||0; const v=A.m*f; return Math.max(-A.cap,Math.min(A.cap,v)) }
+/* round 109 (engine 23; Grokbot, round 13: "in Football Manager, a tactic that is right against one side is wrong against
+   another. Until that is true here, the plan is a setting, not a decision"). On a person's side a plan is worth what his
+   roster suits it over what tonight's opponent's roster suits it (PLAN_VS_K of theirs), held to the sport's cap: skating
+   with a quicker side is worth less, with a slower one more. Averaged over the league the opponent's part is the
+   league's mean fit, so a person who picks blind gains nothing; the computer's games are untouched (no calibration
+   moves). Each sport plays it where it plays the amplified fit (planAmp's extra), so the box score carries it. */
+const PLAN_VS_K=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K)||1);
+function planVsV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23 }
+/* the total a person's plan is worth from rosters, given his amplified fit f and the opponent's fo, held to cap */
+function planVsTot(f,fo,cap){ const v=f-PLAN_VS_K*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
+/* in the chance: the opponent's part (the total less your own fit), 0 before engine 23 or where a sport has no counter */
+/* basketball and football plan your offence, so there the opponent's part is their defence against it (sportPlanVsC: in
+   Elo, a league spread of the defence that answers the plan worth a spread of fit); hockey and soccer play one game
+   both ways, so there it is how well their roster suits the same plan */
+function planVsOpp(o,pl){ return typeof sportPlanVsC==="function"?sportPlanVsC(o,pl):-PLAN_VS_K*sportPlanFit(o,pl) }
+function planVs(t,o,pl){ if(!planVsV()||!t||!o||!pl||pl==="balanced"||typeof sportPlanFit!=="function"||typeof sportPlanCap!=="function")return 0;
+  const f=sportPlanFit(t,pl); return planVsTot(f,-planVsOpp(o,pl),sportPlanCap())-f }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
 function planShiftAt(T,gap){ return T?T[0]+T[1]*Math.max(-300,Math.min(300,gap||0)):0 }
 /* what your plan is worth tonight on your own path, in Elo on the balanced curve: your roster's fit, and (engine 12,
    Ian round 89) the plan's own measured worth at tonight's gap. gap: your edge before plans */
-function planEdge(t,pl,gap){ if(!pl||pl==="balanced")return 0; return (typeof sportPlanFit==="function"?sportPlanFit(t,pl):0)+(typeof sportPlanShiftH==="function"?sportPlanShiftH(pl,gap||0):0) }
+function planEdge(t,pl,gap,o){ if(!pl||pl==="balanced")return 0; return (typeof sportPlanFit==="function"?sportPlanFit(t,pl):0)+(typeof sportPlanShiftH==="function"?sportPlanShiftH(pl,gap||0):0)+(o?planVs(t,o,pl):0) }
 /* your edge in your next game before any plan, for the plan rows */
 function planGapNow(t){ try{ const g=SEA.nextGame?SEA.nextGame(t):null; if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
@@ -6933,14 +7099,25 @@ function liveWPHTML(onCall){
    this wrapper counts the stretches each engine hands back and sets the side's plan before the one it names. */
 function setLivePlan(e,side,plan){
   if(!e||!plan)return;
+  // round 108: a change on the bench, "sub:<unit>" (soccer: 0 the back, 1 midfield, 2 up front); it leaves the plan alone
+  if(typeof plan==="string"&&plan.indexOf("sub:")===0){ if(typeof e.subNow==="function")e.subNow(side,+plan.slice(4)); return }
   if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
+  // engine 22: the latest word wins. A change after the late call (soccer, hockey) was kept in the mode the late
+  // answer had already overruled, so from 65' on it did nothing (measured: Park the bus when level, 0.37 against 0.39)
+  // (only where the late call is a mode: the sports with live instructions; basketball's late holds a press and the
+  // assistant's close-out, which a plan change mustn't cancel)
+  if((typeof ENGINE_V==="undefined"||ENGINE_V>=22)&&typeof LIVE_EXTRA!=="undefined"&&e.late&&typeof e.late==="object"&&side in e.late)e.late[side]=null;
   if("aggrH" in e){ e[side==="home"?"aggrH":"aggrA"]=plan; e[side==="home"?"baseH":"baseA"]=plan }
 }
 if(typeof makeLiveGame==="function"){ const _mlg=makeLiveGame;
   makeLiveGame=function(rng,eH,eA,pH,pA,humans,knock,ctx,pm){
     const e=_mlg(rng,eH,eA,pH,pA,humans,knock,ctx); if(!pm)return e;
     let n=0; const nx=e.next;
-    e.next=function(){ for(let i=0;i<pm.length;i++)if(pm[i][0]===n)setLivePlan(e,pm[i][1],pm[i][2]);
+    // round 108: each entry once in each game played (a stretch that opens with a call comes back here before it plays:
+    // a change on the bench there was made twice); e.pmOn holds the ones this game has made (the replays of a game
+    // share its pm, so the mark is the game's own)
+    const on=e.pmOn=new WeakSet();
+    e.next=function(){ for(let i=0;i<pm.length;i++)if(pm[i][0]===n&&!on.has(pm[i])){ on.add(pm[i]); setLivePlan(e,pm[i][1],pm[i][2]) }
       const r=nx.apply(e,arguments); if(r&&!r.done&&!r.ask&&r.drive)n++; return r };
     return e } }
 /* ============ the season card ============ */
@@ -8287,6 +8464,25 @@ function hlInks(home,away){
   const green=c=>c[1]>c[0]+30&&c[1]>c[2]+20;
   return [green(A)?"#F4F1E8":a, d<90||green(B)?(green(A)?"#1A1D26":"#F4F1E8"):b];
 }
+
+/* ---- round 108: the play by play ----
+   The full match's own commentary, every move as it is played, newest first: the sport hands its lines up to the clock
+   (HL_SPORT feed functions, keyed so a line comes once); the panel is patched in place, as the score is, a few times a
+   second. Kept with the game on screen (live.feed). */
+let hlFeedT=0;
+function hlFeedTick(get){
+  if(typeof live==="undefined"||!live||Date.now()-hlFeedT<250)return; hlFeedT=Date.now();
+  let lines=[]; try{ lines=get()||[] }catch(e){ return }
+  const F=live.feed=live.feed||[], seen=live.feedK=live.feedK||{}; let added=false;
+  lines.forEach(x=>{ if(seen[x.k])return; seen[x.k]=1; F.push(x); added=true });
+  if(added){ try{ const el=document.getElementById("pbp"); if(el)el.innerHTML=hlFeedRows() }catch(e){} } }
+const PBP_SHOW=9;
+function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
+  if(!F.length)return `<div class="pbpe">Kick-off: the play by play follows the ball.</div>`;
+  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}'</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+function hlFeedHTML(){ if(typeof pbOn!=="function"||!pbOn()||typeof live==="undefined"||!live)return "";
+  // round 108: the pitch tells it; the feed is one line, the latest, unless you open it (Ian: "I'm not sure how necessary the text is")
+  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }
 const ptsW=n=>`${n} point${n===1?"":"s"}`;   // "1 points" (Instinct, round 15)
 /* ============ views: English football ============ */
 /* The tables, zones marked (the Premier League's Champions League places and
@@ -9439,21 +9635,44 @@ function liveTick(){
   }
 }
 /* your game plan, changed mid-game: from the next stretch, recorded so a reload or a replay plays it the same */
-function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
+const isSubPm=x=>String(x[2]).indexOf("sub:")===0;   // round 108: a change on the bench rides with the plan changes
+function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side&&!isSubPm(x)); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
 /* round 107: a change of plan in a live game takes a second tap on the same button. One tap arms it, and the
    arming lapses after a few seconds or on a tap anywhere else (Grokbot: a click meant for Full match landed on
    Shorten the game as the screen moved, and the plan changed with nothing said) */
 let PLAN_ARM=null; const PLAN_ARM_MS=4000;
+// round 108: a sport's extra live instructions (soccer: all-out attack, park the bus), engine 22
+function liveExtra(){ return typeof LIVE_EXTRA!=="undefined"&&(typeof ENGINE_V==="undefined"||ENGINE_V>=22)?LIVE_EXTRA:{} }
+function livePlanOk(p){ return !!(PLANS[p]||liveExtra()[p]) }
+function livePlanLabel(p){ return (PLANS[p]||liveExtra()[p]||{}).l||p }
 function planArmed(p){ return !!(PLAN_ARM&&PLAN_ARM.p===p&&live&&PLAN_ARM.ck===live.ckey&&Date.now()-PLAN_ARM.at<PLAN_ARM_MS) }
 function pressPlanMidGame(p){
-  if(!live||live.done||!PLANS[p]||live.h2h)return; if(livePlanNow()===p){ PLAN_ARM=null; render(); return }
+  if(!live||live.done||!livePlanOk(p)||live.h2h)return; if(livePlanNow()===p){ PLAN_ARM=null; render(); return }
   if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setPlanMidGame(p); return }
   if(planArmed(p))return;
   PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
   setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
+/* round 108 (engine 22): a change of your own on the bench, any time: fresh legs in one unit from the next stretch.
+   The engine says what's left (soccer: two, as your assistant makes; once you make one he leaves the bench to you).
+   Two taps, as a plan change; recorded with the plan changes so a reload makes it at the same moment. */
+const LIVE_UNITS=[["0","at the back"],["1","in midfield"],["2","up front"]];
+function liveSubsOn(){ return !!(live&&!live.done&&!live.h2h&&live.eng&&typeof live.eng.subNow==="function"&&live.eng.S&&(typeof ENGINE_V==="undefined"||ENGINE_V>=22)) }
+function liveSubsLeft(){ const side=live.userIsHome?"home":"away"; return live.eng.subsLeft(side)-(live.pm||[]).filter(x=>x[1]===side&&isSubPm(x)&&!(live.eng.pmOn&&live.eng.pmOn.has(x))).length }   // made as its stretch starts (the pm wrapper keeps them)
+function pressSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0||live.ask)return; const p="sub:"+u;
+  if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setSubMidGame(u); return } if(planArmed(p))return;
+  PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
+  setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
+function setSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0)return; const side=live.userIsHome?"home":"away", n=live.drives.length;
+  if((live.pm||[]).some(x=>x[0]===n&&x[1]===side&&x[2]==="sub:"+u))return;
+  live.pm.push([n,side,"sub:"+u]);   // made as the next stretch starts (the engine's pm wrapper), so never twice
+  S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
+function liveSubsHTML(){ if(!liveSubsOn())return ""; const side=live.userIsHome?"home":"away", E=live.eng.S[side].E, left=liveSubsLeft();
+  const legs=v=>{ const n=Math.round(v*100); return `<span class="lgs${n<60?" low":n<75?" mid":""}">${n}</span>` };
+  return `<div class="fnote" style="margin:6px 0 4px">Changes: ${left?`${left} left`:"none left"}${left&&!live.eng.bench?.[side]?" (your assistant makes them at 60' and 70' unless you do)":""}. Legs now:</div>
+    <div class="wspeed">${LIVE_UNITS.map(([u,l])=>`<button class="spbtn${planArmed("sub:"+u)?" armed":""}" id="ms-${u}" data-midsub="${u}"${left>0?"":" disabled"}>${planArmed("sub:"+u)?"Tap again: ":""}Fresh legs ${l} ${legs(E[+u])}</button>`).join("")}</div>` }
 function setPlanMidGame(p){
-  if(!live||live.done||!PLANS[p]||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
-  const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side)live.pm.splice(i,1);
+  if(!live||live.done||!livePlanOk(p)||live.h2h)return; const side=live.userIsHome?"home":"away"; if(livePlanNow()===p)return;
+  const n=live.drives.length; for(let i=live.pm.length-1;i>=0;i--)if(live.pm[i][0]===n&&live.pm[i][1]===side&&!isSubPm(live.pm[i]))live.pm.splice(i,1);
   live.pm.push([n,side,p]); setLivePlan(live.eng,side,p);
   S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
 /* the bar under the live game: your plan from here, and how much of the game to watch */
@@ -9461,7 +9680,7 @@ function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
   const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
   return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
-    <div class="wspeed">${Object.keys(PLANS).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(PLANS[k].l)}</button>`).join("")}</div>`}
+    <div class="wspeed">${Object.keys(PLANS).concat(Object.keys(liveExtra())).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(livePlanLabel(k))}</button>`).join("")}</div>${liveSubsHTML()}`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" id="hl-${v}" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
@@ -10887,7 +11106,7 @@ function gameEdge(me,opp,atHome,neutral){
   const hm=atHome||neutral, g={home:hm?me:opp, away:hm?opp:me, neutral:!!neutral};
   const ku=SEA.userTeam, kf=SEA.featured, kd=SEA.deploy;
   if(S.myTeam){ SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null }
-  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; let x=(hm?d:-d)+(me===S.myTeam?planEdge(me,planPicked(),hm?d:-d):0);   // round 89: your plan's fit and its own worth at this gap
+  try{ const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; let x=(hm?d:-d)+(me===S.myTeam?planEdge(me,planPicked(),hm?d:-d,opp):0);   // round 89: your plan's fit and its own worth at this gap
     // round 89: the computer's club plays the plan its roster suits, and that fit is in the game too
     if(me===S.myTeam&&typeof sportPlanFit==="function"&&!(isHotSeat()&&coachIndexOf(opp)>=0)){ const op=cpuPlanOf(opp,hm?-d:d); if(op!=="balanced")x-=(typeof sportPlanFitC==="function"?sportPlanFitC(opp,op):sportPlanFit(opp,op))+(ENGINE_V>=15&&typeof sportPlanShift==="function"?sportPlanShift(op,hm?-d:d):0) }   // round 92: and that plan's own worth at their gap, as cpuPlanOf weighs it (an outgunned club taking risks: the chance read 81% where the engine won 70%)
     if(typeof sportTonightEdge==="function")x+=sportTonightEdge(me)-sportTonightEdge(opp);   // round 94: tonight's goalie (hockey's back-to-backs)
@@ -11401,8 +11620,16 @@ function planChances(){ const my=S.myTeam; let opp=null, atH=true, neu=false;
   const was=plan, o={}; try{ ["safe","balanced","aggressive"].forEach(k=>{ plan=k; o[k]=LEAGUE.wdl?LEAGUE.wdl(my,opp,atH,neu)[0]:winProb(my,opp,atH,neu) }) }finally{ plan=was }
   let gap=0; try{ plan="balanced"; gap=gameEdge(my,opp,atH,neu) }finally{ plan=was } return {p:o, gap:gap, opp:opp} }   // your edge before your plan
 /* in the units shown: each chance as the screen rounds it (round 71's lesson: the card's 41 and 54 with a line saying 14) */
-function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f;
+function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k,C.gap)-f, vs=C.opp?planVs(my,C.opp,k):0;
   const pl=/\band\b|s$/.test(PLAN_LEAN[k]);
+  // round 109 (engine 23): the biggest part pushing the way the number goes (fit, tonight's opponent, or the gap), so the
+  // reason can't contradict the number (a plus explained by "they have the skaters too")
+  if(planVsV()){ const t=f+vs+sh, sg=t>=0?1:-1, top=[["vs",vs],["f",f],["sh",sh]].reduce((a,b)=>b[1]*sg>a[1]*sg?b:a);
+    if(top[0]==="vs"&&vs){ if(typeof sportPlanVsWhy==="function")return sportPlanVsWhy(C.opp,k,vs);
+      if(typeof PLAN_VS_WORDS!=="undefined"&&PLAN_VS_WORDS[k])return `${esc(C.opp)} ${PLAN_VS_WORDS[k][vs<0?0:1]}`;
+      return vs<0?`${esc(C.opp)} have the ${PLAN_LEAN[k]} to play that game too`:`${esc(C.opp)} don't have the ${PLAN_LEAN[k]} to play that game` }
+    if(top[0]==="f")return `your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`;
+    return sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight") }
   return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) }
 function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
   const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>planWhy(C,k);
@@ -11430,14 +11657,14 @@ function planPreKeep(step,half,ug){ if(!PLANLINE_ON||!planAmpV()||typeof PLAN_LE
   K[planPreKey(step,half)]=q }
 function planLineHTML(step,half){ if(!PLANLINE_ON||step===undefined||step===null||!S.planPre)return "";
   const q=S.planPre[planPreKey(step,half)]; if(!q||!PLANS[q.p]||planFor(step,half)!==q.p)return "";   // simmed ahead on your assistant's plan: no line
-  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), nm=k=>esc(PLANS[k].l), jw=w=>/^as /.test(w)?" "+w:": "+w;
+  const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), nm=k=>esc(livePlanLabel(k)), jw=w=>/^as /.test(w)?" "+w:": "+w;
   let t;
   if(q.p==="balanced")t=q.vb>=2?`You started on <b>${nm("balanced")}</b>. <b>${nm(q.b)}</b> would have added <b>${q.vb}</b> before the game${jw(q.wb)}.`
     :`You started on <b>${nm("balanced")}</b>, and neither other plan added anything tonight.`;
   else if(q.v===0)t=`You started on <b>${nm(q.p)}</b>: no better than <b>${nm("balanced")}</b> before the game.`+(q.b!==q.p&&q.vb>0?` <b>${nm(q.b)}</b> would have added ${q.vb}${jw(q.wb)}.`:"");
   else { t=`You started on <b>${nm(q.p)}</b>: <b>${sg(q.v)}</b> before the game (${q.c}% to win, against ${q.c-q.v}% on ${nm("balanced")}), ${q.w}.`;
     if(q.v<0&&q.b!==q.p&&q.vb>0)t+=` <b>${nm(q.b)}</b> would have been ${sg(q.vb)}.`; else if(q.v<0)t+=` <b>${nm("balanced")}</b> was the better plan.` }
-  const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&PLANS[x[2]]);
+  const mid=(S.planMid&&S.planMid[callKey(step)+(half?"#1":"")])||[], mine=mid.filter(x=>x&&livePlanOk(x[2]));
   if(mine.length)t+=` You changed to <b>${nm(mine[mine.length-1][2])}</b> during the game.`;
   return `<div class="planpost">${t}</div>` }
 function planFitOld(wp,kept){
@@ -12779,13 +13006,15 @@ function render0(){
       // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
       // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
       const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
-        const go=()=>{ if(!b.dataset.midplan)PLAN_ARM=null; fn() };
+        const go=()=>{ if(!b.dataset.midplan&&!b.dataset.midsub)PLAN_ARM=null; fn() };
         b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); go() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)go() } };
       onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
         if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb&&live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
       onPress(el("wstep"),()=>{live.paused=true;S.watchStep=true;liveTick()});
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>pressPlanMidGame(x.dataset.midplan)));
+      document.querySelectorAll("[data-midsub]").forEach(x=>onPress(x,()=>pressSubMidGame(x.dataset.midsub)));
+      document.querySelectorAll("[data-pbp]").forEach(x=>onPress(x,()=>{ S.pbpOpen=!S.pbpOpen; save(); render() }));
       document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
         S.watchSpeed=x.dataset.speed;save();render()}));
