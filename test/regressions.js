@@ -548,8 +548,8 @@ for(const f of ['basketball-coach-pro.html','basketball-coach.html']){ const A=l
   for(let k=0;k<14;k++){ A.doAdvance(); if(!A.live)continue; const st=A.live.step; let m=0; while(A.live&&!A.live.done&&m++<3000){ A.live.ask?A.answerLive(A.live.ask.dp.opts[0][0]):A.liveTick() }
     const P=(A.S.played[A.callKey(st)]||[]).filter(p=>p.team===A.S.myTeam), R=[].concat(...P.map(p=>p.reads||[]));
     R.forEach(r=>{ if(r.split&&!r.unclear)splitGraded++ });
-    const t=A.readsHTML(st); lines+=(t.match(/class="read (ok|no|na)"/g)||[]).length; chose+=(strip(t).match(/You chose "/g)||[]).length;
-    ok((t.match(/class="read (ok|no|na)"/g)||[]).length===R.length,`soccer: ${R.length} reads but ${(t.match(/class="read (ok|no|na)"/g)||[]).length} lines on the card`) }
+    const t=A.readsHTML(st); lines+=(t.match(/class="read (ok|no|na|fair)"/g)||[]).length; chose+=(strip(t).match(/You chose "/g)||[]).length;
+    ok((t.match(/class="read (ok|no|na|fair)"/g)||[]).length===R.length,`soccer: ${R.length} reads but ${(t.match(/class="read (ok|no|na|fair)"/g)||[]).length} lines on the card`) }
   ok(lines>0&&chose===lines,`soccer: ${chose} of ${lines} read lines say what you chose`); ok(splitGraded===0,`soccer: ${splitGraded} split reports graded`) }
 
 /* 77. situation calls only in a game in reach (the round 50/71 floors, a close or late game's one call, are exempt): none asked where the chance with the assistant's call is outside
@@ -570,13 +570,13 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
    measured: scratch r88 fit.js), so there the chance moves by exactly that fit and nothing else, and a line names the
    plan the roster suits only once the gap is worth 12 Elo, as a fact about the roster, never "try X"; everywhere else the
    old rule holds */
-{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8').replace('liveTick, answerLive,','liveTick, answerLive, setPlan(p){plan=p}, fitOf(p){return typeof sportPlanFit==="function"?sportPlanFit(S.myTeam,p):0}, edgeAt(p){const g=SEA.nextGame(S.myTeam); if(!g)return null; return withPlan(p,()=>gameEdge(S.myTeam,g.home===S.myTeam?g.away:g.home,g.home===S.myTeam,!!g.neutral))}, ENGV(){return ENGINE_V}, pEdge(p){if(typeof planEdge!=="function")return 0; const g=SEA.nextGame(S.myTeam), o=g?(g.home===S.myTeam?g.away:g.home):null; return planEdge(S.myTeam,p,planGapNow(S.myTeam),o)},'); const m={exports:{}};
+{ const fs=require('fs'); const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8').replace('liveTick, answerLive,','liveTick, answerLive, NAMES(){return NAMES}, setPlan(p){plan=p}, fitOf(p){return typeof sportPlanFit==="function"?sportPlanFit(S.myTeam,p):0}, edgeAt(p){const g=SEA.nextGame(S.myTeam); if(!g)return null; return withPlan(p,()=>gameEdge(S.myTeam,g.home===S.myTeam?g.away:g.home,g.home===S.myTeam,!!g.neutral))}, ENGV(){return ENGINE_V}, pEdge(p){if(typeof planEdge!=="function")return 0; const g=SEA.nextGame(S.myTeam), o=g?(g.home===S.myTeam?g.away:g.home):null; return planEdge(S.myTeam,p,planGapNow(S.myTeam),o)},'); const m={exports:{}};
   new Function('require','module',src.slice(0,src.indexOf('const args'))+'\nmodule.exports={load};')(require,m);
   const PL=['safe','balanced','aggressive'], FITLINE=/Your roster leans to|Your roster doesn't suit|This plan suits your/;
   let lined=0, moved=0;
   for(const [f,tm] of [['basketball-coach-pro.html','Orlando'],['basketball-coach-pro.html','Boston'],['basketball-coach-pro.html','Denver'],['basketball-coach.html','Duke'],['basketball-coach.html','Gonzaga'],['basketball-coach.html','Kansas'],['soccer-coach.html','Southampton'],['soccer-coach.html','Arsenal'],['soccer-coach.html','Wrexham'],['soccer-coach.html','Liverpool'],['hockey-coach-pro.html','Boston'],['hockey-coach-pro.html','Edmonton'],['hockey-coach-pro.html','Toronto'],['football-coach.html','Alabama'],['football-coach.html','Rice'],['football-coach-pro.html','Kansas City'],['football-coach-pro.html','Detroit']]){ const api=m.exports.load(D(f)); api.newDynasty(tm,4,'T');
     const shown={}, lines={}, linesH={}, edge={}, fit={}; let h='';
-    PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); linesH[pl]=(h.match(/<div class="pland planfit">[\s\S]*?<\/div>/)||[''])[0]; edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
+    PL.forEach(pl=>{ api.setPlan(pl); h=api.view('team'); shown[pl]=(h.match(/class="opct">([^<]*)</)||[])[1]; lines[pl]=FITLINE.test(strip(h)); linesH[pl]=(h.match(/<div class="pland planfit scout">[\s\S]*?each plan was worth\.<\/div><\/div>/)||h.match(/<div class="pland planfit">[\s\S]*?<\/div>/)||[''])[0]; edge[pl]=api.edgeAt(pl); fit[pl]=api.fitOf(pl) });
     ok(!/would help you|try (Play it safe|Take risks|Shorten|Work it|Clog|Skate|Sit deep|Take the game)/i.test(strip(h)),`${f}: a line tells you to try a plan`);
     if(!shown.balanced&&!shown.safe){ console.log(`  ${f} ${tm}: no game on the card yet (skipped)`); continue }   // round 89: the Premier League starts a week later
     const fits=(/basketball/.test(f)&&api.ENGV()>=11)||(/hockey|soccer/.test(f)&&api.ENGV()>=12)||(/football/.test(f)&&api.ENGV()>=14);   // round 89: hockey and soccer on engine 12; round 91: football on 14
@@ -592,12 +592,16 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
     // the best by fit, unless it is a net loss tonight (round 89)
     // round 94 (engine 17): the reason line is in the shown units: under a plan, "+N from <plan>: why", N the change on the
     // card against Balanced; under Balanced, a line only when another plan adds 2 or more
-    if(api.ENGV()>=17){ const pc=q=>parseInt((String(shown[q]).match(/\d+/)||[])[0]), dv=q=>pc(q)-pc('balanced'), bestD=Math.max(dv('safe'),dv('aggressive'));
-      PL.forEach(p=>{ const t=strip(linesH[p]), has=/ from | would add /.test(t);
-        if(has)lined++;
-        if(p==='balanced')ok(has===(bestD>=2),`${f} ${tm}: under balanced the reason line ${has?'shows':'is missing'} (the best other plan adds ${bestD})`);
-        else { const v=dv(p), want=(v>0?'+':v<0?'&minus;':'')+Math.abs(v)+' from';
-          ok(has&&t.includes(want),`${f} ${tm}: under ${p} the reason line doesn't say "${want}" (${t.slice(0,90)})`) } });
+    // round 110 (Ian: the player shouldn't be told the best plan): from engine 17 the card shows the evidence, not the
+    // answer: the same scouting under every plan, no plan's number, ranks within the league, your assistant's read on
+    // engine 24, and a headline chance that doesn't move with the plan (toggling can't read off the best one)
+    if(api.ENGV()>=17){ const cards=PL.map(p=>strip(linesH[p]||'')), N=api.NAMES().length;
+      ok(new Set(Object.values(shown)).size===1,`${f} ${tm}: the headline chance moves with the plan (${PL.map(p=>shown[p]).join(' / ')})`);
+      ok(cards.every(c=>c===cards[0])&&/Scouting tonight/i.test(cards[0]),`${f} ${tm}: the scouting card changes with the plan or is missing (${cards[0].slice(0,80)})`);
+      ok(!/would add|\+\d+ from|&minus;\d+ from|\d+%/.test(cards[0]),`${f} ${tm}: the card gives a plan's number (${cards[0].slice(0,120)})`);
+      const rk=[...cards[0].matchAll(/(\d+)(?:st|nd|rd|th) of (\d+)/g)]; ok(rk.length>=2&&rk.every(m=>+m[2]===N&&+m[1]>=1&&+m[1]<=N),`${f} ${tm}: the card's ranks (${rk.map(m=>m[0]).join(', ')}) aren't within the league's ${N}`);
+      if(api.ENGV()>=24)ok(/your assistant/i.test(cards[0]),`${f} ${tm}: no assistant's read on the card`);
+      if(cards[0])lined++;
       console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo`); continue }
     let bk=PL.reduce((a,q)=>fit[q]>fit[a]?q:a,'balanced'); if(bk!=='balanced'&&pe[bk]<=0)bk='balanced';
     PL.forEach(p=>{ const best=fit[bk], want=(bk!==p&&best-fit[p]>=12)||(p!=='balanced'&&p===bk&&fit[p]>=12);
