@@ -10,19 +10,21 @@ const HL_SPORT=(function(){
   const DEF=[[1,0.42],[1,0.47],[1,0.53],[1,0.58],[4.5,0.35],[4.5,0.5],[4.5,0.65],[6,0.1],[6,0.9],[12,0.32],[12,0.68]];
   /* round 67: field goals (made and missed) and interceptions too, so a clip isn't always a touchdown (Ian) */
   // round 72: the header names the drive a clip shows (it named the drive before it until the clip was over)
-  function clips(L,d,mode){ let out=clips0(L,d,mode); const n=(L.drives||[]).indexOf(d);
+  function clips(L,d,mode){ let out=clips0(L,d,mode), afterCall=false; const n=(L.drives||[]).indexOf(d);
     if(mode==="full"){ const dc=mkDrive(L,d,out);   // round 99: the drive itself, play by play
       if(dc){ if(dc.conv)out=out.filter(c=>c.kind!=="conv");
         // round 101: what the lead-up to a call already showed (leadUp) isn't shown again: the plays to the fourth down,
         // or the whole drive and its touchdown before the two-point call
         const sk=leadFor(L,d);
-        if(sk){ dc.plays=dc.plays.slice(sk.k); dc.base=Math.max(1,dc.plays.length)*1100; if(sk.all)out=[] }
+        if(sk){ dc.plays=dc.plays.slice(sk.k); dc.base=Math.max(1,dc.plays.length)*1100; if(sk.all)out=[]; afterCall=true }
         if(!sk||(!sk.all&&dc.plays.length))out=[dc].concat(out);
         // round 101: the live game keeps what the screen showed of this drive, from its first clip, for the box score
         if(typeof live!=="undefined"&&live&&L===live){ const rec=dc.rec; if(sk){ d.pbShown=true; d._pb=rec } else if(out.length)out[0].onStart=()=>{ d.pbShown=true; d._pb=rec } } } }
     // round 107: the clip's header carries the game clock at the drive's start, as the header between drives does (the
     // clock went missing while plays ran: Muse)
-    const di=n>=0?n:Math.max(0,(L.drives||[]).length-1), ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,di,DRIVES_PER_TEAM*2):"";
+    // round 110: what's left of a drive after a call goes on from the call's clock (the call reads the drive 0.7 of the way
+    // through: 75_screens), not the drive's start (the clock stepped back about two minutes after every call: Muse, 10 of 10)
+    const di=n>=0?n:Math.max(0,(L.drives||[]).length-1), ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,di+(afterCall?0.7:0),DRIVES_PER_TEAM*2):"";
     out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+ck+" \u00b7 drive "+(di+1); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
