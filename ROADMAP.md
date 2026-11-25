@@ -1,4 +1,46 @@
-# Roadmap after the November 15 reviews
+# Roadmap after the November 25 reviews (agreed with Ian, Nov 25)
+
+Sources: Ian's notes (Nov 25), Instinct (8 across the board but pro football 7.5), Muse (CBB 8, CFB 7, PFB 6, hockey 6,
+soccer 6, baseball 6, NBA 5: "the arithmetic is perfect; the plan, in three games, never moves"), Grokbot to come.
+Ian's direction: the player must not be told the best plan; watchability is crucial; tactics in every sport, roster
+decisions included.
+
+Round 109's own miss: it measured that the card's numbers played as shown, not that its reasons were true or that the
+advice varied for a given roster (averaged over clubs, 56-75% "usual plan" hid rosters where one plan always wins).
+
+## Round 110: the decision is the player's, and the game is trustworthy
+- Plan card: no per-plan win chances or "would add N" before the game. Show the opponent's evidence instead (team-level
+  ranks the game publishes: rim protection and perimeter defence; coverage, pass rush, tackling; skating, checking,
+  defence, passing; the day's starter's strikeout and walk lines), and an assistant's opinion as good as your staff
+  (a weak one is sometimes wrong). After the game, reveal what each plan would have done (keeps the honest grading).
+- Plans that bite by opponent in all seven (pro basketball, baseball, soccer never varied for Muse's rosters), measured
+  per roster, not averaged.
+- Reasons and scouting from one source of numbers (test: no reason contradicts a published rank or a box score;
+  Oregon's CB 85 / S 84 ranked 132nd in coverage is a ranking bug to find).
+- Tester bugs, each reproduced before fixing: hockey odds re-roll and PLAY not starting the game (sim the off days
+  right after the last game); baseball's card naming a different starter than Probable Starters; college basketball
+  Full Match showing future scores; football's 78-yard field goal, the clock jumping back after a call; read tallies
+  leaving out wrong reads; "Right read: they surprised you" wording; the card under the PLAY button.
+- Ian's quick wins: a box score page like ESPN's; a schedule score opens its box score with a replay; an easy exit from
+  a replay; a win-probability chart in the box score.
+
+## Rounds 111-112: watching
+- Pacing: Slow in real time (90 minutes a soccer match), Normal at a TV pace; basketball's Normal and Slow are far too
+  fast. A bigger field. Player stats accumulating live (baseball's scoreboard stats as a batter comes up).
+- Movement: soccer and hockey smooth (no stops and stutters); hockey continuous, not restarting at centre; faceoffs at
+  the right dots; soccer dribbling as an attribute.
+- Baseball: groundouts with the runner clearly safe (often), sac flies without a tag, singles no fielder reaches, a
+  bat, breaking balls, runners leading off.
+- Basketball: transition, steals and blocks run the other way.
+
+## Then: tactics in every sport (roster decisions included)
+- Soccer formations and instructions; basketball pace, scheme and shot profile; football run/pass, coverage, blitz;
+  hockey forecheck and line matching; baseball lineup, platoons, bullpen roles, bench and minors (promote/demote).
+- Attributes that visibly drive events (the dribbler dribbles), live player stats and match ratings. Not a full
+  agent simulation of every sport.
+- Real rosters: real-modelled ratings with invented names (publicity rights; not legal advice); possibly editable names.
+
+## Earlier: roadmap after the November 15 reviews
 
 Sources: Ian's notes (Nov 15), Instinct (hockey 8, soccer 8, pro football 7.5, baseball 7, pro basketball 7, college
 football 6.5, college basketball 6), Muse (7/10 across the board: "the loads are fixed, the numbers aren't"), Gamer's
