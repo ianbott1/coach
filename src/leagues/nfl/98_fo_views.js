@@ -10,7 +10,7 @@ function foPlannedSal(P,i){ const a=P.asks&&P.asks[i]; if(!a)return 0; const R=U
 function foCapNote(pay){ const my=S.myTeam, dead=foDeadNext(U,my);
   return `<div class="note">The ${U.year+1} cap is $${FO_CAP}M. Your twenty main players take $${(pay-FO_DEPTH).toFixed(1)}M of it; the rest of the
     53 and the practice squad about $${FO_DEPTH}M${dead>0?`; dead money from players you've let go $${dead.toFixed(1)}M`:""}. About $${nflRookieRoom()}M goes to
-    the draft class, on the rookie scale by where you pick.</div>` }
+    the draft class, on the rookie scale by where you pick.</div>`+foSpecLine(my) }
 /* one expiring player: let him go, re-sign him on a deal you shape, or tag him */
 function foResignHTML(P,i,p,a){
   const on=!!P.resign[i], tag=P.tag===i, kind=(P.deal&&P.deal[i])||"ask", k=foContract(a.sal,a.yrs,p.r,kind,U.year+1), tv=foTagVal(p);

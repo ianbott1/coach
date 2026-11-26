@@ -19,7 +19,8 @@ function startWatch(g){
 const FB_PICKER=[8,9,18,19,8,9,18,9];   // who makes an interception, by the drive's number: the corner (8), the safety (9), or their backups (18, 19: the nickel and the other safety)
 /* round 79: the kicker has a name (Ian: "kicker name"). The roster has no kicker, so each club's is drawn from its name and
    the career's seed: the same man all career, and nothing the season plays out draws from it. */
-function kickerName(team){ let h=2166136261; const k=String(team)+"|"+((typeof SEA!=="undefined"&&SEA&&SEA.seed)||0);
+function kickerName(team){ if(typeof fbSpecName==="function"){ const n=fbSpecName(team); if(n)return n }   // pro football's own kicker, where the club has one
+  let h=2166136261; const k=String(team)+"|"+((typeof SEA!=="undefined"&&SEA&&SEA.seed)||0);
   for(let i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619)>>>0 } return playerName(new RNG(h)) }
 /* round 79: one game clock for the rewatch's rows, the live header and the late calls' "about N minutes left"
    (Ian: "time left on calls"). Drives come about evenly through the game; overtime has no clock to give. The rows had

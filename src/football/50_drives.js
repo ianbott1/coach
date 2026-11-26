@@ -236,10 +236,18 @@ const KICK2={nfl:{range:72,fg:1.0,kick:0.5,curve:[[18,0.99],[25,0.97],[32,0.93],
              cfb:{range:72,fg:1.0,kick:0.65,curve:[[18,0.98],[25,0.94],[32,0.87],[40,0.77],[47,0.65],[54,0.5],[60,0.32],[70,0.12]]}};
 function fgOdds(stall){
   const d=(100-stall)+17, C=ENGINE_V>=2?(KICK2[LEAGUE.id]||KICK2.cfb).curve:FG_CURVE;
-  if(d<=C[0][0])return C[0][1];
-  for(let i=1;i<C.length;i++){ if(d<=C[i][0]){ const [a,pa]=C[i-1],[b,pb]=C[i]; return pa+(pb-pa)*(d-a)/(b-a) } }
-  return C[C.length-1][1];
+  let p=C[C.length-1][1];
+  if(d<=C[0][0])p=C[0][1];
+  else for(let i=1;i<C.length;i++){ if(d<=C[i][0]){ const [a,pa]=C[i-1],[b,pb]=C[i]; p=pa+(pb-pa)*(d-a)/(b-a); break } }
+  return FB_KS?1/(1+Math.exp(-(Math.log(p/(1-p))+FB_KS))):p;   // the kicker's own leg (pro football's front office)
 }
+/* The specialists (pro football's front office, src/leagues/nfl/28_specialists): a game's ctx.kp carries each side's kicker
+   and punter as [shift in the kick's log-odds, yards on the punt]. Set at every drive for the side with the ball (its
+   kicker) and the side without it (the punter whose kick started it). Only the odds and the punt's mean move, never a
+   draw; with no kp (college football, a pro career begun before it) both stay 0 and nothing changes. */
+let FB_KS=0, FB_PS=0;
+function fbSpecSet(ctx,home){ const K=ctx&&ctx.kp, o=K&&K[home?"home":"away"], d=K&&K[home?"away":"home"];
+  FB_KS=o?o[0]:0; FB_PS=d?d[1]:0 }
 function fgDistance(stall){ return (100-stall)+17; }
 
 /* Fourth-down conversion: distance is what matters, quality adjusts it. */
@@ -291,7 +299,7 @@ function nextStart(rng, prevKind, at){
     // a punt goes from where it's kicked: ~45 yards and a short return, or a touchback. It was the
     // opponent's 24 whatever the spot, so punting from your own 10 cost nothing and pinning them from
     // midfield gained nothing, and going for it won most fourth downs (Instinct)
-    if (prevKind === "PUNT"){ const land=100-at-rng.gauss(PUNT_GROSS,7); return land<=0?20:cl(land+Math.max(0,rng.gauss(6,5)),2,70) }
+    if (prevKind === "PUNT"){ const land=100-at-rng.gauss(PUNT_GROSS+FB_PS,7); return land<=0?20:cl(land+Math.max(0,rng.gauss(6,5)),2,70) }
   }
   if (prevKind === "ONSIDE") return cl(rng.gauss(52,4), 40, 65);          // you recovered your own onside kick
   if (prevKind === "ONSIDEX") return cl(rng.gauss(58,5), 45, 75);         // they recovered it: a short field
@@ -318,6 +326,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   for(let i=0;i<st.total;i++){
     if(st.endAfter!==undefined&&i>st.endAfter)break;   // clock ran out
     const home=i%2===0;
+    fbSpecSet(opts.ctx,home);
     const start=nextStart(rng,st.prev,st.at);
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
     let aggr=home?st.aggrH:st.aggrA;
@@ -367,7 +376,7 @@ function playGame(rng, eloH, eloA, planH, planA, opts){
   let ot=0;
   while(st.h===st.a&&ot<24){
     ot++;
-    const home=(ot%2===1);
+    const home=(ot%2===1); fbSpecSet(opts.ctx,home);
     const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,home?M.home:M.away);
     if(home)st.h+=r.pts; else st.a+=r.pts;
     st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
@@ -427,7 +436,8 @@ function sportSeasonNorms(sea){ const o={}; Object.keys(FB_ANS_TERM).forEach(a=>
 const sportStyleAttrs={blitz:"Pass rush",shell:"Coverage",box:"Strength and Tackling"};
 function sportStyleScores(R){ const T=fbShapeOf(R,null).d; return {blitz:T.rsh, shell:T.cov, box:T.str+T.tkl} }
 function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
-  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined, fbn:ENGINE_V>=15&&typeof SEA!=="undefined"&&SEA&&SEA._styles?SEA._styles.norm:undefined} }
+  sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined, fbn:ENGINE_V>=15&&typeof SEA!=="undefined"&&SEA&&SEA._styles?SEA._styles.norm:undefined,
+  kp:typeof fbKickCtx==="function"?fbKickCtx(h,a):undefined} }
 function fbReport(fav,seed){
   const r=new RNG(seed>>>0), w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b), n={};
   SCHEME_KEYS.forEach(k=>n[k]=0);
@@ -546,7 +556,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
        same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
        the ball was lost (stall) and where they took over (retTo, from their own goal). */
     if((res.kind==="INT"||res.kind==="FUM"||res.kind==="PUNT")&&res.stall!=null){   // (round 81: a punt's flight and return too)
-      drive.lost=res.stall; try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
+      drive.lost=res.stall; fbSpecSet(ctx,!home); try{ const cp=new RNG(0); cp.a=rng.a; cp.sp=rng.sp; drive.retTo=nextStart(cp,res.kind,res.stall) }catch(e){} }
     st.drives.push(drive);
     st.prev=res.kind; st.at=res.stall; st.i++; st.pend=null; st.stage=null;
     return drive;
@@ -559,7 +569,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         return {done:true,h:st.h,a:st.a,drives:st.drives};
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
-      const home=(st.otGuard%2===1);
+      const home=(st.otGuard%2===1); fbSpecSet(ctx,home);
       const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,smOf(home));
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
@@ -568,7 +578,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       return {drive:st.drives[st.drives.length-1],h:st.h,a:st.a};
     }
 
-    const i=st.i, home=i%2===0;
+    const i=st.i, home=i%2===0; fbSpecSet(ctx,home);
     const isUser = home ? humans.home : humans.away;
     const q=Math.min(4,Math.floor(i/(st.total/4))+1);
     // asks only ever go to the side with the ball, so the score is theirs
