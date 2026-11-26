@@ -171,3 +171,13 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js "don't repeat"`: before, ncaab 297 repeats at the start and 362 after two summers
   (Tariq x3 at North Carolina), cfb 357 and 406; after, 0 at the start, 25 after two summers (none three deep) and 0
   after one summer of football. MATCH. `node test/reload.js dist/basketball-coach.html`: MATCH 18 of 18 reloads.
+
+## The coach's welcome note is for a career's first season, before your first game (all seven)
+- What: the "Welcome, Coach. Each game: choose a gameplan..." note shows only before your first game of a career's
+  first season (core/99_app.js, the team page). It had shown whenever the league's schedule was empty, so it came back
+  at every new season until you pressed Got it; in pro hockey, where the first days are played as the career opens, it
+  never showed at all.
+- Why: playtest (college basketball): the tutorial came back in season two.
+- Which games: all seven (screens only; no result moves).
+- Tested: `node test/polish.js "welcome note"`: before, shown again at the start of season two in six games and never
+  shown in pro hockey; after, shown before the first game and not in season two in all seven. MATCH.

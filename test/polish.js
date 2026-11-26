@@ -224,5 +224,18 @@ check('names on a college roster don\'t repeat (college basketball and football)
   }
 });
 
+// Playtest (college basketball): the coach's welcome note ("Welcome, Coach. Each game: choose a gameplan...") came back
+// at the start of season two. It shows before a career's first game only, read or not.
+check('the welcome note is for a career\'s first season only (all seven)',()=>{
+  for(const lg of Object.keys(FILE)){
+    const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[1]'),5,'T'); ev('S.guide=true;GUIDE_SEEN={}');
+    const has=()=>/Welcome, Coach/.test(api.view('team'));
+    const first=has(); let n=0; while(api.SEA.phase!=='done'&&n++<3000)ev('simAdvance()'); api.openOffseason();
+    if(api.S.off.act&&api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam; api.commitOffseason();
+    const second=has();
+    ok(first&&!second,`${lg}: welcome before the first game ${first?'shown':'MISSING'}, at the start of season two ${second?'shown again':'not shown'}`);
+  }
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

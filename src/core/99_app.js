@@ -3921,7 +3921,7 @@ function render0(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
+      (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(S.history&&S.history.length)&&!(SEA.rec[S.myTeam]||[]).some(x=>x>0)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
