@@ -9,12 +9,13 @@
      up     each call-up's days in the majors (service time, and a man called up is added to the 40-man)
      down   each optioned man's days in the minors (an option year used at 20)
      log    the moves, for the roster tab's transactions
+     gone   each club's call-ups sent back down, with their game logs (their lines stay in the box scores they played in)
    A career without the front office (engine 26 and before, or a career that has not reached its first front-office
    summer) has no farm, and nothing here runs. */
 const MLB_DAYS_SEASON=186;   // calendar days, March 26 to September 27 (LEAGUE.weeks)
 function mlbSeaState(sea){
   if(sea.mlb)return sea.mlb;
-  const M={start:{},up:{},down:{},log:[],now:{}};
+  const M={start:{},up:{},down:{},log:[],now:{},gone:{}};
   NAMES.forEach(t=>{ M.start[t]=((sea.roster&&sea.roster[t])||[]).filter(Boolean).map(p=>p.n); M.up[t]={}; M.down[t]={} });
   Object.defineProperty(sea,"mlb",{value:M,writable:true,enumerable:false,configurable:true});   // kept out of the season's own digest
   return M }
@@ -36,7 +37,9 @@ function mlbAfterWeek(sea,w){
     // the men back from the IL: the call-up goes down, the bench player comes back
     act.forEach(e=>keys.add(t+"|"+e.idx));
     Object.keys(M.now).forEach(k=>{ if(k.indexOf(t+"|")!==0||keys.has(k))return; const x=M.now[k], b=BK(x.idx);
-      if(!x.sits)R[b]=x.back||null; delete M.now[k];
+      // the call-up's games stay in the box scores he played in (he leaves the 26-man with his game log; the box looks
+      // for a club's men in M.gone as well as on its roster)
+      if(!x.sits){ const cu=R[b]; if(cu&&cu.up&&cu.n===x.up&&cu.gl&&cu.gl.length)(M.gone[t]=M.gone[t]||[]).push(cu); R[b]=x.back||null } delete M.now[k];
       M.log.push({t:t,day:w+1,kind:"back",who:x.who,down:x.up,p:POS[x.idx].p}) });
     // the men going on it
     act.forEach(e=>{ const k=t+"|"+e.idx; if(M.now[k]||e.w<MLB$.ilMin)return;
@@ -57,6 +60,8 @@ function mlbAfterWeek(sea,w){
     // the days: each call-up in the majors, each optioned man in the minors
     Object.keys(M.now).forEach(k=>{ if(k.indexOf(t+"|")!==0)return; const x=M.now[k];
       M.up[t][x.up]=(M.up[t][x.up]||0)+1 }) }) }
+/* the men who played for t this season and went back down: core 96_moments boxLines reads their lines too */
+function boxGone(t){ const M=typeof SEA!=="undefined"&&SEA&&SEA.mlb; return (M&&M.gone&&M.gone[t])||[] }
 if(typeof LEAGUE!=="undefined"){ const _aw=LEAGUE.afterWeek; LEAGUE.afterWeek=function(sea,w){ if(_aw)_aw(sea,w); mlbAfterWeek(sea,w) } }
 /* the season's days, on the 172-day service year: a man on the roster all season gets a full year, an optioned man
    loses his days down, a call-up gets his days up */

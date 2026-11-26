@@ -58,6 +58,9 @@ function boxLines(g,step,all){
     // every roster, the opponent's too (round 85: a man traded to the club he'd played against left the box score of that
     // game); his row's opponent and ground already say which side he was on
     const pool=all?NAMES.flatMap(t=>(SEA.roster[t]||[]).map((p,i)=>[p,t===tm?i:-1])):(SEA.roster[tm]||[]).map((p,i)=>[p,i]);
+    // round 3 fixes (baseball's front office): a call-up sent back down took his line out of the box of every game he
+    // played (a club's 9 hits listed as 8); the league's boxGone(t) hands back such men
+    if(typeof boxGone==="function")(all?NAMES:[tm]).forEach(t=>boxGone(t).forEach(p=>pool.push([p,-1])));
     pool.forEach(([p,i])=>{ if(!p||!p.gl)return;
       for(let j=p.gl.length-w;j>=0;j-=w){ if(p.gl[j]<step)break;
         // (round 82: and the score: a cup week can hold a league game and a cup tie with the same club at the same ground,

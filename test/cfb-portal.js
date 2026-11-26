@@ -26,7 +26,7 @@ const args=process.argv.slice(2), nums=args.filter(a=>/^\d+$/.test(a)).map(Numbe
 const CAREERS=nums[0]||2, SEASONS=nums[1]||6, FILE=(args.find(a=>a.endsWith('.html')))||path.join(__dirname,'..','dist','football-coach.html');
 let bad=0, checks=0; const ok=(c,msg)=>{ checks++; if(!c){ bad++; if(bad<=10)console.log('  FAIL '+msg) } };
 // a season begun before engine 26 (OLD=dir of an engine-25 build's pages): its winter runs as that build ran it (the
-// old budget screen, no market, the same rosters after), and the next winter, on engine 26, opens the market
+// old budget screen, no market, the same rosters after), and the next winter, on the current engine (26 or later), opens the market
 async function oldSeason(){ const OLD=process.env.OLD||'/home/claude/dist-e25', f=path.join(OLD,'football-coach.html'), fs=require('fs'), crypto=require('crypto');
   if(!fs.existsSync(f)){ console.log(`  (no engine-25 build at ${OLD}: the old-season check is skipped)`); return }
   const src=fs.readFileSync(path.join(__dirname,'golden.js'),'utf8');
@@ -35,13 +35,15 @@ async function oldSeason(){ const OLD=process.env.OLD||'/home/claude/dist-e25', 
   const ros=X=>Object.keys(X.U.roster).map(t=>X.U.roster[t].map(p=>p&&[p.n,p.r,p.c,p.pot]));
   const Aold=mk()(f); Aold.newDynasty('Alabama',3,'T'); let g=0; while(Aold.SEA.phase!=='done'&&g++<200)Aold.doAdvance();
   const Bn=mk()(FILE); await Bn.loadSave(JSON.stringify(Aold.S)); 
+  // the current engine, as the page being tested has it (ENGINE_NOW in the environment, else the page's own default)
+  const NOW=+(process.env.ENGINE_NOW||(fs.readFileSync(FILE,'utf8').match(/ENGINE_NOW=\+\(\(typeof process[^)]*\)\|\|(\d+)\)/)||[])[1]);
   ok(Bn.U.engV<26,`an engine-25 save loads on engine ${Bn.U.engV}`);
   for(const X of [Aold,Bn]){ X.openOffseason(); X.render(); X.commitOffseason() }
   ok(!Bn.S.lastMarket,'an engine-25 season\'s winter ran the market');
   ok(h(ros(Aold))===h(ros(Bn)),'an engine-25 season\'s winter changed the rosters');
-  ok(Bn.U.engV===26,`after its winter the career is on engine ${Bn.U.engV}, not 26`);
+  ok(Bn.U.engV===NOW,`after its winter the career is on engine ${Bn.U.engV}, not ${NOW}`);
   g=0; while(Bn.SEA.phase!=='done'&&g++<200)Bn.doAdvance(); Bn.openOffseason(); Bn.render(); Bn.commitOffseason();
-  ok(!!Bn.S.lastMarket,'the next winter, on engine 26, ran no market');
+  ok(!!Bn.S.lastMarket,`the next winter, on engine ${NOW}, ran no market`);
   console.log(`  an engine-25 season: its winter as it was (rosters ${h(ros(Aold))} both builds), the next on the market (${Bn.S.lastMarket?Bn.S.lastMarket.n+' entrants':'none'})`);
 }
 if(args.includes('--old-season')){ oldSeason().then(()=>{ console.log(bad?`OLD ${bad} failed`:'OLD ok'); process.exit(0) }) }
