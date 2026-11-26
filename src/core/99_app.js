@@ -290,7 +290,7 @@ function liveTick(){
   }
 }
 /* your game plan, changed mid-game: from the next stretch, recorded so a reload or a replay plays it the same */
-const isSubPm=x=>String(x[2]).indexOf("sub:")===0;   // round 108: a change on the bench rides with the plan changes
+const isSubPm=x=>/^(sub|act):/.test(String(x[2]));   // round 108: a change on the bench rides with the plan changes (round 111: and a sport's own buttons, act:)
 function livePlanNow(){ if(!live)return plan; const side=live.userIsHome?"home":"away", c=(live.pm||[]).filter(x=>x[1]===side&&!isSubPm(x)); return c.length?c[c.length-1][2]:(live.args?live.args[live.userIsHome?2:3]:plan) }
 /* round 107: a change of plan in a live game takes a second tap on the same button. One tap arms it, and the
    arming lapses after a few seconds or on a tap anywhere else (Grokbot: a click meant for Full match landed on
@@ -312,11 +312,29 @@ function pressPlanMidGame(p){
    Two taps, as a plan change; recorded with the plan changes so a reload makes it at the same moment. */
 const LIVE_UNITS=[["0","at the back"],["1","in midfield"],["2","up front"]];
 function liveSubsOn(){ return !!(live&&!live.done&&!live.h2h&&live.eng&&typeof live.eng.subNow==="function"&&live.eng.S&&(typeof ENGINE_V==="undefined"||ENGINE_V>=22)) }
-function liveSubsLeft(){ const side=live.userIsHome?"home":"away"; return live.eng.subsLeft(side)-(live.pm||[]).filter(x=>x[1]===side&&isSubPm(x)&&!(live.eng.pmOn&&live.eng.pmOn.has(x))).length }   // made as its stretch starts (the pm wrapper keeps them)
+function liveSubsLeft(){ const side=live.userIsHome?"home":"away"; return live.eng.subsLeft(side)-(live.pm||[]).filter(x=>x[1]===side&&String(x[2]).indexOf("sub:")===0&&!(live.eng.pmOn&&live.eng.pmOn.has(x))).length }   // made as its stretch starts (the pm wrapper keeps them)
 function pressSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0||live.ask)return; const p="sub:"+u;
   if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setSubMidGame(u); return } if(planArmed(p))return;
   PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
   setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
+/* round 111: a sport's own buttons in a live game (basketball: Call a timeout), from the engine's actsFor(side):
+   [{id, l, left}]. Two taps, as a plan change; made as the next stretch starts (the pm wrapper), once */
+function liveActsOn(){ return !!(live&&!live.done&&!live.h2h&&live.eng&&typeof live.eng.actsFor==="function") }
+function liveActPend(id){ const side=live.userIsHome?"home":"away"; return (live.pm||[]).some(x=>x[1]===side&&x[2]==="act:"+id&&!(live.eng.pmOn&&live.eng.pmOn.has(x))) }
+function pressActMidGame(id){ if(!liveActsOn()||live.ask||liveActPend(id))return; const p="act:"+id;
+  { const side=live.userIsHome?"home":"away", A=live.eng.actsFor(side).find(a=>a.id===id); if(!A||A.on||(A.left!=null&&!(A.left>0)))return }
+  if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setActMidGame(id); return } if(planArmed(p))return;
+  PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
+  setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
+function setActMidGame(id){ if(!liveActsOn())return; const side=live.userIsHome?"home":"away", n=live.drives.length, A=live.eng.actsFor(side).find(a=>a.id===id);
+  if(!A||(A.left!=null&&!(A.left>0))||A.on||liveActPend(id))return;
+  live.pm.push([n,side,"act:"+id]); S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
+function liveActsHTML(){ if(!liveActsOn())return ""; const side=live.userIsHome?"home":"away", A=live.eng.actsFor(side); if(!A.length)return "";
+  // grouped by a.grp (a line above the group's buttons); a.on: the one in force; a.left: how many are left
+  const G=[]; A.forEach(a=>{ const g=G.find(x=>x.k===(a.grp||"")); if(g)g.a.push(a); else G.push({k:a.grp||"",a:[a]}) });
+  const pendAny=id=>liveActPend(id)||(/:/.test(id)&&A.some(b=>b.id!==id&&b.grp&&b.grp===(A.find(c=>c.id===id)||{}).grp&&liveActPend(b.id)));
+  return G.map(g=>`${g.k?`<div class="fnote" style="margin:6px 0 4px">${esc(g.k)}</div>`:""}<div class="wspeed" style="margin-top:6px">${g.a.map(a=>{ const pend=liveActPend(a.id), arm=planArmed("act:"+a.id), off=(a.left!=null&&!(a.left>0))||pend||a.on||pendAny(a.id);
+    return `<button class="spbtn${arm?" armed":""}" id="ma-${a.id.replace(/[^a-z0-9]/gi,"-")}" data-midact="${esc(a.id)}"${a.on!=null?` aria-pressed="${!!a.on}"`:""}${off&&!a.on?" disabled":""}>${pend?esc(a.pend||"Called: at the next break"):(arm?"Tap again: ":"")+esc(a.l)+(a.left!=null?` (${a.left} left)`:"")}</button>` }).join("")}</div>`).join("") }
 function setSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0)return; const side=live.userIsHome?"home":"away", n=live.drives.length;
   if((live.pm||[]).some(x=>x[0]===n&&x[1]===side&&x[2]==="sub:"+u))return;
   live.pm.push([n,side,"sub:"+u]);   // made as the next stretch starts (the engine's pm wrapper), so never twice
@@ -334,8 +352,8 @@ function setPlanMidGame(p){
 function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
   const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
-  return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
-    <div class="wspeed">${Object.keys(PLANS).concat(Object.keys(liveExtra())).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(livePlanLabel(k))}</button>`).join("")}</div>${liveSubsHTML()}`}
+  return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).some(x=>String(x[2]).indexOf("act:")!==0)?" (changed in this game)":""}</div>
+    <div class="wspeed">${Object.keys(PLANS).concat(Object.keys(liveExtra())).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(livePlanLabel(k))}</button>`).join("")}</div>${liveSubsHTML()}${liveActsHTML()}`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
     <div class="wspeed">${HLM.filter(([v])=>v!=="full"||(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient)).map(([v,l])=>`<button class="spbtn" id="hl-${v}" data-hlm="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div>`:""}</div>` }
 function liveGap(){
@@ -3783,7 +3801,7 @@ function render0(){
       // the press redraws the screen, so the click that follows lands on a new button: the time of the press is kept
       // by the button's name, not on the button, or a tap pauses and the click unpauses (round 61: pause did nothing on a phone)
       const onPress=(b,fn)=>{ if(!b)return; const k=b.id||("sp"+(b.dataset.speed||""));
-        const go=()=>{ if(!b.dataset.midplan&&!b.dataset.midsub)PLAN_ARM=null; fn() };
+        const go=()=>{ if(!b.dataset.midplan&&!b.dataset.midsub&&!b.dataset.midact)PLAN_ARM=null; fn() };
         b.onpointerdown=e=>{ if(e.button>0)return; PRESS_AT[k]=Date.now(); go() }; b.onclick=()=>{ if(Date.now()-(PRESS_AT[k]||0)>600)go() } };
       onPress(el("wpause"),()=>{live.paused=!live.paused;S.watchStep=live.paused;save();
         if(live.paused){ if(live.timer){clearTimeout(live.timer);live.timer=null} if(live.pb&&live.pb.frozen==null)live.pb.frozen=Date.now()-live.pb.at; render() }else liveTick()});   // pausing stops on the play shown; it used to play one more first
@@ -3791,6 +3809,7 @@ function render0(){
       onPress(el("wskip"),()=>skipLive());
       document.querySelectorAll("[data-midplan]").forEach(x=>onPress(x,()=>pressPlanMidGame(x.dataset.midplan)));
       document.querySelectorAll("[data-midsub]").forEach(x=>onPress(x,()=>pressSubMidGame(x.dataset.midsub)));
+      document.querySelectorAll("[data-midact]").forEach(x=>onPress(x,()=>pressActMidGame(x.dataset.midact)));
       document.querySelectorAll("[data-pbp]").forEach(x=>onPress(x,()=>{ S.pbpOpen=!S.pbpOpen; save(); render() }));
       document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{

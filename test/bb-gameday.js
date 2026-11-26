@@ -1,0 +1,96 @@
+/* Basketball game day (round 111, engine 25): timeouts, runs, and the calls they bring. The engine on its own, both
+   leagues. Checks, then a report.   node test/bb-gameday.js [games=3000]
+   - the computer's own games: as on engine 24 (it calls a timeout on every run it faces while it has one)
+   - a run is asked about only after a stretch lost by BB_GD.runPts, never at a period's end, never with none left or 20
+     either way; your assistant's answer plays exactly as calling the timeout and keeping the defense
+   - timeouts never go below zero; a timeout of your own (the live button) asks what you change
+   - what a timeout is worth: the same games, every run answered "save it" against "timeout" (small, on purpose) */
+const fs=require('fs');
+const core=fs.readFileSync('src/core/20_engine.js','utf8');
+const rngSrc=core.slice(core.indexOf('function mulberry32'),core.indexOf('\n}\n',core.indexOf('class RNG'))+3);
+const eng=fs.readFileSync('src/basketball/50_game.js','utf8');
+const nbaSrc=fs.readFileSync('src/leagues/nba/05_league.js','utf8');
+const nbaBB=new Function('return {'+nbaSrc.slice(nbaSrc.indexOf('bb:{pace'),nbaSrc.indexOf('}',nbaSrc.indexOf('bb:{pace'))+1)+'}')().bb;
+function load(pro){ return new Function('LEAGUE',rngSrc+eng+'\nreturn {RNG,makeLiveGame,BB,BB_GD:Object.assign(BB_GD,{quarters:BB.quarters}),SEGS,setV(v){ENGINE_V=v}};')(pro?{id:'nba',tuning:{bb:nbaBB}}:{id:'ncaab',tuning:{}}) }
+const N=+(process.argv[2]||3000);
+let fails=0; const check=(ok,msg)=>{ console.log((ok?'  ok   ':'  FAIL ')+msg); if(!ok)fails++ };
+function run(G,seed,gap,humans,answer,actAt){
+  const e=G.makeLiveGame(new G.RNG(seed),1500+gap,1500,'balanced','balanced',humans);
+  const asks=[]; let g=0, r, acted=false;
+  while(g++<400){
+    if(actAt!=null&&!acted&&e.seg===actAt&&!e.queue.length&&!e.waiting){ acted=e.act('home','to') }
+    r=e.next(); if(r.done)break;
+    if(r.ask){ asks.push({k:r.ask.k,dp:r.ask,seg:e.seg,lead:r.mine-r.theirs,TO:e.TO?e.TO[r.side]:null,mo:e.mo?Object.assign({},e.mo):null});
+      e.reply(answer?answer(r.ask,e):r.ask.opts[r.ask.opts.length-1][0]) } }
+  return {h:r.h,a:r.a,asks,TO:e.TO,drives:e.drives,acted,log:e.log};
+}
+for(const pro of [false,true]){
+  const G=load(pro), L=pro?'pro':'college';
+  console.log(`\n${L}: ${G.BB_GD.timeouts} timeouts, a run is ${G.BB_GD.runPts}+ in a stretch, momentum ${G.BB_GD.momentum}`);
+  // 1. the computer's own games, engine 24 against 25
+  let same=0, toUsed=0, runs=0, neg=0;
+  for(let s=1;s<=N;s++){ const gap=((s*37)%300)-150;
+    G.setV(24); const a=run(G,s,gap,false); G.setV(25); const b=run(G,s,gap,false);
+    if(a.h===b.h&&a.a===b.a)same++; toUsed+=2*G.BB_GD.timeouts-b.TO.home-b.TO.away; if(b.TO.home<0||b.TO.away<0)neg++;
+    b.drives.forEach(d=>{ if(typeof d.seg==='number'&&d.seg<G.SEGS-1&&Math.abs(d.h-d.a)>=G.BB_GD.runPts)runs++ }) }
+  console.log(`  computer games: ${same} of ${N} as on engine 24; runs ${(runs/N).toFixed(2)} a game, timeouts called ${(toUsed/N).toFixed(2)} a game (both sides)`);
+  check(same>=N*0.995,'the computer\'s games play as before (99.5%+)');
+  check(neg===0,'timeouts never below zero');
+  // 2. your games: when the run call comes, and what the assistant's answer does
+  G.setV(25); let asked=0, bad=0, parity=0, parN=0, withDef=0;
+  for(let s=1;s<=N;s++){ const gap=((s*53)%300)-150, x=run(G,s,gap,{home:true,away:false});
+    x.asks.filter(q=>q.k==='timeout').forEach(q=>{ asked++; if(q.dp.withDef)withDef++;
+      const s0=q.seg, D=x.drives[s0-1], against=D.a-D.h;
+      if(against<G.BB_GD.runPts||s0===G.SEGS/2||(pro&&s0%2===0)||q.TO<=0||Math.abs(q.lead)>=20||s0>=G.SEGS)bad++ });
+    if(x.asks.some(q=>q.k==='timeout')&&parN<300){ parN++;
+      const a=run(G,s,gap,{home:true,away:false},(dp)=>dp.k==='timeout'?'to':dp.opts[dp.opts.length-1][0]);
+      if(a.h===x.h&&a.a===x.a)parity++ } }
+  console.log(`  your games: the run call ${(asked/N).toFixed(2)} a game (${withDef} with the defense on it)`);
+  check(asked>0&&bad===0,'asked only after a run against you, mid-period, with a timeout left, inside 20');
+  check(parity===parN,`your assistant's answer plays as "timeout, keep your setup" (${parity} of ${parN})`);
+  // 3. your own timeout
+  let acts=0, tomine=0, left=0;
+  for(let s=1;s<=200;s++){ const x=run(G,s,0,{home:true,away:false},null,3); if(x.acted){ acts++; if(x.asks.some(q=>q.k==='tomine'))tomine++ } left+=x.TO.home }
+  check(acts===200&&tomine===200,`a timeout of your own asks what you change (${tomine} of ${acts})`);
+  { const e=G.makeLiveGame(new G.RNG(5),1500,1500,'balanced','balanced',{home:true,away:false}); e.TO.home=0; check(e.act('home','to')===false&&!e.queue.length,'no timeout of your own with none left') }
+  // 4. what a timeout is worth: every run answered "save" against "timeout", the same dice
+  let n=0, wSave=0, wTO=0, ptsS=0, ptsT=0;
+  for(let s=1;s<=N;s++){ const gap=((s*53)%300)-150, x=run(G,s,gap,{home:true,away:false},dp=>dp.k==='timeout'?'save':dp.opts[dp.opts.length-1][0]);
+    if(!x.asks.some(q=>q.k==='timeout'))continue;
+    const y=run(G,s,gap,{home:true,away:false},dp=>dp.k==='timeout'?'to':dp.opts[dp.opts.length-1][0]);
+    n++; wSave+=x.h>x.a?1:0; wTO+=y.h>y.a?1:0; ptsS+=x.h-x.a; ptsT+=y.h-y.a }
+  console.log(`  ${n} games with a run against you: timeout won ${(100*wTO/n).toFixed(1)}%, saved ${(100*wSave/n).toFixed(1)}%; margin ${(ptsT/n).toFixed(2)} against ${(ptsS/n).toFixed(2)}`);
+  check(n>0&&(ptsT-ptsS)/n>-0.2&&(ptsT-ptsS)/n<2,'a timeout on a run is worth a little, not a lot (under two points)');
+  // 4b. behind in the last minute: foul or play it out (asked inside the last stretch; your assistant fouls)
+  { let asked=0, bad=0, par=0, parN=0; const by={};
+    for(let s=1;s<=N;s++){ const gap=((s*29)%300)-150, x=run(G,s,gap,{home:true,away:false});
+      const q=x.asks.find(a=>a.k==='defend'); if(!q)continue; asked++; if(!(q.lead<0&&q.lead>=-8))bad++;
+      const f=run(G,s,gap,{home:true,away:false},dp=>dp.k==='defend'?'foul':dp.opts[dp.opts.length-1][0]);
+      const d=run(G,s,gap,{home:true,away:false},dp=>dp.k==='defend'?'defend':dp.opts[dp.opts.length-1][0]);
+      if(parN<300){ parN++; if(f.h===x.h&&f.a===x.a)par++ }
+      const k=-q.lead<=2?'1-2':-q.lead<=4?'3-4':'5-8', B=by[k]=by[k]||{n:0,f:0,d:0}; B.n++; B.f+=f.h>f.a?1:0; B.d+=d.h>d.a?1:0 }
+    console.log(`  behind in the last minute: asked ${(asked/N).toFixed(2)} a game; won by foul / play it out: `+Object.keys(by).sort().map(k=>`down ${k} ${(100*by[k].f/by[k].n).toFixed(1)}/${(100*by[k].d/by[k].n).toFixed(1)} (${by[k].n})`).join(', '));
+    check(asked>0&&bad===0,'the last-minute call comes only when you\'re behind by one to eight');
+    check(par===parN,`your assistant fouls, as the computer does (${par} of ${parN})`);
+    // the stretch so far, while the call waits (core plays it up to the call), and the stretch it becomes
+    let pOk=0, pN=0;
+    for(let s=1;s<=N&&pN<100;s++){ const e=G.makeLiveGame(new G.RNG(s),1500,1500,'balanced','balanced',{home:true,away:false}); e.plog=true; let gg=0,r,D=null,sc=null;
+      while(gg++<400){ r=e.next(); if(r.done)break; if(r.ask){ if(r.ask.k==='defend'){ D=e.partial(); sc=[r.mine,r.theirs] } e.reply(r.ask.opts[r.ask.opts.length-1][0]); continue }
+        if(D&&r.drive&&r.drive.seg===G.SEGS-1){ pN++; const d=r.drive; if(D.sh===sc[0]&&D.sa===sc[1]&&D.pl.length>0&&JSON.stringify(d.pl.slice(0,D.pl.length))===JSON.stringify(D.pl)&&d.pl.length>D.pl.length)pOk++; D=null } } }
+    check(pN>0&&pOk===pN,`the last stretch waits for the call with its score so far, and goes on from there (${pOk} of ${pN})`) }
+  // 5. the rotation: what tight and deep are worth against the usual, by the starters' gap over the bench and Stamina
+  { const R=G.BB_GD, M=Math.min(N,3000), cell=(g,sta,rot)=>{ let w=0,m=0;
+      for(let s=1;s<=M;s++){ const e=G.makeLiveGame(new G.RNG(s),1500,1500,'balanced','balanced',{home:true,away:false},false,{rot:{home:{g,sta},away:{g:R.gMean,sta:0}}});
+        if(rot!=='normal')e.act('home','rot:'+rot); let gg=0,r; while(gg++<400){ r=e.next(); if(r.done)break; if(r.ask)e.reply(r.ask.opts[r.ask.opts.length-1][0]) }
+        w+=r.h>r.a?1:r.h===r.a?0.5:0; m+=r.h-r.a } return [w/M,m/M] };
+    const rows=[[R.gMean,0],[R.gMean+4,0],[R.gMean-4,0],[R.gMean,R.quarters?0.13:0.25],[R.gMean,R.quarters?-0.13:-0.25]];
+    const base={}; let flat=true, thin=0, deep=0;
+    rows.forEach(([g,sta])=>{ const n=cell(g,sta,'normal'), t=cell(g,sta,'tight'), d=cell(g,sta,'deep');
+      console.log(`  rotation, gap ${g.toFixed(1)} Stamina ${sta>=0?'+':''}${sta}: tight ${(100*(t[0]-n[0])).toFixed(1)} pts of wins (${(t[1]-n[1]).toFixed(2)} margin), deep ${(100*(d[0]-n[0])).toFixed(1)} (${(d[1]-n[1]).toFixed(2)})`);
+      if(g===R.gMean&&sta===0&&(Math.abs(t[1]-n[1])>0.35||Math.abs(d[1]-n[1])>0.35))flat=false;
+      if(g>R.gMean&&sta===0)thin=t[1]-d[1]; if(g<R.gMean&&sta===0)deep=d[1]-t[1] });
+    check(flat,'the usual roster gains nothing either way from its rotation (within 0.35 points)');
+    check(thin>0&&deep>0,'a thin bench wants it tight, a deep one wants it deep');
+  }
+}
+console.log(fails?`\n${fails} FAILED`:'\nall passed'); process.exit(fails?1:0);

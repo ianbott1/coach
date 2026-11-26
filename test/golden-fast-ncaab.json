@@ -1,5 +1,5 @@
 {
- "fp": "c81a35489f0479ac",
+ "fp": "56a93041991eab8e",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -130,21 +130,31 @@
    "fp": "c81a35489f0479ac",
    "from": "c81a35489f0479ac",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "76f20e72c6618f2b",
+   "from": "c81a35489f0479ac",
+   "note": "round 111 engine 25: basketball timeouts (the run call, your own timeout) change the user's live games; computer games unchanged"
+  },
+  {
+   "fp": "56a93041991eab8e",
+   "from": "76f20e72c6618f2b",
+   "note": "round 111 step 2: the rotation buttons on the live bar (screens only; results unchanged)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
+    "games": "e8c8c7ac441de239",
+    "post": "92e7df992e23516e",
+    "champion": "Kentucky",
+    "rec": "09dad5445d7185d4",
+    "poll": "4240a967b3fef259",
     "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "history": "10f87eb41c03cb65",
+    "universe": "acaaffc1287a2788",
+    "screens": "375274ee03b7c66f"
    }
   ]
  }

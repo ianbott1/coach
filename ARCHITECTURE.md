@@ -472,6 +472,26 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
 - Left for later: the pitch applying soccer's late change, the hockey rink on a
   phone, red-zone punts (round 106), kicks against going for it (a model question).
 
+Round 111 (branch rv/gameday): game day as coaching (engine 25, BB_GD_V in basketball/50_game.js).
+- Basketball timeouts: BB_GD.timeouts a game (pro 7, college 4: NBA Rule 5 VI; NCAA men's broadcast games). A run (a
+  stretch won by BB_GD.runPts, 8) carries BB_GD.momentum (0.012 on each side's make rate) into the next stretch unless
+  the side it hurt calls a timeout or a period ends (college half-time, the pros' quarters). Small on purpose: matched
+  studies put the real effect at about nothing (arxiv 2009.06750, 2011.11691). You're asked on a run against you
+  (k "timeout": a timeout with the defense picked there, graded as a read; or save it), never 20 either way, not gated
+  by the spread (being asked would say your defense is wrong). The live bar's Timeout button (core liveActsHTML; pm
+  "act:to", engine st.act/actsFor) calls one at the next break and asks what you change (k "tomine"). A down-two last
+  possession with no timeout left is a scramble (BB_GD.noTO 0.85 of the make rate). The computer and the assistant
+  call one on every run they face while they have one, so computer games are those of engine 24 (test/bb-gameday.js).
+- Basketball rotation (BB_GD.rot: the bench's share, tight 0.12, usual 0.20, deep 0.28; live bar buttons act:rot:*).
+  Each stretch, R_SLOPE x (0.20 - share) x the starters' gap over the bench (gameCtx rot, bbRotOf) in Elo; the extra
+  minutes (st.xm, in six-stretch units of tight) cost F x xm x (1 - staK x Stamina) in the last two stretches and
+  overtime, F set so the league's mean gap (gMean) nets to nothing. The star's foul rate follows his minutes. The
+  computer plays the usual rotation: no change to its games. st.legs: what the bar shows, from the same sum.
+- Basketball's last minute, behind by one to eight (k "defend", core GATE_KINDS): asked inside the last stretch. playSeg
+  stops before the trailing side's fouls (st.lpD: the stretch so far, for eng.partial; st.lpFinish: the rest), and the
+  answer plays it: foul (the old loop, the assistant's) or play it out (one possession each). Nothing is drawn while it
+  waits, so the computer's games and an unasked game are as before.
+
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
   the answer (planScoutHTML, core 99_app): for each plan, your roster's lean and the opponent's answer to it as league
