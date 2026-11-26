@@ -166,5 +166,17 @@ check('the staff rating\'s scale covers every rating shown (seven games)',()=>{
     ok(tips.length>0&&tips.every(t=>/\+40 or more one of the best, -40 or less/.test(t)),`${lg}: ${tips.length} staff ratings (${q.join(', ')}), the scale open at both ends`) }
 });
 
+// Playtest (pro basketball): asking OKC about a forward said only "Nobody of yours at his position would get him." The
+// answer says who of yours comes closest and what stands in the way (words only; the trade model is untouched).
+check('asking about a player says what stands in the way (pro basketball)',()=>{
+  const api=load('nba'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); for(let i=0;i<15;i++)ev('simAdvance()');
+  if(!ev('tdState().open')){ ok(false,'trades closed on day 15'); return }
+  let no=0, said=0; const ex=[];
+  for(const t of ev('tdClubs()').slice(0,8)){ (api.SEA.roster[t]||[]).forEach((p,b)=>{ if(!p)return; ev(`TD_UI={club:${JSON.stringify(t)},ask:${b}}`);
+      const h=ev('tradesView()').replace(/<[^>]+>/g,' ').replace(/\s+/g,' '); if(!/Nobody of yours at his position would get him/.test(h))return; no++;
+      const m=h.match(/would get him[^.]*\.(.*?)(With your first-round pick|Two for two|$)/); const why=(m&&m[1]||'').trim(); if(why.length>20){ said++; if(ex.length<2)ex.push(`${t} on ${p.n}: ${why.slice(0,110)}`) } }) }
+  ok(no>=10&&said===no,`${said} of ${no} "nobody would get him" answers say why (${ex.join(' | ')})`);
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

@@ -126,3 +126,14 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
   since a +45 is better than a +40 and the game uses the difference.
 - Why: playtest (pro basketball): OFF assistant Luis Chatman showed +45 beside a scale that stopped at +40.
 - Tested: `node test/polish.js "staff rating"`: every staff rating's tooltip in all seven games has the open scale. MATCH.
+
+## Asking about a player says what stands in the way (trades: pro basketball and the other pro leagues)
+- What: when nobody of yours at the asked player's position would get him, the answer goes on to say who comes
+  closest and why, in the deal's own terms: "Closest: <your man>, and it isn't enough: they're contending and want more
+  help now. A second player or a first-round pick can sometimes bridge it."; or that the swap they'd take would leave
+  you better off than them (no club gives more than it gets); or that every swap breaks the cap or tax line; or that you
+  have nobody healthy at his position (tdAskWhy in core/98_trades.js). Words only: tdDeal, tdAsk and the trade model
+  are untouched (another agent is rebuilding NBA trades; this is the one message line plus a read-only helper).
+- Why: playtest (pro basketball): asking OKC about Luka Arrington (SF 73) said only "Nobody of yours at his position
+  would get him."
+- Tested: `node test/polish.js "stands in the way"`: 19 of 19 such answers over eight clubs' rosters say why. MATCH.

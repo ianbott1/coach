@@ -107,6 +107,21 @@ function tdAsk(t,b){
   const my=S.myTeam; if(tdHurt(t,b))return {hurt:true,list:[]}; if(tdRecent(t))return {recent:true,list:[]};
   const list=[]; SEA.roster[my].forEach((p,a)=>{ if(!p||tdGrp(a)!==tdGrp(b)||tdHurt(my,a))return; const d=tdDeal(t,a,b); if(d&&d.yes)list.push(d) });
   return {list:list.sort((x,y)=>y.now-x.now||y.fut-x.fut)} }
+/* review round (playtest, pro basketball: asking about a player said only "Nobody of yours at his position would get
+   him"): who of yours comes closest, and what stands in the way, in the deal's own terms (words only: the trade model
+   is untouched). A club wants more than an even swap, values now or two years ahead by where it stands, keeps under
+   the cap, and won't give you more than you give. */
+function tdAskWhy(t,b){ try{ const my=S.myTeam, M=SEA.roster[my];
+    const D=M.map((p,a)=>p&&tdGrp(a)===tdGrp(b)&&!tdHurt(my,a)?tdDeal(t,a,b):null).filter(Boolean);
+    if(!D.length)return " You have nobody healthy at his position to offer.";
+    const w=tdWin(t), want=w>0.6?"they're contending and want more help now":w<0.4?"they're building and want more for the years ahead":"they want more, now or in two years";
+    const fit=D.filter(d=>!d.over&&d.fair), unfair=D.filter(d=>!d.over&&!d.fair), cap=D.filter(d=>d.over);
+    if(fit.length){ const d=fit.sort((x,y)=>y.score-x.score)[0];
+      return ` Closest: ${tdPl(my,d.give,d.a)}, and it isn't enough: ${want}. A second player or a first-round pick can sometimes bridge it.` }
+    if(unfair.length){ const d=unfair.sort((x,y)=>(x.now+x.fut)-(y.now+y.fut))[0];
+      return ` They'd take ${tdPl(my,d.give,d.a)}, but no club gives more than it gets: that swap would leave you better off now and in two years together.` }
+    if(cap.length)return ` Every swap would put one of you over the ${LEAGUE.taxLine?"tax line":"cap"}.`;
+    return "" }catch(e){ return "" } }
 // carry a trade out: on the season's rosters (also as a reload replays it)
 // two for two around one man: yours at a (shop) or theirs at b (ask); the second pair at any other position
 function tdPackages(t,a,b){
@@ -192,7 +207,7 @@ function tradesView(){
       h+=`<div style="margin:8px 0">${t} on ${tdPl(t,T[b],b)} <button class="promo" data-tdask="-1">Back</button></div>`+
         (A.hurt?`<div class="fnote">He's injured: not now.</div>`:A.recent?`<div class="fnote">They've traded with you in the last ${TD_GAP} ${LEAGUE.daily?"days":"weeks"}: not yet.</div>`:
          A.list.length?`<div class="fnote">They'd take any of these for him:</div>`+A.list.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${esc(t)}|${d.a}|${d.b}">Trade</button></div>`).join(""):
-         `<div class="fnote">Nobody of yours at his position would get him${tdWin(t)>0.7?": they're contending and he helps them win now":""}.</div>`)+(A.hurt||A.recent?"":tdTwoRows(tdAskTwo(t,b),my)+tdPickRows(tdAskPick(t,b),my,"With your first-round pick")) }
+         `<div class="fnote">Nobody of yours at his position would get him${tdWin(t)>0.7?": they're contending and he helps them win now":""}.${tdAskWhy(t,b)}</div>`)+(A.hurt||A.recent?"":tdTwoRows(tdAskTwo(t,b),my)+tdPickRows(tdAskPick(t,b),my,"With your first-round pick")) }
     else h+=T.map((q,b)=>q?`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(t,q,b)}${tdHurt(t,b)?` <span class="outtag">OUT</span>`:""}</div></div>${tdHurt(t,b)?"":`<button class="promo" data-tdask="${b}">Ask</button>`}</div>`:"").join("") }
   return h+`</div>` }
 function bindTrades(){
