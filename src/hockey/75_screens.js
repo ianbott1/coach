@@ -42,6 +42,13 @@ const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: ever
 const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||1), ps:+(HK13_ENV("HK17C_PS")||0.35), un:+(HK13_ENV("HK17C_UN")||0.3), lk:+(HK13_ENV("HK17C_LK")||0.06), lmax:+(HK13_ENV("HK17C_LMAX")||1.2), dw:+(HK13_ENV("HK17C_DW")||1)};
 const hkV17=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=17;
 const HK26_S=+(HK13_ENV("HK26_S")||0.35), HK26_R=+(HK13_ENV("HK26_R")||0.7), HK26_PS=+(HK13_ENV("HK26_PS")||0.2), HK26_A2=+(HK13_ENV("HK26_A2")||0.35);
+/* engine 27 (the front office): the roster carries twenty-three, so the bottom six it used to leave out are on it. The
+   third line and the third pair, and the fourth line's forwards (slots 12-16 and 18-20: twelve forwards and six
+   defencemen dressed, as a club dresses), take their part of the depth goals, each at HK27_X of a man behind a starter's
+   weight. With ten skaters taking every goal the top scorer ran 70-76 a season (the NHL's 2015-25: 44-69) */
+const HK27_X=+(HK13_ENV("HK27_X")||0.4), HK27_SLOTS=[12,13,14,15,16,18,19,20];
+function hkExtras(tm){ const R=SEA.roster&&SEA.roster[tm]; if(typeof ENGINE_V==="undefined"||ENGINE_V<27||!R||R.length<21)return [];
+  return HK27_SLOTS.map(i=>({p:R[i],i:i})).filter(o=>o.p&&o.p.n) }
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
@@ -81,6 +88,7 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, a2:e.an2||null
   const w26=o=>{ const second=o.i>=nP&&D.some(q=>q!==o&&q.i%nP===o.i%nP), u=POS[o.i%nP].p;
     return (second?1:HK26_S)*Math.max(0.3,1+(o.p.r-60)/20*HK26_R)*(HK_GW[u]||HK_GW.C)/HK_GW.C };
   const DB=hkV16()?D.map(o=>({n:o.n,w:v26?w26(o):hkV17()?(o.i>=6?HK17C.d:HK17C.s):(o.i>=6?3:1)})):[];
+  if(v26)hkExtras(tm).forEach(o=>{ const u=POS[o.i%nP].p; DB.push({n:o.p.n,w:HK27_X*Math.max(0.3,1+(o.p.r-60)/20*HK26_R)*(HK_GW[u]||HK_GW.C)/HK_GW.C}) });   // engine 27
   if(x>=1-UN&&DB.length)n=hkWPick(DB,(x-(1-UN))/UN)||DB[0].n;
   else if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
   const AW=(e.en||e.extra)?null:hkDressed(tm,HK_AW,"pas"), a=AW?hkWPick(AW,(((u*7+3)%100)+0.5)/100,n):null;

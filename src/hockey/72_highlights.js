@@ -105,6 +105,7 @@ const HL_SPORT=(function(){
     const defSide=attSide==="home"?"away":"home", opp=attSide==="home"?g.away:g.home;
     const SL=[slots(attSide)[0],at(3,dL),at(4,dL),at(0,fL),at(1,fL),at(2,fL)];
     if(sWas!==sIdx){ [SL[sIdx],SL[sWas]]=[SL[sWas],SL[sIdx]] }   // the shooter's dot is his: short a man, the right wing shoots from the left wing's place
+    if(GN&&!GN.depth&&si>=2*nP)SL[sIdx]=si;   // engine 27: a goal of the bottom six (the roster carries twenty-three): the scorer is out there, his own number
     if(penA){ const o=hkOffender(tm,penA), j=SL.indexOf(o); if(j>0&&j!==5&&j!==sIdx){ [SL[j],SL[5]]=[SL[5],SL[j]] } }   // the man in the box isn't out there
     // the assist from the other line: he's out there too (a shift on the change), at his own place if the scorer isn't
     // in it, else beside him
