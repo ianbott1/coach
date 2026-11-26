@@ -73,7 +73,7 @@ function foQual(r){ return Math.max(0,Math.min(1,(r-55)/25)) }
 const FO_DEALS={ask:{y:0,m:1,g:0,l:"Their ask"}, short:{y:-1,m:1.07,g:0,l:"Fewer years, more a year"},
   long:{y:+1,m:0.95,g:0,l:"More years, less a year"}, gtd:{y:0,m:0.92,g:0.22,l:"More guaranteed, less a year"}};
 function foContract(aav,yrs,r,kind,year){
-  const D=FO_DEALS[kind]||FO_DEALS.ask; yrs=Math.max(1,Math.min(5,yrs+D.y)); aav=Math.round(Math.max(FO_MIN,Math.min(FO_MAX,aav*D.m))*10)/10;
+  const D=FO_DEALS[kind]||FO_DEALS.ask; yrs=Math.max(1,Math.min(5,yrs+D.y)); aav=Math.round(Math.max(FO_MIN,aav*D.m)*10)/10;   // (the ask is capped already: foAsk)
   const q=foQual(r), tot=aav*yrs, sb=yrs>1?tot*(0.12+0.3*q):0, gt=Math.min(tot,Math.max(sb,tot*Math.min(0.9,0.12+0.5*q+D.g)));
   const r1=x=>Math.round(x*100)/100;
   return {v:2,sal:aav,yrs:yrs,aav:aav,pb:r1(sb/yrs),g:r1(gt-sb),sb:r1(sb),gt:r1(gt),tot:r1(tot),y0:year,deal:kind||"ask"};
