@@ -193,9 +193,9 @@ function develop26(u,p,a,mu,rng,o){
 /* the starters' mean and spread as a career opens (ten fresh universes each, Nov 2026). Soccer by division (the
    pyramid's levels are its own: held as one, the Premier League's spread was squeezed to 4 in twenty summers) */
 const REF26={nfl:{m:66.7,s:5.85,t:81.6}, nba:{m:59.6,s:6.16,t:74.2}, nhl:{m:59.6,s:5.97,t:73.8}, mlb:{m:59.2,s:5.57,t:73.8},
-  cfb:{m:61.1,s:10.86,t:89.4}, ncaab:{m:61.9,s:10.96,t:93.0},
+  cfb:{m:61.1,s:10.86}, ncaab:{m:61.9,s:10.96},
   epl:{PL:{m:70.8,s:10.15,t:93.8},CH:{m:58.3,s:7.04,t:75.7},L1:{m:52.8,s:7.63,t:71.0},L2:{m:47.9,s:6.71,t:62.9},NL:{m:41.8,s:6.48,t:57.3},
-    NN:{m:37.6,s:6.72,t:53.0},NS:{m:38.8,s:6.70,t:54.1}}};   // t: the top 1% of starters (at least three men), its mean
+    NN:{m:37.6,s:6.72,t:53.0},NS:{m:38.8,s:6.70,t:54.1}}};   // t: the top 1% of starters (at least three men), its mean (college: no ceilings, and its tails held without it: test/longrun.js)
 /* each position's starters against the league's (soccer: against their division's), as a career opens (same universes) */
 const REFPOS26={nfl:{QB:-1.7,RB:0.9,WR:0.3,S:0.3}, cfb:{QB:0.4,RB:0.4,DT:-0.3,CB:-0.4,S:-0.3}, nba:{SF:0.3}, ncaab:{SG:0.3,C:-0.3},
   nhl:{D:-0.3}, epl:{}, mlb:{SS:-0.4,LF:-0.4,DH:-0.3,SP:0.3,CL:0.6}};

@@ -20,9 +20,14 @@ const AGE_SHIFT={QB:3,RB:-2};
    (Brady to 45, Rodgers 41, Flacco 40). The re-sign and free-agent cut-offs ignored the shift, so in 360 seasons no
    starting quarterback was older than 34. */
 const AGE26={QB:4,RB:-2};
-const age26=p=>AGE26[String(p.p).replace(/\d+$/,"")]||0;
+/* a quarterback grows like anyone to 27, then ages at half speed to 35 (four years in hand by then): shifted whole, the
+   young ones grew for four more years too and pushed the veterans out (one starter 35 or older a season) */
+const age26=p=>{ const P=String(p.p).replace(/\d+$/,""); if(P==="QB"){ const a=p.age||0; return a<=27?0:a<=35?(a-27)*0.5:AGE26.QB } return AGE26[P]||0 };
 /* a veteran stays while he's good: to lim anyone useful (lim as before), three years more a man well above the bar */
-const vetOK=(p,lim)=>eng26()?(p.age-age26(p)<=lim||(p.age-age26(p)<=lim+3&&p.r>=RS_BAR+6)):p.age<=lim;
+/* engine 26: the bars read the position's place in the league (core REFPOS26: a starting quarterback sits 1.7 below
+   the league's starters, so the flat bar let few reach it, fewer still at 36) */
+const bar26=p=>eng26()?((REFPOS26.nfl||{})[String(p.p).replace(/\d+$/,"")]||0):0;
+const vetOK=(p,lim)=>eng26()?(p.age-age26(p)<=lim||(p.age-age26(p)<=lim+3&&p.r>=RS_BAR+6+bar26(p))):p.age<=lim;
 const POS_PAY={QB:1.75,EDGE:1.15,OT:1.0,WR:1.05,WR2:0.8,CB:0.95,DT:0.9,LB:0.7,S:0.7,RB:0.6};
 
 /* What the market pays veterans, scaled so payrolls of the players the sim
@@ -60,12 +65,12 @@ function nflResignPlan(R){
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
-    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=3*PAY*foK())&&vetOK(p,32);
+    const worth=(i<POS.length?p.r>=RS_BAR+bar26(p):p.r>=RB_BAR&&ask<=3*PAY*foK())&&vetOK(p,32);
     keep[i]=worth&&pay+ask<=(foNew()?FO_CAP:NFL_CAP)-nflRookieRoom();
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :!vetOK(p,32)?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :i<POS.length&&p.r<RS_BAR+bar26(p)?`rated ${p.r}: below what the staff want in a starter`
       :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>3*PAY*foK()?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;

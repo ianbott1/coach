@@ -5,7 +5,7 @@
    franchise strength and the champion. Then it checks the late seasons against the early ones (drift) and against
    the real leagues (bands below, each with its source).
 
-     node test/longrun.js                        all seven, 20 seasons, 2 careers each (about 25 minutes on 4 cores)
+     node test/longrun.js                        all seven, 20 seasons, 2 careers each (college 4) (about 30 minutes on 4 cores)
      node test/longrun.js mlb nhl --seasons 12   some leagues
      node test/longrun.js --short                run-all's fast tier: 6 seasons, 1 career, two at a time, the bands that show early
      node test/longrun.js --dist DIR             another build (DIR/<game>.html), e.g. /home/claude/dist-e25 for before
@@ -118,7 +118,12 @@ const SHORT=argv.includes('--short');
 const LGS=argv.filter(a=>GAMES[a]); const leagues=LGS.length?LGS:Object.keys(GAMES);
 const SEASONS=+opt('--seasons',SHORT?6:20), CAREERS=+opt('--careers',SHORT?1:2), JOBS=+opt('--jobs',SHORT?2:3);
 const DIST=path.resolve(opt('--dist',path.join(__dirname,'..','dist')));
-const jobs=[]; leagues.forEach(lg=>{ for(let k=0;k<CAREERS;k++)jobs.push({lg,k}) });
+// college: four careers unless asked (a title share from 40 seasons is mostly one coach's luck: a 68-rated coach at the
+// top program builds a dynasty in one career and not the next)
+const careersOf=lg=>argv.includes('--careers')||SHORT?CAREERS:COLLEGE[lg]?4:CAREERS;
+const jobs=[]; leagues.forEach(lg=>{ for(let k=0;k<careersOf(lg);k++)jobs.push({lg,k}) });
+// the slow ones first, so the last round isn't one long career alone
+jobs.sort((a,b)=>(COLLEGE[b.lg]?1:0)-(COLLEGE[a.lg]?1:0));
 // longest first
 const COST={mlb:9,ncaab:9,epl:6,nba:4,nhl:3,cfb:2,nfl:1.2}; jobs.sort((a,b)=>COST[b.lg]-COST[a.lg]);
 const t0=Date.now(), out={};
