@@ -97,8 +97,15 @@ for(const [f,cap,hard] of [['football-coach-pro.html',110,true],['hockey-coach-p
     else ok(pay[pay.length-1]<=top+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} past ${top}`) }
   // hockey's curve bends (Nov 2026, Ian's call): cheaper middles leave a typical payroll near 60% of the
   // cap, the best-built teams still at it; the others stay ~70-85%; the real NBA sheet sits ~90-125%
-  const nbaNew=/basketball/.test(f)&&A.NBA$&&A.U.foV;
-  const lo=/hockey/.test(f)?0.5:nbaNew?0.85:0.6, hi=nbaNew?1.25:0.95, want=/hockey/.test(f)?"~55-70%":nbaNew?"~90-125%":"~70-85%";
+  // round 3 (engine 27): a hockey career on the NHL cap sheet (u.hkFO, leagues/nhl 24_hkcap) works against the real
+  // $104M cap as real clubs do (median 97%, CHANGELOG-review/hockey-fo.md), not Ian's earlier ~60%: the two differ
+  // and are his call (CHANGELOG-review/fixes-fo.md); a career on the old rules keeps the old band. Pro football on the
+  // real scale (engine 25) is calibrated to a $204M median of $301.2M with the $62M depth line, so its twenty tracked
+  // players sit near 60% of the cap less that line (seeds 3-11: 57-62%, engines 25-27 alike); the old ~70-85% was the
+  // $110M game's, and the 60% floor failed on noise
+  const nbaNew=/basketball/.test(f)&&A.NBA$&&A.U.foV, hkNew=/hockey/.test(f)&&!!A.U.hkFO;
+  const lo=hkNew?0.88:/hockey/.test(f)?0.5:nbaNew?0.85:nfl2?0.5:0.6, hi=hkNew?1.0:nbaNew?1.25:nfl2?0.75:0.95,
+    want=hkNew?"~90-100%, the NHL's":/hockey/.test(f)?"~55-70%":nbaNew?"~90-125%":nfl2?"~55-65% of the cap less the depth line":"~70-85%";
   const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=lo&&m<=hi,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ${want})`);
   console.log(`  ${f}: typical payroll ${Math.round(100*m)}% of the cap`); }
 
@@ -163,7 +170,12 @@ for(const [f,team] of [['hockey-coach-pro.html','Vegas'],['football-coach.html',
 /* 16. payroll on every team's card, in season (pro games) */
 for(const [f] of GAMES.filter(g=>/pro|soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(GAMES.find(g=>g[0]===f)[1],5,'T');
   const t=A.NAMES.find(x=>x!==A.S.myTeam); play(A,2); const c=strip(A.teamCard(t));
-  ok(/Payroll [$£][\d.]+M (of [$£][\d.]+M|&middot; (under the cap|over the cap|in the tax|over the first apron|over the second apron))/.test(c),   // review round: the NBA card names where the payroll sits on the real sheet
+  // round 3 (engine 27): hockey's NHL sheet shows the cap hit (dead money in it) against the cap (leagues/nhl 28_hkviews),
+  // baseball's front office the payroll against the tax line and the owner's limit (leagues/mlb 99_fo_views)
+  const hk27=/hockey/.test(f)&&!!A.U.hkFO, mlb27=/baseball/.test(f)&&!!A.U.mlbFO;
+  ok(/Payroll [$£][\d.]+M (of [$£][\d.]+M|&middot; (under the cap|over the cap|in the tax|over the first apron|over the second apron))/.test(c)   // review round: the NBA card names where the payroll sits on the real sheet
+    ||hk27&&/Cap hit [$][\d.]+M of [$][\d.]+M &middot; [$][\d.]+M (of room|over)/.test(c)
+    ||mlb27&&/Payroll [$][\d.]+M &middot; (<[^>]*>)?[$][\d.]+M (under|over) the tax line[\s\S]{0,40}owner's limit [$][\d.]+M/.test(c),
     `${f}: ${t}'s card shows no payroll in season ("${c.slice(0,60)}")`); }
 /* 17. milestones count your seasons at this club, not the club's */
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Denver',5,'T');
@@ -195,7 +207,10 @@ for(const [f] of GAMES.filter(g=>/pro|soccer/.test(g[0]))){ const A=load({settab
         // a job offer's last season, with overtime losses (Instinct: 42-42 for 42-30-12)
         const ls=(jc.match(/Last season (\d+-\d+(-\d+)?)/g)||[]); ok(ls.length>0&&ls.every(x=>/\d+-\d+-\d+/.test(x)),`hockey: job offers read ${ls.join(', ')||'nothing'}`) }
       const card=strip(A.LEAGUE.ui.offseasonBanner?A.LEAGUE.ui.offseasonScreen():''); ok(card.indexOf(A.recStr(A.S.myTeam))>=0,`hockey: the offseason card's record isn't ${A.recStr(A.S.myTeam)} (overtime losses merged)`);
-      ok(/fits|close: it depends|won't fit/.test(card)&&!/squeezing the draft class/.test(card),'hockey: a target "fits only by squeezing the draft class" (the class is paid before free agency)') }
+      // round 3 (engine 27): on the NHL sheet the class goes to the reserve list unsigned, so a target reads "fits" or
+      // how far short of room it is (leagues/nhl 28_hkviews hkTargetsHTML); the old screen keeps its words
+      const tgt=A.U.hkFO||/Free agents and offer sheets you want/.test(card)?/(fits|short of room)/:/fits|close: it depends|won't fit/;
+      ok(tgt.test(card)&&!/squeezing the draft class/.test(card),'hockey: a target "fits only by squeezing the draft class" (the class is paid before free agency)') }
     for(let c=0;c<5&&A.S.off;c++){ if(A.S.off.act&&A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
     A.NAMES.forEach(t=>A.U.roster[t].forEach(p=>{ if(p&&p.k){ n++; if(p.k.sal>=A.MAX_SAL-0.05)maxed++ } })) }
   console.log(`  hockey: ${maxed} of ${n} contracts at the maximum`);
@@ -515,12 +530,15 @@ for(let sd=8, done=false; sd<=20&&!done; sd++){ const A=load({settable:SET,file:
   ok(m&&Math.abs(tot-(+m[1]))<=0.15,`soccer: the payroll line doesn't add up (${m?m[2]+' + '+parts.join(' ')+' = '+tot+' vs '+m[1]:'no line: '+t.slice(t.indexOf('Payroll'),t.indexOf('Payroll')+200)})`) }
 
 /* 71. draft night: the draft shown pick by pick is the draft that happens, your picks are the players drafted, and a skipped night is the staff's */
-for(const [f,team,R] of [['football-coach-pro.html','Chicago',7],['basketball-coach-pro.html','Detroit',2],['hockey-coach-pro.html','Toronto',2]]){
-  const A=load({settable:SET,file:D(f),expose:EXP.concat(['draftNight','dnState','dnOn','draftNightHTML','dnSectionHTML'])}); A.newDynasty(team,5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
-  const my=A.S.myTeam, P=A.S.off.picks, yr=A.SEA.year; P.hand=[]; const stops=[];
+// round 3 (engine 27): the rounds are the league's (hockey drafts three on the NHL sheet, two before: leagues/nhl
+// 26_offseason draftRounds), and you stop once for each pick you hold (the hockey pick ledger can move them)
+for(let [f,team,R] of [['football-coach-pro.html','Chicago',7],['basketball-coach-pro.html','Detroit',2],['hockey-coach-pro.html','Toronto',2]]){
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['draftNight','dnState','dnOn','draftNightHTML','dnSectionHTML','dnPicksOf'])}); A.newDynasty(team,5,'T'); let g=0; while(A.SEA.phase!=='done'&&g++<5000)A.SEA.advance(); A.openOffseason();
+  R=A.LEAGUE.offseason.draftRounds||R;
+  const my=A.S.myTeam, P=A.S.off.picks, yr=A.SEA.year, held=A.dnPicksOf?A.dnPicksOf(my).length:R; P.hand=[]; const stops=[];
   ok(A.dnOn()&&/Go to draft night/.test(strip(A.dnSectionHTML())),`${f}: no way into draft night`);
-  for(let k=0;k<R+2;k++){ const D0=A.dnState(); if(!D0.stop)break; stops.push(D0.stop.overall); const av=D0.prospects.filter(p=>!p.taken); P.hand.push(av[Math.min(3,av.length-1)].pid) }
-  ok(stops.length===R,`${f}: stopped for ${stops.length} picks of ${R}`);
+  for(let k=0;k<Math.max(R,held)+2;k++){ const D0=A.dnState(); if(!D0.stop)break; stops.push(D0.stop.overall); const av=D0.prospects.filter(p=>!p.taken); P.hand.push(av[Math.min(3,av.length-1)].pid) }
+  ok(stops.length===held,`${f}: stopped for ${stops.length} picks of ${held}`);
   A.S.off.dn=true; ok(/Your class is in/.test(strip(A.draftNightHTML())),`${f}: draft night not finished after every pick`); A.S.off.dn=false;
   const shown=A.draftNight(A.U,A.SEA.rec,A.SEA.elo,{[my]:{draft:P.draft,board:P.board,hand:P.hand}},R,null).picks.map(d=>d.team+':'+d.pid).join(',');
   const R0=A.LEAGUE.offseason.run; let B=null; A.LEAGUE.offseason.run=function(){ B=R0.apply(this,arguments); return B };
