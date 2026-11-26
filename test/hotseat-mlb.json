@@ -1,5 +1,5 @@
 {
- "fp": "80594fd4d73af457",
+ "fp": "f3e3835d57a427f3",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -165,6 +165,11 @@
    "fp": "80594fd4d73af457",
    "from": "a8057d553642d8e4",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "f3e3835d57a427f3",
+   "from": "80594fd4d73af457",
+   "note": "Engine 25, the people (round 111): morale and the home crowd move results (at most 2% and 0.8% of a level game's chance). With PEOPLE_ON=0 the build matches round 110's fingerprint exactly (checked for NBA: d9c452b4879407ca)."
   }
  ],
  "out": [
@@ -174,20 +179,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "84-78",
-      "result": "Missed the postseason",
-      "grade": "C"
+      "rec": "74-88",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "b9c781ba258fe510"
+     "book": "9a2cd460b90784c5"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "71-91",
+      "rec": "69-93",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "22f8cae8e412ab31"
+     "book": "abe5dcbf1ab0d2b9"
     }
    ]
   },
@@ -197,20 +202,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "70-92",
+      "rec": "76-86",
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "bf94aba46f35f5a6"
+     "book": "5f53b299833a1f45"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "73-89",
+      "rec": "74-88",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "614670e3f6b417a3"
+     "book": "d9a203ea2e813988"
     }
    ]
   }

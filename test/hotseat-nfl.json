@@ -1,5 +1,5 @@
 {
- "fp": "028fe72b3eea2f64",
+ "fp": "59d6a640e00f8e27",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -430,6 +430,11 @@
    "fp": "028fe72b3eea2f64",
    "from": "028fe72b3eea2f64",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "59d6a640e00f8e27",
+   "from": "028fe72b3eea2f64",
+   "note": "Engine 25, the people (round 111): morale and the home crowd move results (at most 2% and 0.8% of a level game's chance). With PEOPLE_ON=0 the build matches round 110's fingerprint exactly (checked for NBA: d9c452b4879407ca)."
   }
  ],
  "out": [
@@ -439,11 +444,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "12-5",
+      "result": "Lost in the divisional round",
+      "grade": "A-"
      },
-     "book": "6dcb459521b5e6da"
+     "book": "399abafc790fdb1d"
     },
     {
      "team": "Tennessee",
@@ -452,7 +457,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "978455b071bbff5c"
+     "book": "21683aa58dd302ec"
     }
    ]
   },
@@ -462,20 +467,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
+      "rec": "11-6",
       "result": "Lost in the wild card round",
-      "grade": "B-"
+      "grade": "B+"
      },
-     "book": "2c6c8983a2460872"
+     "book": "5df2c3032e9c520a"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "B-"
      },
-     "book": "610ff42ec4b92d1e"
+     "book": "80ed2502cf5da2b0"
     }
    ]
   },
@@ -485,20 +490,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "6-11",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "11-6",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "6abd08de089791d1"
+     "book": "85cfbbe4593c44f8"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost the conference championship",
+      "rec": "13-4",
+      "result": "Lost in the wild card round",
       "grade": "A+"
      },
-     "book": "05e9cbbb1d05db03"
+     "book": "f5d0a3af6e3b2aee"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "d9c452b4879407ca",
+ "fp": "525c0d02ddc486d9",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -350,6 +350,11 @@
    "fp": "d9c452b4879407ca",
    "from": "d9c452b4879407ca",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "525c0d02ddc486d9",
+   "from": "d9c452b4879407ca",
+   "note": "Engine 25, the people (round 111): morale and the home crowd move results (at most 2% and 0.8% of a level game's chance). With PEOPLE_ON=0 the build matches round 110's fingerprint exactly (checked for NBA: d9c452b4879407ca)."
   }
  ],
  "out": [
@@ -359,20 +364,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-48",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "50-32",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "57d8be836875e857"
+     "book": "b26fa75afb9e2a9c"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
-      "grade": "C"
+      "rec": "46-36",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "4e5bf18ae892a5ce"
+     "book": "7e7a68a65826f326"
     }
    ]
   },
@@ -382,20 +387,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-53",
+      "rec": "36-46",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "c4be8b5dd12f81bf"
+     "book": "50e819e49c81f51d"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "36-46",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "47-35",
+      "result": "Lost in the conference semifinals",
+      "grade": "B"
      },
-     "book": "5a69c15acc87110d"
+     "book": "4b384660d4dcd873"
     }
    ]
   },
@@ -405,20 +410,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
-      "grade": "C"
+      "rec": "24-58",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "05225029811faefa"
+     "book": "d1291dccb08e018f"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "45-37",
-      "result": "Lost in the conference semifinals",
+      "rec": "51-31",
+      "result": "Lost in the first round",
       "grade": "B-"
      },
-     "book": "43e7f8eab4c175a3"
+     "book": "6c66da8aa62b8850"
     }
    ]
   }

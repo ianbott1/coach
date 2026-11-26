@@ -1,5 +1,5 @@
 {
- "fp": "32a8fcd0b28207d3",
+ "fp": "9e7a284bdc7041f6",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -405,6 +405,11 @@
    "fp": "32a8fcd0b28207d3",
    "from": "32a8fcd0b28207d3",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "9e7a284bdc7041f6",
+   "from": "32a8fcd0b28207d3",
+   "note": "Engine 25, the people (round 111): morale and the home crowd move results (at most 2% and 0.8% of a level game's chance). With PEOPLE_ON=0 the build matches round 110's fingerprint exactly (checked for NBA: d9c452b4879407ca)."
   }
  ],
  "out": [
@@ -414,20 +419,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "4-8",
+      "rec": "5-7",
       "result": "No bowl game",
       "grade": "F"
      },
-     "book": "28ccf88599b03aa7"
+     "book": "44f347b15f1d2763"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
-      "result": "No bowl game",
-      "grade": "C+"
+      "rec": "7-6",
+      "result": "Won the Frisco Bowl",
+      "grade": "A"
      },
-     "book": "791b367e20628950"
+     "book": "d86f20b5f2172541"
     }
    ]
   },
@@ -437,20 +442,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Gasparilla Bowl",
-      "grade": "C-"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "F"
      },
-     "book": "90fe9e98ccc9d7e2"
+     "book": "0c8d3ab817ddb689"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Hawaii Bowl",
-      "grade": "A-"
+      "rec": "1-11",
+      "result": "No bowl game",
+      "grade": "C-"
      },
-     "book": "1f9fbf522418a70c"
+     "book": "9645186336a86e42"
     }
    ]
   },
@@ -460,20 +465,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Holiday Bowl",
-      "grade": "C+"
+      "rec": "10-3",
+      "result": "Won the Gator Bowl",
+      "grade": "A-"
      },
-     "book": "8370994afe185c85"
+     "book": "2d4b01caef5d69f4"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the New Mexico Bowl",
-      "grade": "A"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "08ab6b33b6ffb4dd"
+     "book": "b5212a28aa1c414c"
     }
    ]
   }

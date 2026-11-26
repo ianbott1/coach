@@ -117,6 +117,10 @@ Commands: `node test/golden.js dist/<game>.html [--fast] --write --note "..."` a
 | golden-fast-mlb | b47ce354d7c745ac -> 2c4d08bcccb9ed43 |
 | golden-mlb | 1ebdddcc4e20204a -> c4c7acc5df5c46eb |
 
+Hot-seat fingerprints (`test/hotseat-*.json`, re-recorded; with `PEOPLE_ON=0` the NBA one is round 110's exactly):
+cfb 9e7a284bdc7041f6, nfl 59d6a640e00f8e27, ncaab 58c5d60e4f4e6bf9, nba 525c0d02ddc486d9, nhl b218071cf6c1be54,
+epl ba6709810ffe9967, mlb f3e3835d57a427f3.
+
 ## Other tests run
 
 - `node test/reload.js dist/football-coach.html`: MATCH 18 of 18; `dist/basketball-coach-pro.html`: MATCH 18 of 18.

@@ -1,5 +1,5 @@
 {
- "fp": "50d8c2fb77ebe5fb",
+ "fp": "ba6709810ffe9967",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -350,6 +350,11 @@
    "fp": "50d8c2fb77ebe5fb",
    "from": "dc7ac367366af5f0",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "ba6709810ffe9967",
+   "from": "50d8c2fb77ebe5fb",
+   "note": "Engine 25, the people (round 111): morale and the home crowd move results (at most 2% and 0.8% of a level game's chance). With PEOPLE_ON=0 the build matches round 110's fingerprint exactly (checked for NBA: d9c452b4879407ca)."
   }
  ],
  "out": [
@@ -359,20 +364,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-6-12",
-      "result": "Finished 5th in the Premier League",
+      "rec": "19-6-13",
+      "result": "Finished 4th in the Premier League",
       "grade": "B-"
      },
-     "book": "05e7371b80236207"
+     "book": "75a1d33db7542dec"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-9-18",
-      "result": "Finished 16th in the Premier League",
+      "rec": "12-9-17",
+      "result": "Finished 15th in the Premier League",
       "grade": "C"
      },
-     "book": "60da14195a5b38fd"
+     "book": "315572b5f566027d"
     }
    ]
   },
@@ -382,20 +387,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "11-14-13",
-      "result": "Finished 12th in the Premier League",
-      "grade": "C-"
+      "rec": "19-9-10",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "31038064206e47bd"
+     "book": "65fd647f6286a4e6"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "8-10-20",
-      "result": "Relegated (18th)",
-      "grade": "D"
+      "rec": "11-14-13",
+      "result": "Finished 14th in the Premier League",
+      "grade": "C+"
      },
-     "book": "db6bd1fbb6635b90"
+     "book": "c06be418771c1944"
     }
    ]
   },
@@ -405,20 +410,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-9-13",
-      "result": "Finished 8th in the Premier League",
+      "rec": "15-8-15",
+      "result": "Finished 10th in the Premier League",
       "grade": "C"
      },
-     "book": "ea199f2cf932c3cc"
+     "book": "ba4d316e1e9e842b"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-15-16",
-      "result": "Finished 12th in the Championship",
-      "grade": "D"
+      "rec": "10-7-21",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "5f74d79473b0fbc9"
+     "book": "32bd576f28c9cceb"
     }
    ]
   }
