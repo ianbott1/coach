@@ -190,15 +190,19 @@ const ACH=[
 const ACH_CENT=()=>(LEAGUE.tuning&&LEAGUE.tuning.century)||100;
 const ACH_UNB=()=>(LEAGUE.tuning&&LEAGUE.tuning.unbeaten)||0;       // 0: no losses at all
 const achD=a=>(a.dyn&&a.dyn())||a.d;
-let newAch=[];                     // unlocked since the last screen: shown once
+let newAch=[], newAchAt={};        // unlocked since the last screen: shown once (and, for a game's, which game)
 function achList(){ return ACH.filter(a=>(!a.soccer||!!LEAGUE.draws)&&(!a.reads||typeof readText==="function")) }
 function unlock(id){ const C=S.career; C.ach=C.ach||{}; if(C.ach[id])return; C.ach[id]=SEA.year; newAch.push(id); if(typeof sfx==="function")sfx("ach") }
 function checkAchievements(){
   if(!SEA||!S.myTeam||!S.career)return;
   const my=S.myTeam, C=S.career, have=C.ach||{};
   const games=[].concat(...SEA.weeks.map(w=>w.games)).filter(g=>g.home===my||g.away===my);
-  if(!have.firstwin&&(C.w>0||games.some(g=>g.winner===my)))unlock("firstwin");
-  if(!have.giant&&games.some(g=>g.winner===my&&preElo(g.winner===g.home?g.away:g.home)-preElo(my)>=wpScale("balanced")*Math.log10(3)))unlock("giant");
+  // review round (playtest: "Off the mark: Win your first game" after an 82-game sim): a game's achievement checked at the
+  // end of a sim says which game it was, when that wasn't the last one
+  const at=g=>{ if(!g)return; const w=SEA.weeks.findIndex(W=>W.games.indexOf(g)>=0); return w>=0&&w<SEA.weeks.length-1?((LEAGUE.dates&&LEAGUE.dates[g.week!=null?g.week:w])||wkLabel(w)):null };
+  if(!have.firstwin&&(C.w>0||games.some(g=>g.winner===my))){ unlock("firstwin"); if(!(C.w>0))newAchAt.firstwin=at(games.find(g=>g.winner===my)) }
+  const giant=g=>g.winner===my&&preElo(g.winner===g.home?g.away:g.home)-preElo(my)>=wpScale("balanced")*Math.log10(3);
+  if(!have.giant&&games.some(giant)){ unlock("giant"); newAchAt.giant=at(games.find(giant)) }
   if(!have.perfect&&S.played){ const P=S.played; for(const k in P){ (P[k]||[]).forEach(p=>{ if(p.team===my&&p.reads&&p.reads.length>=3&&p.reads.every(x=>x.right))unlock("perfect") }) } }
   const Y=S.readTally&&S.readTally.yr&&S.readTally.yr[SEA.year];
   if(!have.reader&&Y&&Y.n>=12&&Y.right/Y.n>=0.7)unlock("reader");
@@ -223,9 +227,9 @@ function checkAchievements(){
 }
 function achToastHTML(){
   if(!newAch.length)return "";
-  const L=newAch.map(id=>ACH.find(a=>a.id===id)).filter(Boolean); newAch=[];
+  const L=newAch.map(id=>ACH.find(a=>a.id===id)).filter(Boolean), At=newAchAt; newAch=[]; newAchAt={};
   try{ sfx("win") }catch(e){}
-  return `<div class="achtoast">${L.map(a=>`<div><span>&#9733;</span><b>${esc(a.l)}</b> ${esc(achD(a))}</div>`).join("")}</div>`;
+  return `<div class="achtoast">${L.map(a=>`<div><span>&#9733;</span><b>${esc(a.l)}</b> ${esc(achD(a))}${At[a.id]?` &middot; ${esc(At[a.id])}`:""}</div>`).join("")}</div>`;
 }
 function cabinetHTML(){
   const have=(S.career&&S.career.ach)||{}, L=achList();

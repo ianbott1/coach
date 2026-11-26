@@ -444,7 +444,7 @@ LEAGUE.goals={
     const sea=SEA, inF=sea.field&&sea.field.indexOf(my)>=0, picked=sea.field&&sea.field.length>0;
     const wins=NCAA_ROUNDS.filter(r=>r!=="open").reduce((n,r)=>n+((sea.rounds&&sea.rounds[r])||[]).filter(g=>g.winner===my).length,0);
     const want=e.par>=1.2?2:e.par>=0.6?1:0, what=want===2?"reach the Sweet 16":want===1?"win a game in the tournament":"";
-    if(!picked)return `Still to do: get into the field. Selection Sunday decides.`;
+    if(!picked)return typeof sea.marchHope==="function"&&!sea.marchHope(my)?`Missed the field: out of the conference tournament, and too far down for an at-large bid.`:`Still to do: get into the field. Selection Sunday decides.`;
     if(!inF)return `Missed the field.`;
     if(wins>=want)return want?`In the field, and ${want===2?"into the Sweet 16":"a tournament win"}: done.`:`In the field: done.`;
     const alive=!((sea.rounds&&NCAA_ROUNDS.some(r=>(sea.rounds[r]||[]).some(g=>g.loser===my))));
@@ -456,7 +456,7 @@ LEAGUE.goals={
     // no result yet (a season in progress, as the seat badge asks): March at par
     const march=!result?(exp.par||0):/NATIONAL/i.test(result)?5:/national championship/i.test(result)?3.6:/Final Four/.test(result)?3:
       /Elite Eight/.test(result)?2.3:/Sweet 16/.test(result)?1.6:/Second Round/.test(result)?0.9:
-      /First Round/.test(result)?0.4:/Opening Round/.test(result)?0.2:/Made the NCAA/.test(result)?0.3:
+      /First Round/.test(result)?0.4:/Opening Round/.test(result)?0.2:/Made the NCAA/.test(result)?Math.max(0.3,exp.par||0):
       /^Won the/.test(result)?0.8:-(exp.par>=0.2?1.0:0);
     let s=(wins-exp.w)*0.32+march-(exp.par||0);
     if(wins<losses)s-=(exp.w>=15?1.0:0.2);

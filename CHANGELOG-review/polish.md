@@ -84,3 +84,24 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js "names men"`: before the fix, ncaab 3 and nba 2 baskets named for a star while he sat
   (e.g. "Damari Mancini buries a three" while Damari Mancini sat), 0 "stays" lines; after: none of 262 and 611 named
   baskets, 3 and 1 second sits read "stays on the bench". MATCH.
+
+## The board judges only what has happened (college basketball, college football, the pros, achievements)
+- What:
+  - College basketball: before Selection Sunday a team still alive in its conference tournament, or one the committee
+    could still take at large (a winning record and a résumé inside the best 44+32 non-champions), has no season result
+    yet (`ctAlive`, `marchHope` in leagues/ncaab/85_postseason.js); only a team out of its tournament with no at-large
+    hope "missed the NCAA tournament". The loss card for such a team says "At 11–20 no at-large bid is coming: the
+    season is over" instead of "Selection Sunday decides the rest"; the board's clause says the same.
+  - College football: no season result before the selection show (no "Bowl snub" during conference championship week);
+    a team picked for a bowl not yet played is "Headed to the X Bowl", graded +0.5 (between a bowl win's +0.8 and a
+    loss's +0.2), so a bowl loss lowers the grade instead of raising it.
+  - Pro basketball, hockey, baseball (and college basketball's "Made the NCAA tournament"): alive in the playoffs counts
+    at par or better (Math.max(0.9, exp.par)), as a season in progress does; getting in no longer lowers the grade.
+  - Achievements: a game's achievement shown after a sim names the game ("Off the mark: Win your first game · Oct 28").
+- Why: playtest findings (item 7). The grade at the end of a season is unchanged (final results only use the ended
+  strings), so history and firing are unaffected.
+- Tested: `node test/polish.js "the board"`. Before the fix: cfb 132 teams with a result before the selection show
+  ("Bowl snub"), 0 of 31 bowl teams "headed to" theirs; nba Cleveland 62-20 fell A- to B+ and Detroit 55-27 B+ to B on
+  getting in (the playtest's exact case); the toast had no game. After: ncaab no team alive in its tournament told it
+  missed (299 team-rounds out with no hope are), cfb none before the show and 31 of 31 headed to their bowls, nba 12,
+  nhl 16, mlb 12 playoff teams with no grade falling, the toast names Oct 28. MATCH.

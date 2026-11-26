@@ -508,9 +508,11 @@ LEAGUE.goals={
   },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
+    // review round (playtest: a 62-20 pro basketball team fell A- to B+ the moment it clinched): in the playoffs and
+    // still alive is a season in progress too, at par or better
     // no result yet (a season in progress, as the seat badge asks): the postseason at par
     const po=!result?(exp.par||0):/WORLD SERIES CHAMPIONS/i.test(result)?5:/Lost the World Series/.test(result)?3.6:/championship series/.test(result)?2.6:
-      /division series/.test(result)?1.7:/wild-card series/.test(result)?0.9:/Made the postseason/.test(result)?0.9:-(exp.par>=0.4?0.8:0);
+      /division series/.test(result)?1.7:/wild-card series/.test(result)?0.9:/Made the postseason/.test(result)?Math.max(0.9,exp.par||0):-(exp.par>=0.4?0.8:0);
     let s=(wins-exp.w)*0.09+po-(exp.par||0);     // a win is worth less than hockey's 0.13: 162 games, and wins spread about 12. Only twelve of thirty
                                                  // go to October (hockey: sixteen of thirty-two), so the middle band's par is a race, not a berth
     if(wins<losses)s-=(exp.w>=86?0.8:0.2);

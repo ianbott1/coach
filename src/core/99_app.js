@@ -1658,7 +1658,8 @@ function heroResult(){
     else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&(g.ct||!(SEA.field&&SEA.field.length))&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)&&!g.ct)){
       const ctn=esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/ Championship$/i,"").replace(/Tournament Tournament/,"Tournament"));
       const inF=SEA.field&&SEA.field.length&&SEA.seeds&&SEA.seeds[my];
-      move=!(SEA.field&&SEA.field.length)?`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`
+      const rr=SEA.rec[my]||[0,0];   // review round: an 11-20 team was told Selection Sunday decides
+      move=!(SEA.field&&SEA.field.length)?(typeof SEA.marchHope==="function"&&!SEA.marchHope(my)?`<div class="hmove dn">Out of the ${ctn}. At ${rr[0]}&ndash;${rr[1]} no at-large bid is coming: the season is over.</div>`:`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`)
         :inF?`<div class="hmove flat">Out of the ${ctn}, and into the NCAA Tournament: a ${SEA.seeds[my]} seed${SEA.region&&SEA.region[my]?`, ${esc(SEA.region[my])}`:""}.</div>`
         :`<div class="hmove dn">Out of the ${ctn}, and left out of the NCAA field.</div>` }
     // round 99 (Instinct: a 12-1 Miami told "Season over" after the ACC final, then seeded 2nd with a bye): a conference title

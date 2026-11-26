@@ -105,5 +105,42 @@ check('basketball play-by-play names men on the floor (college and pro)',()=>{
   }
 });
 
+// Playtest, the board and the season's words: college basketball's board said "missed the NCAA tournament" before the
+// conference tournament, and "Selection Sunday decides the rest" to an 11-20 team; college football said "bowl snub"
+// before the bowls were set and its grade rose after a bowl loss; pro basketball's grade fell A- to B+ the moment a
+// 62-20 team clinched; "Off the mark" showed after an 82-game sim with no word of which game.
+check('the board judges only what has happened (four games)',()=>{
+  { const api=load('ncaab'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0;
+    while(!/^ct/.test(api.SEA.phase)&&n++<400)ev('simAdvance()');
+    let early=[], hopeless=0, hopeLosing=[];
+    while(/^ct/.test(api.SEA.phase)&&n++<500){ for(const t of ev('NAMES')){ const r=api.SEA.seasonResult(t), alive=api.SEA.ctAlive(t), rec=api.SEA.rec[t];
+        if(alive&&r)early.push(`${t} (${api.SEA.phase}, still in its tournament): "${r}"`);
+        if(!api.SEA.marchHope(t)){ hopeless++; if(r!=='Missed the NCAA tournament')early.push(`${t} out with no hope: "${r}"`) }
+        if(rec[0]<=rec[1]&&api.SEA.marchHope(t)&&!alive)hopeLosing.push(t) }
+      ev('simAdvance()') }
+    ok(!early.length&&!hopeLosing.length&&hopeless>100,`ncaab conference tournaments: no team alive in one is told it missed the NCAA tournament; ${hopeless} team-rounds out with no hope are${early.length?'; '+early.slice(0,2).join('; '):''}`);
+  }
+  { const api=load('cfb'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0;
+    while(api.SEA.phase==='week'&&n++<40)ev('simAdvance()');
+    const pre=ev('NAMES').map(t=>api.SEA.seasonResult(t)).filter(Boolean);
+    while(api.SEA.phase!=='bowls'&&n++<60)ev('simAdvance()');
+    const P=api.SEA.bowlPairs||[], heads=P.filter(p=>/^Headed to the /.test(api.SEA.seasonResult(p.a))).length;
+    const exp=ev('expectations()'), before={}; P.forEach(p=>[p.a,p.b].forEach(t=>{ const r=api.SEA.rec[t]; before[t]=ev('seasonGrade')(r[0],r[1],api.SEA.seasonResult(t),exp) }));
+    ev('simAdvance()'); const order=['F','D','C-','C','C+','B-','B','B+','A-','A','A+']; let rose=[];
+    P.forEach(p=>{ const t=p.a, g=api.SEA.bowls.find(x=>x.home===t||x.away===t); const L=g&&g.loser; if(!L)return; const r=api.SEA.rec[L], aft=ev('seasonGrade')(r[0],r[1],api.SEA.seasonResult(L),exp);
+      if(order.indexOf(aft.g)>order.indexOf(before[L].g))rose.push(`${L} ${before[L].g} to ${aft.g}`) });
+    ok(!pre.length&&heads===P.length&&P.length>30&&!rose.length,`cfb: no result before the selection show (${pre.length}: ${pre.slice(0,2).join(', ')}); ${heads} of ${P.length} bowl teams "headed to" theirs; no bowl loser's grade rose${rose.length?' ('+rose.slice(0,3).join(', ')+')':''}`); }
+  for(const lg of ['nba','nhl','mlb']){ const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0;
+    while(api.SEA.phase==='week'&&n++<400)ev('simAdvance()');
+    while(!(api.SEA.seeds&&Object.keys(api.SEA.seeds).length)&&n++<500)ev('simAdvance()');
+    const exp=ev('expectations()'), order=['F','D','C-','C','C+','B-','B','B+','A-','A','A+']; let fell=[], k=0;
+    for(const t of Object.keys(api.SEA.seeds)){ const r=api.SEA.rec[t], res=api.SEA.seasonResult(t); if(!/^Made the/.test(res))continue; k++;
+      const a=ev('seasonGrade')(r[0],r[1],'',exp), b=ev('seasonGrade')(r[0],r[1],res,exp); if(order.indexOf(b.g)<order.indexOf(a.g))fell.push(`${t} ${r[0]}-${r[1]} ${a.g} to ${b.g}`) }
+    ok(k>=8&&!fell.length,`${lg}: ${k} teams into the playoffs, no grade falls on getting in${fell.length?' ('+fell.slice(0,2).join(', ')+')':''}`) }
+  { const api=load('nba'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); ev('render()'); ev('achToastHTML()'); let n=0;
+    ev('simRun(SEA.step+30)'); let t=(global.__nodes.app||{}).innerHTML.match(/<div class="achtoast">[\s\S]*?<\/div><\/div>/)?.[0]||''; t=t.replace(/<[^>]+>/g,' ').replace(/&middot;/g,'·');
+    ok(/Off the mark Win your first game · \S/.test(t.replace(/\s+/g,' ')),`nba: after a sim the toast names the first win's game: "${t.replace(/\s+/g,' ').trim().slice(0,90)}"`) }
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

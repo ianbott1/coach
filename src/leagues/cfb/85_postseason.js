@@ -254,7 +254,13 @@ extendSeason({
     const made=this.field.indexOf(my)>=0;
     let result="Missed the playoff";
     const bowl=this.myBowl(my);
+    // review round (playtest: "Bowl snub" before the bowls were set; the grade rose to A after a bowl loss): before the
+    // selection show nothing is settled; picked for a bowl not yet played, you're headed there (graded between a win and
+    // a loss, so a bowl loss lowers it)
+    if(!this.bowlPairs&&!(this.field&&this.field.length))return this.champion===my?"NATIONAL CHAMPIONS":"";
+    const pair=!bowl&&(this.bowlPairs||[]).find(x=>x.a===my||x.b===my);
     if(bowl)result=(bowl.winner===my?"Won the ":"Lost the ")+bowl.title;
+    else if(pair&&this.field.indexOf(my)<0)result="Headed to the "+pair.name;
     else if(this.field.indexOf(my)<0)result=this.rec[my][0]>=6?"Bowl snub":"No bowl game";
     if(this.champion===my)result="NATIONAL CHAMPIONS";
     else if(made){
