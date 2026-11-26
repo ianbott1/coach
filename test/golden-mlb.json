@@ -1,5 +1,5 @@
 {
- "fp": "1ebdddcc4e20204a",
+ "fp": "9db89b876029b4ea",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -275,6 +275,11 @@
    "fp": "1ebdddcc4e20204a",
    "from": "1ebdddcc4e20204a",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "9db89b876029b4ea",
+   "from": "1ebdddcc4e20204a",
+   "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
   }
  ],
  "result": {
@@ -289,7 +294,7 @@
     "heis": "7d5b897b0d9b6c32",
     "history": "da15fbfd7101bc37",
     "universe": "56c8183973a51f1f",
-    "screens": "1612d5c806ff6c05"
+    "screens": "b448c8d5d35b129a"
    },
    {
     "year": 2027,
@@ -301,7 +306,7 @@
     "heis": "773ec581dad87a9c",
     "history": "6acd7d078226bbb4",
     "universe": "0e503d756a19b330",
-    "screens": "49217556b3802e33"
+    "screens": "28d9d77b635bd56c"
    }
   ],
   "Colorado#777": [
@@ -315,7 +320,7 @@
     "heis": "c538f6ec29f1dea8",
     "history": "2776d71e098b91d8",
     "universe": "c04512530a010990",
-    "screens": "d8c11aef312cc5ae"
+    "screens": "40f6accf29164d2d"
    },
    {
     "year": 2027,
@@ -327,7 +332,7 @@
     "heis": "eac2183831bc1117",
     "history": "53e39dd404565cdb",
     "universe": "49e8d24da1631d6f",
-    "screens": "c9701884af330e6e"
+    "screens": "de194274c7a436c9"
    }
   ],
   "schedules#60": [

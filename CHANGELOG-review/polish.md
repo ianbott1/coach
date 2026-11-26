@@ -204,3 +204,10 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
   the generator fills Dec 5 (real life's conference championship weekend) with about 44 games, most made up (a new
   Oregon State career, seed 5: Oregon at Georgia, Vanderbilt at Oregon State). The 2026 data lists real games through
   Nov 27/28 only. Moving the made-up games off Dec 5 changes every college football schedule and result.
+
+## Goldens re-recorded (fast and full, all seven)
+- Hockey, soccer, baseball: screens only. Pro basketball: games and records unchanged; awards, the history's award lines,
+  career totals and screens (the bench's lines). Pro football: games move (the punt call). College football: games move
+  (distinct names on a new career, the punt call). College basketball: games move (distinct names on a new career). The
+  60-universe schedule fingerprints are unchanged in every game.
+- `node test/golden.js dist/<game>.html [--fast] --write --note "…"` for each, each ending MATCH; the notes say why.

@@ -1,5 +1,5 @@
 {
- "fp": "b0d4fc8493ebefae",
+ "fp": "15b4c8cc7992ccd1",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -590,6 +590,11 @@
    "fp": "b0d4fc8493ebefae",
    "from": "b0d4fc8493ebefae",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "15b4c8cc7992ccd1",
+   "from": "b0d4fc8493ebefae",
+   "note": "review polish: games and records as before; the bench's share of each game's lines goes to the backups who played, so awards, the history's award lines and career totals move; screens"
   }
  ],
  "result": {
@@ -601,10 +606,10 @@
     "champion": "Boston",
     "rec": "aa929acbb3d41009",
     "poll": "f7d6b103e4e40c76",
-    "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "heis": "45932fc2ef8bb291",
+    "history": "3adfbbbbb37c926b",
+    "universe": "64be3bfd0f1f9de1",
+    "screens": "e2cf699c034194bd"
    },
    {
     "year": 2027,
@@ -614,9 +619,9 @@
     "rec": "4e57bfc4bc60432a",
     "poll": "ce81856e9e87c2d1",
     "heis": "02ebadf6932b7f6a",
-    "history": "01efbe25cfd940ee",
-    "universe": "bb81ea2771bbbf45",
-    "screens": "593c82311b570ecc"
+    "history": "b9daf18a405b7a9c",
+    "universe": "cd663ea44b6e4bd3",
+    "screens": "5141a1b235dce647"
    }
   ],
   "Detroit#777": [
@@ -627,10 +632,10 @@
     "champion": "New York",
     "rec": "a57c9276f2b2f4b1",
     "poll": "6a2e8da5986046a7",
-    "heis": "635d996bb8c406fc",
-    "history": "e96eb46ec64147d8",
-    "universe": "a6287fc5e42e1707",
-    "screens": "888e82025ec3196a"
+    "heis": "1a1b82222eb13138",
+    "history": "07eaebba24016340",
+    "universe": "5d2454086b76944c",
+    "screens": "9220db20b36524d1"
    },
    {
     "year": 2027,
@@ -641,8 +646,8 @@
     "poll": "0b46b8960550d70e",
     "heis": "746e3a3070225b55",
     "history": "0eaf33ad660bf773",
-    "universe": "2a51ad4ab26ac914",
-    "screens": "0a726c25a6ad77b4"
+    "universe": "b258a8bed4cf864d",
+    "screens": "2d995e5427a9abf9"
    }
   ],
   "schedules#60": [

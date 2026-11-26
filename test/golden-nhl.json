@@ -1,5 +1,5 @@
 {
- "fp": "5b5b8ddc7dd608c4",
+ "fp": "7f6d4531ccb285df",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -630,6 +630,11 @@
    "fp": "5b5b8ddc7dd608c4",
    "from": "5b5b8ddc7dd608c4",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "7f6d4531ccb285df",
+   "from": "5b5b8ddc7dd608c4",
+   "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
   }
  ],
  "result": {
@@ -644,7 +649,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "screens": "25e6d275f2f79455"
    },
    {
     "year": 2027,
@@ -656,7 +661,7 @@
     "heis": "5ed6f299aaee8f70",
     "history": "7f2db36e6a75c3ca",
     "universe": "87bd4428c7b36740",
-    "screens": "5857e2088a822e0d"
+    "screens": "9c6c7e7e9f2f6c51"
    }
   ],
   "Edmonton#777": [
@@ -670,7 +675,7 @@
     "heis": "5ee332f850b9731e",
     "history": "c2ef3c8c856d0962",
     "universe": "15fee3f90c993552",
-    "screens": "a1a3587d0b86e07a"
+    "screens": "4ecf9f83c1a8b0f9"
    },
    {
     "year": 2027,
@@ -682,7 +687,7 @@
     "heis": "bb56911fa58c1c5b",
     "history": "90d9fb97e15f5a7e",
     "universe": "7f42d9d51d1e1edc",
-    "screens": "ba0114893bd9103b"
+    "screens": "f29b23d727d6775f"
    }
   ],
   "schedules#60": [
