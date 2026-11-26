@@ -1,4 +1,6 @@
-/* ============ offseason: pro football ============ */
+/* ============ offseason: pro baseball ============ */
+/* (engine 27: a career on the front office's rules runs its summer in 27_fo_run, mlbRun27; this is the summer of a
+   career begun before it, kept so an older season's summer runs as it was played) */
 /* Players have ages and contracts. Each offseason, in order:
      1. expiring contracts are re-signed or let go (you choose for your team)
      2. everyone ages: better until about 27, flat, then decline after 30
@@ -281,6 +283,7 @@ function nflPlace(roster,p){
 }
 
 function nflRun(u,rng,healthy,elo,rec,choices){
+  if(u.mlbFO||(typeof ENGINE_V!=="undefined"&&ENGINE_V>=27))return mlbRun27(u,rng,healthy,elo,rec,choices);   // engine 27: the front office (24_fo)
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
   // draft night: its own dice, on the rosters as the season ended (core/91_draftnight)
   const DN=draftNight(u,rec,elo,U_CH,MLB_ROUNDS);
@@ -462,7 +465,10 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     cap:Object.fromEntries(NAMES.map(t=>[t,Math.round(payroll(u.roster[t])*10)/10]))};
 }
 
-LEAGUE.cap=NFL_CAP; LEAGUE.taxLine=TAX_LINE;
+/* the line the season reads (the computer's deadline deals, the trade screen): a career on the front office's rules
+   reads the competitive balance tax, $244M; one from before keeps the $165M it was played on */
+Object.defineProperty(LEAGUE,"cap",{get(){ return mlbFO()?MLB$.cbt:NFL_CAP },enumerable:true,configurable:true});
+Object.defineProperty(LEAGUE,"taxLine",{get(){ return mlbFO()?MLB$.cbt:TAX_LINE },enumerable:true,configurable:true});
 LEAGUE.offseason={
   newRoster:nflRoster,
   run:nflRun,
