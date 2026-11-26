@@ -3983,7 +3983,7 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; planConfirm(e.currentTarget,advance) };   // round 100: the side column's Play waits too
+  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; planConfirm((e&&e.currentTarget)||el("adv2"),advance) };   // round 100: the side column's Play waits too
   ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=e=>{ if(strayTap(e))return; simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
@@ -3995,7 +3995,7 @@ function render0(){
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
   const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
   ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=e=>{ if(settling()||strayTap(e))return;
-    planConfirm(e.currentTarget,()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
+    planConfirm((e&&e.currentTarget)||el(id),()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
     simAdvance(); window.scrollTo({top:0,behavior:"auto"}) });
   }});
   if(false)el("simone").onclick=()=>{
@@ -4005,7 +4005,7 @@ function render0(){
   el("adv").onclick=e=>{ if(settling()||strayTap(e))return;
     if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
-    planConfirm(e.currentTarget,()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
+    planConfirm((e&&e.currentTarget)||el("adv"),()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
     doAdvance();
     window.scrollTo({top:0,behavior:"auto"}) });
   };
