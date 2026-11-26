@@ -356,9 +356,17 @@ function mlbForfeit(u,t,to,payers,rep,p){
 /* whose pick it is: a forfeited pick, and the top pick of a club $40M or more over the tax moved back ten places */
 LEAGUE.pickOwner=function(u,orig,rd,slot){
   if(!u||!u.mlbFO)return null;
+  if(rd===1){ const O=mlbBackOrder(u); if(O){ const t=O[slot-1]; if(t){ const pm=pickOwnMap(u); return pm[t]||t } } }
   const own=u.mlbPk&&u.mlbPk[u.year+"|"+orig+"|"+rd];
   if(own)return own;
   return null };
+/* the first round's order with each club that ended a season $40M or more over the tax moved back ten places (the
+   draft's own order, read again: the same lottery draw, so every part of the draft reads the same) */
+function mlbBackOrder(u){
+  const B=u.mlbBack; if(!B||B.y!==u.year||!B.t||!B.t.length||typeof SEA==="undefined"||!SEA||!SEA.rec)return null;
+  const O=nflDraftOrder(SEA.rec,SEA.elo,draftRng(u)).slice();
+  B.t.forEach(t=>{ const i=O.indexOf(t); if(i<0)return; O.splice(i,1); O.splice(Math.min(O.length,i+10),0,t) });
+  return O }
 
 /* ---- the summer screen's side: the universe made ready as the summer opens (a career's first summer on these rules
    comes onto them now; the season's service time and moves are folded in), the choices it starts with, and the market
