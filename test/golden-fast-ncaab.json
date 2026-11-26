@@ -1,5 +1,5 @@
 {
- "fp": "6d260910eb44fe43",
+ "fp": "88a4e0afa777dc16",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -160,6 +160,11 @@
    "fp": "6d260910eb44fe43",
    "from": "2af2de7bb465972c",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "88a4e0afa777dc16",
+   "from": "6d260910eb44fe43",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "result": {
@@ -172,9 +177,9 @@
     "rec": "07d98ba3b8fb83d5",
     "poll": "0a0138ce733562c1",
     "heis": "b947c74f5785b20e",
-    "history": "0e89ee4981a10a84",
-    "universe": "9e6e49b4824aa151",
-    "screens": "a2b1a3e1cb674675"
+    "history": "f0d9bc28feb6f863",
+    "universe": "3fdde69d1e03106c",
+    "screens": "1cfcf3a96bd6eec9"
    }
   ]
  }

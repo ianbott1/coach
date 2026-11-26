@@ -1,5 +1,5 @@
 {
- "fp": "12f25479b979308c",
+ "fp": "0d4a1ea357564ae6",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -450,6 +450,11 @@
    "fp": "12f25479b979308c",
    "from": "8dec97f4cb158ecd",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "0d4a1ea357564ae6",
+   "from": "12f25479b979308c",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "out": [
@@ -459,20 +464,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "5-12",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "9-8",
+      "result": "Missed the playoffs",
+      "grade": "B-"
      },
-     "book": "759f9c10f6c26d44"
+     "book": "2e36cac813db3a21"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "4-13",
+      "rec": "3-14",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "c32290e761cc7df0"
+     "book": "e7f6b6e93843b663"
     }
    ]
   },
@@ -482,20 +487,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "5-12",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "12-5",
+      "result": "Lost the conference championship",
+      "grade": "A-"
      },
-     "book": "6c26e050b54fe743"
+     "book": "266d29c91b3676eb"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "7-10",
+      "rec": "4-13",
       "result": "Losing season",
-      "grade": "B"
+      "grade": "C"
      },
-     "book": "2197aa19df00111f"
+     "book": "d8cfe4b7ae062890"
     }
    ]
   },
@@ -505,20 +510,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the wild card round",
-      "grade": "C+"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "13a98cb724cf6a49"
+     "book": "9c781159321ce3a1"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the divisional round",
-      "grade": "A+"
+      "rec": "6-11",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "5863a9fb24cd9dcd"
+     "book": "d8c082b1fd0b7ec6"
     }
    ]
   }

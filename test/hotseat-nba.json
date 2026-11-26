@@ -1,5 +1,5 @@
 {
- "fp": "8c17f3940dfb150d",
+ "fp": "6bf921962d34e36e",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -375,6 +375,11 @@
    "fp": "8c17f3940dfb150d",
    "from": "247584ca9044eeba",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "6bf921962d34e36e",
+   "from": "8c17f3940dfb150d",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "out": [
@@ -388,7 +393,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "B+"
      },
-     "book": "e56fdad271bf8b47"
+     "book": "cc695bba4fccf910"
     },
     {
      "team": "New York",
@@ -397,7 +402,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "f592afbf244863d2"
+     "book": "4757e7dda68059c5"
     }
    ]
   },
@@ -407,20 +412,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "33-49",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "39-43",
+      "result": "Lost in the first round",
+      "grade": "C-"
      },
-     "book": "c6fac8a169c097af"
+     "book": "f0e9c572b8ce85e3"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "27-55",
+      "rec": "21-61",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "d3f4682134a256eb"
+     "book": "b11dd07205442a27"
     }
    ]
   },
@@ -430,20 +435,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "35-47",
+      "rec": "31-51",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C+"
      },
-     "book": "354441612ab87f09"
+     "book": "4fed2704581bcc2a"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "29-53",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "b34ff4ba9cbaf3ab"
+     "book": "bd2258e5ba18dd54"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "b4b323afc23491d6",
+ "fp": "cffbb1fccb3fc520",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -385,6 +385,11 @@
    "fp": "b4b323afc23491d6",
    "from": "36e3598098423c4e",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "cffbb1fccb3fc520",
+   "from": "b4b323afc23491d6",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "out": [
@@ -398,7 +403,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A-"
      },
-     "book": "837f216917139aad"
+     "book": "eddc06ff83cd8258"
     },
     {
      "team": "North Carolina",
@@ -407,7 +412,7 @@
       "result": "Lost in the Final Four",
       "grade": "A"
      },
-     "book": "19e5b3b271bc4ffb"
+     "book": "9f68c128a8d09c8b"
     }
    ]
   },
@@ -417,20 +422,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "24-9",
-      "result": "Lost in the First Round",
-      "grade": "B-"
+      "rec": "30-6",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "eb0cc5a588c9b92a"
+     "book": "f586dd908670207b"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "21-11",
-      "result": "Lost in the First Round",
-      "grade": "C+"
+      "rec": "24-9",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "8baef4c73a00a55b"
+     "book": "cd5bbb2fd6a48a3c"
     }
    ]
   },
@@ -440,20 +445,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "18-13",
-      "result": "Missed the NCAA tournament",
-      "grade": "C-"
+      "rec": "31-6",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "85b5be78a33d009c"
+     "book": "74c903675e5e1e88"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "27-8",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "28-11",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "999060b90be77016"
+     "book": "3c7e1b0de93d2fff"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "d56afe564468b3ef",
+ "fp": "1c3d2d255b410ee2",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -430,6 +430,11 @@
    "fp": "d56afe564468b3ef",
    "from": "d56afe564468b3ef",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "1c3d2d255b410ee2",
+   "from": "d56afe564468b3ef",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "out": [
@@ -439,20 +444,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A+"
+      "rec": "7-6",
+      "result": "Won the Rate Bowl",
+      "grade": "B-"
      },
-     "book": "6f1b734bdf8dc584"
+     "book": "f32dff613d93ad70"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "4-8",
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "2c638003152bb981"
+     "book": "d5b726942ff7f5ff"
     }
    ]
   },
@@ -462,11 +467,11 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "C-"
+      "rec": "8-5",
+      "result": "Lost the Gator Bowl",
+      "grade": "C+"
      },
-     "book": "484a85f0c2e096bc"
+     "book": "4dbd23e8237bd067"
     },
     {
      "team": "Rice",
@@ -475,7 +480,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "94d3c9adf2c9a275"
+     "book": "bf31ccef2dc530b5"
     }
    ]
   },
@@ -485,20 +490,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Holiday Bowl",
-      "grade": "A-"
+      "rec": "7-6",
+      "result": "Lost the Texas Bowl",
+      "grade": "B"
      },
-     "book": "71d10fc91b9e09d0"
+     "book": "14e9c1ba9645e993"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "3-9",
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "6972330da1c94550"
+     "book": "554dd9fe2f5e5b4d"
     }
    ]
   }

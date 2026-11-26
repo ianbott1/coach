@@ -1,5 +1,5 @@
 {
- "fp": "1296628ab653cb8d",
+ "fp": "9f38438e92ac83e1",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -190,6 +190,11 @@
    "fp": "1296628ab653cb8d",
    "from": "1296628ab653cb8d",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "9f38438e92ac83e1",
+   "from": "1296628ab653cb8d",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "out": [
@@ -203,16 +208,16 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "842d158a8e283294"
+     "book": "5aabc57aae3b7a6b"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "64-98",
+      "rec": "70-92",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "C+"
      },
-     "book": "7e30e0cc4b170f6d"
+     "book": "3f046da415b8cd05"
     }
    ]
   },
@@ -222,20 +227,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "70-92",
+      "rec": "66-96",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "7c95626bc812ae73"
+     "book": "8d2b2d1fd6a93b08"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "65-97",
+      "rec": "55-107",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "b91ae711a8665314"
+     "book": "7572b1dd83e47419"
     }
    ]
   }

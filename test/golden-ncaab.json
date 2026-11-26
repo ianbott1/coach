@@ -1,5 +1,5 @@
 {
- "fp": "bbdb0e66ee53efd9",
+ "fp": "d0085cdbc17ea83a",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -640,6 +640,11 @@
    "fp": "bbdb0e66ee53efd9",
    "from": "3d172cb74e14ffdb",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "d0085cdbc17ea83a",
+   "from": "bbdb0e66ee53efd9",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "result": {
@@ -652,21 +657,21 @@
     "rec": "07d98ba3b8fb83d5",
     "poll": "0a0138ce733562c1",
     "heis": "b947c74f5785b20e",
-    "history": "0e89ee4981a10a84",
-    "universe": "9e6e49b4824aa151",
-    "screens": "a2b1a3e1cb674675"
+    "history": "f0d9bc28feb6f863",
+    "universe": "3fdde69d1e03106c",
+    "screens": "1cfcf3a96bd6eec9"
    },
    {
     "year": 2027,
-    "games": "3c9494c60339af51",
-    "post": "7b28393529644fb4",
-    "champion": "BYU",
-    "rec": "db44903daea1a23b",
-    "poll": "6bd7eba3941df6f0",
-    "heis": "4f140d066779fefb",
-    "history": "f4118a6cf2a9e98e",
-    "universe": "a1a2caed94b6d4a7",
-    "screens": "2987138e182b873f"
+    "games": "4cdf7d017f0beabc",
+    "post": "de246b93f20f3956",
+    "champion": "Texas",
+    "rec": "0201a8c380c00144",
+    "poll": "d5ca8dfc1ccf989e",
+    "heis": "8482701919018f6c",
+    "history": "beabc79eabf285d4",
+    "universe": "0745438fa396f7fb",
+    "screens": "84ad2ab71ed0a6c7"
    }
   ],
   "Coppin State#2024": [
@@ -678,21 +683,21 @@
     "rec": "3357d553c1b3fd9a",
     "poll": "f408dfd729d9dbc9",
     "heis": "247f06f92cf20b76",
-    "history": "09a7cf06830d6901",
-    "universe": "7328ace1705158d4",
-    "screens": "90496fe880d6dc47"
+    "history": "7c170b0c432ab60e",
+    "universe": "1a90510d935c3d81",
+    "screens": "84486a064267d796"
    },
    {
     "year": 2027,
-    "games": "6f3b363478db1c1a",
-    "post": "6775ccf208d87771",
-    "champion": "Arizona",
-    "rec": "0ce12f1d335a4108",
-    "poll": "762096877d172fef",
-    "heis": "6ca53d252ab831d0",
-    "history": "0d6b11f09c369f6b",
-    "universe": "90c72ad7355cec5c",
-    "screens": "96e41495f93e45f5"
+    "games": "aab9795df76552d9",
+    "post": "30e63ee5ca445b4a",
+    "champion": "Texas",
+    "rec": "209b36ab6ee3cb96",
+    "poll": "aca7a0ed9f450343",
+    "heis": "eaf95b74fe5b6b42",
+    "history": "1087a4db085fd925",
+    "universe": "ce536bae56fb27aa",
+    "screens": "f2ac43c251ae0a31"
    }
   ],
   "Gonzaga#777": [
@@ -704,21 +709,21 @@
     "rec": "8f136addf6f05c0c",
     "poll": "6da299813247e9bd",
     "heis": "1da9d6984d7f1d36",
-    "history": "6818b8080cc8b060",
-    "universe": "7b795250fa7536a6",
-    "screens": "dbfb91562ee76a02"
+    "history": "b81fe18951c83e9b",
+    "universe": "e8b1fd91e04bf105",
+    "screens": "ced1f52207297298"
    },
    {
     "year": 2027,
-    "games": "9b245aa194904522",
-    "post": "86a01fd0f36e4718",
-    "champion": "Arkansas",
-    "rec": "7e6f7b559f8b588a",
-    "poll": "bf9530ab96e77b9c",
-    "heis": "558baca26df13d09",
-    "history": "9406b7463c751370",
-    "universe": "9bc1ca03573fcd51",
-    "screens": "db6c7fea71615e24"
+    "games": "499f7118fd08c501",
+    "post": "3a41b84c072af38c",
+    "champion": "Arizona State",
+    "rec": "b68f1f60941cbeca",
+    "poll": "0e40f5fc2f84a0c9",
+    "heis": "8f49872ed2fd2684",
+    "history": "d5341de3f02cc0a7",
+    "universe": "12c9ad2d3beddd5e",
+    "screens": "63083995ebb269cc"
    }
   ],
   "schedules#60": [

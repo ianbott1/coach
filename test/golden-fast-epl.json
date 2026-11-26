@@ -1,5 +1,5 @@
 {
- "fp": "a75d53daa33c7a59",
+ "fp": "ec41d9359cbcf068",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -175,21 +175,26 @@
    "fp": "a75d53daa33c7a59",
    "from": "a75d53daa33c7a59",
    "note": "Re-recorded once on the merged engine-26 build (round two)"
+  },
+  {
+   "fp": "ec41d9359cbcf068",
+   "from": "a75d53daa33c7a59",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "603d0d9ab8cba63d",
-    "post": "c05d70d1fd92dd42",
-    "champion": "Manchester City",
-    "rec": "8863f50b140677f9",
-    "poll": "22afaba90e26232e",
-    "heis": "28c39ccccb0fc9da",
-    "history": "156f903450ef3bc0",
-    "universe": "b85b1f9a4789199f",
-    "screens": "cd78f54f02f34476"
+    "games": "e9b6e9703f272e0c",
+    "post": "2c9df181a53cedb6",
+    "champion": "Newcastle United",
+    "rec": "ba7c980dff763990",
+    "poll": "015842295bff99f0",
+    "heis": "950997603a3e1f38",
+    "history": "bf6ecd054e6dbf5f",
+    "universe": "ed5328a13d688d61",
+    "screens": "c49ab3ff4b3f6e86"
    }
   ]
  }

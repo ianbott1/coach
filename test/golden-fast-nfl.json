@@ -1,5 +1,5 @@
 {
- "fp": "cff8cc43147de1ef",
+ "fp": "095f36cc66b6046f",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -170,21 +170,26 @@
    "fp": "cff8cc43147de1ef",
    "from": "402d34ff185e18b8",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "095f36cc66b6046f",
+   "from": "cff8cc43147de1ef",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "0b33abec688d92c0",
-    "post": "57afa5d25294ffb9",
-    "champion": "Baltimore",
-    "rec": "3b630f26d168d3e8",
-    "poll": "89818df40c08738a",
-    "heis": "08794c02feee4cdd",
-    "history": "479a58c254bfe144",
-    "universe": "87ff791294da7b46",
-    "screens": "5634a68b6c9512ab"
+    "games": "6c0eba1dc40a57c2",
+    "post": "8ecce1b9f36d540a",
+    "champion": "Chicago",
+    "rec": "4161763e09ecf8e0",
+    "poll": "8847ab6e727dbc94",
+    "heis": "14204ca961df1856",
+    "history": "62548cd93b97045d",
+    "universe": "8f878d068874635b",
+    "screens": "0ec2b3d5e3e05bfa"
    }
   ]
  }

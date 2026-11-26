@@ -1,5 +1,5 @@
 {
- "fp": "971fa75188a62ca2",
+ "fp": "a341c29c2f93bbc2",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -405,6 +405,11 @@
    "fp": "971fa75188a62ca2",
    "from": "194928a238357ea7",
    "note": "Re-recorded once on the merged engine-26 build (round two)"
+  },
+  {
+   "fp": "a341c29c2f93bbc2",
+   "from": "971fa75188a62ca2",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "out": [
@@ -414,11 +419,11 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-39-11",
+      "rec": "37-39-8",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "61d7b770962e94cc"
+     "book": "893b8fd78d4c2138"
     },
     {
      "team": "Montreal",
@@ -427,7 +432,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "c3bfa820626cf985"
+     "book": "9e5307bf00bd82c0"
     }
    ]
   },
@@ -437,20 +442,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "35-40-9",
+      "rec": "25-52-7",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "d119ca77898e710c"
+     "book": "648b5ce92025f3bc"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "44-34-6",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "45-32-7",
+      "result": "Lost in the first round",
+      "grade": "A-"
      },
-     "book": "4f19d3a0f7212d64"
+     "book": "67c8a1081fad6ba6"
     }
    ]
   },
@@ -460,20 +465,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-43-10",
+      "rec": "31-41-12",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "6f2d74a99f3a180b"
+     "book": "dae5addd597bcc70"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "34-44-6",
+      "rec": "23-49-12",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "7f3ca9ef24c96d00"
+     "book": "4d58ca86fa705a34"
     }
    ]
   }

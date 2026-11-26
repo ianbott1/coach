@@ -1,5 +1,5 @@
 {
- "fp": "cd65e7fb1e461f4c",
+ "fp": "edf9496069051884",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -615,6 +615,11 @@
    "fp": "cd65e7fb1e461f4c",
    "from": "afa71f67cad4b966",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "edf9496069051884",
+   "from": "cd65e7fb1e461f4c",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
   }
  ],
  "result": {
@@ -627,21 +632,21 @@
     "rec": "b5dc1a1f90b036d1",
     "poll": "41d6363b0bdc54f5",
     "heis": "d2a779e43b634a3c",
-    "history": "78d87833f5bff51a",
-    "universe": "634763e7e2119794",
-    "screens": "326dd0b25ddb078f"
+    "history": "b42db59cfb4fe518",
+    "universe": "039091495088e3c2",
+    "screens": "b10791249c6f09fc"
    },
    {
     "year": 2027,
-    "games": "7d056dd9b99ff8ce",
-    "post": "b571543be546cedf",
+    "games": "24e10bfb4c1a95a0",
+    "post": "3b9f621d1390e8ca",
     "champion": "Oklahoma City",
-    "rec": "5d61d2210650aee0",
-    "poll": "6e65793617b906a5",
-    "heis": "2c46682fb736f032",
-    "history": "7eb382009f22f339",
-    "universe": "159b517abb754023",
-    "screens": "9d0fb852a2039979"
+    "rec": "384b77d1d5d07348",
+    "poll": "b0d881b79aaa7285",
+    "heis": "150c6a4ff7cd9002",
+    "history": "fba05d03078c61f0",
+    "universe": "b25350c682f61def",
+    "screens": "85206d11cbdbdd06"
    }
   ],
   "Detroit#777": [
@@ -653,21 +658,21 @@
     "rec": "e52a5b79944a871b",
     "poll": "ebd0109f707c4331",
     "heis": "827255945f877f5b",
-    "history": "5c302e87d48138b6",
-    "universe": "f28ea4a54cccab21",
-    "screens": "f4bb77062d942eb7"
+    "history": "0285076455345b22",
+    "universe": "3f3dbc4d96c8527b",
+    "screens": "8aac901c2f68114f"
    },
    {
     "year": 2027,
-    "games": "4664a17a202f58f1",
-    "post": "a969412f54c10af7",
+    "games": "146781770c0439f3",
+    "post": "e5b56094a0542c4f",
     "champion": "Oklahoma City",
-    "rec": "4dd0d4c00afa07a4",
-    "poll": "515e9ef6d13c425a",
-    "heis": "f13bfef24639c3fc",
-    "history": "93c1ba72b753ffd3",
-    "universe": "cf78277180266af4",
-    "screens": "5759f2a7338ada26"
+    "rec": "bc262713e86bbec8",
+    "poll": "86d6ce2b13fe69bc",
+    "heis": "89e38a1bb8ed1ce1",
+    "history": "c743fdb6013c0c90",
+    "universe": "15bfcb42d5b1d986",
+    "screens": "927fe9502b21fadf"
    }
   ],
   "schedules#60": [
