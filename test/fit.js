@@ -14,7 +14,7 @@ const DIST=process.env.DIST||path.join(__dirname,'..','dist');
    for(let k=0;k<6;k++){ await pg.evaluate(()=>doAdvance()); await pg.waitForTimeout(200); if(await pg.evaluate(()=>!!live&&!live.done))break }
    // through the first stretches and the calls between them (the win-chance bar arrives after the first and pushes the field down)
    let m=null, n=0;
-   for(let j=0;j<40;j++){ await pg.waitForTimeout(350); const q=await pg.evaluate(()=>{ if(live&&live.ask){ answerLive(live.ask.dp.opts[0][0]); return null } const big=!!document.querySelector('.hlpitch.big'); if(!big)window.scrollTo(0,0); const c=document.querySelector('canvas.hlcv'); if(!c||!c.offsetHeight)return null; const r=c.getBoundingClientRect(), bar=document.querySelector('.actionbar'), top=bar&&bar.offsetHeight?bar.getBoundingClientRect().top:innerHeight;
+   for(let j=0;j<40;j++){ await pg.waitForTimeout(350); const q=await pg.evaluate(()=>{ if(live&&live.ask){ answerLive(live.ask.dp.opts[0][0]); return null } const big=!!document.querySelector('.hlpitch.big'); if(!big)window.scrollTo(0,0); else if(!live.pb&&!HL.cur)return null; const c=document.querySelector('canvas.hlcv'); if(!c||!c.offsetHeight)return null; const r=c.getBoundingClientRect(), bar=document.querySelector('.actionbar'), top=bar&&bar.offsetHeight?bar.getBoundingClientRect().top:innerHeight;
        return {cTop:Math.round(r.top),w:Math.round(r.width),hidden:Math.max(0,Math.round(r.bottom-top),big?Math.round(r.height-top):0),big} });
      if(q){ n++; if(!m||q.hidden>m.hidden)m=q } }
    if(m)m.n=n;
