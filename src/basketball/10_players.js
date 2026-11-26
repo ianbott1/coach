@@ -99,16 +99,33 @@ function teamLines(rng,c){
   c.drives.forEach(d=>{ if(!Array.isArray(d.pn))return; d.pn.forEach(q=>{ if(q[0]!==sd)return; const p=c.R[q[2]]; if(!p)return;
     if(q[1]===3&&t3>0){ named(p.n,"tpm"); t3-- } else if(q[1]===2&&t2>0){ named(p.n,"f2"); t2-- } else if(q[1]===1&&t1>0){ named(p.n,"ft"); t1-- } }) });
   c.drives.forEach(d=>!Array.isArray(d.pn)&&(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0, bn=!!(d.bn&&d.bn[c.side]);
-    if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u,bn),"tpm"); t3-- }
-    if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u,bn); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
-  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)*bbLean(s.x.pl,k)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) };
+    const off=typeof bbOff==="function"?bbOff(d,c.side,tm):null;   // review round: not the star while he sits
+    if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u,bn,off),"tpm"); t3-- }
+    if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u,bn,off); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
+  const bD={};   // the bench's share of each count (review round: it went to no one, so a backup's season line had only the points the play-by-play named him for)
+  const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)*bbLean(s.x.pl,k)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }); bD[k]=d[sl.length] };
   ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
   const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
   share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));
+  benchLines(rng,c,bD,at,extra,line);
   const fin=l=>({pts:2*l.f2+3*l.tpm+l.ft,reb:l.reb,ast:l.ast,stl:l.stl,blk:l.blk,tpm:l.tpm});
   const out=sl.map((s,j)=>({pl:s.x.pl,pos:s.x.P,line:fin(L[j])}));
   Object.keys(extra).forEach(nm=>{ const x=at[nm]; out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:fin(extra[nm])}) });
   return out;
+}
+/* review round (playtest: a college center averaged 3.8 points and 0.0 rebounds over 30 games; a pro backup center the
+   same): the bench's share of every count goes to the backups who played, by position and the same leans as the
+   starters (a backup center takes the boards and blocks, a backup point guard the assists). A backup plays behind a
+   healthy starter (a hurt starter's backup is on the floor, in the starters' lines); a hurt backup doesn't play. Every
+   backup who played has a line, so his games are the games he played, not the ones he scored in. Lines only: these
+   draws come after every other on the game's own line generator, so no result moves. */
+function benchLines(rng,c,bD,at,extra,line){
+  const onF=new Set(c.act.map(x=>x.pl)), hurt=new Set(c.sea&&c.sea.talent?c.sea.talent.active(c.tm).map(x=>x.idx):[]);
+  const B=[]; POS.forEach((P,i)=>{ const p=c.R[BK(i)]; if(p&&p.n&&!hurt.has(BK(i))&&!onF.has(p)&&c.R[i]&&onF.has(c.R[i]))B.push({pl:p,R:ROLE[P.p]}) });
+  if(!B.length)return;
+  ["tpm","pts2","pts1","reb","ast","stl","blk"].forEach(k=>{ const n=bD[k]||0; if(!n)return; const rk=k==="pts2"||k==="pts1"?"pts":k;
+    const d=splitDraw(rng,n,B.map(b=>b.R[rk]*bbLean(b.pl,k))); B.forEach((b,j)=>{ if(!d[j])return; const t=extra[b.pl.n]=extra[b.pl.n]||line(); t[k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }) });
+  B.forEach(b=>{ if(at[b.pl.n])extra[b.pl.n]=extra[b.pl.n]||line() });
 }
 /* round 88 (engine 11): who takes the shares leans with his attributes: the shooters the threes, the finishers the
    buckets inside and the free throws, the rebounders the boards, the playmakers the assists, the perimeter stoppers the

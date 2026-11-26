@@ -202,7 +202,27 @@ function teamLines(rng,c){
     const rc=[2,3].filter(has);
     rc.forEach(i=>{ const need=(tdY[i]||0)+2*Math.max(0,(L[i].rec||0)-(L[i].ctd||0)); if(L[i].cyd<need)L[i].cyd=need });
     if(has(0)){ const Q=L[0], got=rc.reduce((t,i)=>t+L[i].cyd,0)+bkYd; if(got>Q.pyd)Q.pyd=got } }
+  fbBenchLines(rng,c,L,X);
   return c.act.map(x=>({pl:x.pl,pos:x.P,line:L[x.i]})).concat(Object.values(X));
+}
+/* review round (playtest: a backup's season line was only the plays the log named him for: a corner with 2 games, 2
+   interceptions and no tackle, a receiver whose every catch was a touchdown; and every box score carried 4-14 catches for
+   "Other receivers"). The backup receivers are the third and fourth wideouts: they take a share of the catches the roster's
+   two starters don't (a third receiver about a tenth of the team's, a fourth half that; the rest are the tight ends' and
+   backs', which the roster doesn't carry). The backup corner and safety are the nickel and dime backs: a few tackles a
+   game, a pass broken up now and then. Each line is for a game he was healthy and dressed, so his games are the team's.
+   Lines only: these draws come after every other on the game's own line generator, so no result moves. */
+function fbBenchLines(rng,c,L,X){
+  const hurt=new Set(c.sea&&c.sea.talent?c.sea.talent.active(c.tm).map(x=>x.idx):[]), onF=new Set(c.act.map(x=>x.pl));
+  const bk=i=>{ const p=c.R[BK(i)]; return p&&p.n&&!hurt.has(BK(i))&&!onF.has(p)&&c.R[i]&&onF.has(c.R[i])?p:null };
+  const ent=(i,keys)=>{ const j=BK(i), p=c.R[j]; const e=X[j]=X[j]||{pl:p,pos:POS[i].p,line:{}}; keys.forEach(k=>{ if(e.line[k]==null)e.line[k]=0 }); return e.line };
+  const Q=L[0];
+  if(Q&&Q.cmp!=null){ const B=[[2,0.10],[3,0.05]].filter(([i])=>bk(i));
+    if(B.length){ const own=[2,3].reduce((t,i)=>t+(L[i]&&L[i].rec||0),0)+Object.values(X).reduce((t,e)=>t+(e.line.rec||0),0);
+      const ownY=[2,3].reduce((t,i)=>t+(L[i]&&L[i].cyd||0),0)+Object.values(X).reduce((t,e)=>t+(e.line.cyd||0),0);
+      const rest=Math.max(0,Q.cmp-own), restY=Math.max(0,Q.pyd-ownY), d=splitDraw(rng,rest,B.map(b=>b[1]).concat([0.35]));
+      B.forEach(([i],j)=>{ const l=ent(i,["rec","cyd","ctd"]); l.rec+=d[j]; l.cyd+=rest>0?Math.floor(restY*d[j]/rest):0 }) } }
+  [8,9].forEach(i=>{ if(!bk(i))return; const l=ent(i,["tkl","pd","ints"]); l.tkl+=Math.round(rng.r()*3.4); if(rng.r()<0.18)l.pd++; if(l.ints&&l.tkl<1)l.tkl=1 });
 }
 function addStats(dst,src){
   dst.g=(dst.g||0)+1;

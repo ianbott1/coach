@@ -97,8 +97,11 @@ function portalHTML(num){
   // who he'd push down, on today's roster: a transfer who starts sends your backup there away, and that can
   // be the recruit you've just signed (Muse: a recruit lost his spot to the coach's own portal signing, unwarned)
   const R=U.roster[my]||[];
+  // review round (playtest: "he'd back up Bergeron", a graduating senior): the depth chart he'd join is next season's,
+  // so the seniors and the players leaving through the portal aren't on it
+  const gone=new Set(all.filter(e=>e.from===my).map(e=>e.n));
   const bumpWord=e=>{ const i=POS.findIndex(P=>P.p===e.p); if(i<0)return "";
-    const st=R[i], bk=R[BK(i)];
+    const D=R.filter(p=>p&&(p.p||"")===e.p&&!(p.c>=3)&&!gone.has(p.n)).sort((a,b)=>b.r-a.r), st=D[0], bk=D[1];
     if(!st||e.r>st.r)return `he'd start over ${st?esc(st.n):"nobody"}${bk?`, and ${esc(bk.n)} or a new ${esc(e.p)} recruit would lose his place`:""}`;
     if(!bk||e.r>bk.r)return `he'd back up ${esc(st.n)}${bk?`; ${esc(bk.n)} or a new ${esc(e.p)} recruit would lose his place`:""}`;
     return `on today's roster he wouldn't make your top two at ${esc(e.p)}` };

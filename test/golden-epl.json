@@ -1,5 +1,5 @@
 {
- "fp": "970533ca1a8ba026",
+ "fp": "96515f597d10284b",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -590,6 +590,11 @@
    "fp": "970533ca1a8ba026",
    "from": "970533ca1a8ba026",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "96515f597d10284b",
+   "from": "970533ca1a8ba026",
+   "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
   }
  ],
  "result": {
@@ -604,7 +609,7 @@
     "heis": "065f6e734e9dbdc7",
     "history": "8526fe2171a3e13d",
     "universe": "d44bd69fe2f99477",
-    "screens": "7228f63e8e312633"
+    "screens": "2465a9d8d8b4acd9"
    },
    {
     "year": 2027,
@@ -616,7 +621,7 @@
     "heis": "2735f143249a7399",
     "history": "acd67544ef71efc8",
     "universe": "a2a520b152264c9c",
-    "screens": "6b481aa30a6daf3d"
+    "screens": "0ad36af947ca06bd"
    }
   ],
   "Wrexham#777": [
@@ -630,7 +635,7 @@
     "heis": "1d71e296053e1251",
     "history": "7cd20a41aa17b4e7",
     "universe": "a12f2c37d16ddcb0",
-    "screens": "bc6907771e8e5d27"
+    "screens": "ee9301e34d689611"
    },
    {
     "year": 2027,
@@ -642,7 +647,7 @@
     "heis": "c8945ca94f7edce6",
     "history": "a25e9457bc4c36e7",
     "universe": "98bd4f55404e1e23",
-    "screens": "c67d45d0eedef0ee"
+    "screens": "d4e62e3087781ba9"
    }
   ],
   "schedules#60": [

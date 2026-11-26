@@ -92,6 +92,12 @@ function planKey(step,half){ return half?step+"#1":step }
 /* round 72: the first highlights setting, named for what it shows in each sport ("Goals only" meant little in baseball:
    Instinct) */
 function hlGoalsLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.goalsLabel)||"Goals only" }
+/* review round (playtest: "Every chance" and "Full match" on basketball's, hockey's, football's and baseball's live
+   screens): each sport names its own modes; soccer keeps these */
+/* soccer's "side", everyone else's "team" (review round: "a top side" in pro basketball) */
+function sideWord(){ return typeof LEAGUE!=="undefined"&&LEAGUE.text&&LEAGUE.text.unit==="club"?"side":"team" }
+function hlAllLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.allLabel)||"Every chance" }
+function hlFullLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.fullLabel)||"Full match" }
 function planFor(step,half){ const P=S.plans||{}; return (half&&P[step+"#1"]!==undefined?P[step+"#1"]:P[step])||"balanced" }
 
 function liveSeed(step){
@@ -351,7 +357,7 @@ function setPlanMidGame(p){
 /* the bar under the live game: your plan from here, and how much of the game to watch */
 function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
-  const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
+  const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all",hlAllLabel()],["full",hlFullLabel()],["off","Off"]];
   return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).some(x=>String(x[2]).indexOf("act:")!==0)?" (changed in this game)":""}</div>
     <div class="wspeed">${Object.keys(PLANS).concat(Object.keys(liveExtra())).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(livePlanLabel(k))}</button>`).join("")}</div>${liveSubsHTML()}${liveActsHTML()}`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
@@ -592,7 +598,10 @@ function noteChoice(k,was,now){
    without the card being seen): a plan kept from an earlier game, not chosen for this one, is asked about on the first
    tap of Play or Sim game ("Keep Take risks?"); the second plays it. Balanced, a plan picked today, a shared seat or a
    game with no card aren't asked. */
-function planCarried(){ try{ if(isHotSeat()||!SEA||!PLANS[plan]||plan==="balanced"||S.off)return false; const g=SEA.phase==="week"?cardGame(S.myTeam):null; if(SEA.phase==="week"&&!g)return false;
+function planCarried(){ try{ if(isHotSeat()||!SEA||!PLANS[plan]||plan==="balanced"||S.off)return false;
+  // only before a game you play: not on "Enter the offseason" (the season is done) or "Sim to your next game, or the
+  // end" (a postseason round without you: the coordinator, after an eliminated pro basketball team's last game)
+  if(SEA.phase==="done"||spectating())return false; const g=SEA.phase==="week"?cardGame(S.myTeam):null; if(SEA.phase==="week"&&!g)return false;
   const st=g?g.week:SEA.step; return !(S.planStep!=null&&S.planStep>=st)&&S.planOk!==SEA.year+":"+st }catch(e){ return false } }
 function planConfirm(b,go){ if(!b||!planCarried())return go();
   const g=SEA.phase==="week"?cardGame(S.myTeam):null, st=g?g.week:SEA.step;
@@ -982,7 +991,7 @@ function newDynasty(team,seed,coachName,roster){
     u.coach[c.myTeam]={id:0,n:c.career.name,q:0,t:0,hired:true,you:true,
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
-  distinctLeague(u);
+  distinctLeague(u); distinctNewcomers(u,new Set());   // college: one first name and one surname a roster (core 21_names)
   u.schedV=4;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads; 4: round 79, no back-to-back sets (baseball)
   u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
   attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
@@ -1245,6 +1254,15 @@ function openOffseason(){
     L.forEach((c,i)=>{ let k=0; while(seen.has(c.n)&&k<COACH_FIRST.length){ c.n=COACH_FIRST[(i*7+k++)%COACH_FIRST.length]+" "+c.n.split(" ").slice(1).join(" ") } seen.add(c.n) }) });
   ["oc","dc"].forEach(side=>{ if(SEA.midFired&&SEA.midFired[side]&&!staffCands[side]){
     staffCands[side]=coordCandidates(rng,U.program[my],side,C.rep); A.staffOpen=Object.assign({},A.staffOpen||{},{[side]:true}) } });
+  // review round (playtest: "Trent Tuiasosopo" was hired and joined the staff as "Wes Tuiasosopo"): the staff's rule
+  // (distinctStaff: no two first names among the head coach and his assistants) renamed him after the hire. The
+  // candidates take distinct first names now, against the head coach, an assistant staying and each other, so the man
+  // you hire keeps the name you hired. By hash, as distinctStaff does: no draw moves.
+  { const first=n=>n?String(n).split(" ")[0]:null, taken=new Set([first(C.name),first(U.coach[my]&&U.coach[my].n)].filter(Boolean));
+    ["oc","dc"].forEach(sd=>{ if(!staffCands[sd]&&U[sd]&&U[sd][my])taken.add(first(U[sd][my].n)) });
+    ["oc","dc"].forEach(sd=>(staffCands[sd]||[]).forEach(c=>{ if(!c||!c.n)return; let f=first(c.n);
+      if(taken.has(f)){ const h=strHash(c.n+"|"+my+"|"+sd); for(let k=0;k<FIRST.length&&taken.has(f);k++)f=FIRST[(h+k)%FIRST.length]; c.n=f+c.n.slice(c.n.indexOf(" ")) }
+      taken.add(f) })) }
   // a league can run its own market (soccer: relative to your club, not fixed bands)
   // a hot seat: another coach's program is never on your market, even when they were fired from it the same winter.
   // Round 49 (test/firing.js): both humans fired in one offseason, the first took the second's program off the market,
@@ -1368,6 +1386,7 @@ function endSeason(rng,choices,act,seasonTeam){
   // and realignment move teams, and the season belongs to the group it was played in
   const entry=seasonEntry(my);
   if(typeof bankStory==="function")bankStory(entry);   // its comeback and collapse; the head-to-head with each coach (round 41)
+  const known=new Set(); NAMES.forEach(t=>(U.roster[t]||[]).forEach(p=>{ if(p)known.add(p) }));   // who was on a roster before the summer
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
@@ -1402,7 +1421,7 @@ function endSeason(rng,choices,act,seasonTeam){
         coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
-  distinctLeague(U);
+  distinctLeague(U); distinctNewcomers(U,known);   // college: the summer's unmet newcomers take names free on their roster
   U.schedV=4;                                            // (schedOrder; 3: round 71; 4: round 79)
   U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time
@@ -1668,7 +1687,8 @@ function heroResult(){
     else if(!won&&g.winner&&typeof NCAA_ROUNDS!=="undefined"&&(g.ct||!(SEA.field&&SEA.field.length))&&!(typeof SEA._nextFor==="function"&&SEA._nextFor(my)&&!g.ct)){
       const ctn=esc(String(g.title||"conference tournament").replace(/^(the )/i,"").replace(/ (First|Second|Quarter|Semi)[a-z]* ?(Round|final)s?$/i," Tournament").replace(/ Championship$/i,"").replace(/Tournament Tournament/,"Tournament"));
       const inF=SEA.field&&SEA.field.length&&SEA.seeds&&SEA.seeds[my];
-      move=!(SEA.field&&SEA.field.length)?`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`
+      const rr=SEA.rec[my]||[0,0];   // review round: an 11-20 team was told Selection Sunday decides
+      move=!(SEA.field&&SEA.field.length)?(typeof SEA.marchHope==="function"&&!SEA.marchHope(my)?`<div class="hmove dn">Out of the ${ctn}. At ${rr[0]}&ndash;${rr[1]} no at-large bid is coming: the season is over.</div>`:`<div class="hmove dn">Out of the ${ctn}. Selection Sunday decides the rest.</div>`)
         :inF?`<div class="hmove flat">Out of the ${ctn}, and into the NCAA Tournament: a ${SEA.seeds[my]} seed${SEA.region&&SEA.region[my]?`, ${esc(SEA.region[my])}`:""}.</div>`
         :`<div class="hmove dn">Out of the ${ctn}, and left out of the NCAA field.</div>` }
     // round 99 (Instinct: a 12-1 Miami told "Season over" after the ACC final, then seeded 2nd with a bye): a conference title
@@ -2226,7 +2246,7 @@ function teamCardHTML(my,rk,co){
       if(!O||!D)return "";
       const row=(lab,c)=>`<div class="stline"><span class="stlab">${lab}</span>
         <span class="stn">${esc(c.n)}</span><span class="sts">${esc(c.s)}</span>
-        <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}" title="How good he is at the job: 0 is an average ${esc(SPORT.staff.any||"coach")}, +40 one of the best, -40 in over his head">${c.q>0?"+":""}${c.q}</span></div>`;
+        <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}" title="How good he is at the job: 0 is an average ${esc(SPORT.staff.any||"coach")}, +40 or more one of the best, -40 or less in over his head">${c.q>0?"+":""}${c.q}</span></div>`;
       return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>
         <div class="stkey">${esc(SPORT.staff.oc.short)}, ${esc(SPORT.staff.dc.short)}: your two lead assistants. The number is how good each is at the job (0 average, +40 among the best); it shifts how your team plays and how fast players develop.</div>`})()}
     ${(()=>{const e=S.expNow||expectations();
@@ -2395,8 +2415,8 @@ function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k
       if(typeof PLAN_VS_WORDS!=="undefined"&&PLAN_VS_WORDS[k])return `${esc(C.opp)} ${PLAN_VS_WORDS[k][vs<0?0:1]}`;
       return vs<0?`${esc(C.opp)} have the ${PLAN_LEAN[k]} to play that game too`:`${esc(C.opp)} don't have the ${PLAN_LEAN[k]} to play that game` }
     if(top[0]==="f")return `your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`;
-    return sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight") }
-  return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) }
+    return sh>0?(k==="aggressive"?"as the underdog tonight":"as the better "+sideWord()+" tonight"):(k==="aggressive"?"as the better "+sideWord()+" tonight":"as the underdog tonight") }
+  return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better "+sideWord()+" tonight"):(k==="aggressive"?"as the better "+sideWord()+" tonight":"as the underdog tonight")) }
 function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
   const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>planWhy(C,k);
   const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), keptS=kept?"Kept from your last game. ":"";
@@ -3522,7 +3542,10 @@ function simAhead(){
 let simSheet=false;
 /* what you take charge of: a program (college), a team, a club */
 const ORG_WORD=(typeof LEAGUE!=="undefined"&&LEAGUE.text&&LEAGUE.text.unit)||"program";
-const SIM_STOPS=[["big","A big game is next (a rival, a top side"+(typeof LEAGUE!=="undefined"&&LEAGUE.cup?", a cup tie)":")")],["slide","We lose three in a row"],
+/* review round (playtest: pro basketball's said "a top side, a cup tie"): soccer's words in soccer only; the NBA Cup by name */
+const SIM_BIG=typeof LEAGUE==="undefined"?"A big game is next":sideWord()==="side"?"A big game is next (a rival, a top side"+(LEAGUE.cup?", a cup tie)":")")
+  :"A big game is next (a rival, a top team"+(LEAGUE.cup&&LEAGUE.cup.name?", an "+LEAGUE.cup.name+" knockout game)":")");
+const SIM_STOPS=[["big",SIM_BIG],["slide","We lose three in a row"],
   ["hurt","One of our players gets hurt"],["decide","Something needs a decision"]];
 /* off until you tick them (Ian: sim ahead should just sim). Saves that never touched them had them
    all on by default; they start off too. */
@@ -3823,7 +3846,7 @@ function render0(){
     const wbox=typeof boxHTML==="function"?boxHTML(watch.g,watch.i>=watch.script.length,watch.step):"";
     // round 81: how much of it to watch, as on the live screen (Highlights, Every chance: every moment the game had)
     const depth=typeof hlCan==="function"&&hlCan()&&watch.i<watch.script.length?`<div class="liveplan" style="max-width:760px;margin:8px auto 0;padding:0 16px"><div class="fnote" style="margin:6px 0 4px">Watch</div>
-      <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
+      <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all",hlAllLabel()],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
     // round 110 (Ian: "Once watching a replay of another game it is not easy to just exit out"): Exit, always there (and Esc)
     const wexit=`<button class="wexit" id="wexit" aria-label="Exit the replay">&times; Exit replay</button>`;
     el("app").innerHTML=wexit+watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
@@ -3920,7 +3943,7 @@ function render0(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
+      (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(S.history&&S.history.length)&&!(SEA.rec[S.myTeam]||[]).some(x=>x>0)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -4201,7 +4224,7 @@ function firstJobs(){
   const r=Math.random();
   return [
     {k:"fav",  t:at(0.02+0.04*r), l:"The favourite", d:"Expected to win. The pressure starts on day one."},
-    {k:"cont", t:at(0.18+0.12*r), l:"The contender", d:"A good side with a real chance. The best first job."},
+    {k:"cont", t:at(0.18+0.12*r), l:"The contender", d:"A good "+sideWord()+" with a real chance. The best first job."},
     {k:"build",t:at(0.55+0.15*r), l:"The rebuild",   d:"Patience, and a hero if you pull it off."}
   ];
 }
@@ -4404,13 +4427,13 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
-    <div class="setrow">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+    <div class="setrow">${[["goals",hlGoalsLabel()],["key","Key moments"],["all",hlAllLabel()]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full",hlFullLabel()]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
       aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
     <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-livewp="${v}"
       aria-pressed="${(!S||S.liveWP!==false)===v}">${l}</button>`).join("")}</div>
-    <div class="note">The bar above the score in a game you watch. It reads this game's odds, from replays of games like it: in these leagues the better side wins more often than in real life, so early leads can read high.</div>
+    <div class="note">The bar above the score in a game you watch. It reads this game's odds, from replays of games like it: in these leagues the better ${sideWord()} wins more often than in real life, so early leads can read high.</div>
     <div class="grouphead">Music</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-music="${v}"
       aria-pressed="${musicOn()===v}">${l}</button>`).join("")}</div>

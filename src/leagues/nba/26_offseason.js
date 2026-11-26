@@ -555,9 +555,11 @@ LEAGUE.goals={
   isTitle(result){ return /NBA CHAMPIONS/i.test(result) },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
+    // review round (playtest: a 62-20 pro basketball team fell A- to B+ the moment it clinched): in the playoffs and
+    // still alive is a season in progress too, at par or better
     // no result yet (a season in progress, as the seat badge asks): the playoffs at par
     const po=!result?(exp.par||0):/NBA CHAMPIONS/i.test(result)?5:/NBA Finals/.test(result)?3.6:/conference finals/.test(result)?2.6:
-      /conference semifinals/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?0.9:
+      /conference semifinals/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?Math.max(0.9,exp.par||0):
       /play-in/.test(result)?0.2:-(exp.par>=0.4?0.8:0);
     let s=(wins-exp.w)*0.13+po-(exp.par||0);
     if(wins<losses)s-=(exp.w>=41?0.8:0.2);

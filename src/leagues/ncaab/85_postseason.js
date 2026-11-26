@@ -228,8 +228,21 @@ extendSeason({
     return {label:m.label,opp:m.home===team?m.away:m.home,neutral:true}},
   titleField(c){return this.confRank(c)},
   myBowl(){return null},
+  /* review round (playtest: the board said "missed the NCAA tournament" before the conference tournament was played,
+     and "Selection Sunday decides the rest" to an 11-20 team): before the field is picked, a team still alive in its
+     conference tournament, or one the committee could still take at large, hasn't missed anything. At large: a winning
+     record and a résumé inside the best at-large hopefuls with room to spare (the 44 bids plus 32, as conference
+     tournaments still move résumés) */
+  ctAlive(t){ const c=CONF[t]; if(this.champs[c])return this.champs[c]===t;
+    const T=this.ct&&this.ct[c], seeds=T&&T.seeds||this.confRank(c).slice(0,(LEAGUE.playoff.ctCap||{})[c]||16);
+    return seeds.indexOf(t)>=0&&!((this.ctGames&&this.ctGames[c])||[]).some(g=>g.loser===t) },
+  marchHope(t){ if(this.field&&this.field.length)return this.field.indexOf(t)>=0; if(this.ctAlive(t))return true;
+    const r=this.rec[t]; if(!r||r[0]<=r[1])return false; const inel=LEAGUE.playoff.ineligible; if(inel.indexOf(t)>=0)return false;
+    const al=NAMES.filter(x=>inel.indexOf(x)<0&&this.champs[CONF[x]]!==x).sort((a,b)=>this.resume(b)-this.resume(a));
+    return al.indexOf(t)<LEAGUE.playoff.atLarge+32 },
   seasonResult(my){
     if(this.champion===my)return "NATIONAL CHAMPIONS";
+    if(!(this.field&&this.field.length)&&this.champs[CONF[my]]!==my&&this.marchHope(my))return "";   // not decided yet
     if(this.field.indexOf(my)<0){
       return this.champs[CONF[my]]===my?"Won the "+CONF[my]+" Tournament":"Missed the NCAA tournament";
     }

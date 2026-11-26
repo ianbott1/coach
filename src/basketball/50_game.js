@@ -496,6 +496,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s>=1&&s<=3&&!X.asked1&&X.f>=BB.foulOut-3)return 1;
     if(s>=4&&s<=6&&!X.asked2&&X.f>=BB.foulOut-2)return 2; return 0 };
   const sitStar=(X,half)=>{ X.sitTo=half===1?4:6 };
+  // review round: a second sit on the fouls he sat with at the half says he stays on the bench (no draw: the same game)
+  const sitEv=(X,sd,u)=>{ const e={side:sd,k:"sit",f:X.f,u:u}; if(X.satF===X.f)e.again=1; X.satF=X.f; return e };
   st.log=[];            // the person's reads, and what was true (for the result screen)
   // did the numbers on the card mark what they were doing? (the card's own marks: three-point share
   // 45%+ or 31%- , pick-and-rolls 3.4+ a stretch). If not, a miss isn't held against you (Instinct: 38%
@@ -527,7 +529,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp.k==="read"&&v==="keep"&&DEFENSES[X.def]){ const t=st.S[other(side)].off, ok=DEFENSES[X.def].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:X.def,truth:t,right:ok,evid:dp.best,fe:DEFENSES[X.def].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(DEFENSES[X.def].beats)),unclear:!ok&&!shownOf(dp,t)}); return }
     if(dp.k==="read"&&DEFENSES[v]){ const t=st.S[other(side)].off, ok=DEFENSES[v].beats===t; st.log.push({side:side,h:dp.h,k:"read",pick:v,truth:t,right:ok,evid:dp.best,fe:DEFENSES[v].beats===dp.best||(ENGINE_V>=21&&readFlags(dp).includes(DEFENSES[v].beats)),unclear:!ok&&!shownOf(dp,t)}) }
     if(dp.k==="read"){ if(DEFENSES[v]){ if(v!==X.def)X.prepd=false; X.def=v } else { const was=X.def; readIt(side,dp.stage===2?0.3:0.45); st.autoDid=X.def!==was&&DEFENSES[X.def]?"read them himself and switched to "+DEFENSES[X.def].l.split(":")[0].toLowerCase():"read them himself and kept the defense as it was" } return }
-    if(dp.k==="fouls"){ if(v!=="play"){ sitStar(X,dp.half); st.pendEv=(st.pendEv||[]).concat([{side:side,k:"sit",f:X.f,u:rng.int(100)}]) } return }   // judged on the card against your assistant's (he sits him), like the other situation calls
+    if(dp.k==="fouls"){ if(v!=="play"){ sitStar(X,dp.half); st.pendEv=(st.pendEv||[]).concat([sitEv(X,side,rng.int(100))]) } return }   // judged on the card against your assistant's (he sits him), like the other situation calls
     if(dp.k==="half"){ st.mode[side]=v==="push"?"push":v==="sit"?"sit":st.mode[side]; if(v!=="push"&&v!=="sit")st.autoDid="kept the pace as it was"; return }
     if(dp.k==="chase"){ st.late[side]=v==="press"?"press":v==="keep"?"keep":"auto"; if(st.late[side]==="auto")st.autoDid="managed the finish by the score, as every computer coach does"; return }
     if(dp.k==="protect"){ st.late[side]=v==="sit"?"sit":v==="keep"?"keep":"auto"; if(st.late[side]==="auto")st.autoDid="managed the finish by the score, as every computer coach does"; return }
@@ -571,7 +573,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         // yours is a call again (round 44: Muse, "foul trouble is scenery in a game drowning in foul data"): sit him, as
         // the computer and your assistant do, or ride it out on how tight tonight's referees are
         if(BB_FOULQ&&humans[sd]){ queueCall(sd,Object.assign(foulCall(h,X,{fouls:st.fouls[sd],lastSeg:st.lastSeg[sd],rot:GD?st.rot[sd]:undefined},s),{half:h})); return }
-        sitStar(X,h); st.pendEv=(st.pendEv||[]).concat([{side:sd,k:"sit",f:X.f,u:rng.int(100)}]) });
+        sitStar(X,h); st.pendEv=(st.pendEv||[]).concat([sitEv(X,sd,rng.int(100))]) });
       if(st.queue.length)return st.next() }
     // the reads: end of the first quarter (two segments), and the half
     if(s===2&&!st.r1){st.r1=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];

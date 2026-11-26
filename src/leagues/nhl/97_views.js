@@ -85,7 +85,12 @@ function confBracket(sd){
   // at 0-0 the first round is known: drawn from the seeding (it filled in only after a game: Ian)
   let r1=ser("r1");
   if(!r1.length&&SEA.step>=LEAGUE.weeks){ SEA._seed(); r1=(SEA.bracket[sd]||[]).map(p=>({hi:p[0],lo:p[1],w:{}})) }
-  return `<div class="bracket">${col("First round",pad(r1,4).map(seriesBox))}${col("Second round",pad(ser("r2"),2).map(seriesBox))}${col("Conference final",pad(ser("r3"),1).map(seriesBox))}</div>`;
+  // review round (pro basketball's playtest, the same here: a round not yet begun read "to be decided" after the last
+  // one ended): each pairing shows as soon as its teams are known, home ice as _makeSeries gives it
+  const nx=(prev,n)=>{ const out=[]; for(let i=0;i<n;i++){ const a=prev[2*i]&&prev[2*i].winner||null, b=prev[2*i+1]&&prev[2*i+1].winner||null;
+    if(!a&&!b){ out.push(null); continue } const hi=a&&b?(SEA._tb(a,b)<=0?a:b):(a||b); out.push({hi:hi,lo:a&&b?(hi===a?b:a):null,w:{}}) } return out };
+  const r2=ser("r2").length?ser("r2"):nx(r1,2), r3=ser("r3").length?ser("r3"):nx(r2,1);
+  return `<div class="bracket">${col("First round",pad(r1,4).map(seriesBox))}${col("Second round",pad(r2,2).map(seriesBox))}${col("Conference final",pad(r3,1).map(seriesBox))}</div>`;
 }
 function nflBracket(){
   const my=S.myTeam, mine=SEA.mySeries(my), live=mine&&!mine.winner&&SEA.phase!=="done";
@@ -96,7 +101,7 @@ function nflBracket(){
   if(live&&!isHotSeat())h+=`<div class="note">${esc(ROUND_NAME[mine.round])}: ${(o=>`${esc(my)} ${mine.w[my]||0}, ${esc(o)} ${mine.w[o]||0}`)(mine.hi===my?mine.lo:mine.hi)}.
     <button class="subtab" data-simseries="1">Sim the series</button> <span class="fnote">It stops before a game that could end your season.</span></div>`;
   if(nbaPostTab==="Final"){
-    h+=`<div class="bracket"><div class="bcol"><div class="bhead">Stanley Cup Final</div><div class="bgames">${seriesBox((SEA.series.r4||[])[0])}</div></div></div>`;
+    h+=`<div class="bracket"><div class="bcol"><div class="bhead">Stanley Cup Final</div><div class="bgames">${seriesBox((SEA.series.r4||[])[0]||(()=>{ const w=(SEA.series.r3||[]).map(x=>x.winner).filter(Boolean); return w.length?{hi:w[0],lo:w[1]||null,w:{}}:null })())}</div></div></div>`;
   } else h+=confBracket(nbaPostTab);
   return h;
 }

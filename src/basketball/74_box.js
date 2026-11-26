@@ -17,6 +17,6 @@ function sportBoxPlayers(g,BL){
   return ["away","home"].map(sd=>{ const L=last.ln[sd], pts=2*L.fgm2+3*L.tpm+L.ftm, R=BL[sd];
     const rows=R.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.pts,x.s.reb,x.s.ast,x.s.tpm,x.s.stl,x.s.blk].map(String)}));
     const rest=pts-R.reduce((t,x)=>t+x.s.pts,0), r3=L.tpm-R.reduce((t,x)=>t+x.s.tpm,0);
-    if(R.length)rows.push({c:[`<span style="color:var(--muted)">Rest of the bench</span>`,String(rest),"","",String(r3),"",""]});
+    if(R.length&&(rest>0||r3>0))rows.push({c:[`<span style="color:var(--muted)">Rest of the bench</span>`,String(rest),"","",String(r3),"",""]});
     return boxSide(g,sd,["","Pts","Reb","Ast","3PM","Stl","Blk"],rows) }).join("");
 }

@@ -328,6 +328,7 @@ LEAGUE.goals={
     else if(/quarterfinal/i.test(result))s+=1.8;
     else if(/first round|Playoff/i.test(result))s+=1.4;
     else if(/^Won the/.test(result))s+=0.8;
+    else if(/^Headed to the/.test(result))s+=0.5;   // review round: a bowl berth, still to play
     else if(/^Lost the/.test(result))s+=0.2;
     else if(/No bowl|Losing season/.test(result))s-=(exp.w>=6?1.0:0.2);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":

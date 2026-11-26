@@ -485,9 +485,11 @@ LEAGUE.goals={
   isTitle(result){ return /STANLEY CUP CHAMPIONS/i.test(result) },
   firstTitle:"First championship of your tenure.",
   grade(wins,losses,result,exp){
+    // review round (playtest: a 62-20 pro basketball team fell A- to B+ the moment it clinched): in the playoffs and
+    // still alive is a season in progress too, at par or better
     // no result yet (a season in progress, as the seat badge asks): the playoffs at par
     const po=!result?(exp.par||0):/STANLEY CUP CHAMPIONS/i.test(result)?5:/Stanley Cup Final/.test(result)?3.6:/conference final/.test(result)?2.6:
-      /second round/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?0.9:-(exp.par>=0.4?0.8:0);
+      /second round/.test(result)?1.7:/first round/.test(result)?0.9:/Made the playoffs/.test(result)?Math.max(0.9,exp.par||0):-(exp.par>=0.4?0.8:0);
     let s=(wins-exp.w)*0.13+po-(exp.par||0);
     if(wins<losses)s-=(exp.w>=41?0.8:0.2);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":

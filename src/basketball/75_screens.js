@@ -4,12 +4,19 @@
    call screen with the staff's advice, and the replay view. */
 
 /* ---- names ---- */
-function bbPlayer(team,i,u,bn){
+function bbPlayer(team,i,u,bn,off){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
   // an injured player isn't on the floor (Grokbot: "OUT 4 more weeks", and he hit threes)
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
-  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; const pick=(b&&(bn||(u%10)<2))||!p?b:p; return pick?pick.n:null;   // bn: the bench is in (round 93)
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; let pick=(b&&(bn||(u%10)<2))||!p?b:p;   // bn: the bench is in (round 93)
+  // review round (playtest: a star "buries a three" while he sat with three fouls): the man sitting (off) isn't on the
+  // floor either: his backup has it, or with no backup the next starter
+  if(pick&&off&&pick.n===off)pick=b&&b!==pick?b:(()=>{ for(let k=1;k<5;k++){ const j=(i+k)%5, q=hurt.has(j)?null:R[j]; if(q&&q.n!==off)return q } return null })();
+  return pick?pick.n:null;
 }
+/* the star a stretch has on the bench (foul trouble, fouled out), by name: the engine's star sits from the stretch it is
+   called to the half (d.star: fouls, on the floor, fouled out) */
+function bbOff(d,side,team){ try{ const x=d&&d.star&&d.star[side]; return x&&(x[1]===false||x[2])?bbStar(team):null }catch(e){ return null } }
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
   let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }
@@ -25,10 +32,11 @@ function pickOf(a,u){return a[u%a.length]}
 function bbEventText(g,e,d){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, u=e.u||0, bn=!!(d&&d.bn&&d.bn[e.side]);
-  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u,bn); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
-  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u,bn); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
+  const off=bbOff(d,e.side,tm);
+  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u,bn,off); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
+  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u,bn,off); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
   if(e.k==="foul"){ const n=bbStar(tm); return {team:tm,tag:e.f>=BB.foulOut-2?"FOULS":"",text:`${n} picks up his ${ordw(e.f)} foul`} }
-  if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }
+  if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:e.again?`${bbStar(tm)} stays on the bench to start the half, still on ${e.f} fouls`:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }   // review round: the second sit on the same fouls read as a repeat
   if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
   if(e.k==="to")return {team:tm,tag:"TIMEOUT",text:`${e.mine?"Timeout":"Timeout to stop the run"}${e.left!=null?` (${e.left} left)`:""}`};
   if(e.k==="rot")return {team:tm,tag:"BENCH",text:e.rot==="tight"?"Tighten the rotation: the starters play heavy minutes":e.rot==="deep"?"Go deep into the bench: fresh legs, more minutes for the second unit":"Back to the usual rotation"};

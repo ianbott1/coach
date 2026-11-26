@@ -35,3 +35,20 @@ function distinctSurnames(r){ const pool=wideLast.pool||[], seen=new Set(), last
     if(seen.has(l)){ const h=strHash(p.n+"|"+i); for(let k=0;k<pool.length&&seen.has(l);k++)l=pool[(h+k)%pool.length]; p.n=p.n.slice(0,p.n.indexOf(" ")+1)+l }
     seen.add(l) });
   return r }
+/* college: a summer's newcomers take a first name and a surname nobody else on their roster has (playtest: four
+   Kel'els, two Spearmans and two Guidrys on one college basketball roster). Only men nobody has met yet are renamed:
+   the freshmen the computer signed and the walk-ons who fill a spot. Everyone who was on a roster before (returners,
+   transfers) and a recruit you signed off your board keep their names; a new career renames before its first screen.
+   By hash, so no draw moves; a name is changed only where a free one exists. */
+function distinctNewcomers(u,known){
+  if(!u.roster||!(LEAGUE.classes&&LEAGUE.classes.length))return;
+  const F=typeof PNAMES_F!=="undefined"?PNAMES_F:FIRST, L=wideLast.pool||(typeof PNAMES_L!=="undefined"?PNAMES_L:[]);
+  const first=n=>n.slice(0,n.indexOf(" ")), last=n=>n.slice(n.indexOf(" ")+1);
+  NAMES.forEach(t=>{ const R=u.roster[t]; if(!R)return;
+    const kept=x=>known.has(x)||x.board, fs=new Set(), ls=new Set();
+    R.forEach(p=>{ if(p&&p.n&&p.n.indexOf(" ")>0&&kept(p)){ fs.add(first(p.n)); ls.add(last(p.n)) } });
+    R.forEach((p,i)=>{ if(!p||!p.n||p.n.indexOf(" ")<0||kept(p))return; let f=first(p.n), l=last(p.n); const h=strHash(p.n+"|"+t+"|"+i);
+      if(fs.has(f))for(let k=0;k<F.length;k++){ const g=F[(h+k)%F.length]; if(!fs.has(g)){ f=g; break } }
+      if(ls.has(l))for(let k=0;k<L.length;k++){ const g=L[(h+k)%L.length]; if(!ls.has(g)){ l=g; break } }
+      p.n=f+" "+l; fs.add(f); ls.add(l) }) });
+}

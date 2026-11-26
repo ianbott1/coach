@@ -1,5 +1,5 @@
 {
- "fp": "30c6ece58cf32d78",
+ "fp": "6215247027f5a481",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -145,21 +145,26 @@
    "fp": "30c6ece58cf32d78",
    "from": "30c6ece58cf32d78",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "6215247027f5a481",
+   "from": "30c6ece58cf32d78",
+   "note": "review polish: a new career's rosters take distinct first names and surnames (attributes are read from a name's hash, so games move); 'Pin them deep' only from the opponent's 35 out; backups' lines; screens"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "1dede2795cb4e7ad",
-    "post": "9415b158a2c02390",
-    "champion": "Ohio State",
-    "rec": "fdad2e3cad9aef25",
-    "poll": "b598e68e8e87dfc2",
-    "heis": "c15cc548db28d6ea",
-    "history": "103a796d2863e60b",
-    "universe": "1b20d91c1b4f9bc1",
-    "screens": "97bd0fa8c835b056"
+    "games": "35a2179918fda954",
+    "post": "e995a34523a358a9",
+    "champion": "Notre Dame",
+    "rec": "a522c07cca71eac2",
+    "poll": "64bc6e834a3a6134",
+    "heis": "4b9fa7093991ae80",
+    "history": "d4c63fa5692c4360",
+    "universe": "98797595e2fa1d7f",
+    "screens": "9a7d9e75673dd7e9"
    }
   ]
  }

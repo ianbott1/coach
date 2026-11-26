@@ -60,6 +60,7 @@ add('moves before the day\'s game survive a reload (browser)',['promo-reload.js'
 add('a decision card is seen above the pinned Play button (laptop and desktop, browser)',['side-decision.js'],{fast:true,timeout:900000});
 add('the summer plan hires the candidate rated best (four games)',['staff-default.js'],{timeout:1800000});
 add('a soccer save names the keeper who played',['sc-keeper.js'],{fast:true});
+add('playtest slips stay fixed: wording, stats, the board, the bracket (all seven)',['polish.js'],{fast:true,timeout:1800000});
 add('pro basketball: the win chance follows the score in overtime (browser)',['ot-wp.js'],{fast:true,timeout:900000});
 add('hockey: no even-strength goal inside the other side\'s penalty',['hk-pp-goal.js'],{fast:true});
 add('hockey overtime is drawn three-on-three (browser)',['hk-ot.js'],{fast:true,timeout:1200000});
