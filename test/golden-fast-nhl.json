@@ -1,5 +1,5 @@
 {
- "fp": "8a7ce9c311be32a6",
+ "fp": "989ca2cfdf635bf3",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -170,21 +170,26 @@
    "fp": "8a7ce9c311be32a6",
    "from": "7db5d2fc482e864c",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "989ca2cfdf635bf3",
+   "from": "8a7ce9c311be32a6",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; hockey: depth goals by role and rating, second assists"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e6c9649933e840c0",
-    "post": "822d828a30cc61d4",
-    "champion": "Los Angeles",
-    "rec": "babc9790fe42cb6a",
-    "poll": "c1091ba2a45e5f98",
-    "heis": "588a323304c4a9f0",
-    "history": "9a813fb1ad8da80c",
-    "universe": "196e395e262667c9",
-    "screens": "84cd1912218d521d"
+    "games": "8d3ba7ec6c3d1050",
+    "post": "0d7db7fe4ded69c0",
+    "champion": "Carolina",
+    "rec": "6e55112423fd3d06",
+    "poll": "fccf84773a549f58",
+    "heis": "b076f009271dc226",
+    "history": "930d005c68b0e601",
+    "universe": "4cc8ab327de08d5f",
+    "screens": "84dac084b225a519"
    }
   ]
  }

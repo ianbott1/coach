@@ -1,5 +1,5 @@
 {
- "fp": "50a11f33f0298177",
+ "fp": "25bfefaa0858bee0",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -155,21 +155,26 @@
    "fp": "50a11f33f0298177",
    "from": "e381d9e5fb2e8b43",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "25bfefaa0858bee0",
+   "from": "50a11f33f0298177",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; soccer: striker share 0.38 to 0.29, lean 1.4x"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "1fd83e2bd664825d",
-    "post": "80479a984693125a",
-    "champion": "Manchester United",
-    "rec": "e77fed74c16f7deb",
-    "poll": "c0bd2a6b4af2fb30",
-    "heis": "14750437202280fd",
-    "history": "245f770158caacfa",
-    "universe": "cea8e6101522d5b6",
-    "screens": "254c9e5d6dde2757"
+    "games": "fc61dfe15175c13e",
+    "post": "17ccda4bb3101362",
+    "champion": "Manchester City",
+    "rec": "6b43f3d1fbd7b447",
+    "poll": "c5ff671deac09ceb",
+    "heis": "a8b7fd66c95c3d0d",
+    "history": "1a31a3457c580064",
+    "universe": "613a0fba50fcdaad",
+    "screens": "44a2d1052bef2c55"
    }
   ]
  }

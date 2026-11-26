@@ -1,5 +1,5 @@
 {
- "fp": "42de9274ba906b25",
+ "fp": "9908ce7880b78630",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -625,85 +625,90 @@
    "fp": "42de9274ba906b25",
    "from": "097abda59fbeee03",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "9908ce7880b78630",
+   "from": "42de9274ba906b25",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; basketball: full lines, lean 1.4x, usage cap"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "2df5b2ebc995cf83",
-    "post": "4c9b9b443f9792eb",
-    "champion": "Kentucky",
-    "rec": "0b8c7f14ce7df2e9",
-    "poll": "87d16a0d9ac0f59e",
-    "heis": "01c2a01f118bfe4d",
-    "history": "ccf3c0c3e3602d2e",
-    "universe": "79c78577efbd8655",
-    "screens": "b54612cb35dcff03"
+    "games": "78535c406cfb61d8",
+    "post": "ec04e4af361bcc7e",
+    "champion": "Virginia",
+    "rec": "d51fb25aa8b1b4bf",
+    "poll": "b84f6552e3aaf10b",
+    "heis": "9c718d539a579f7a",
+    "history": "7df4bceefbb00420",
+    "universe": "83fd4e0ac9d4b316",
+    "screens": "bc1cf90d380466b0"
    },
    {
     "year": 2027,
-    "games": "b5faf303d9a1ec6b",
-    "post": "33795b55d49bfc24",
-    "champion": "Marquette",
-    "rec": "e055f714aa046735",
-    "poll": "d382443212a743b6",
-    "heis": "5f095586d7d7571d",
-    "history": "141e481632935306",
-    "universe": "8e71046f37a7a625",
-    "screens": "573acdb3d3ed73ad"
+    "games": "ac1e933124c1aebe",
+    "post": "b4aff570077b0fac",
+    "champion": "Iowa State",
+    "rec": "110776ab868ef0c1",
+    "poll": "d7cf8263dc1de53e",
+    "heis": "48402869a59282e2",
+    "history": "ab2b44e6ccb3ff5a",
+    "universe": "1ec17bbd9de41306",
+    "screens": "0be3fbd5f9a24744"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "a6f2ead30e23a334",
-    "post": "bffb27b6f0188880",
+    "games": "73184a51a48af986",
+    "post": "cae16c6c76313c33",
     "champion": "Kansas",
-    "rec": "2afb2c239a7bece1",
-    "poll": "dd749a68d4413c97",
-    "heis": "def229392e07739c",
-    "history": "3b3264d3c0721677",
-    "universe": "8a94b07ae7cac602",
-    "screens": "9386b7b42649fd68"
+    "rec": "3c26ca19746969fb",
+    "poll": "4804d64b8ad0ddf4",
+    "heis": "9294a8b1f08166de",
+    "history": "82a155cc7fa2b161",
+    "universe": "72512ebc2bc3f460",
+    "screens": "ef9df9987a619afd"
    },
    {
     "year": 2027,
-    "games": "375eaf49b15d48ac",
-    "post": "93e4da0cfe6f0368",
-    "champion": "North Carolina",
-    "rec": "6b7d20bf3c9d2bd4",
-    "poll": "3fa037c6aec5d97a",
-    "heis": "118d2eb373fd56b6",
-    "history": "567860f6295b2e7c",
-    "universe": "11c760a30eef96b2",
-    "screens": "2ea92f19d4c5895d"
+    "games": "c673a8577e24237f",
+    "post": "9b62f5ce17d3a57b",
+    "champion": "UConn",
+    "rec": "a6c5441d9d09428a",
+    "poll": "f8de80790d28acf8",
+    "heis": "eb5c2de8859b7167",
+    "history": "c2a670dd157ebf76",
+    "universe": "383b78a2634ece63",
+    "screens": "ab62f3db142f44fc"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "65dc9f6d49356db8",
-    "post": "1d360251d194ef1a",
-    "champion": "Arkansas",
-    "rec": "57abc8f8900d6cbc",
-    "poll": "b07ae08d409b5421",
-    "heis": "225af2c963a07b70",
-    "history": "3a0327299da5e13b",
-    "universe": "e96b0701c65018e3",
-    "screens": "d5faf345363419a5"
+    "games": "a1caca59491089ee",
+    "post": "e0009123cbdefed8",
+    "champion": "Kentucky",
+    "rec": "22ecb6d68276c2d2",
+    "poll": "7038aa69cff15c7c",
+    "heis": "bc295fd0385fb506",
+    "history": "96bb4f1fed189540",
+    "universe": "42e7f05716c898dd",
+    "screens": "f65565ca19455fd4"
    },
    {
     "year": 2027,
-    "games": "0c79a2c2ee9ee681",
-    "post": "a519c6eace3a692b",
-    "champion": "Iowa State",
-    "rec": "725da04112c74176",
-    "poll": "e73b10d53685671d",
-    "heis": "abd9161aa69a24f2",
-    "history": "9a55f97b88443c9a",
-    "universe": "9f3023f46d199ef9",
-    "screens": "387345a78284501f"
+    "games": "7e8202a0e50258af",
+    "post": "e98e4a300c9d4243",
+    "champion": "Missouri",
+    "rec": "928219484b2325c1",
+    "poll": "58e0b94ed5c5002a",
+    "heis": "26ca5b646e235247",
+    "history": "221c095574bf8ff2",
+    "universe": "128d6e8cb8ceea2a",
+    "screens": "5c625acc2133eeb5"
    }
   ],
   "schedules#60": [

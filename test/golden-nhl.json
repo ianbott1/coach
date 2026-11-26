@@ -1,5 +1,5 @@
 {
- "fp": "8492a36b148251bf",
+ "fp": "0378daa887ad2beb",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -640,59 +640,64 @@
    "fp": "8492a36b148251bf",
    "from": "7f6d4531ccb285df",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "0378daa887ad2beb",
+   "from": "8492a36b148251bf",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; hockey: depth goals by role and rating, second assists"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e6c9649933e840c0",
-    "post": "822d828a30cc61d4",
-    "champion": "Los Angeles",
-    "rec": "babc9790fe42cb6a",
-    "poll": "c1091ba2a45e5f98",
-    "heis": "588a323304c4a9f0",
-    "history": "9a813fb1ad8da80c",
-    "universe": "196e395e262667c9",
-    "screens": "84cd1912218d521d"
+    "games": "8d3ba7ec6c3d1050",
+    "post": "0d7db7fe4ded69c0",
+    "champion": "Carolina",
+    "rec": "6e55112423fd3d06",
+    "poll": "fccf84773a549f58",
+    "heis": "b076f009271dc226",
+    "history": "930d005c68b0e601",
+    "universe": "4cc8ab327de08d5f",
+    "screens": "84dac084b225a519"
    },
    {
     "year": 2027,
-    "games": "a88edba1b18a9691",
-    "post": "8f005b4f2fd86a17",
-    "champion": "Anaheim",
-    "rec": "fa0674153346b2c0",
-    "poll": "3c620a46d12ae912",
-    "heis": "57e8a81da8dcce3e",
-    "history": "9de2358707421dbd",
-    "universe": "44b766e9f3c02154",
-    "screens": "81763b500f60ad91"
+    "games": "eb0c97f9049f3c92",
+    "post": "9d49d18898856c47",
+    "champion": "Carolina",
+    "rec": "56e70c577402e33f",
+    "poll": "6be2023afcbe373c",
+    "heis": "a76808b5655fb0ad",
+    "history": "6483993ada626ccd",
+    "universe": "0ee4ab5042cddcd0",
+    "screens": "97c96e489dd74d5a"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "0f31268bd6cc0d70",
-    "post": "29b20563d4e8cf3f",
-    "champion": "Detroit",
-    "rec": "821f5d7000fb7324",
-    "poll": "5944c134c7558d60",
-    "heis": "6938e26fa217cacb",
-    "history": "923e831bddfea088",
-    "universe": "78bbef10bde2c004",
-    "screens": "831cd0140a77ae52"
+    "games": "e9c5e04524eedcda",
+    "post": "f8e34fe89dd0ea85",
+    "champion": "Tampa Bay",
+    "rec": "78c5534f27c4ba58",
+    "poll": "a51b946f86abdde2",
+    "heis": "9b925df0749b6e6a",
+    "history": "a8ff788e92f708df",
+    "universe": "401950a7dc935eda",
+    "screens": "ba961804e81668c0"
    },
    {
     "year": 2027,
-    "games": "1d4b4ebb9312ae65",
-    "post": "8302ff19ba35e7db",
+    "games": "d11b7b896a19a4ab",
+    "post": "8291f0b841f5b07c",
     "champion": "New Jersey",
-    "rec": "46f9bf3cb14cebc6",
-    "poll": "526697650b9625ad",
-    "heis": "dcf86e9fe5745bcf",
-    "history": "2e53a0f3be9905a7",
-    "universe": "252e713dedfc23ca",
-    "screens": "ec874993bd34961d"
+    "rec": "76fb2408580fc3d4",
+    "poll": "03755c99c9a91d08",
+    "heis": "79d6f114667bff39",
+    "history": "ce6f0688dfd36e13",
+    "universe": "71cfddbaea934f10",
+    "screens": "94c009cfbb518011"
    }
   ],
   "schedules#60": [

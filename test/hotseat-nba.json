@@ -1,5 +1,5 @@
 {
- "fp": "6ece100e30e8c7cc",
+ "fp": "ca10c375e973ad22",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -360,6 +360,11 @@
    "fp": "6ece100e30e8c7cc",
    "from": "42e172741a178e58",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "ca10c375e973ad22",
+   "from": "6ece100e30e8c7cc",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; basketball: full lines, lean 1.4x, usage cap"
   }
  ],
  "out": [
@@ -370,19 +375,19 @@
      "team": "Boston",
      "last": {
       "rec": "51-31",
-      "result": "Lost in the first round",
-      "grade": "C+"
+      "result": "Lost in the conference finals",
+      "grade": "B+"
      },
-     "book": "405f1060c8575dea"
+     "book": "089ad2179fb6bd13"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "26-56",
+      "rec": "25-57",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "44d3e5b9205c309f"
+     "book": "75ad1e8ac081bb55"
     }
    ]
   },
@@ -392,20 +397,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "32-50",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "48-34",
+      "result": "Lost in the first round",
+      "grade": "C+"
      },
-     "book": "7f1516da954dcef9"
+     "book": "0a87f7be71a2ec71"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "23-59",
+      "rec": "21-61",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "ecb65a3842a1036f"
+     "book": "088f7442000c0d29"
     }
    ]
   },
@@ -415,20 +420,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-57",
+      "rec": "22-60",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "96be24808098361d"
+     "book": "6ff0da7efd75a8bd"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "36-46",
-      "result": "Lost in the first round",
-      "grade": "B"
+      "rec": "28-54",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "5d6a8e2ac447f558"
+     "book": "add5b8256049fa2a"
     }
    ]
   }

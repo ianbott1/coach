@@ -1,5 +1,5 @@
 {
- "fp": "3b79ac6211a15e85",
+ "fp": "d80bf34d46536de0",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -155,21 +155,26 @@
    "fp": "3b79ac6211a15e85",
    "from": "6215247027f5a481",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "d80bf34d46536de0",
+   "from": "3b79ac6211a15e85",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; football: completions, QB runs, two backs, picks spread"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "28eb3177b1b52086",
-    "post": "f650e6d7c97421b2",
-    "champion": "Ohio State",
-    "rec": "90070c50c9489033",
-    "poll": "b86bc4267140e3e4",
-    "heis": "19422758f67a94a0",
-    "history": "c8fddc0638537dbe",
-    "universe": "cff4677800c5cc5d",
-    "screens": "fbc03f94e531a7e7"
+    "games": "754b27aa00429d61",
+    "post": "2a0972f17a1ce989",
+    "champion": "Notre Dame",
+    "rec": "aa1abe9122581bb2",
+    "poll": "2e690f279429fc19",
+    "heis": "ec904f66bbdd4e4d",
+    "history": "b51b0037e006078c",
+    "universe": "e2e944fc0009f0bc",
+    "screens": "68338dc808f8536d"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "8cd6f6a3a427a33e",
+ "fp": "22a6de51885cd0cf",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -175,6 +175,11 @@
    "fp": "8cd6f6a3a427a33e",
    "from": "70282015ae24bd2a",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "22a6de51885cd0cf",
+   "from": "8cd6f6a3a427a33e",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; baseball: walks 0.080 to 0.066, starter form 0.02, hitters' edge 0.035 (shutouts 19% to 13%)"
   }
  ],
  "out": [
@@ -184,20 +189,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "71-91",
+      "rec": "56-106",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C-"
      },
-     "book": "cef0dfc6dd0b9559"
+     "book": "7f4abe0f12c925ce"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "68-94",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "88-74",
+      "result": "Lost in the division series",
+      "grade": "C+"
      },
-     "book": "8e80e7f1e25d4c2c"
+     "book": "8e2bc9659e5465c2"
     }
    ]
   },
@@ -207,20 +212,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
+      "rec": "62-100",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "01b0f76db509f199"
+     "book": "e5e00d922bb8705a"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "69-93",
+      "rec": "70-92",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "8be99dab2eefb048"
+     "book": "8ef83de549535f19"
     }
    ]
   }
