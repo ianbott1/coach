@@ -145,6 +145,7 @@ function presentAsk(r,floorCall){
       live.ff=false;                            // skipping stops at your next call
       // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
       if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
+      if(typeof HL!=="undefined")HL.bigFor=null;   /* round 111: the call screen reflows the page; the full match scrolls back to its field after it */
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();

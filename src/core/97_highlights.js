@@ -31,7 +31,7 @@ function hlMount(){
   let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
   try{ const bar=document.querySelector(".actionbar"), big=box.classList&&box.classList.contains("big"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-(big?10:top)-6;
     if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect));
-    // round 111: the full match's surface as big as the window allows (its own bug carries the score and the clock); the page scrolls to it once a game
+    // round 111: the full match's surface as big as the window allows (its own bug carries the score and the clock); the page scrolls to it once a game, and again after each call (the call screen reflows the page: the field sat 34 px under the bar after one)
     if(big&&HL.bigFor!==live&&top>8&&(live.pb||HL.cur)){ HL.bigFor=live; try{ window.scrollTo(0,Math.max(0,top-6)) }catch(e){} } }catch(e){}
   const H=Math.round(W*HL_SPORT.aspect);
   if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
