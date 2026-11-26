@@ -1,5 +1,5 @@
 {
- "fp": "a99742c5d24942c1",
+ "fp": "53970622057d1f78",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -375,6 +375,11 @@
    "fp": "a99742c5d24942c1",
    "from": "0524ef359d58ce8e",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "53970622057d1f78",
+   "from": "a99742c5d24942c1",
+   "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
   }
  ],
  "out": [
@@ -384,20 +389,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "38-2",
-      "result": "Lost the national championship",
-      "grade": "A+"
+      "rec": "30-6",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "38aa36fdda87f37d"
+     "book": "63bdf873d0854f4e"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "34-3",
-      "result": "NATIONAL CHAMPIONS",
+      "rec": "33-4",
+      "result": "Lost the national championship",
       "grade": "A+"
      },
-     "book": "26c03b9f6edb0560"
+     "book": "d8c09737dbe63799"
     }
    ]
   },
@@ -407,20 +412,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the Second Round",
-      "grade": "B"
+      "rec": "23-11",
+      "result": "Lost in the First Round",
+      "grade": "B-"
      },
-     "book": "c57c785052dae1ed"
+     "book": "5953ecd3b35539de"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "19-14",
-      "result": "Lost in the First Round",
-      "grade": "C+"
+      "rec": "31-7",
+      "result": "Lost the national championship",
+      "grade": "A+"
      },
-     "book": "3242592fd9df5cbc"
+     "book": "8a81f5c4e3370e85"
     }
    ]
   },
@@ -430,20 +435,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "26-9",
-      "result": "Lost in the Sweet 16",
-      "grade": "B"
+      "rec": "20-13",
+      "result": "Lost in the Opening Round",
+      "grade": "C-"
      },
-     "book": "225e87cddc5d3285"
+     "book": "bbdf32265b440857"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the First Round",
-      "grade": "B"
+      "rec": "34-4",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
      },
-     "book": "1a4255e535b01bd1"
+     "book": "156b10dbcbd0fc77"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "9491d6ac34f5d216",
+ "fp": "a4176beff82c7701",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -160,21 +160,26 @@
    "fp": "9491d6ac34f5d216",
    "from": "50a11f33f0298177",
    "note": "rv2/soccer engine 26: the matchday (team sheet, shapes, five changes in three windows, condition and rotation)"
+  },
+  {
+   "fp": "a4176beff82c7701",
+   "from": "9491d6ac34f5d216",
+   "note": "engine 26 (rv2/stats2 follow-up): soccer's names follow the team sheet; the computer rests its keeper in a cup tie against a lower division"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "62a27731fecc7b2c",
-    "post": "71e245f6be46893d",
+    "games": "27cc5ecdfa9f5013",
+    "post": "d84947ac58c4b3e5",
     "champion": "Manchester City",
-    "rec": "f923fd199afdc4d0",
-    "poll": "ec6272bd11cf3f2f",
-    "heis": "d9c5cb211c247d5d",
-    "history": "e9dced4e97ab74f0",
-    "universe": "7f20534ba227e258",
-    "screens": "3ee830f138afb3aa"
+    "rec": "884164777ba594ae",
+    "poll": "580b54997f0771e2",
+    "heis": "0e90febe9b30febf",
+    "history": "a2d248db7a859e40",
+    "universe": "3070862b26dcffb8",
+    "screens": "8b2c09600412765c"
    }
   ]
  }

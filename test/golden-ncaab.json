@@ -1,5 +1,5 @@
 {
- "fp": "6195913450ea13f8",
+ "fp": "cedf788c68b1029d",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -630,85 +630,90 @@
    "fp": "6195913450ea13f8",
    "from": "42de9274ba906b25",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "cedf788c68b1029d",
+   "from": "6195913450ea13f8",
+   "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "2df5b2ebc995cf83",
-    "post": "4c9b9b443f9792eb",
-    "champion": "Kentucky",
-    "rec": "0b8c7f14ce7df2e9",
-    "poll": "87d16a0d9ac0f59e",
-    "heis": "01c2a01f118bfe4d",
-    "history": "46babb28fb09c2d2",
-    "universe": "93770a3a59664167",
-    "screens": "a03aac7ef65297af"
+    "games": "f82b96280f6876d6",
+    "post": "818eecf91d411699",
+    "champion": "Tennessee",
+    "rec": "4191273d4e826aa1",
+    "poll": "12ff3cff51d51a33",
+    "heis": "20ad96bc3ba2480f",
+    "history": "db06add57c1d13f2",
+    "universe": "6162699758879cdc",
+    "screens": "f692df8541c297ce"
    },
    {
     "year": 2027,
-    "games": "4f823a7a75bed8d4",
-    "post": "d64899cd62f489be",
-    "champion": "USC",
-    "rec": "8237e19cbff8fbc3",
-    "poll": "82ef796d28258f21",
-    "heis": "3999882ce4fb0530",
-    "history": "57988de6ca9a4dee",
-    "universe": "838843294464623a",
-    "screens": "c74106aaa2a59ca5"
+    "games": "8703d6ecc0bb9755",
+    "post": "1c68039ac098b3c5",
+    "champion": "Nebraska",
+    "rec": "5f4003bc94c44930",
+    "poll": "e45756aa293e261e",
+    "heis": "d265045c67b9bb14",
+    "history": "18360f9530741f11",
+    "universe": "fa603d24f3481f6f",
+    "screens": "787177a152d25693"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "a6f2ead30e23a334",
-    "post": "bffb27b6f0188880",
+    "games": "9d0b784e57f43927",
+    "post": "386331fbefcd42de",
     "champion": "Kansas",
-    "rec": "2afb2c239a7bece1",
-    "poll": "dd749a68d4413c97",
-    "heis": "def229392e07739c",
-    "history": "98243c439d40d18a",
-    "universe": "c0ec91a310940b97",
-    "screens": "c6c0e28aff3cccce"
+    "rec": "d7d1b49965a63b7d",
+    "poll": "20fda94d1ef854f0",
+    "heis": "5c45c1ebf0223017",
+    "history": "2e65111e62d0d77b",
+    "universe": "1c94f5fa98901740",
+    "screens": "af6440ce788ca8d1"
    },
    {
     "year": 2027,
-    "games": "ba3e44d6555aa287",
-    "post": "b675f42205b4cf23",
-    "champion": "North Carolina",
-    "rec": "95e7ecf77d279f41",
-    "poll": "abde189dea2bcd85",
-    "heis": "07a6dd3589e241eb",
-    "history": "6f6dde7e9d1f7736",
-    "universe": "a5df1ee084db3f9f",
-    "screens": "2829edfb57c0927f"
+    "games": "21ab0a65a2e65ca1",
+    "post": "fa4a88c78782ea42",
+    "champion": "Missouri",
+    "rec": "458d5ee9320ccacb",
+    "poll": "247dc68f01fc4bee",
+    "heis": "425afd4aecc81c3f",
+    "history": "761452f1e9d0a403",
+    "universe": "f15f8882c734e34d",
+    "screens": "ff06841817de1361"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "65dc9f6d49356db8",
-    "post": "1d360251d194ef1a",
-    "champion": "Arkansas",
-    "rec": "57abc8f8900d6cbc",
-    "poll": "b07ae08d409b5421",
-    "heis": "225af2c963a07b70",
-    "history": "a091069ae1d8fb2f",
-    "universe": "15f75940c5d0fc5c",
-    "screens": "7eca1ccde2dcdfbd"
+    "games": "1e52d3341cdab411",
+    "post": "04f12b3524b73402",
+    "champion": "Kansas",
+    "rec": "16c837be930501aa",
+    "poll": "a3c2867f7a0a9202",
+    "heis": "e54d3babba38e5bb",
+    "history": "9d5603165b4d7008",
+    "universe": "8ca32abc5c63e08d",
+    "screens": "a977f0a3636bc279"
    },
    {
     "year": 2027,
-    "games": "6f43c2169c2176d8",
-    "post": "a693423cdad275cb",
-    "champion": "USC",
-    "rec": "64a62c3926f751ad",
-    "poll": "73b718207922b01e",
-    "heis": "c5b667660b00e5ad",
-    "history": "9958a57483a4bc60",
-    "universe": "b8df57dd392bd881",
-    "screens": "6a9fee86029a33df"
+    "games": "06ec5af5437f7aa5",
+    "post": "38246da1e15f5a44",
+    "champion": "Butler",
+    "rec": "9876bad781c5c4a3",
+    "poll": "a030c44c5c7258d9",
+    "heis": "1d6815de25bccb94",
+    "history": "184d9fe61f129014",
+    "universe": "07d6e13ce3cc99b4",
+    "screens": "74ec82baf28ffc8c"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "1b8eb6589a1574a3",
+ "fp": "560858794e1093f9",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -150,21 +150,26 @@
    "fp": "1b8eb6589a1574a3",
    "from": "3818fb2b6bcbfc4c",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "560858794e1093f9",
+   "from": "1b8eb6589a1574a3",
+   "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "2df5b2ebc995cf83",
-    "post": "4c9b9b443f9792eb",
-    "champion": "Kentucky",
-    "rec": "0b8c7f14ce7df2e9",
-    "poll": "87d16a0d9ac0f59e",
-    "heis": "01c2a01f118bfe4d",
-    "history": "46babb28fb09c2d2",
-    "universe": "93770a3a59664167",
-    "screens": "a03aac7ef65297af"
+    "games": "f82b96280f6876d6",
+    "post": "818eecf91d411699",
+    "champion": "Tennessee",
+    "rec": "4191273d4e826aa1",
+    "poll": "12ff3cff51d51a33",
+    "heis": "20ad96bc3ba2480f",
+    "history": "db06add57c1d13f2",
+    "universe": "6162699758879cdc",
+    "screens": "f692df8541c297ce"
    }
   ]
  }

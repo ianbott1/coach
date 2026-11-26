@@ -173,3 +173,12 @@ The measuring test is `test/boxscores.js` (fast tier of run-all, about 55 second
 ## test/boxscores.js
 - What: the NBA's sides' threes (fewest, most, made a game), the three-point and blocks leaders; college's three-point
   leader; soccer's sheet checks above. 25 basketball and 5 soccer checks.
+
+## Goldens
+- Re-recorded one at a time (fast, full, hot seat) for the three games whose results moved: English football (the
+  keeper's rest and the lines' morale), college basketball and the NBA (the plans' threes). The other four are as they
+  were.
+- Also passed: engine-replay (a season begun on engine 25 replays exactly), migrate 2253 of 2253, reload 18 of 18,
+  saves, stats.js, statsum, boxscore.js, hk-lines, bb-reads (both), plan-line, read-marks, attrs-bb, styles,
+  bb-gameday, sim-parity, live-wp, sc-keeper, sc-subs, sc-pb, epl-screens, hl-hurt. Browser tests (sc-watch,
+  sc-clipjoin) can't run here.
