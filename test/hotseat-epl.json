@@ -1,5 +1,5 @@
 {
- "fp": "d42ac54a5a832b2d",
+ "fp": "b867e762d24c63b8",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -365,6 +365,11 @@
    "fp": "d42ac54a5a832b2d",
    "from": "ba6709810ffe9967",
    "note": "rv2/soccer engine 26: the matchday (team sheet, shapes, five changes in three windows, condition and rotation)"
+  },
+  {
+   "fp": "b867e762d24c63b8",
+   "from": "d42ac54a5a832b2d",
+   "note": "engine 26 (rv2/stats2 follow-up): soccer's names follow the team sheet; the computer rests its keeper in a cup tie against a lower division"
   }
  ],
  "out": [
@@ -374,20 +379,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-6-12",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "17-7-14",
+      "result": "Finished 9th in the Premier League",
+      "grade": "C"
      },
-     "book": "34eb941f2e23be1d"
+     "book": "26532b8503b31f6c"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "13-10-15",
-      "result": "Finished 13th in the Premier League",
-      "grade": "C+"
+      "rec": "10-11-17",
+      "result": "Finished 15th in the Premier League",
+      "grade": "C"
      },
-     "book": "b77622d88ce29b8e"
+     "book": "ecd9cfca278ee23d"
     }
    ]
   },
@@ -397,20 +402,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "12-12-14",
-      "result": "Finished 11th in the Premier League",
-      "grade": "C-"
+      "rec": "14-11-13",
+      "result": "Finished 10th in the Premier League",
+      "grade": "C"
      },
-     "book": "a9a8519c36c110b9"
+     "book": "ec04d287c9ffe583"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "6-15-17",
-      "result": "Relegated (20th)",
-      "grade": "D"
+      "rec": "15-11-12",
+      "result": "Finished 9th in the Premier League",
+      "grade": "B"
      },
-     "book": "dbe7111f8792713f"
+     "book": "75f1cce49e7b2198"
     }
    ]
   },
@@ -420,20 +425,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-9-13",
-      "result": "Finished 7th in the Premier League",
+      "rec": "16-6-16",
+      "result": "Finished 9th in the Premier League",
       "grade": "C"
      },
-     "book": "03a1f6e7c160e822"
+     "book": "e1ce47b651f0226c"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "22-7-17",
-      "result": "Lost in the Championship play-offs (8th)",
-      "grade": "C"
+      "rec": "11-10-17",
+      "result": "Finished 14th in the Premier League",
+      "grade": "C+"
      },
-     "book": "1f6bd24dc2160319"
+     "book": "eb8840abae4acf20"
     }
    ]
   }

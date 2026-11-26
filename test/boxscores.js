@@ -20,6 +20,12 @@
      NHL   https://www.thescore.com/nhl/news/3268277 (2024-25: 52 goals, 121 points, one 50-goal man);
            https://www.thescore.com/nhl/news/2894890 (2023-24: 69, 144, four 50-goal men);
            https://thescore.com/nhl/news/2627081 (2022-23: 64, 153, five 50-goal men)
+           Follow-up: https://www.landofbasketball.com/yearbyyear/2024_2025_season_leaders.htm and its 2023-24 and 2022-23
+           pages (three-pointers made 320, 357, 301; blocks 3.8, 3.6, 3.0 a game);
+           https://www.statmuse.com/nba/ask/3pt-attempts-team-leaders-2024-2025 (2024-25 sides' threes tried a game,
+           Celtics 48.2 down to Pelicans 34.6 of the 25 it lists; about 13.5 made)
+     NCAAB https://www.sports-reference.com/cbb/leaders/fg3-player-yearly.html (three-pointers made leader 162, 137, 131, 136
+           in 2022-23 to 2025-26, in 31 to 36 games: 3.7 to 4.5 a game)
      EPL   Golden Boot 36 (2022-23), 27 (2023-24), 29 (2024-25), 38 league games
      MLB   https://www.mlb.com/news/every-50-home-run-season (leaders 54, 58, 60 in 2023-25);
            https://blogs.fangraphs.com/more-walks-more-runs-an-early-look-at-offense-with-the-arrival-of-the-abs/ (walks
@@ -30,7 +36,7 @@ const path=require('path');const {load}=require('./harness.js');
 const D=f=>path.join(process.env.DIST||path.join(__dirname,'..','dist'),f);
 let bad=0, checks=0; const ok=(c,m)=>{ checks++; console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++ };
 const inBand=(v,lo,hi,m)=>ok(v>=lo&&v<=hi,`${m}: ${typeof v==='number'&&v%1?v.toFixed(v<1?3:1):v} (band ${lo}-${hi})`);
-const EXPOSE=['S','SEA','NAMES','LEAGUE','POS','STAT_KEYS','glStride','newDynasty','boxLines','ENGINE_V','CONF'];
+const EXPOSE=['S','SEA','NAMES','LEAGUE','POS','STAT_KEYS','glStride','newDynasty','boxLines','ENGINE_V','CONF','doAdvance','live','liveTick','answerLive','scOnAt','BK'];
 function season(A){ let g=0; while(A.SEA.phase!=='done'&&g++<9000)A.SEA.advance() }
 // a player's regular-season league games, from his game log (step before the playoffs, cup bit clear)
 function reg(A,p){ const gl=p.gl||[], w=A.glStride(), o={g:0}; for(let j=0;j+w<=gl.length;j+=w){ if(gl[j]>=A.LEAGUE.weeks||(gl[j+2]&2))continue;
@@ -95,11 +101,20 @@ run('basketball-coach-pro.html',A=>{
   inBand(avg(R=>pg(R,'reb')[0]),11,15.5,'rebounds leader, rpg (12.3-13.9)');
   inBand(avg(R=>pg(R,'ast')[0]),8.5,13,'assists leader, apg (10.7-11.6)');
   inBand(avg(R=>pg(R,'stl')[0]),1.7,3.3,'steals leader, spg (1.9-3.0)');
+  // follow-up: the sides' threes and the leaders that come of them, and the blocks
+  const tm=R=>{ const T={}; R.forEach(r=>{ const t=T[r.t]=T[r.t]||{a:0,m:0,g:0}; t.a+=r.s.tpa||0; t.m+=r.s.tpm||0; t.g=Math.max(t.g,r.s.g) }); return Object.values(T).map(t=>({a:t.a/t.g,m:t.m/t.g})) };
+  inBand(avg(R=>Math.min(...tm(R).map(t=>t.a))),22,36,'fewest threes tried by a side, a game (34.6 the fewest of 25 listed)');
+  inBand(avg(R=>Math.max(...tm(R).map(t=>t.a))),42,54,'most threes tried by a side, a game (48.2)');
+  inBand(avg(R=>tm(R).reduce((a,t)=>a+t.m,0)/tm(R).length),11.5,15,'threes made a side a game (about 13.5)');
+  inBand(avg(R=>top(R,r=>r.s.tpm)),270,390,'three-pointers made leader (301-357)');
+  inBand(avg(R=>pg(R,'blk')[0]),2.8,4.2,'blocks leader, bpg (3.0-3.8)');
 });
 run('basketball-coach.html',A=>{
   A.newDynasty(A.NAMES[1],1,'T'); season(A); bbBox(A,'college',200);
   const R=rows(A), G=Math.max(...R.map(r=>r.s.g)), p=R.filter(r=>r.s.g>=G*0.58).map(r=>r.s.pts/r.s.g).sort((a,b)=>b-a);
   inBand(p[0],21.5,28.5,'scoring leader, ppg (23.3-25.2)');
+  const t3=R.filter(r=>r.s.g>=G*0.58).map(r=>(r.s.tpm||0)/r.s.g).sort((a,b)=>b-a);
+  inBand(t3[0],3.2,5,'three-pointers made leader, a game (3.7-4.5)');
 });
 // ---- hockey ----
 run('hockey-coach-pro.html',A=>{
@@ -113,6 +128,22 @@ run('hockey-coach-pro.html',A=>{
 run('soccer-coach.html',A=>{
   A.newDynasty(A.NAMES[0],7,'T'); season(A); const top20=rows(A,r=>A.CONF&&A.CONF[r.t]==='PL');
   inBand(top(top20,r=>r.s.goals),22,38,'Golden Boot, league goals (36, 27, 29)');
+  // follow-up: the names follow the team sheet. A season of a club's own games (the sheet and its changes are kept for
+  // the games you play): every man with a line was on the pitch, every goal's scorer was on it at that minute, and the
+  // keeper too is rested now and then (a cup tie against a lower division, as clubs play their cup keeper)
+  A.newDynasty(A.NAMES[0],5,'T'); let guard=0, games=0, off=0, offG=0, gkB=0, subs=0;
+  while(A.SEA.phase!=='done'&&guard++<160){ A.doAdvance(); let n=0; while(A.live&&!A.live.done&&n++<4000){ A.live.ask?A.answerLive(A.live.ask.dp.opts[A.live.ask.dp.opts.length-1][0]):A.liveTick() }
+    const step=A.SEA.step-1, W=A.SEA.weeks[step]; if(!W)continue;
+    W.games.forEach(g=>{ if(!g.drives||g.__seen)return; g.__seen=1; const BL=A.boxLines(g,step,true); if(!BL)return; games++;
+      ['home','away'].forEach(sd=>{ const tm=sd==='home'?g.home:g.away, R=A.SEA.roster[tm], x0=g.drives[0].xi0&&g.drives[0].xi0[sd]; if(!x0)return;
+        if(x0[0])gkB++; const man=(u,b)=>{ const p=R[b?A.BK(u):u]; return p&&p.n }, played=new Set(A.POS.map((P,u)=>man(u,x0[u])));
+        g.drives.forEach(d=>{ const L=d.sb&&d.sb[sd]; if(L)L.forEach(u=>{ subs++; played.add(man(u,!x0[u])) }) });
+        BL[sd].forEach(x=>{ if(!played.has(x.n))off++ });
+        g.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=='goal'||e.side!==sd||!e.nm)return; const on=A.scOnAt(g.drives,sd,e.m); if(!A.POS.some((P,u)=>man(u,on[u])===e.nm))offG++ })) }) }) }
+  ok(games>=30,`soccer: ${games} of your club's games read, ${subs} changes made`);
+  ok(off===0,`soccer: every man with a line was on the pitch (${off} lines for men who never played)`);
+  ok(offG===0,`soccer: every goal's scorer was on the pitch at its minute (${offG} not)`);
+  ok(gkB>=1,`soccer: the deputy keeper starts now and then (${gkB} starts)`);
 });
 // ---- baseball ----
 run('baseball-coach-pro.html',A=>{

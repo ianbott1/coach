@@ -116,3 +116,69 @@ The measuring test is `test/boxscores.js` (fast tier of run-all, about 55 second
   leaders held to bands around the last three real seasons, basketball's box lines checked against the game, and the
   award splits. Added to test/run-all.js's fast tier.
 - Tested: MATCH, 41 checks, about 55 seconds.
+
+# Follow-up
+
+## The merged build's soccer page didn't load
+- What: the soccer branch's `SC26` (50_game.js) and this branch's `SC26` (75_screens.js) were both declared, so
+  dist/soccer-coach.html at 3e83a72 stopped with "Identifier 'SC26' has already been declared". Mine is now
+  `SC_GOAL26`.
+- Games: English football.
+
+## Soccer: the names follow the team sheet
+- What: the box score, the feed, the highlights and the stats pages read who was on the pitch from the sheet
+  (`drives[0].xi0`, 1 where the man behind started) and its changes (`d.sb`, the units changed as stretch `d.seg`
+  began, at minute seg*5): `scOnAt` in src/soccer/75_screens.js. Each man's minutes come from it (a starter changed at
+  minute m plays m, the man who came on the rest, 120 with extra time); only men who played get a line; a goal goes to a
+  man on the pitch at its minute, an assist to another, a clean sheet to a defender with 60 minutes; the keeper's line
+  is the keeper who started. Minutes are a new stat (`min`, from engine 26 only). The highlights' eleven names the
+  sheet's men and leaves the partners the roster doesn't carry unnamed. With that sound, the computer rests its keeper
+  too, in a cup tie against a lower division when his deputy is close (as clubs play a cup keeper), and you can swap
+  yours on the sheet.
+- Why: a rested starter could be credited with goals, so keepers were never rotated.
+- Games: English football.
+- Tested: a season of a club's own games: 43 games, 341 changes, 0 lines and 0 goals for men off the pitch, 4 starts
+  for the deputy keeper (test/boxscores.js); eight seasons, the first-choice keeper rested 336 times, every one in such
+  a tie (test/sc-manager.js, its check changed from "never rested"); test/sc-keeper.js reads the sheet for the keeper
+  who made a save.
+- Not yet: sc-manager's goals a game (2.69) and draws (28-29%) sit just outside its bands over eight seasons, and did
+  so at 3e83a72 too (2.69 and 28.3% with only the rename): the soccer branch's match engine, not this change.
+
+## Basketball: threes and blocks like the league's
+- What, threes (src/basketball/50_game.js, engine 26): the plans' three-point shares 0.18 and 0.64 become 0.29 and
+  0.49 (`AGGR26`), and no side takes under 0.20 or over 0.53 of its shots from three, style and shape included
+  (`BB26_SHR`). The pace is as it was. A plan's fit is paid as before, the part its own shots no longer carry on its
+  other shots (`BB26_FIT`), so the shown fit still holds and the best-shooting sides aren't made better shooters than any
+  real one. In the box score no one takes more than 26% of his team's threes (`BB_USE3`, src/basketball/10_players.js).
+- What, blocks: a rim protector's lean counts four times, a centre's role 1.5 times, and the team blocks 0.21 of the
+  other side's missed twos, from 0.18 (`BB_BLKX`, `BB_BLKC`, `BB_BLK26`). Lines only.
+- Why: a side that let it fly all season took 60 threes a game and its shooter made 537-608; the blocks leader sat at
+  2.1-2.3.
+- Games: NBA, college basketball.
+- Tested: two NBA seasons: sides' threes tried a game 14-62 -> 24-45 (2024-25: 34.6-48.2 of the 25 sides listed);
+  made 13.6 -> 12.5 a side (about 13.5); leader 580/608 -> 345 average (301-357); blocks leader 2.2-2.3 -> 3.6 (3.0-3.8),
+  team blocks 4.3 -> 5.0. College three-point leader 3.5 a game (3.7-4.5). Plans' worth, engine 25 against 26 on the
+  same dice, 8,000 games a gap (test/bb-plans.js run at each): every cell within a point. Sources:
+  https://www.landofbasketball.com/yearbyyear/2024_2025_season_leaders.htm (and 2023-24, 2022-23),
+  https://www.statmuse.com/nba/ask/3pt-attempts-team-leaders-2024-2025,
+  https://www.sports-reference.com/cbb/leaders/fg3-player-yearly.html
+- Not yet: the sides' three-point percentages run 31.5-39.9% (about 33-39% real), from the shapes.
+
+## Football: interceptions thrown
+- Not done. The leader throws 22-36 (real 15-21) because his side does: over twenty computer seasons the sides threw
+  13-15 interceptions at the median and 22-36 at the most. The starter
+  rightly throws all of his side's. The spread is the drive engine's (turnovers bunch on the weak sides), and a real
+  side would bench a quarterback long before 30, so either fix moves results: it waits for the football owner.
+
+## test/boxscores.js
+- What: the NBA's sides' threes (fewest, most, made a game), the three-point and blocks leaders; college's three-point
+  leader; soccer's sheet checks above. 25 basketball and 5 soccer checks.
+
+## Goldens
+- Re-recorded one at a time (fast, full, hot seat) for the three games whose results moved: English football (the
+  keeper's rest and the lines' morale), college basketball and the NBA (the plans' threes). The other four are as they
+  were.
+- Also passed: engine-replay (a season begun on engine 25 replays exactly), migrate 2253 of 2253, reload 18 of 18,
+  saves, stats.js, statsum, boxscore.js, hk-lines, bb-reads (both), plan-line, read-marks, attrs-bb, styles,
+  bb-gameday, sim-parity, live-wp, sc-keeper, sc-subs, sc-pb, epl-screens, hl-hurt. Browser tests (sc-watch,
+  sc-clipjoin) can't run here.

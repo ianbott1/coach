@@ -158,6 +158,13 @@ function bbEff(p,k){ const l=bbLean(p,k); return Math.pow(l,0.3) }
    from the score in the stretches he played. The team's totals are the engine's: nothing here moves a result. */
 const _bbE=k=>typeof process!=="undefined"&&process.env&&process.env[k]?+process.env[k]:null;
 const BB_LEANMAX=1.4, BB_USE=_bbE("BB_USE")||0.33, BB_START26=_bbE("BB_START")||0.67, BB_STAR26={nba:2.9,ncaab:2.3}, BB_EXP26={nba:0.8,ncaab:0.8};
+/* follow-up: blocks are the most bunched count in the game (the league's leader blocks 3.0 to 3.8 a game, more than half
+   his team's): a rim protector's lean counts BB_BLKX times and a centre's role BB_BLKC more, and the team blocks BB_BLK26
+   of the other side's missed twos (the league about 5 a game) */
+/* follow-up: and no one takes more than BB_USE3 of his team's threes (the league's leaders made 24 to 29 per cent of
+   their side's in 2022-25: Edwards 320 of Minnesota's 1,230, Curry 357 of Golden State's 1,214) */
+const BB_USE3=_bbE("BB_USE3")||0.26;
+const BB_BLKX=_bbE("BB_BLKX")||4, BB_BLKC=_bbE("BB_BLKC")||1.5, BB_BLK26=_bbE("BB_BLK26")||0.21;
 const BB_PFW={PG:0.8,SG:0.9,SF:1.0,PF:1.25,C:1.45}, BB_FT26={PG:1.06,SG:1.05,SF:1.0,PF:0.94,C:0.88};
 /* a man's appetite for shots, his own and kept all season (some good players are scorers, some aren't): his name's
    hash, a spread of BB_SCOR in the log of his share */
@@ -194,9 +201,10 @@ function bbLines26(rng,c,M,O,L,sl,extra,at,line,t3,t2,t1){
   P.forEach(x=>{ x.st=starOf(x.pl); x.sc=Math.exp(ex*(x.pl.r-60)/20+bbScorer(x.pl)+rng.gauss(0,0.3)); x.L=x.j>=0?L[x.j]:(extra[x.pl.n]=extra[x.pl.n]||line()) });
   const tot=P.reduce((t,x)=>t+x.min,0)||1;
   // a count shared by minutes, role, rating and lean; the scorers held to BB_USE of the kind each
-  const share=(k,n,rk,sc)=>{ if(!(n>0))return; let w=P.map(x=>x.min/tot*x.R[rk]*(sc?x.sc:x.st)*Math.pow(bbLean(x.pl,rk),rk==="blk"||rk==="ast"?2:1));   // a rim protector's blocks and a point guard's assists lean twice
-    if(sc){ for(let it=0;it<4;it++){ const T=w.reduce((a,b)=>a+b,0); if(!(T>0))break; const over=w.map(v=>v>BB_USE*T); if(!over.some(Boolean))break;
-        const fixed=w.reduce((t,v,j)=>t+(over[j]?0:v),0), cap=BB_USE*fixed/(1-BB_USE*over.filter(Boolean).length); if(!(cap>0))break; w=w.map((v,j)=>over[j]?cap:v) } }
+  const share=(k,n,rk,sc)=>{ if(!(n>0))return; let w=P.map(x=>x.min/tot*x.R[rk]*(sc?x.sc:x.st)*Math.pow(bbLean(x.pl,rk),rk==="blk"?BB_BLKX:rk==="ast"?2:1)*(rk==="blk"&&x.pos==="C"?BB_BLKC:1));   // a rim protector's blocks and a point guard's assists lean twice
+    const U=rk==="tpm"?BB_USE3:BB_USE;
+    if(sc){ for(let it=0;it<4;it++){ const T=w.reduce((a,b)=>a+b,0); if(!(T>0))break; const over=w.map(v=>v>U*T); if(!over.some(Boolean))break;
+        const fixed=w.reduce((t,v,j)=>t+(over[j]?0:v),0), cap=U*fixed/(1-U*over.filter(Boolean).length); if(!(cap>0))break; w=w.map((v,j)=>over[j]?cap:v) } }
     // the men the run of play already named for some keep them: the whole count is shared, then made up to theirs
     const fl=P.map(x=>x.L[k]||0), N=n+fl.reduce((a,b)=>a+b,0), d=splitDraw(rng,N,w);
     let need=d.reduce((t,v,j)=>t+Math.max(0,fl[j]-v),0); const out=d.map((v,j)=>Math.max(v,fl[j]));
@@ -206,7 +214,7 @@ function bbLines26(rng,c,M,O,L,sl,extra,at,line,t3,t2,t1){
   share("tpm",t3,"tpm",1); share("f2",t2,"pts2",1); share("ft",t1,"pts1",1);
   const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm);
   share("reb",Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0)))),"reb"); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm)),"ast");
-  share("stl",Math.round(BB_STL*(O.to||0)),"stl"); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)),"blk");
+  share("stl",Math.round(BB_STL*(O.to||0)),"stl"); share("blk",Math.round(BB_BLK26*(O.fga2-O.fgm2)),"blk");
   // the misses: to the men who shot, by how well they shoot (a man with no make still takes a shot or two)
   const miss=(mk,n,pT,ek,f)=>{ if(!(n>0))return; const w=P.map(x=>{ const p=Math.max(0.05,Math.min(0.97,pT*bbEff(x.pl,ek)*(f?f(x):1)));
       return (x.L[mk]+0.25*x.min/tot*5*(mk==="tpm"?x.R.tpm/0.25:1))*(1-p)/p });

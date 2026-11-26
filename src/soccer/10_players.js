@@ -56,9 +56,10 @@ function injuryCost(roster,idx){
 function blankTeamLine(){return {sog:0,pp:0,ppg:0,pim:0}}
 
 /* ============ box scores ============ */
-const OUT=["goals","ast","shots"];
-const STAT_KEYS={GK:["sv","ga","cs"],CB:OUT.concat(["cs"]),FB:OUT.concat(["cs"]),CM:OUT,W:OUT,ST:OUT};
-function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>o[k]=0); return o}
+const OUT=["goals","ast","shots","min"];
+const STAT_KEYS={GK:["sv","ga","cs","min"],CB:OUT.concat(["cs"]),FB:OUT.concat(["cs"]),CM:OUT,W:OUT,ST:OUT};
+// minutes from engine 26 (the team sheet): a season begun before it keeps its old keys (test/engine-replay.js)
+function blankStats(pos){const o={g:0}; (STAT_KEYS[pos]||[]).forEach(k=>{ if(k!=="min"||typeof ENGINE_V==="undefined"||ENGINE_V>=26)o[k]=0 }); return o}
 /* each first-choice player's share of the team's goals, assists and shots */
 const ROLE={CB:{goals:0.06,ast:0.04,shots:0.07},FB:{goals:0.05,ast:0.14,shots:0.08},CM:{goals:0.16,ast:0.24,shots:0.20},
             W:{goals:0.22,ast:0.24,shots:0.24},ST:{goals:0.36,ast:0.12,shots:0.28}};
@@ -77,7 +78,41 @@ function gameStats(rng,pl,posIdx,forPts,oppPts,won){
    the pitch (each scorer at least his goals), the keeper's saves (their shots on target less their goals) and goals
    against as the game played them. Everyone who played gets a line, the bench too. */
 const SC_ASSISTED=0.72;
+/* engine 26 (stats, follow-up): with the team sheet (the first stretch's xi0, each stretch's sb), only the men on the
+   pitch get a line: one man a unit at a time, his minutes from the sheet and the changes. Each goal goes to the man the
+   sheet had on in the scorer's unit at that minute, its assist to a team-mate on the pitch then, the shots by minutes;
+   the keeper who started gets the saves (a rested starter scored and the keeper was never rotated because the names
+   didn't follow the sheet). */
+function scLines26(rng,c,d0){
+  const o=c.side==="home"?"away":"home", tm=c.tm, xs=d0.xi0[c.side], star=p=>Math.max(0.5,1+(p.r-60)/20*0.45);
+  const len=90+(c.drives.some(d=>d&&d.seg>=SEGS)?30:0), sg={};
+  c.drives.forEach(d=>{ const L=d&&d.sb&&d.sb[c.side]; if(L)L.forEach(u=>{ if(sg[u]==null)sg[u]=d.seg }) });
+  const men=[]; POS.forEach((P,u)=>{ const a=xs[u]?BK(u):u, b=xs[u]?u:BK(u), m1=sg[u]!=null?Math.min(len,sg[u]*5):len;
+    [[a,m1,0],[b,len-m1,m1]].forEach(([i,m,from])=>{ const p=c.R[i]; if(p&&m>0)men.push({p:p,i:i,u:u,P:P.p,min:m,from:from,to:from+m}) }) });
+  const on=men.filter(x=>x.P!=="GK"), L=new Map(); on.forEach(x=>L.set(x.p.n,{goals:0,ast:0,shots:0,min:x.min}));
+  const onAt=(x,m)=>x.from<m&&m<=x.to+(x.to>=len?60:0);   // stoppage and a long extra time stay with the man on at the end
+  const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
+  const sdA=c.side==="home"?0:1, shownA=[]; c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]===sdA&&q[1]==="a")shownA.push({i:q[2],m:q[3]}) }));
+  ev.filter(e=>e.side===c.side).forEach(e=>{ const S=scGoalBy(tm,e,scOnAt(c.drives,c.side,e.m)), l=L.get(S.n); e.nm=S.n; e.un=S.unit; if(!l)return; l.goals++;
+    let k=-1; if(rng.r()<SC_ASSISTED){ const w=on.map(x=>x.p.n===S.n||!onAt(x,e.m)?0:ROLE[x.P].ast*star(x.p)*scLean(x.p,"pas")); k=splitDraw(rng,1,w).indexOf(1) }
+    const j=shownA.findIndex(q=>q.m===e.m);
+    if(j>=0){ const q=shownA.splice(j,1)[0], p=q.i>=0?c.R[q.i]:null, x=p?on.find(y=>y.p.n===p.n):null; if(x&&p.n!==S.n&&onAt(x,e.m))L.get(p.n).ast++ }
+    else if(k>=0)L.get(on[k].p.n).ast++ });
+  const sts=c.drives.filter(d=>d.st), st=sts.length?sts[sts.length-1].st:null;
+  const sd=c.side==="home"?0:1, shown={}; let nShown=0;
+  c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]!==sd||q[1]!=="s")return; const p=c.R[q[2]]; if(p&&L.has(p.n)){ shown[p.n]=(shown[p.n]||0)+1; nShown++ } }));
+  const shots=st?st[c.side][0]:0, given=on.reduce((t,x)=>t+L.get(x.p.n).goals,0);
+  const n=splitDraw(rng,Math.max(0,shots-given-nShown),on.map(x=>ROLE[x.P].shots*x.min/len*star(x.p)));
+  on.forEach((x,j)=>{ const l=L.get(x.p.n); l.shots=l.goals+n[j]+(shown[x.p.n]||0) });
+  const ga=ev.filter(e=>e.side===o).length, reg=ev.filter(e=>e.side===o&&e.m<=90).length, cs=ga===0?1:0;
+  // a clean sheet to a defender who played an hour of it (the fantasy games' rule); the keeper's whole
+  const out=on.map(x=>{ const l=L.get(x.p.n); if(x.P==="CB"||x.P==="FB")l.cs=cs&&x.min>=60?1:0; return {pl:x.p,pos:POS[x.i%POS.length].p,line:l} });
+  const gk=men.find(x=>x.P==="GK"); if(gk)out.push({pl:gk.p,pos:"GK",line:{sv:st?Math.max(0,st[o][1]-reg):0,ga:ga,cs:cs,min:gk.min}});
+  return out;
+}
 function teamLines(rng,c){
+  const d26=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26&&Array.isArray(c.drives)?c.drives.find(d=>d&&d.xi0&&d.xi0[c.side]):null;
+  if(d26)return scLines26(rng,c,d26);
   const o=c.side==="home"?"away":"home", tm=c.tm, at={}; c.R.forEach((p,i)=>{ if(p&&p.n&&!at[p.n])at[p.n]={pl:p,i:i} });
   const hurt=new Set(c.sea.talent?c.sea.talent.active(tm).map(x=>x.idx):[]), star=p=>Math.max(0.5,1+(p.r-60)/20*0.45);
   const on=[]; POS.forEach((P,i)=>{ if(P.p==="GK")return; const st=hurt.has(i)?null:c.R[i], bk=hurt.has(BK(i))?null:c.R[BK(i)], b=P.bench;

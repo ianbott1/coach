@@ -1,5 +1,5 @@
 {
- "fp": "35b5aa4aab9e8a0d",
+ "fp": "afa71f67cad4b966",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -605,59 +605,64 @@
    "fp": "35b5aa4aab9e8a0d",
    "from": "7e053079b973a78e",
    "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; basketball: full lines, lean 1.4x, usage cap"
+  },
+  {
+   "fp": "afa71f67cad4b966",
+   "from": "35b5aa4aab9e8a0d",
+   "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "7e1f66329ff86873",
-    "post": "23e32d508adf4432",
-    "champion": "Boston",
-    "rec": "fd090ac64b00f3ee",
-    "poll": "8afbcc9051557406",
-    "heis": "2d940e4354110d4b",
-    "history": "2df98605418affee",
-    "universe": "9e8aae9f80a511b4",
-    "screens": "7213b62001ff620c"
+    "games": "f4f93325f01e228a",
+    "post": "00e4f34aa4563827",
+    "champion": "Orlando",
+    "rec": "b5dc1a1f90b036d1",
+    "poll": "41d6363b0bdc54f5",
+    "heis": "d2a779e43b634a3c",
+    "history": "e81ff04ad2b16e19",
+    "universe": "1006c2a629f1c725",
+    "screens": "970346ebdf7b183a"
    },
    {
     "year": 2027,
-    "games": "1d22034afe6cf9fc",
-    "post": "82904cbfefef7574",
-    "champion": "Detroit",
-    "rec": "aa99951690dec836",
-    "poll": "286375aafdd2f8f9",
-    "heis": "29bf60a6d7103d8e",
-    "history": "d2246bda0ff9f069",
-    "universe": "f63347a518d93ede",
-    "screens": "dc84fea900a100db"
+    "games": "3d9669a76cbdb43b",
+    "post": "de0ae907a9815789",
+    "champion": "Oklahoma City",
+    "rec": "5c7655df5e0bd404",
+    "poll": "072594bd1c255c36",
+    "heis": "fe0acf0f57d3e4b9",
+    "history": "84b865c642f7edcc",
+    "universe": "966f1158834b2ab4",
+    "screens": "c5c18550ae71e62a"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "b9d1eb0ef3001c5b",
-    "post": "b724de2b2709f0ea",
-    "champion": "Minnesota",
-    "rec": "b3af3d8c52288c6b",
-    "poll": "fd240dcd525082b1",
-    "heis": "8dd1151317656a1e",
-    "history": "6289886108d42d93",
-    "universe": "da9f48babb18db07",
-    "screens": "0d4285fffa6d1030"
+    "games": "ca9aa07b03d0cd29",
+    "post": "cce01613cf639e6f",
+    "champion": "Houston",
+    "rec": "e52a5b79944a871b",
+    "poll": "ebd0109f707c4331",
+    "heis": "827255945f877f5b",
+    "history": "4af809e511e8e34b",
+    "universe": "72b39aac8e05f878",
+    "screens": "acebb56b57ad3005"
    },
    {
     "year": 2027,
-    "games": "a0074df29bd70e65",
-    "post": "d405ea5a5dd7c106",
-    "champion": "Houston",
-    "rec": "61a7eea327e07747",
-    "poll": "56f0ff1df1c5713b",
-    "heis": "e19666adebca15bf",
-    "history": "66eff6c335a7c74e",
-    "universe": "c36d0b111f0d2331",
-    "screens": "68788f44d0346657"
+    "games": "c747b28cd6b5c890",
+    "post": "f2ac0dd1429c4809",
+    "champion": "Oklahoma City",
+    "rec": "2d75c9ea65746345",
+    "poll": "4882185b0a22ed66",
+    "heis": "94c8a287498998fd",
+    "history": "ff772f3763238773",
+    "universe": "2334121188fc59f4",
+    "screens": "2a8b769f75b82c6e"
    }
   ],
   "schedules#60": [
