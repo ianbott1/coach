@@ -25,6 +25,7 @@ function ctScore(sea,A,give,i,get,w){   // club A gives the man at slot i, gets 
   const R=sea.roster[A], R2=ctAfter(R,i,get), dNow=ctVal(R2,false)-ctVal(R,false);
   return {s:w*dNow+(1-w)*(ctVal(R2,true)-ctVal(R,true))-CT_PROP*Math.max(0,-dNow),R2:R2} }
 function cpuDeadline(sea){
+  if(LEAGUE.trade&&LEAGUE.trade.cpu&&LEAGUE.trade.cpu(sea))return;   // a league's own deadline (pro basketball's front office)
   if(!LEAGUE.trade||!sea.roster||sea._ctDone===sea.year)return;
   if(sea.step!==ctDeadline())return; sea._ctDone=sea.year;
   const humans=sea.humans||[], cap=LEAGUE.taxLine||LEAGUE.cap, rec=sea.rec||{};
@@ -49,4 +50,4 @@ function cpuTradesHTML(){ const L=((SEA&&SEA.cpuTr)||[]).filter(x=>!LEAGUE.trade
   return `<div class="grouphead">Around the league: deadline deals</div><div class="card" style="padding:6px 12px">`+L.map(x=>{ const g=SEA.roster[x.my].find(p=>p&&p.n===x.qn), q=SEA.roster[x.t].find(p=>p&&p.n===x.gn);
     return `<div style="margin:4px 0">${esc(x.my)} get ${g?plLink(x.my,g.n):esc(x.qn)}${g?` <span style="color:var(--muted)">${esc(POS[SEA.roster[x.my].indexOf(g)%POS.length].p)} ${g.r}</span>`:""} from ${esc(x.t)} for ${q?plLink(x.t,q.n):esc(x.gn)}${q?` <span style="color:var(--muted)">${q.r}, ${q.age||""}</span>`:""}</div>` }).join("")+`</div>` }
 // on the home screen for a while after deadline day (three weeks of football, a week of the daily leagues)
-function cpuNewsCard(){ const L=(SEA&&SEA.cpuTr)||[]; if(!L.length||SEA.phase!=="week")return ""; const k=SEA.step-L[0].step; if(k<1||k>(LEAGUE.daily?7:3))return ""; return cpuTradesHTML() }
+function cpuNewsCard(){ if(LEAGUE.trade&&LEAGUE.trade.on&&LEAGUE.trade.on())return LEAGUE.trade.news?LEAGUE.trade.news():""; const L=(SEA&&SEA.cpuTr)||[]; if(!L.length||SEA.phase!=="week")return ""; const k=SEA.step-L[0].step; if(k<1||k>(LEAGUE.daily?7:3))return ""; return cpuTradesHTML() }

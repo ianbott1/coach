@@ -124,6 +124,7 @@ function tdShopTwo(a){ const out=[]; tdClubs().forEach(t=>{ if(tdRecent(t))retur
 function tdAskTwo(t,b){ if(tdRecent(t)||tdHurt(t,b))return []; return tdPackages(t,null,b).sort((x,y)=>(y.now+y.fut)-(x.now+x.fut)).slice(0,3) }
 const tdGo=d=>`${esc(d.t)}|${d.a}|${d.b}`+(d.give2?`|${d.a2}|${d.b2}`:"||")+(d.pk?`|${d.pk}`:"");
 function tdApply(sea,x){
+  if(x&&x.nba&&typeof nbaTdApply==="function")return nbaTdApply(sea,x);   // pro basketball's trade machine (leagues/nba 98_fo_trades)
   const my=x.my||S.myTeam, M=sea.roster[my], T=sea.roster[x.t]; if(!M||!T)return false;
   const find=(R,i,n)=>R[i]&&R[i].n===n?i:R.findIndex(p=>p&&p.n===n);
   const pairs=[[find(M,x.a,x.gn),find(T,x.b,x.qn)]]; if(x.gn2)pairs.push([find(M,x.a2,x.gn2),find(T,x.b2,x.qn2)]);
@@ -145,11 +146,12 @@ function tdDo(d){
 function tdCarry(u){
   // once a season (round 85: at the season's end, on a reload, at the summer's commit); kept off the save (not enumerable)
   if(u._tdc===SEA.year)return; Object.defineProperty(u,"_tdc",{value:SEA.year,writable:true,configurable:true,enumerable:false});
-  const own={}; tdAllTrades().forEach(x=>{ if(x.pk){ const g=x.pk==="mine"?(x.my||S.myTeam):x.t; own[g]=g===x.t?(x.my||S.myTeam):x.t } });
+  const own={}; tdAllTrades().forEach(x=>{ if(x.pk&&!x.nba){ const g=x.pk==="mine"?(x.my||S.myTeam):x.t; own[g]=g===x.t?(x.my||S.myTeam):x.t } });
   if(Object.keys(own).length)u.pickOwn={y:SEA.year,own:own};   // round 86: whose first-round pick each club holds, for the summer's draft
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
   ((SEA&&SEA.cpuTr)||[]).forEach(x=>(L[x.step]=L[x.step]||[]).push(x));   // and the computer's clubs' (round 85), after yours on deadline day
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
+    if(x.nba){ if(typeof nbaTdCarry==="function")nbaTdCarry(u,x); return }   // pro basketball's trade machine
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
       const a=M.findIndex(p=>p&&p.n===gn), b=T.findIndex(p=>p&&p.n===qn); if(a<0||b<0)return;
@@ -169,6 +171,7 @@ function tdTwoRows(L,my){ if(!L.length)return "";
   return `<div class="fnote" style="margin-top:8px">Two for two:</div>`+L.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)} and ${tdPl(my,d.give2,d.a2)}</div>
     <div class="psub">for ${esc(d.t)}${/s$/.test(d.t)?"'":"'s"} ${tdPl(d.t,d.get,d.b)} and ${tdPl(d.t,d.get2,d.b2)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${tdGo(d)}">Trade</button></div>`).join("") }
 function tradesView(){
+  if(LEAGUE.trade.on&&LEAGUE.trade.on())return LEAGUE.trade.view();   // a league's own trade machine (pro basketball's front office)
   const my=S.myTeam, st=tdState(), R=SEA.roster[my];
   let h=`<div class="note">${esc(st.why)} Up to ${TD_MAX} trades a season: one for one at the same position, or two for two (a pair at each of two positions). A club weighs now against two years ahead by where it stands, under the cap, and you always give a little more than you get.</div>`;
   const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
@@ -196,6 +199,7 @@ function tradesView(){
     else h+=T.map((q,b)=>q?`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(t,q,b)}${tdHurt(t,b)?` <span class="outtag">OUT</span>`:""}</div></div>${tdHurt(t,b)?"":`<button class="promo" data-tdask="${b}">Ask</button>`}</div>`:"").join("") }
   return h+`</div>` }
 function bindTrades(){
+  if(LEAGUE.trade&&LEAGUE.trade.on&&LEAGUE.trade.on()){ LEAGUE.trade.bind(); return }
   document.querySelectorAll("[data-tdshop]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdshop; TD_UI={shop:i<0?null:i,club:TD_UI.club}; render() });
   document.querySelectorAll("[data-tdask]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdask; TD_UI={club:TD_UI.club,ask:i<0?null:i}; render() });
   document.querySelectorAll("[data-tdno]").forEach(b=>b.onclick=()=>{ TD_UI={no:b.dataset.tdno}; render() });
@@ -229,6 +233,7 @@ function tdIncoming(){
 function tdMark(d){ if(!S.tdShown||S.tdShown.y!==SEA.year)S.tdShown={y:SEA.year,s:{},k:[]};
   const key=d.t+"|"+d.give.n; if(S.tdShown.s[SEA.step]===undefined){ S.tdShown.s[SEA.step]=key; if(S.tdShown.k.indexOf(key)<0)S.tdShown.k.push(key) } }
 function tdOfferCard(){
+  if(LEAGUE.trade&&LEAGUE.trade.on&&LEAGUE.trade.on())return LEAGUE.trade.offerCard?LEAGUE.trade.offerCard():"";
   if(!LEAGUE.trade||!SEA.roster)return ""; const k=SEA.year+"|"+SEA.step; if(TD_UI.no===k)return "";
   const sh=S.tdShown&&S.tdShown.y===SEA.year?S.tdShown:null; let d=null;
   if(sh&&sh.s[SEA.step]!==undefined){ const [t,gn]=String(sh.s[SEA.step]).split("|"), R=SEA.roster[S.myTeam], a=R.findIndex(p=>p&&p.n===gn);

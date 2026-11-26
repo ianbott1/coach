@@ -75,6 +75,7 @@ function nflBoardHTML(P){
    opens, at the asking price plus about 10%, if they fit; then your style
    fills whatever is left. */
 function nflTargetsHTML(P,room){
+  if(nbaFO())return nbaTargetsHTML(P);
   const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
   const mine=(P.targets||[]).filter(k=>byKey[k]);
   let left=room-ROOKIE_ROOM;                        // leave room for the draft class
@@ -104,6 +105,52 @@ function nflTargetsHTML(P,room){
     (pool.length?pool.map(x=>row(x,false)).join(""):`<div class="note">Nobody worth chasing this year.</div>`);
   return h;
 }
+/* The front office (Nov 2026): free agency is days of bidding, and a target is an offer you make: the money and the
+   years. What you can offer other clubs' free agents: your cap room, else the mid-level exception your payroll allows,
+   else the minimum. */
+function nbaRookiesDue(){ return dnPicksOf(dnTeam()).reduce((s,o)=>s+(o<=dnOrder().length?nbaRookieSal(o):nbaMin(20)),0) }
+function nbaCanSpend(){ const my=S.myTeam, pay=nflPlannedPay()+nbaRookiesDue(), lim=nbaBudget(U,my);
+  if(pay<NBA$.cap-1)return {amt:Math.max(0,Math.min(NBA$.cap,lim)-pay),how:"room",pay:pay};
+  const m=pay+NBA$.mleNT<=NBA$.ap1?NBA$.mleNT:pay+NBA$.mleT<=NBA$.ap2?NBA$.mleT:0;
+  return m&&pay+m<=lim+1?{amt:m,how:"mle",pay:pay}:{amt:0,how:"min",pay:pay} }
+function nbaBidOf(P,x){ const b=P.bids&&P.bids[x.key]; return {sal:b&&b.sal?b.sal:x.ask,yrs:b&&b.yrs?b.yrs:nbaYears(x.age,x.r)} }
+function nbaTargetsHTML(P){
+  const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
+  const mine=(P.targets||[]).filter(k=>byKey[k]), sp=nbaCanSpend(), R=U.roster[S.myTeam];
+  const canW=sp.how==="room"?`about ${nbaMoney(sp.amt)} of cap room`:sp.how==="mle"?`the ${nbaMoney(sp.amt)} mid-level exception (one player, or split)`:`only minimum deals (over the cap with no exception your payroll or owner allows)`;
+  let h=`<div class="grouphead">Free agents you want: your offers</div>
+    <div class="note">Free agency runs ${NBA_FAD} days. Clubs bid; each player weighs the money against his market, the years he wants, winning, the role he'd have, and his old club. Stars wait for the market, role players sign early. With your payroll after re-signings and your draft picks (${nbaMoney(sp.pay)}), you can offer ${canW}. Your own players you re-sign above (Bird rights), up to your owner's limit of ${nbaMoney(nbaBudget(U,S.myTeam))}.</div>`;
+  let left=sp.how==="min"?0:sp.amt;
+  const role=x=>{ const i=POS.findIndex(Q=>Q.p===x.p), s=R[i], b=R[BK(i)]; return !s||x.r>s.r?"would start for you":!b||x.r>b.r?"would back up "+s.n:"would be your third man" };
+  const row=(x,on,i)=>{
+    if(!on)return `<div class="drow"><div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
+      <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; market about ${nbaMoney(x.ask/1.1)} &middot; ${role(x)}</div></div>
+      <button class="skip small" data-fatadd="${esc(x.key)}">Make an offer</button></div>`;
+    const b=nbaBidOf(P,x), min=b.sal<=nbaMin(x.age)+0.05; let fit;
+    if(min)fit="a minimum deal: anyone can offer one";
+    else if(b.sal<=left+0.05){ fit=sp.how==="room"?`fits your room (${nbaMoney(left-b.sal)} left after it)`:"fits the mid-level exception"; if(sp.how==="room")left-=b.sal; else left=0 }
+    else fit=`<span class="dn">more than you can offer now (${nbaMoney(left)})</span>`;
+    const hold=x.r>=63?"will wait for the market":x.r>=57?"takes a day or two":"signs early";
+    const pull=b.sal>=x.ask*1.05?"a strong offer":b.sal>=x.ask*0.95?"about his market":b.sal>=x.ask*0.8?"under his market":"well under his market";
+    return `<div class="drow"><span class="dpick">${i+1}.</span>
+      <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
+        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; market about ${nbaMoney(x.ask/1.1)} for ${nOf(nbaYears(x.age,x.r),"year")} &middot; ${hold} &middot; ${role(x)}${x.age>=29?" &middot; winning matters to him":""}</div>
+        <div class="fnote"><b>Your offer: ${nbaMoney(b.sal)} a year for ${nOf(b.yrs,"year")}</b> (${pull}) &middot; ${fit}</div>
+        <div><button class="skip small" data-bid="${esc(x.key)}|-1|0">&minus; $1M</button> <button class="skip small" data-bid="${esc(x.key)}|1|0">+ $1M</button>
+          <button class="skip small" data-bid="${esc(x.key)}|0|-1">&minus; a year</button> <button class="skip small" data-bid="${esc(x.key)}|0|1">+ a year</button></div></div>
+      <button class="skip small" data-fatrm="${esc(x.key)}">Withdraw</button></div>` };
+  h+=mine.length?mine.map((k,i)=>row(byKey[k],true,i)).join("")
+    :`<div class="note">No offers yet: your free-agency style will bid for you. Add players below and you make them an offer on the first day.</div>`;
+  const pool=pre.filter(x=>mine.indexOf(x.key)<0).slice(0,25);
+  h+=`<div class="grouphead">Likely free agents &mdash; the best 25</div>`+(pool.length?pool.map(x=>row(x,false)).join(""):`<div class="note">Nobody worth chasing this year.</div>`);
+  return h }
+/* the club's options on next season: pick up or decline (the front office) */
+function nbaOptionsHTML(P){ const R=U.roster[S.myTeam], T=P.topt||{}, ks=Object.keys(T).map(Number).filter(i=>R[i]);
+  if(!ks.length)return "";
+  return `<div class="grouphead">Team options</div><div class="note">The last year of these deals is yours to keep or decline. Declined, he's a free agent.</div>`+
+    ks.map(i=>{ const p=R[i], on=!!T[i]; return `<div class="cand ${on?'on':''}"><div class="candtop"><div><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
+      <div class="fnote">${p.k.rk?"Rookie scale":"Team option"} &middot; age ${p.age+1} next season &middot; rated ${p.r} &middot; ${nbaMoney(p.k.sal)} next season (market about ${nbaMoney(nbaAsk(p.r,p.age+1))})</div></div>
+      <button class="promo" data-topt="${i}" aria-pressed="${on}">${on?"Picking up":"Declining"}</button></div></div>` }).join("") }
 function nflPickSlot(){
   const o=dnPicksOf(dnTeam())[0]||0;
   return ordinal(o);                  // 21st, not 21th
@@ -125,11 +172,15 @@ function offseasonBanner(){
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
-  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  if(X.bill){ const B=X.bill, own=X.mood<0?" The owner wants the payroll back under the tax line: your limit this season is the tax line.":X.mood>0?" The owner liked what he paid for: your limit goes up a step this season.":"";
+    rec+=B.tax>0?`<div class="bnews ${X.mood<0?"flag":""}"><b>The tax bill:</b> a ${money2(B.pay)} payroll cost ${nbaMoney(B.tax)} in luxury tax${B.rep?" at the repeater's rates":""}.${own}</div>`
+      :B.short>0?`<div class="bnews small"><b>Under the floor:</b> a ${money2(B.pay)} payroll was ${nbaMoney(B.short)} short of the ${nbaMoney(NBA$.floor)} minimum; the shortfall went to the players.</div>`:"" }
+  if(X.payroll!=null&&nbaFO())rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)}, ${esc(NBA_TIERW[nbaTier(X.payroll)])} &middot; your owner's limit ${nbaMoney(nbaBudget(U,my))}${nbaTaxBill(X.payroll)>0?` &middot; on course for a ${nbaMoney(nbaTaxBill(X.payroll,nbaRepeater(U,my)))} tax bill`:""}.</div>`;
+  else if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
-  if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M")}.</div>`;
+  if((X.signed||[]).length)rec+=`<div class="bnews"><b>Free agency:</b> ${list(X.signed,p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+") $"+p.sal.toFixed(1)+"M"+(p.yrs&&p.day?" for "+nOf(p.yrs,"year")+", day "+p.day+(p.how==="mle"?", the mid-level":p.how==="min"?", the minimum":""):""))}.</div>`;
   if(X.trade)rec+=X.trade.done?`<div class="bnews"><b>Trade:</b> ${esc(X.trade.gave)} (${esc(X.trade.gp)}) to ${esc(X.trade.with)} for ${esc(X.trade.got)} (${esc(X.trade.qp)}).</div>`
     :`<div class="bnews small"><b>Trade called off:</b> ${esc(X.trade.why)}.</div>`;
   const missed=(X.targets||[]).filter(x=>!x.got);
@@ -256,23 +307,27 @@ function offseasonScreen(){
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");
   const tax=LEAGUE.taxLine||LEAGUE.cap;
-  h+=`<div class="budgetleft ${pay<=tax?'done':''}">Payroll $${pay.toFixed(1)}M &middot; cap $${LEAGUE.cap}M &middot; ${
+  if(nbaFO()){ const lim=nbaBudget(U,my), tb=nbaTaxBill(pay);
+    h+=`<div class="budgetleft ${pay<=lim?'done':''}">Payroll ${nbaMoney(pay)} &middot; ${esc(NBA_TIERW[nbaTier(pay)])} &middot; cap ${nbaMoney(NBA$.cap)}, tax ${nbaMoney(NBA$.tax)}, aprons ${nbaMoney(NBA$.ap1)} / ${nbaMoney(NBA$.ap2)} &middot; owner's limit ${nbaMoney(lim)}${tb>0?` &middot; tax bill ${nbaMoney(tb)}`:""}</div>`;
+    h+=`<div class="note">Over the cap you can still re-sign your own (Bird rights), up to your owner's limit. Room under the cap is what you can offer other clubs' free agents; over it, the mid-level exception (${nbaMoney(NBA$.mleNT)}, ${nbaMoney(NBA$.mleT)} once you're past the first apron) or the minimum.</div>`;
+    h+=nbaOptionsHTML(P) }
+  else{ h+=`<div class="budgetleft ${pay<=tax?'done':''}">Payroll $${pay.toFixed(1)}M &middot; cap $${LEAGUE.cap}M &middot; ${
     room>=0?"$"+room.toFixed(1)+"M room":"$"+(-room).toFixed(1)+"M over the cap"}</div>`;
-  if(tax>LEAGUE.cap)h+=`<div class="note">You can go over the cap to re-sign your own players, up to the $${tax}M tax line. Over the cap, you can't sign other teams' free agents.</div>`;
+  if(tax>LEAGUE.cap)h+=`<div class="note">You can go over the cap to re-sign your own players, up to the $${tax}M tax line. Over the cap, you can't sign other teams' free agents.</div>`; }
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
     return `<div class="cand ${on?'on':''}">
       <div class="candtop"><div><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
-      <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
+      <div class="fnote">${i<POS.length?"Starter":i<2*POS.length?"Backup":"End of the bench"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
       <button class="promo" data-resign="${i}" aria-pressed="${on}" title="${on?"Tap to let him go":"Tap to re-sign him"}">${on?"Re-signing":"Letting go"}</button></div>
-      <div class="cdesc">Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
+      <div class="cdesc">${a.out?"Opted out of his last year. ":""}Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
         p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
   h+=`<div class="grouphead">${n(2)}. Free agency</div>`;
   const FA=LEAGUE.offseason.faStyles;
   h+=Object.keys(FA).map(k=>`<div class="opt ${P.fa===k?'on':''}" data-fa="${k}">
     <div class="fname">${esc(FA[k].l)}</div><div class="cdesc">${esc(FA[k].d)}</div></div>`).join("");
   h+=nflTargetsHTML(P,room);
-  h+=nflTradeHTML(P);
+  if(!nbaFO())h+=nflTradeHTML(P);   // the front office trades on the Trades tab, all year
   h+=`<div class="grouphead">${n(3)}. The draft</div>`;
   h+=dnSectionHTML();
   const DR=LEAGUE.offseason.draftStyles;
@@ -292,7 +347,8 @@ Object.assign(LEAGUE.ui,{
   /* null when you can go on; otherwise what the button says */
   offseasonBlock(){
     if(!S.off)return null;
-    // your own players may take you over the cap, up to the tax line
+    // your own players may take you over the cap, up to the tax line (the front office: up to the owner's limit)
+    if(nbaFO()){ const o=nflPlannedPay()-nbaBudget(U,S.myTeam); return o>0?"Over your owner's limit by "+nbaMoney(o):null }
     const over=nflPlannedPay()-(LEAGUE.taxLine||LEAGUE.cap);
     return over>0?"Over the tax line by $"+over.toFixed(1)+"M":null;
   },
@@ -312,6 +368,14 @@ Object.assign(LEAGUE.ui,{
       const P=S.off.picks, R=U.roster[S.myTeam], g=R[P.block];
       const o=nflTradeOffers(U,S.myTeam,P.block,nflHumans())[+b.dataset.taccept]; if(!o||!g)return;
       P.trade=Object.assign({},o,{giveName:g.n,giveSal:g.k.sal}); P.block=null; save(); render();});
+    document.querySelectorAll("[data-topt]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks, i=+b.dataset.topt; P.topt=P.topt||{}; P.topt[i]=!P.topt[i]; save(); render();});
+    document.querySelectorAll("[data-bid]").forEach(b=>b.onclick=()=>{
+      const P=S.off.picks, [t,n,pos,dm,dy]=b.dataset.bid.split("|"), key=[t,n,pos].join("|");
+      const x=nflFreeAgentPreview(U,S.myTeam).find(z=>z.key===key); if(!x)return;
+      const c=nbaBidOf(P,x); P.bids=P.bids||{};
+      P.bids[key]={sal:Math.round(Math.max(nbaMin(x.age),Math.min(nbaMax(x.age),c.sal+(+dm)))*10)/10,yrs:Math.max(1,Math.min(5,c.yrs+(+dy)))};
+      save(); render();});
     document.querySelectorAll("[data-fatadd]").forEach(b=>b.onclick=()=>{
       const P=S.off.picks; P.targets=(P.targets||[]).concat([b.dataset.fatadd]); save(); render();});
     document.querySelectorAll("[data-fatrm]").forEach(b=>b.onclick=()=>{

@@ -364,6 +364,7 @@ function newUniverse(seed){
   });
   u._rngState=seed*7919+13;
   NAMES.forEach(t=>distinctStaff(u,t));
+  if(LEAGUE.offseason&&LEAGUE.offseason.init)LEAGUE.offseason.init(u);   // a league's own new-universe settings (pro basketball's front office); none elsewhere
   return u;
 }
 

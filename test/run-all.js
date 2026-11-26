@@ -39,7 +39,7 @@ add('bracket (ncaab)',['bb-bracket.js','12']); add('screens (ncaab)',['bb-screen
 add('transfer portal (ncaab)',['bb-portal.js','4']);
 add('March vs history (ncaab)',['bb-march.js','2','100'],{long:true});
 // pro basketball
-add('playoffs (nba)',['nba-playoffs.js','4']); add('screens (nba)',['nba-screens.js']);
+add('playoffs (nba)',['nba-playoffs.js','4']); add('screens (nba)',['nba-screens.js']); add('the front office: cap sheet, fifteen, trades, free agency, an old career (nba)',['nba-fo.js'],{timeout:1200000});
 add('NBA history (nba)',['nba-history.js','2','100'],{long:true});
 add('draft labels hold their bands (pro)',['draft-labels.js','16'],{long:true});
 // pro hockey

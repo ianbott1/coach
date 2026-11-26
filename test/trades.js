@@ -12,7 +12,7 @@ const FLEECE=process.argv.includes('--fleece'), FL=[];
 for(const [f,team] of G){const p=await b.newPage({viewport:{width:1265,height:900}}),errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto('file://'+path.join(process.env.DIST||path.join(__dirname,'..','dist'),f));await p.waitForTimeout(400);
 // to an open day: soccer waits for January
-const r=await p.evaluate(([team])=>{newDynasty(team,5,'T');S.title=false;S.guide=false;
+const r=await p.evaluate(([team])=>{newDynasty(team,5,'T');S.title=false;S.guide=false;if(LEAGUE.trade.on&&LEAGUE.trade.on())return {skip:1};   /* pro basketball's front office: its own trade machine, tested by nba-fo.js */
   let n=0; while(!tdState().open&&SEA.phase==="week"&&n<400){simAdvance();n++} if(!tdState().open)return {err:'never open: '+tdState().why};
   for(let i=0;i<3;i++)simAdvance();
   const my=S.myTeam, R=SEA.roster[my];
@@ -20,6 +20,7 @@ const r=await p.evaluate(([team])=>{newDynasty(team,5,'T');S.title=false;S.guide
   const C=tdClubs(), t=C[3], ask=SEA.roster[t].map((q,b)=>q?tdAsk(t,b).list.length:0);
   const same=JSON.stringify(tdOffers(0).map(d=>[d.t,d.b]))===JSON.stringify(tdOffers(0).map(d=>[d.t,d.b]));
   return {step:SEA.step,date:LEAGUE.dates[SEA.step],why:tdState().why,shops,offers,asked:ask.length,askYes:ask.filter(x=>x).length,same,clubs:C.length}},[team]);
+if(r.skip){console.log(f.padEnd(26),'its own trade machine: see test/nba-fo.js');await p.close();continue}
 if(r.err){console.log(f,r.err);bad++;await p.close();continue}
 console.log(f.padEnd(26),`${r.date} (${r.why}) offers ${r.offers} for ${r.shops} players; of one club's ${r.asked}, ${r.askYes} could be had; ${r.clubs} clubs`);
 ok(r.offers>0,'some offers'); ok(r.askYes>0,'some of a club\'s men could be had'); ok(r.same,'the same question, the same answer');
