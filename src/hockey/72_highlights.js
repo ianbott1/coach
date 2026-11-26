@@ -439,6 +439,9 @@ const HL_SPORT=(function(){
     let txt=hpText(P,mv,k===T.length-2&&u>0.6?T.length-1:k); const sh0=P.shortAt(0,f), sh1=P.shortAt(1,f);
     if(sh0||sh1)txt=(txt?txt+" · ":"")+"Power play, "+(sh0?g.away:g.home);
     if(txt)hlTicker(x,W,H,txt.charAt(0).toUpperCase()+txt.slice(1),8+Math.max(10,Math.round(W/44))*1.7+6);
+    // round 111 (Ian: a play by play in every sport, synced): each move's end as it is shown, by name
+    if(typeof hlFeedTick==="function")hlFeedTick(()=>{ const out=[]; P.moves.forEach((m2,i)=>{ const z=m2.T[m2.T.length-1]; if(z.f>f||m2.end==="clip")return; const tx=hpText(P,m2,m2.T.length-1); if(!tx)return;
+      const sd=m2.end==="pen"?m2.m.pen:m2.end==="icing"||m2.end==="off"?m2.side:1-m2.side; out.push({k:d.seg+"|h"+i,m:evPB.clock(d,z.f),team:sd?g.away:g.home,text:tx.charAt(0).toUpperCase()+tx.slice(1),big:m2.end==="pen"?"pen":null}) }); return out });
     if(mv.end==="pen"&&k===T.length-2&&u>0.7)hlBanner(x,W,H,"PENALTY",{fill:"#F2C14E"},(u-0.7)/0.3);
     // round 108: the bench changes how it plays (the computer pushing in the third or locking it down, your call)
     else if(HP2()&&f<0.16&&d.md){ const di=(L.drives||[]).indexOf(d), pv=di>0?L.drives[di-1]:null;
@@ -488,5 +491,5 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {frameDbg:()=>frame.dbg||null, drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
+  return {feedClips:true, frameDbg:()=>frame.dbg||null, drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
 })();

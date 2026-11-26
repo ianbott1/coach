@@ -171,7 +171,7 @@ function liveView(){
     return d.home?100-end:end};
   return `<div class="watchwrap">
     ${liveScoreboard()}
-    ${typeof hlBox==="function"?hlBox():""}
+    ${typeof hlBox==="function"?hlBox():""}${typeof hlFeedHTML==="function"?hlFeedHTML():""}
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
     ${typeof HL!=="undefined"&&HL.foot&&HL.footG===g&&!live.done?`<div class="fpos">${esc(HL.foot)}</div>`:last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started ${fbYd(last.start)}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}

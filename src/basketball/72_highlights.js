@@ -154,7 +154,7 @@ const HL_SPORT=(function(){
     const sd=p[0], to=p[1], fta=p[2], ftm=p[3], tpa=p[4], tpm=p[5], fga2=p[6], fgm2=p[7], ob=p[8], late=p[9];
     const A=[], u=k=>pbSeed(d,i,k);
     let x3=tpa-tpm, x2=fga2-fgm2, k=0;
-    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; A.push({t:"miss",three:three,who:pickBy(three?W3:W2,u("s"+k)),reb:off?"off":"def",rb:pickBy(WRB,u("r"+k))}); k++ };
+    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; const who=pickBy(three?W3:W2,u("s"+k)); let rb=pickBy(WRB,u("r"+k)); if(off&&rb===who)rb=(rb+4)%5; A.push({t:"miss",three:three,who:who,reb:off?"off":"def",rb:rb}); k++ };   // round 111: not his own miss
     if(to&&!tpa&&!fga2&&!fta){ A.push({t:"to",who:pickBy(WTO,u("t")),st:pickBy(WST,u("st"))}); return A }
     for(let j=0;j<ob;j++)miss(true);
     if(tpm||fgm2){ const three=!!tpm; A.push({t:"make",three:three,who:pickBy(three?W3:W2,u("s"+k)),pts:three?3:2,and1:!three&&fta===1,ftm:ftm}); return A }
@@ -300,6 +300,11 @@ const HL_SPORT=(function(){
     hlTicker(x,W,H,top,8.01);   // top right: the score bug has the left
     if(end){ const key=pi+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
     pbPatch(hs,as,clk);
+    // round 111 (Ian: a play by play in every sport, synced): each trip once it's over, by name
+    if(typeof hlFeedTick==="function")hlFeedTick(()=>{ const out=[]; plan.P.forEach((q2,j)=>{ if(q2.at+q2.w>T)return; const hm=q2.side===0, A=hm?NM.home:NM.away, Dn=hm?NM.away:NM.home, tm=hm?g.home:g.away, ot=hm?g.away:g.home, nm=k=>surname(A[k])||tm, dm=k=>surname(Dn[k])||ot;
+      const bits=q2.acts.map(a=>a.t==="to"?`${nm(a.who)} turns it over, ${dm(a.st)} with the steal`:a.t==="ft"?`${nm(a.who)} ${a.m} of ${a.n} at the line`:a.t==="make"?(a.three?`${nm(a.who)} from three`:a.and1?`${nm(a.who)} scores and one`:`${nm(a.who)} scores`)
+        :`${nm(a.who)} misses${a.three?" from three":""}, ${a.reb==="off"?nm(a.rb)+" offensive board":dm(a.rb)+" rebound"}`);
+      if(!bits.length)return; out.push({k:d.seg+"|b"+j,m:clockAt(d.seg,(q2.at+q2.w)/plan.tot),team:tm,text:(q2.trans?"On the break: ":"")+bits.join("; "),big:q2.acts.some(a=>a.t==="make"&&a.three)?"three":null}) }); return out });
     // the crowd, once a basket: your side's three, or a basket that takes the lead
     { const L0=pbDraw._sc; pbDraw._sc={d:d,h:hs,a:as};
       if(L0&&L0.d===d&&(hs!==L0.h||as!==L0.a)&&typeof sfx==="function"){ const meH=live.userIsHome, mineUp=meH?hs-L0.h:as-L0.a, my=meH?hs:as, th=meH?as:hs, was=meH?L0.h-L0.a:L0.a-L0.h;

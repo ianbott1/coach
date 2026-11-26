@@ -75,7 +75,7 @@ function hlPlay(L,drive){
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
-  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)) });
+  clips.forEach(c=>{ c.dur=c.rtS&&hlMode()==="full"&&typeof fullRT==="function"?Math.round(c.rtS*1000*fullRT()):Math.round(c.base*Math.min(1.6,k)) });   // round 111: a clip that knows its real seconds (football's drives) runs them on the full match's pace
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
@@ -193,6 +193,7 @@ function hlEvDraw(x,W,H){
   P.seg.slice(0,i).forEach(z=>{ if(z.k==="clip")goal(z.c) });
   let clock;
   if(q.k==="clip"){ const t=Math.min(1,(el-q.at)/Math.max(1,q.ms)), rv=q.c.reveal!=null?q.c.reveal:HL_SPORT.reveal;
+    if(rv!=null&&t>=rv&&HL_SPORT.feedClips&&q.c.text&&typeof hlFeedTick==="function"){ const c0=q.c; hlFeedTick(()=>[{k:"c|"+d.seg+"|"+c0.f, m:S.clock(d,c0.f), team:c0.tm||"", text:c0.text, big:c0.kind==="goal"?"goal":null}]) }   // round 111: the clip's line in the play by play
     if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
     clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
@@ -382,8 +383,8 @@ function hlFeedTick(get){
   if(added){ try{ const el=document.getElementById("pbp"); if(el)el.innerHTML=hlFeedRows() }catch(e){} } }
 const PBP_SHOW=9;
 function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
-  if(!F.length)return `<div class="pbpe">Kick-off: the play by play follows the ball.</div>`;
-  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}'</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
-function hlFeedHTML(){ if(typeof pbOn!=="function"||!pbOn()||typeof live==="undefined"||!live)return "";
+  if(!F.length)return `<div class="pbpe">The play by play follows the action.</div>`;
+  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}${typeof x.m==="number"?"'":""}</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+function hlFeedHTML(){ if(typeof live==="undefined"||!live||!((typeof pbOn==="function"&&pbOn())||(typeof hlMode==="function"&&hlMode()==="full"&&typeof hlCan==="function"&&hlCan())))return "";   // round 111: every sport's full match (football's drives aren't a playback)
   // round 108: the pitch tells it; the feed is one line, the latest, unless you open it (Ian: "I'm not sure how necessary the text is")
   return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }
