@@ -24,7 +24,7 @@ const G=new Function(js+`
     const ph=this.phase, st=this.step; REC.lastDrives=null;
     const r=_rs.call(this,a,b,neutral,extra);
     REC.games.push({a:a,b:b,n:!!neutral,wp:wp,wd:wd,dv:(typeof CONF!=='undefined'?CONF[a]:null),hp:r.hp,ap:r.ap,w:r.winner,ph:ph,st:st,ot:r.ot||0,draw:!!r.draw,cup:!!(extra&&extra.cup),hs:r.hseed,as:r.aseed,user:this.userTeam===a||this.userTeam===b});
-    if(REC.lastDrives&&REC.lastDrives.length&&REC.lastDrives[0]&&REC.lastDrives[0].kind)REC.drives.push(REC.lastDrives.map(d=>d.kind)); REC.sides=REC.sides||[]; [true,false].forEach(h=>{ const D=REC.lastDrives.filter(d=>!!d.home===h&&!d.ot); if(D.length)REC.sides.push([D.length,D.filter(d=>d.kind==='TD').length,D.filter(d=>d.kind==='FG'||d.kind==='MISS').length]) })
+    if(REC.lastDrives&&REC.lastDrives.length&&REC.lastDrives[0]&&REC.lastDrives[0].kind){ REC.drives.push(REC.lastDrives.map(d=>d.kind)); REC.sides=REC.sides||[]; [true,false].forEach(h=>{ const D=REC.lastDrives.filter(d=>!!d.home===h&&!d.ot); if(D.length)REC.sides.push([D.length,D.filter(d=>d.kind==='TD').length,D.filter(d=>d.kind==='FG'||d.kind==='MISS').length]) }) }
     return r };
   return {REC,newDynasty,get SEA(){return SEA},get S(){return S},get U(){return U},NAMES,LEAGUE,expectations,winProb,get ENGINE_V(){return ENGINE_V}};`)();
 const L=G.LEAGUE, W=L.weeks;

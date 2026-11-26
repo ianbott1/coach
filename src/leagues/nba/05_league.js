@@ -52,8 +52,7 @@ const LEAGUE={
     "Real Madrid","Partizan","ASVEL","Mega Basket","Joventut","Ratiopharm Ulm","Overtime Elite","G League Ignite"],
   awards:{mvp:"MVP", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},
   tuning:{bb11:{sht:0.0225,pd:0.022,fin:0.022,id:0.0218,ath:0.011,athd:0.00825,ply:0.0158,reb:0.018,sta:0.0428,shr:0.02},   /* round 88: engine 11, a point of each attribute worth a rating point (BB11, scratch r88/marg.js) */ century:500, unbeaten:0.85, /* round 60: achievements (unbeaten: as rare as a perfect college football season, ~0.6% of team-seasons) */ wpK:{safe:274,balanced:280,aggressive:290}, softWp:[200,0.5],   /* round 39: the gap per possession 0.0006 -> 0.00052 (best records ran ~70, one 77-5; favourites 73.6% -> 70.2%) and the shown chance softened like the engine (refit 250 -> 280) */   /* round 32: pace held to ±8% (the plans moved scoring 20 points and wins little); safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
-    get hfa(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=25?+((typeof process!=="undefined"&&process.env&&process.env.HFA25)||30):60 },   // engine 25: home court (ESPN 2024-25: home sides won 54.4%; it played 58.4%)
-    gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
+    hfa:60, gapScale:1, pFloor:1200, pCeil:1850, talentSteps:+((typeof process!=="undefined"&&process.env&&process.env.NBA_TS)||12),
     /* the pro game (docs/NBA.md): 48 minutes in quarters, ~99 possessions */
     bb:{pace:99,paceSd:2.5,two:0.557,three:0.370,foul2:0.13,foul3:0.02,ft:0.785,and1:0.09,oreb:0.24,foulOut:6,starFouls:3.0,teamFouls:20,
         toBase:0.129,softGap:200,gapPerPoss:+((typeof process!=="undefined"&&process.env&&process.env.NBA_GAP)||0.00052),garbage:13,benchPull:0.08,quarters:true,lateLeft:"six"}},
