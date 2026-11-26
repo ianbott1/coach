@@ -228,11 +228,11 @@ function ntDecode(s){ const [t,a,b,pa,pb]=s.split("|"), n=x=>x?x.split(".").map(
 function ntState(){ const T=LEAGUE.trade; if(SEA.phase!=="week")return {open:false,why:"Trades are closed until next season."};
   if(tdDay((LEAGUE.dates||[])[SEA.step]||"")>tdDay(T.by))return {open:false,why:`The trade deadline (${T.by}) has passed.`};
   return {open:true,why:`The trade deadline is ${T.by}.`} }
-function ntCapSheet(){ const my=S.myTeam, R=SEA.roster[my], pay=ntPay(R), tier=nbaTier(pay), tax=nbaTaxBill(pay), lim=nbaBudget(U,my);
+function ntCapSheet(){ const my=S.myTeam, R=SEA.roster[my], pay=ntPay(R), tier=nbaTier(pay), rp=nbaRepeater(U,my), tax=nbaTaxBill(pay,rp), lim=nbaBudget(U,my), md=nbaMood(U,my);
   const row=(l,v,on)=>`<div style="display:flex;justify-content:space-between;padding:2px 0${on?";font-weight:600":""}"><span>${l}</span><span>${v}</span></div>`;
   return `<div class="card" style="padding:8px 12px;margin:6px 0">${row("Payroll",nbaMoney(pay),1)}${row("Where it sits",esc(NBA_TIERW[tier]))}
     ${row("Cap",nbaMoney(NBA$.cap))}${row("Tax line",nbaMoney(NBA$.tax))}${row("First apron",nbaMoney(NBA$.ap1))}${row("Second apron",nbaMoney(NBA$.ap2))}
-    ${row("Your owner will pay up to",nbaMoney(lim))}${tax>0?row("Luxury tax bill at this payroll",`<span class="dn">${nbaMoney(tax)}</span>`,1):""}
+    ${row("Your owner will pay up to",nbaMoney(lim)+(md<0?" (he wants out of the tax)":md>0?" (a step up, for last season)":""))}${tax>0?row("Luxury tax bill at this payroll"+(rp?" (repeater)":""),`<span class="dn">${nbaMoney(tax)}</span>`,1):pay<NBA$.floor?row("Short of the salary floor",nbaMoney(NBA$.floor-pay)):""}
     <div class="fnote" style="margin-top:4px">${tier==="room"?"Under the cap, salary you take in fits inside your room.":tier==="cap"||tier==="tax"?"Over the cap: what you take back is matched to what you send (about twice a small contract, a big one plus $9.1M or a quarter more).":tier==="ap1"?"Over the first apron: you can't take back more salary than you send.":"Over the second apron: no more salary back than out, and no adding contracts together to match a bigger one."}</div></div>` }
 function ntBuilder(){
   const my=S.myTeam, C=tdClubs(), t=NT_UI.club&&C.indexOf(NT_UI.club)>=0?NT_UI.club:null;

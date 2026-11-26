@@ -32,7 +32,7 @@ const nbaMax=age=>{ const s=nbaSvc(age); return s>=10?NBA$.max[2]:s>=7?NBA$.max[
 /* What the market pays, by rating: the stars at the max, a good starter about the mid-level and up, the end of the
    bench at the minimum. Set so a club of fifteen pays about the cap and the best-run spend into the tax (measured:
    test/nba-cap.js prints the league's payrolls). */
-const NBA_PAYC=[[42,0],[46,2.8],[50,5.6],[54,10],[57,14.5],[60,21],[63,29],[66,38],[69,46],[72,55],[76,62]];
+const NBA_PAYC=[[42,0],[46,3],[50,6.2],[54,11.5],[57,16.5],[60,23.5],[63,31.5],[66,40],[69,47],[72,55],[76,62]];
 function nbaMarket(r){ const C=NBA_PAYC; if(r<=C[0][0])return 0; for(let i=1;i<C.length;i++)if(r<=C[i][0]){ const [a,x]=C[i-1],[b,y]=C[i]; return x+(y-x)*(r-a)/(b-a) } return C[C.length-1][1] }
 function nbaAsk(r,age){
   let s=nbaMarket(r); if(age>=32)s*=0.72; else if(age>=30)s*=0.85; else if(age>=29)s*=0.93;
@@ -60,7 +60,8 @@ function nbaTakeBack(out,payBefore,payAfterIn){
 const NBA_BIG={"New York":2,"LA Lakers":2,"Golden State":2,"Boston":1,"LA Clippers":1,"Brooklyn":1,"Chicago":1,"Philadelphia":1,"Houston":1,"Dallas":1,"Miami":1,"Toronto":1};
 function nbaBudget(u,t){ const pr=(u&&u.program&&u.program[t])||1500, big=NBA_BIG[t]||0;
   const s=(pr-1500)/100+big*0.6;
-  return s>=1.6?NBA$.ap2:s>=0.9?NBA$.ap1:s>=0.2?NBA$.tax:s>=-0.6?NBA$.tax-6:NBA$.cap+10 }
+  const k=s>=1.6?4:s>=0.9?3:s>=0.2?2:s>=-0.6?1:0, m=nbaFO(u)?nbaMood(u,t):0;
+  return NBA_TIERS()[m<0?Math.min(k,2):m>0?Math.min(4,k+1):k] }
 const nbaMoney=x=>"$"+(+x).toFixed(1)+"M";
 /* old contracts on the new scale (once, the summer a career comes onto these rules): each man paid what the market
    pays him now, a drafted man on his pick's rookie scale; his years left stay */
@@ -81,3 +82,42 @@ function nbaSpend(u,t,R,used){ const pay=payroll(R), lim=nbaBudget(u,t);
   if(!(used&&used[t])){ const m=pay+NBA$.mleNT<=NBA$.ap1?NBA$.mleNT:pay+NBA$.mleT<=NBA$.ap2?NBA$.mleT:0;
     if(m&&pay+m<=lim+1)return {amt:m,how:"mle"} }
   return {amt:0,how:"min"} }
+/* Free agency: days of bidding (26_offseason nflRun). What a player makes of an offer: the money against his market,
+   the years he wants (a veteran wants security, a young man about what his age gets), winning (more to a veteran), the
+   role he'd have at that club (a starter's minutes, a backup's, the end of the bench), and a nod to the club he played
+   for. A game rule, set so the money decides most signings and the rest decide the close ones. */
+const NBA_FAD=5;
+function nbaFaPref(u,p,o,elo,parts){
+  const R=u.roster[o.t], pY=nbaYears(p.age,p.r), s=R[p.i], b=R[BK(p.i)];
+  const money=o.sal/Math.max(p.ask||0,nbaMin(p.age));
+  const yrs=p.age>=30?0.03*Math.max(-2,Math.min(2,o.yrs-pY)):-0.03*Math.abs(o.yrs-pY);
+  const e=elo&&elo[o.t]!=null?elo[o.t]:1500, win=(e-1500)/100*(p.age>=29?0.10:0.06);
+  const role=(!s||p.r>s.r?0.07:!b||p.r>b.r?0:-0.10)*(p.r>=56?1:0.5);
+  const home=o.t===p.from?0.04:0;
+  if(parts)return {money:money,yrs:yrs,win:win,role:role,home:home};
+  return money+yrs+win+role+home+(o.nz||0) }
+/* what he holds out for on day d: the better he is, the longer he waits for the market */
+const nbaFaHold=(p,d)=>(p.r>=63?1.08:p.r>=57?1.03:0.98)-0.05*d;
+/* your offer to a target: the price and years you set, or his ask and about 10% for the years he wants */
+function nbaBid(ch,key,p){ const b=ch&&ch.bids&&ch.bids[key];
+  const sal=b&&b.sal?Math.max(nbaMin(p.age),Math.min(nbaMax(p.age),+b.sal)):Math.min(nbaMax(p.age),p.ask*1.1);
+  return {sal:Math.round(sal*10)/10,yrs:b&&b.yrs?Math.max(1,Math.min(5,b.yrs|0)):nbaYears(p.age,p.r)} }
+/* The owner and the tax (finances). The payroll a club ends the season on is what it pays: over the tax line it pays the
+   tax (at the repeater's rates if it paid in three of the four seasons before), under the floor it pays the shortfall to
+   its players. An owner who paid the tax for a losing season cuts the limit to the tax line for the next one; one who
+   paid it for a title, or a season well past what the job expects, lets it out a tier. A game rule. */
+const NBA_TIERS=()=>[NBA$.cap+10,NBA$.tax-6,NBA$.tax,NBA$.ap1,NBA$.ap2];
+function nbaRepeater(u,t){ const Y=(u&&u.nbaTaxY&&u.nbaTaxY[t])||[], y=u?u.year:0; return Y.filter(x=>x<y&&x>=y-4).length>=3 }
+/* the season's bill for a club, as its season ends: tax, or the floor's shortfall */
+function nbaSeasonBill(u,t,pay){ return {tax:nbaTaxBill(pay,nbaRepeater(u,t)),short:Math.max(0,Math.round((NBA$.floor-pay)*10)/10),rep:nbaRepeater(u,t)} }
+/* the owner's mood after a season: -1 (back under the tax), +1 (spend), 0 */
+function nbaMoodOf(u,t,pay,w,l,champ){ if(nbaTaxBill(pay)<=0)return 0;
+  const exp=LEAGUE.goals.expectations((u.program&&u.program[t])||1500), wp=w/Math.max(1,w+l), ew=exp.w/82;
+  return champ===t||wp>=ew+0.08?1:wp<ew-0.06?-1:0 }
+/* the mood that holds now: kept from the summer for the season that follows (u.nbaOwn), or, with the season over and
+   the summer not yet run, read from the season just played */
+function nbaMood(u,t){
+  if(u&&u.nbaOwn&&u.nbaOwn.y===u.year&&(u.nbaOwn.s||!(typeof SEA!=="undefined"&&SEA&&SEA.year===u.year&&SEA.phase==="done")))return u.nbaOwn.m[t]||0;
+  if(typeof SEA!=="undefined"&&SEA&&SEA.phase==="done"&&SEA.year===(u&&u.year)&&SEA.rec&&SEA.rec[t]&&SEA.roster&&SEA.roster[t])
+    return nbaMoodOf(u,t,payroll(SEA.roster[t]),SEA.rec[t][0],SEA.rec[t][1],SEA.champion);
+  return 0 }

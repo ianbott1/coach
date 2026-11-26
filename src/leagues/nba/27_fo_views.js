@@ -17,6 +17,6 @@ LEAGUE.payrollLine=function(t){
   const R=(SEA&&SEA.roster&&SEA.roster[t])||(U&&U.roster&&U.roster[t]); if(!R||!R.some(p=>p&&p.k))return "";
   const pay=payroll(R);
   if(!nbaFO())return `<div class="progline">Payroll <b>${money2(pay)}</b> of ${money2(LEAGUE.taxLine)} &middot; the old cap rules until the summer</div>`;
-  const tier=nbaTier(pay), tax=nbaTaxBill(pay);
+  const tier=nbaTier(pay), tax=nbaTaxBill(pay,nbaRepeater(U,t));
   const next=tier==="room"?`${nbaMoney(NBA$.cap-pay)} under the cap`:tier==="cap"?`${nbaMoney(NBA$.tax-pay)} under the tax`:tier==="tax"?`${nbaMoney(NBA$.ap1-pay)} under the first apron`:tier==="ap1"?`${nbaMoney(NBA$.ap2-pay)} under the second apron`:`${nbaMoney(pay-NBA$.ap2)} over the second apron`;
   return `<div class="progline">Payroll <b>${money2(pay)}</b> &middot; ${esc(NBA_TIERW[tier])} (${next})${tax>0?` &middot; <span class="dn">tax bill ${nbaMoney(tax)}</span>`:""}</div>` };
