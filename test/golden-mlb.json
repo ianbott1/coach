@@ -295,6 +295,11 @@
    "fp": "f3a245c796f89a25",
    "from": "164a0be539c5ab8d",
    "note": "round 112 follow-up: MLB re-tuned on the merged build (engine 26)"
+  },
+  {
+   "fp": "f3a245c796f89a25",
+   "from": "f3a245c796f89a25",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {

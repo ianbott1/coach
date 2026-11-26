@@ -1,5 +1,5 @@
 {
- "fp": "402d34ff185e18b8",
+ "fp": "cff8cc43147de1ef",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -165,6 +165,11 @@
    "fp": "402d34ff185e18b8",
    "from": "5ff55da6769956fc",
    "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; football: completions, QB runs, two backs, picks spread, MVP by slot"
+  },
+  {
+   "fp": "cff8cc43147de1ef",
+   "from": "402d34ff185e18b8",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
@@ -177,9 +182,9 @@
     "rec": "3b630f26d168d3e8",
     "poll": "89818df40c08738a",
     "heis": "08794c02feee4cdd",
-    "history": "8b4ac2919f72e5a9",
-    "universe": "7e0b9d188ec3669a",
-    "screens": "5c826d5d54054c2a"
+    "history": "479a58c254bfe144",
+    "universe": "87ff791294da7b46",
+    "screens": "5634a68b6c9512ab"
    }
   ]
  }

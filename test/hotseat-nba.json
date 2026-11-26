@@ -1,5 +1,5 @@
 {
- "fp": "247584ca9044eeba",
+ "fp": "8c17f3940dfb150d",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -370,6 +370,11 @@
    "fp": "247584ca9044eeba",
    "from": "ca10c375e973ad22",
    "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
+  },
+  {
+   "fp": "8c17f3940dfb150d",
+   "from": "247584ca9044eeba",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "out": [
@@ -383,7 +388,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "B+"
      },
-     "book": "7f23cecaefef6e59"
+     "book": "e56fdad271bf8b47"
     },
     {
      "team": "New York",
@@ -392,7 +397,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "d352cc260cdce9da"
+     "book": "f592afbf244863d2"
     }
    ]
   },
@@ -402,20 +407,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-52",
+      "rec": "33-49",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "f488bced53511cf8"
+     "book": "c6fac8a169c097af"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "26-56",
+      "rec": "27-55",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "18fd2a536e7c26c1"
+     "book": "d3f4682134a256eb"
     }
    ]
   },
@@ -425,20 +430,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "37-45",
-      "result": "Lost in the play-in",
-      "grade": "C"
+      "rec": "35-47",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "990aa5ed96b4d1c3"
+     "book": "354441612ab87f09"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "32-50",
-      "result": "Losing season",
-      "grade": "B-"
+      "rec": "40-42",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "722a020a3d31f48e"
+     "book": "b34ff4ba9cbaf3ab"
     }
    ]
   }

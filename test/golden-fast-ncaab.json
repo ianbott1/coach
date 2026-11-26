@@ -1,5 +1,5 @@
 {
- "fp": "2af2de7bb465972c",
+ "fp": "6d260910eb44fe43",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -155,21 +155,26 @@
    "fp": "2af2de7bb465972c",
    "from": "1b8eb6589a1574a3",
    "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "6d260910eb44fe43",
+   "from": "2af2de7bb465972c",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "23d99e48d02163ae",
-    "post": "5d25cda83179850d",
-    "champion": "North Carolina",
-    "rec": "f66af019398ff5e3",
-    "poll": "1c565a32a53f4a01",
-    "heis": "7244d7923dd47815",
-    "history": "84ec56d4b5c1614d",
-    "universe": "8e5c00a45c149daf",
-    "screens": "fb52174e4de160de"
+    "games": "8b4733819fbcbfda",
+    "post": "cffd73005bd52354",
+    "champion": "Florida",
+    "rec": "07d98ba3b8fb83d5",
+    "poll": "0a0138ce733562c1",
+    "heis": "b947c74f5785b20e",
+    "history": "0e89ee4981a10a84",
+    "universe": "9e6e49b4824aa151",
+    "screens": "a2b1a3e1cb674675"
    }
   ]
  }

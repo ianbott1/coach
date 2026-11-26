@@ -1,5 +1,5 @@
 {
- "fp": "d97f6654e94abafb",
+ "fp": "ce3bdb2c0f50bfe2",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -155,6 +155,11 @@
    "fp": "d97f6654e94abafb",
    "from": "4a18a87bf5c95757",
    "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
+  },
+  {
+   "fp": "ce3bdb2c0f50bfe2",
+   "from": "d97f6654e94abafb",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
@@ -167,9 +172,9 @@
     "rec": "b5dc1a1f90b036d1",
     "poll": "41d6363b0bdc54f5",
     "heis": "d2a779e43b634a3c",
-    "history": "e81ff04ad2b16e19",
-    "universe": "1006c2a629f1c725",
-    "screens": "970346ebdf7b183a"
+    "history": "78d87833f5bff51a",
+    "universe": "634763e7e2119794",
+    "screens": "326dd0b25ddb078f"
    }
   ]
  }

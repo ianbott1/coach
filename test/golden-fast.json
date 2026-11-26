@@ -165,6 +165,11 @@
    "fp": "1a2a58de5b2e862e",
    "from": "ba4de2ec5cc1b078",
    "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "1a2a58de5b2e862e",
+   "from": "1a2a58de5b2e862e",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {

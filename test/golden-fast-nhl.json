@@ -1,5 +1,5 @@
 {
- "fp": "24f09140552c641b",
+ "fp": "2f341c78ae4f3c9c",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -175,21 +175,26 @@
    "fp": "24f09140552c641b",
    "from": "8a7ce9c311be32a6",
    "note": "round 2 rv2/hockey (engine 26): the goalie pull at real benches' times (empty-net goals 0.14 to 0.29 a game), tonight's lines and legs, the timeout"
+  },
+  {
+   "fp": "2f341c78ae4f3c9c",
+   "from": "24f09140552c641b",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "b3bf7d190bfb41db",
-    "post": "a4ee0ca73e7f813f",
-    "champion": "Florida",
-    "rec": "902f1eb769a5db5d",
-    "poll": "4f1112accc775064",
-    "heis": "6dce2f0407b8509c",
-    "history": "8cdb6f24f7249c46",
-    "universe": "1b7edd0bc2177b35",
-    "screens": "254b9707cd3c2c32"
+    "games": "677c3541db7e3248",
+    "post": "7e4deaf3ac246194",
+    "champion": "Washington",
+    "rec": "80e1e43dfb839dd1",
+    "poll": "d67349cf5478543e",
+    "heis": "7d8cf393e386e237",
+    "history": "c3bdaf62442bfd9c",
+    "universe": "985fdb3fc7753f36",
+    "screens": "da734f853cabdc9c"
    }
   ]
  }
