@@ -78,7 +78,12 @@ function scXiCtx(h,a,sea,step){ try{ sea=sea||(typeof SEA!=="undefined"?SEA:null
   const st=step==null?sea.step:step, hf=st===sea.step&&sea.half?1:0;
   const H=scSheet(sea,h,a,st,hf), A=scSheet(sea,a,h,st,hf); if(!H||!A)return undefined;
   const strip=X=>({fm:X.fm,u:X.u.map(q=>({s:q.s,b:q.b,ns:q.ns,nb:q.nb,cs:q.cs,cb:q.cb,av:q.av,on:q.on}))});
-  return {home:strip(H),away:strip(A)} }catch(e){ return undefined } }
+  return {home:strip(H),away:strip(A),gf:scGoalF(h,a)} }catch(e){ return undefined } }
+/* the division's own scoring: the Premier League scores more than the pyramid below it (2024-25: 2.93 goals a game and
+   24.5% draws against the Championship's 2.45 and 28.0%, futbol24.com's season statistics), and the engine's one goal
+   rate played every division alike (Premier League games 2.7 goals and 29% draws over eight seasons, the Championship
+   2.5 and 31%). A top-flight club's games score SC26.topG times as many (a cup tie with one, halfway) */
+function scGoalF(h,a){ const f=t=>scTier(t)===1?SC26.topG:1; return Math.round((f(h)+f(a))/2*1000)/1000 }
 /* after a game (core Season._resolve): each man's minutes off his condition, from who started (the first stretch's
    xi0) and the changes (each stretch's sb); and how fresh the club's starters were, for this week's knocks */
 function sportAfterGame(sea,a,b,drives){ if(!scV26()||!sea||!Array.isArray(drives)||!drives.length)return;
