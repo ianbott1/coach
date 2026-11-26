@@ -198,6 +198,9 @@ function applyBudget(u,t,alloc){
   };
 }
 
+/* engine 26: the programs' spread held to the opening one (core 20_engine), before the January window; the screen's
+   preview of the window does the same to a copy (LEAGUE.market.before, core 92_market pxU) */
+function cfbPreWindow(u){ if(typeof eng26==="function"&&eng26())programRecentre26(u) }
 function offseasonRosters(u,rng,healthy,elo,rec,choices){
   /* One human or several: each coached program gets its own choices. */
   const U_CH = choices.users || (choices.userTeam?{[choices.userTeam]:choices}:{});
@@ -206,7 +209,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   choices=choices||{};
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
-  if(typeof eng26==="function"&&eng26())programRecentre26(u);   // engine 26: the programs' spread held to the opening one (core 20_engine)
+  cfbPreWindow(u);
 
   if(ut&&choices.coach){
     const c=choices.coach;
@@ -331,6 +334,7 @@ LEAGUE.market={
   v0:1.2, r0:82, k:9.5, floor:0.02,
   pos:{QB:2.2,OT:1.25,EDGE:1.25,DT:1.1,WR:1.0,CB:1.0,WR2:0.8,RB:0.75,LB:0.75,S:0.7},
   rosterLimit:105, window:"Jan 4-13", maxIn:8, posPush:{QB:0.3}, draft:"NFL draft",
+  before:u=>cfbPreWindow(u),          // what the offseason does to the league before the window
   // underclassmen declare in January, beside the window: the early-entry rule developRoster used, on the rating he'd
   // reach this spring
   pro(pl){ const c=pl.c||0, rE=Math.min(pl.pot||pl.r,pl.r+[6.2,4.0,2.2][c]); return c+1>=2&&rE>=76?{p:(rE-74)/34,r:Math.round(rE)}:null }

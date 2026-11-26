@@ -12,7 +12,7 @@
 
    The team sheet. Each unit's first choice starts unless he's hurt or rested; the computer (and your assistant, until
    you pick) rests a man short of condition when the man behind him is close, and in a cup tie against a club from a
-   lower division rests any whose man behind is close (never the keeper, for now). Its formation is the one
+   lower division rests any whose man behind is close, the keeper too. Its formation is the one
    its squad suits best (the most of its rating on the units the shape leans on). Your own picks for a game, and your
    formation from a game on, are kept in the save (S.xiLog, S.xiFm) so a reload plays them the same. */
 const SC_CND={drop:26, rec:7, gk:0.35, floor:30,
@@ -54,7 +54,9 @@ function scBestFm(U){ const v=k=>scFmScore(U,k)+(FORMATIONS[k].pop||0); return F
    lower division, rest more */
 function scAutoOn(U,cupLow){ const C=SC_CND;
   return U.map((q,u)=>{ if(q.av!=="both")return q.av==="b"?1:0;
-    if(u===0)return 0;   // one keeper: the feed and the box name the first choice (see the changelog's Not yet)
+    // the keeper: rested only for a cup tie against a lower division (his legs are back by the next game). The feed,
+    // the box and the clips name the keeper the sheet started (stats follow-up; it named the first choice before)
+    if(u===0)return cupLow&&q.b>=q.s-C.cupGap?1:0;
     if(q.cs<C.restC&&q.b>=q.s-C.restGap&&q.cb>=q.cs)return 1;
     if(cupLow&&q.b>=q.s-C.cupGap)return 1;
     return 0 }) }
@@ -68,7 +70,7 @@ function scSheet(sea,t,opp,step,half,asAuto){
   const day=scDayOf(step,half), U=scUnits(sea,t,day); if(!U)return null;
   const idx=scIdx(sea.year,step,half), cupLow=!!half&&scTier(opp)>scTier(t);
   const auto=scAutoOn(U,cupLow), mine=asAuto?null:scUserOn(t,idx);
-  const on=U.map((q,u)=>q.av==="both"&&mine&&u>0?(mine[u]?1:0):auto[u]);
+  const on=U.map((q,u)=>q.av==="both"&&mine?(mine[u]?1:0):auto[u]);
   U.forEach((q,u)=>{ q.on=on[u]; q.auto=auto[u] });
   return {fm:(asAuto?null:scUserFm(t,idx))||scBestFm(U), afm:scBestFm(U), u:U, day:day, cupLow:cupLow} }
 /* gameCtx's part (50_game): both sides, for the game being played now */
@@ -128,7 +130,7 @@ function sportNextExtra(ng,my,step){ try{ if(!scV26()||!SEA||!SEA.roster||my!==S
     const a=`${sn(q.ns)} ${q.s} ${cnd(q.cs)}`, b=q.nb?`${sn(q.nb)} ${q.b} ${cnd(q.cb)}`:"";
     const hurt=q.av==="b"?` (${sn(q.ns)} injured)`:q.av==="s"?` (${sn(q.nb)} injured)`:q.av===""?" (both injured)":"";
     const first=q.on?b:a, other=q.on?a:b;
-    const btn=q.av==="both"&&u>0?`<button class="setbtn" data-scxi="${u}" style="margin-left:6px">Start ${sn(q.on?q.ns:q.nb)}</button>`:"";
+    const btn=q.av==="both"?`<button class="setbtn" data-scxi="${u}" style="margin-left:6px">Start ${sn(q.on?q.ns:q.nb)}</button>`:"";
     const said=q.av==="both"&&q.auto!==q.on?` <span style="color:var(--muted)">Your assistant would start ${sn(q.auto?q.nb:q.ns)}.</span>`:"";
     return `<div class="nrec"><b>${SC_UNITL[u]}</b> ${first}${other?` <span style="color:var(--muted)">&middot; bench</span> ${other}`:""}${hurt}${btn}${said}</div>` }).join("");
   const rest=Q.u.filter(q=>q.av==="both"&&q.auto).length;
@@ -141,6 +143,6 @@ function sportBind(){ if(typeof document==="undefined")return;
   document.querySelectorAll("[data-scfm]").forEach(b=>b.onclick=()=>{ const M=scMine(); if(!M||!FORMATIONS[b.dataset.scfm])return;
     S.xiFm=S.xiFm||{}; const F=(S.xiFm[M.t]||[]).filter(x=>x[0]<M.idx); F.push([M.idx,b.dataset.scfm]); S.xiFm[M.t]=F; save(); render() });
   document.querySelectorAll("[data-scxi]").forEach(b=>b.onclick=()=>{ const M=scMine(), u=+b.dataset.scxi; if(!M)return;
-    const Q=scSheet(SEA,M.t,M.n.opp,M.n.step,M.n.half); if(!Q||!(u>0)||!Q.u[u]||Q.u[u].av!=="both")return;
+    const Q=scSheet(SEA,M.t,M.n.opp,M.n.step,M.n.half); if(!Q||!(u>=0)||!Q.u[u]||Q.u[u].av!=="both")return;
     S.xiLog=S.xiLog||{}; Object.keys(S.xiLog).forEach(k=>{ if(+k.split("|").pop()<SEA.year*1000)delete S.xiLog[k] });   // last season's sheets: done with
     const on=Q.u.map(q=>q.on?1:0); on[u]=1-on[u]; S.xiLog[M.t+"|"+M.idx]={on:on}; save(); render() }) }

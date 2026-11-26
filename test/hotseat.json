@@ -1,5 +1,5 @@
 {
- "fp": "272caca2a88715c4",
+ "fp": "d56afe564468b3ef",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -420,6 +420,11 @@
    "fp": "272caca2a88715c4",
    "from": "b2cfe8aa3af5a4e8",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "d56afe564468b3ef",
+   "from": "272caca2a88715c4",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
   }
  ],
  "out": [
@@ -433,16 +438,16 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A+"
      },
-     "book": "9afa8306eda7d6ec"
+     "book": "6f1b734bdf8dc584"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Hawaii Bowl",
-      "grade": "A-"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "B"
      },
-     "book": "1da3e8f18107d7f6"
+     "book": "2c638003152bb981"
     }
    ]
   },
@@ -452,20 +457,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Alamo Bowl",
-      "grade": "B"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "C-"
      },
-     "book": "74b98ef98740e022"
+     "book": "484a85f0c2e096bc"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Bahamas Bowl",
-      "grade": "A+"
+      "rec": "3-9",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "0c127742e662cb72"
+     "book": "94d3c9adf2c9a275"
     }
    ]
   },
@@ -475,20 +480,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Won the Texas Bowl",
+      "rec": "9-4",
+      "result": "Won the Holiday Bowl",
       "grade": "A-"
      },
-     "book": "92644e39b44d1877"
+     "book": "71d10fc91b9e09d0"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "6471ba6f4853830b"
+     "book": "6972330da1c94550"
     }
    ]
   }

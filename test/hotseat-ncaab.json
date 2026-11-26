@@ -1,5 +1,5 @@
 {
- "fp": "a99742c5d24942c1",
+ "fp": "36e3598098423c4e",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -375,6 +375,11 @@
    "fp": "a99742c5d24942c1",
    "from": "0524ef359d58ce8e",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "36e3598098423c4e",
+   "from": "a99742c5d24942c1",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
   }
  ],
  "out": [
@@ -384,20 +389,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "38-2",
-      "result": "Lost the national championship",
-      "grade": "A+"
+      "rec": "34-2",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "38aa36fdda87f37d"
+     "book": "7baaa367d2d50593"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "34-3",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "32-5",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "26c03b9f6edb0560"
+     "book": "5f90fb237da83f1e"
     }
    ]
   },
@@ -407,20 +412,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "28-7",
+      "rec": "28-5",
       "result": "Lost in the Second Round",
-      "grade": "B"
+      "grade": "B+"
      },
-     "book": "c57c785052dae1ed"
+     "book": "0f71b6c8453121f9"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "19-14",
-      "result": "Lost in the First Round",
-      "grade": "C+"
+      "rec": "25-8",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "3242592fd9df5cbc"
+     "book": "a313d3db996b5218"
     }
    ]
   },
@@ -430,20 +435,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "26-9",
-      "result": "Lost in the Sweet 16",
-      "grade": "B"
+      "rec": "24-9",
+      "result": "Lost in the First Round",
+      "grade": "B-"
      },
-     "book": "225e87cddc5d3285"
+     "book": "e90a93b0be91d853"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "28-7",
-      "result": "Lost in the First Round",
-      "grade": "B"
+      "rec": "31-5",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "1a4255e535b01bd1"
+     "book": "33cb11d8cc87e550"
     }
    ]
   }

@@ -96,14 +96,30 @@ const AGGR = {
   chase:     {tempo:1.10, three:0.55},
   push:      {tempo:1.12, three:0.55}        // a coach's call: speed it up, let it fly
 };
+/* follow-up (engine 26): the plans' three-point shares held nearer the league's. On 0.18 and 0.64 a side that worked it
+   inside all season took 14 threes a game and one that let it fly 60, and the second's shooter made 580 to 608 in a
+   season (the real NBA's sides took 34.6 to 48.2 a game in 2024-25, and its leader makes 301 to 357). Most of the
+   spread about balanced goes, 0.29 and 0.49, and no side takes under 0.20 or over 0.53 of its shots from three, style
+   and shape and all. The pace is as it was (round 32's eight per cent). What the shares carried of a plan's worth was
+   little (test/bb-plans.js at engine 25 and 26, 8,000 games a gap: the same within a point), and the plan's fit is paid
+   as before, the part the plan's own shots no longer carry on its other shots (BB26_FIT: on its twos for a side that
+   lets it fly, so the fit doesn't make the league's best-shooting sides better than any real one). The late-game modes
+   are as they were. */
+const AGGR26={safe:{tempo:1.08, three:0.29}, aggressive:{tempo:0.92, three:0.49}}, BB26_SHR=[0.20,0.53];
+function bbV26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=26 }
+function bbAggr(mode){ const A=AGGR[mode]||AGGR.balanced; return bbV26()&&AGGR26[mode]?AGGR26[mode]:A }
+/* a plan's fit, per point of it on the plan's own shots, paid on the other kind: the share it lost, at what a shot of
+   that kind is worth (3 a three, 2 a two), over the share of the other kind it now takes */
+const BB26_FIT={safe:(0.82-0.71)*2/(0.29*3), aggressive:(0.64-0.49)*3/(0.51*2)};
+function bbFit26(pl){ return bbV26()&&BB26_FIT[pl]||0 }
 /* one possession: points scored, and a line for the box score */
 const NOMOD={share:0,p2:0,p3:0,to:0,f2:1};
 function possession(rng, edge, mode, st, pressed, m){
-  const A=AGGR[mode]||AGGR.balanced; m=m||NOMOD;
+  const A=bbAggr(mode); m=m||NOMOD;
   if(pressed){ if(rng.r()<BB.pressTO){st.to++; return 0} edge+=BB.pressEasy }   // against the press
   if(rng.r() < BB.toBase - edge*BB.toGap*0.1 + m.to){ st.to++; return 0 }
   for(let tries=0;tries<3;tries++){
-    const three = rng.r() < Math.max(0.05,Math.min(0.85,A.three+m.share));
+    const three = rng.r() < (bbV26()?Math.max(BB26_SHR[0],Math.min(BB26_SHR[1],A.three+m.share)):Math.max(0.05,Math.min(0.85,A.three+m.share)));
     // talent is worth the same per shot either way (2/3 of the edge on a
     // three), so taking more threes adds variance, not an edge
     const pMake = (three?BB.three+edge*2/3+m.p3:BB.two+edge+m.p2);
@@ -287,7 +303,7 @@ function prepCall(rep){
 function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   ctx=ctx||{}; const fav=ctx.fav||{};
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
-  const tempo=((AGGR[planH]||AGGR.balanced).tempo+(AGGR[planA]||AGGR.balanced).tempo)/2;
+  const tempo=(bbAggr(planH).tempo+bbAggr(planA).tempo)/2;
   const poss=Math.max(50,Math.round(rng.gauss(BB.pace*tempo,BB.paceSd)));
   // a mismatch past BB.softGap counts half: the better side rests and coasts, so
   // even a great team loses some (unset: no change). Pro: 82-0 happened.
@@ -362,7 +378,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // engine 17 (round 94): the plan's fit amplified, the extra (Elo) through its own shots (a point of Finishing moves the
     // two-point rate by a*c.fin and is worth a rating points: c.fin/R_SLOPE a rate point per Elo; Shooting the same on threes)
     if(planAmpV()){ m.p2-=BB17.k*0.5; m.p3-=BB17.k*0.36 }   // the league's points held (suited plans everywhere score more on 17)
-    if(s<SEGS){ const pl=st.mode[sd], E=ampE(sd,pl); if(E){ if(pl==="safe")m.p2+=BB17.gs*E*c.fin/R_SLOPE; else if(pl==="aggressive")m.p3+=BB17.ga*E*c.sht/R_SLOPE } } };
+    if(s<SEGS){ const pl=st.mode[sd], E=ampE(sd,pl); if(E){ if(pl==="safe"){ const v=BB17.gs*E*c.fin/R_SLOPE; m.p2+=v; m.p3+=v*bbFit26(pl) } else if(pl==="aggressive"){ const v=BB17.ga*E*c.sht/R_SLOPE; m.p3+=v; m.p2+=v*bbFit26(pl) } } } };
   const ampMemo={home:{},away:{}};
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!BB11_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
     const f=bbFitSh((humans[sd]?BB11_FIT:BB11_FITC)[pl],SH[sd]);
@@ -386,8 +402,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // from the two starting plans; a person's mode now (a live instruction, the half-time call, a late call kept) scales
     // this stretch's count by its tempo against the plan he started on. The computer's sides, and a side left to the
     // assistant, count as their starting plan: a computer-only game draws and plays exactly as before.
-    if(ENGINE_V>=22&&s<SEGS){ const t0=sd=>(AGGR[sd==="home"?planH:planA]||AGGR.balanced).tempo,
-        tNow=(sd,m)=>humans[sd]&&st.late[sd]!=="auto"?(AGGR[m]||AGGR.balanced).tempo:t0(sd), f=(tNow("home",mH)+tNow("away",mA))/(t0("home")+t0("away"));
+    if(ENGINE_V>=22&&s<SEGS){ const t0=sd=>bbAggr(sd==="home"?planH:planA).tempo,
+        tNow=(sd,m)=>humans[sd]&&st.late[sd]!=="auto"?bbAggr(m).tempo:t0(sd), f=(tNow("home",mH)+tNow("away",mA))/(t0("home")+t0("away"));
       if(Math.abs(f-1)>1e-9)n=Math.max(1,Math.round(n*f)) }
     const H=st.S.home, A=st.S.away;
     // stars off the floor: in foul trouble, or fouled out

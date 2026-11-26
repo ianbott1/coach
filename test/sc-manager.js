@@ -30,7 +30,7 @@ const t0=Date.now();
 const EXP=['S','SEA','NAMES','CONF','newDynasty','ENGINE_V','Season','sportInjMul','scCndOf','scDayOf','FORMATIONS','SEGS','scTier'];
 const A=load({file:FILE,expose:EXP});
 const G=[], five={}, subs=[], firsts=[], rot={lg:[],cupLow:[],cupEq:[]}, cnd={short:[],long:[]}, inj={short:[],long:[]}, fm={}, champ=[];
-let wrongWin=0, over=0, keeperRested=0;
+let wrongWin=0, over=0, keeperRested=0, keeperCup=0;
 const proto=A.Season.prototype, _rs=proto._resolve;
 proto._resolve=function(a,b,neutral,extra){ const st=this.step, hf=this.half?1:0, cup=!!(extra&&extra.cup), gkHurt=[a,b].map(t=>this.talent.active(t).some(x=>x.idx===0));
   const r=_rs.call(this,a,b,neutral,extra), D=this.lastDrives||[], d0=D.find(d=>d&&d.xi0);
@@ -40,7 +40,7 @@ proto._resolve=function(a,b,neutral,extra){ const st=this.step, hf=this.half?1:0
     ['home','away'].forEach((sd,i)=>{ const t=i?b:a, o=i?a:b, W=new Set(); let n=0, f=null;
       D.forEach(d=>{ const L=d.sb&&d.sb[sd]; if(!L||!L.length)return; n+=L.length; if(d.seg!==9&&d.seg<A.SEGS)W.add(d.seg); if(f==null)f=d.seg*5 });
       if(n>5+(et?1:0)||W.size>3)over++;
-      if(d0.xi0[sd][0]&&!gkHurt[i])keeperRested++;
+      if(d0.xi0[sd][0]&&!gkHurt[i]){ if(cup&&A.scTier(o)>A.scTier(t))keeperCup++; else keeperRested++ }
       if(pl){ subs.push(n); if(n>=5)five[G.length-1]=1; if(f!=null)firsts.push(f); fm[d0.xi0.fm[sd]]=(fm[d0.xi0.fm[sd]]||0)+1 }
       const k=d0.xi0[sd].reduce((s,x)=>s+x,0), tier=A.scTier;
       if(pl)rot.lg.push(k); else if(cup)(tier(o)>tier(t)?rot.cupLow:rot.cupEq).push(k) }) }
@@ -69,7 +69,7 @@ chk(!over, `never more than five changes, or three windows besides half-time (on
 chk(mean(subs)>=3.5&&mean(subs)<=4.7, `changes a side a match ${f2(mean(subs))} (Premier League 2023-24: about four)`);
 chk(s5>=0.25&&s5<=0.6, `all five used in ${pc(s5)} of matches, by one side or both (2023-24: 42.5%)`);
 chk(mean(firsts)>=52&&mean(firsts)<=70, `the first change at ${f2(mean(firsts))}' on average (clubs' averages 55' to 66')`);
-chk(!keeperRested, `one keeper: never rested (${keeperRested})`);
+chk(!keeperRested, `the first-choice keeper rested only in a cup tie against a lower division (${keeperRested} other times; ${keeperCup} in such ties): clubs play their cup keeper there, never in the league`);
 console.log(`  shapes the clubs pick: ${Object.keys(fm).sort((x,y)=>fm[y]-fm[x]).map(k=>k+' '+pc(fm[k]/subs.length)).join(', ')}`);
 chk(Object.keys(fm).length>=3&&(fm['4-2-3-1']||0)/subs.length>=0.4&&(fm['4-2-3-1']||0)/subs.length<=0.75, 'the clubs play more than one shape, as their squads suit, 4-2-3-1 most (2024-25: about 54% of teams\' games, https://www.premierleague.com/news/4323030)');
 chk(mean(cnd.short)<mean(cnd.long)-1&&mean(cnd.long)>=98, `starters' condition at kick-off: ${f2(mean(cnd.short))} after four days or fewer (${cnd.short.length}), ${f2(mean(cnd.long))} after a week (${cnd.long.length})`);
