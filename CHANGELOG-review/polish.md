@@ -165,9 +165,9 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Why: playtest: one college basketball roster held four Kel'els, two Spearmans and two Guidrys. A college roster drew
   from 55-60 first names, so a new career began with 297 first-name repeats across 365 basketball rosters and 357 across
   132 football rosters, some three deep.
-- Which games: college basketball, college football. Results of a first season don't move (names aren't drawn from);
-  later seasons can (the portal reads a hash of a starter's name), and screens and the universe's names change in both
-  goldens.
+- Which games: college basketball, college football. A new career's results move (a player's attributes are read from
+  a hash of his name, core/93_attrs.js, and the portal reads one too), so both college goldens change in results as
+  well as screens; a career already under way keeps its season and changes only from its next summer's newcomers.
 - Tested: `node test/polish.js "don't repeat"`: before, ncaab 297 repeats at the start and 362 after two summers
   (Tariq x3 at North Carolina), cfb 357 and 406; after, 0 at the start, 25 after two summers (none three deep) and 0
   after one summer of football. MATCH. `node test/reload.js dist/basketball-coach.html`: MATCH 18 of 18 reloads.
@@ -181,3 +181,26 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Which games: all seven (screens only; no result moves).
 - Tested: `node test/polish.js "welcome note"`: before, shown again at the start of season two in six games and never
   shown in pro hockey; after, shown before the first game and not in season two in all seven. MATCH.
+
+## Football: "Pin them deep" only from their 35 or further out (college and pro football)
+- What: on fourth down in kicking range, the punt option is offered from the opponent's 35 or further out
+  (football/50_drives.js, fourthDownCall: was up to their 23). Inside their 35 the call is Go for it or Kick it; a
+  drive the engine punted from there is no longer turned into a question.
+- Why: playtest (college football): "Pin them deep" offered at the opponent's 24, where a punt is a touchback.
+- Which games: college and pro football. Which calls are asked changes, so the football goldens' results move (the
+  golden plays the calls it's asked).
+- Tested: `node test/polish.js "Pin them"` (fourthDownCall at every spot from their 38 to their 21): before, college
+  football offered the punt down to their 23; after, from their 38 to their 35 only, both games. MATCH.
+
+## Checked, not changed (college football playtest)
+- "Rest the starters" when the game is close: it's asked only up 14-24 in the fourth quarter or 21-40 in the third
+  (football/50_drives.js, restNow), never in a one-score game.
+- Live speed going back to Normal after each call: not reproduced. S.watchSpeed is set only by the speed buttons and the
+  1-4 keys and kept in the save; over a live college football game with six calls answered it stayed "fast" throughout
+  (node, the game's own doAdvance/answerLive/liveTick). If it's seen again, the device and screen would help.
+- A bye week skipping the pregame card: not reproduced. Oregon State's week-3 bye shows the OPEN DATE card, Play moves
+  one week, and the next game's card follows.
+- "at Oregon" in week 14: not changed (left for the lead). The game's college season runs 14 weeks, Sep 5 to Dec 5, and
+  the generator fills Dec 5 (real life's conference championship weekend) with about 44 games, most made up (a new
+  Oregon State career, seed 5: Oregon at Georgia, Vanderbilt at Oregon State). The 2026 data lists real games through
+  Nov 27/28 only. Moving the made-up games off Dec 5 changes every college football schedule and result.
