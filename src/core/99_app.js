@@ -662,6 +662,7 @@ function rebuild(){
   replayCarousel();
   auditTrophies();
   carryTrades();   // round 85: a reload after the season's end, the same
+  if(LEAGUE.afterRebuild)LEAGUE.afterRebuild(U);   // a league's own step once the season is back (pro football: an open offseason's contracts)
 }
 // the season's trades into next season's rosters, once, as soon as the season is over (round 85: before, at the summer's
 // commit only, so the offseason's screens showed the man you'd traded away on your re-sign list, and a re-sign choice

@@ -363,6 +363,7 @@ function newUniverse(seed){
     u.coach[n]=c;
   });
   u._rngState=seed*7919+13;
+  if(LEAGUE.onNewUniverse)LEAGUE.onNewUniverse(u);   // a league's own setup of a new career, no dice (pro football's front office)
   NAMES.forEach(t=>distinctStaff(u,t));
   return u;
 }
