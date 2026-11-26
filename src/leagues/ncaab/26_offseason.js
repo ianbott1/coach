@@ -31,6 +31,13 @@ function makeRoster(rng,programElo){
 
 const ANCHOR=0.10;
 const ANCHOR_OF=Object.fromEntries(NCAAB_TEAMS.map(t=>[t.n,NCAAB_ELO(t)]));
+/* engine 26: a program drifts back toward its level in the 64-team era (1985 on), not toward titles won in the 1960s and
+   70s. The prior counts every title alike (7 points of pedigree each), so UCLA, ten of whose eleven came in 1964-75, sat
+   at the top and won 14-18% of the titles in every career. Here a title before 1985 counts 2, not 7. Titles 1985-2025
+   (40, with Louisville's 2013 as the data counts it): https://en.wikipedia.org/wiki/List_of_NCAA_Division_I_men%27s_basketball_champions */
+const TITLES85={"Duke":5,"UConn":6,"North Carolina":4,"Kentucky":3,"Villanova":3,"Kansas":3,"Florida":3,"Louisville":2,
+  "Indiana":1,"Michigan":1,"UNLV":1,"Arkansas":1,"UCLA":1,"Arizona":1,"Michigan State":1,"Maryland":1,"Syracuse":1,"Virginia":1,"Baylor":1};
+const ANCHOR26_OF=Object.fromEntries(NCAAB_TEAMS.map(t=>[t.n,NCAAB_ELO(t)-Math.round(5*0.8*SPREAD*Math.max(0,t.titles-(TITLES85[t.n]||0)))]));
 
 /* one newcomer at position i: the class's draw (developRoster), and the
    recruiting board's prospects, which come from exactly this */
@@ -49,6 +56,7 @@ function drawNewcomer(rng,C,i){
     // The stronger the program, the likelier it lands one.
     if(cls===0&&rng.r()<Math.max(0.01,Math.min(0.45,(C.base-66)/40))){
       np.r=Math.round(Math.max(np.r,C.base+rng.gauss(0,3))); np.pot=Math.min(99,Math.round(np.r+16+rng.gauss(0,4)));
+      if(typeof eng26==='function'&&eng26())np.r=Math.min(99,np.r);   // engine 26: a five-star at a top program could arrive at 100-101 (test/longrun.js)
       np.star5=true;
     }
     return np;
@@ -316,6 +324,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   const entrants=portalEntrants(u);                 // decided as the season ended
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
+  if(typeof eng26==="function"&&eng26())programRecentre26(u);   // engine 26: the programs' spread held to the opening one (core 20_engine)
 
   if(ut&&choices.coach){
     const c=choices.coach;
@@ -331,7 +340,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     // resources anchor a program: conference money, arena, recruiting reach.
     // A mid-major can rise, and a blue blood can fall, but both drift back
     // toward their structural level unless results keep them there.
-    u.program[t]+=ANCHOR*(ANCHOR_OF[t]-u.program[t]);
+    u.program[t]+=ANCHOR*((typeof eng26==="function"&&eng26()?ANCHOR26_OF:ANCHOR_OF)[t]-u.program[t]);
     u.program[t]=Math.max(P_FLOOR,Math.min(P_CEIL,u.program[t]));
     c.t++;
     const ch=chFor(t);

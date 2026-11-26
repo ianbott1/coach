@@ -206,6 +206,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   choices=choices||{};
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
+  if(typeof eng26==="function"&&eng26())programRecentre26(u);   // engine 26: the programs' spread held to the opening one (core 20_engine)
 
   if(ut&&choices.coach){
     const c=choices.coach;

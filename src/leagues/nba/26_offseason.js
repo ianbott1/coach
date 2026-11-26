@@ -142,8 +142,11 @@ function nflProspects(rng,n,sh){
     const posIdx=rng.int(POS.length);
     const age=19+rng.int(4);                    // one-and-dones to four-year seniors
     // NBA rookies: mostly below the league's typical starter at first, with ceilings
-    const r0=Math.round(Math.max(42,Math.min(78,rng.gauss(+((typeof process!=="undefined"&&process.env&&process.env.NBA_PR)||57)-12*Math.pow(q,0.7),3.5*DRAFT_K.sd))));
-    const pot0=Math.round(Math.min(99,r0+Math.max(3,rng.gauss(15-6*q,5))));
+    // engine 26: four points further from the same ceiling (with rookies as good as the men they replaced, the league's
+    // balance put its peak at 24-25; the real one is about 27: test/longrun.js)
+    const PR=+((typeof process!=="undefined"&&process.env&&process.env.NBA_PR)||(eng26()?53:57)), PX=eng26()?4:0;
+    const r0=Math.round(Math.max(42,Math.min(78,rng.gauss(PR-12*Math.pow(q,0.7),3.5*DRAFT_K.sd))));
+    const pot0=Math.round(Math.min(99,r0+Math.max(3,rng.gauss(15+PX-6*q,5))));
     const {r,pot}=sh?draftShape(sh,r0,pot0,42,84):{r:r0,pot:pot0};      // core/91_draftnight
     out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,
               hz:0,prod:0,st:0,from:rng.pick(LEAGUE.draftTeams)});
