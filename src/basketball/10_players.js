@@ -118,7 +118,7 @@ function teamLines(rng,c){
   ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
   const oMiss=(O.fga2-O.fgm2)+(O.tpa-O.tpm), reb=Math.round(BB_REB*((M.oreb||0)+Math.max(0,oMiss-(O.oreb||0))));
   share("reb",reb); share("ast",Math.round(BB_AST*(M.fgm2+M.tpm))); share("stl",Math.round(BB_STL*(O.to||0))); share("blk",Math.round(BB_BLK*(O.fga2-O.fgm2)));
-  benchLines(rng,c,bD,at,extra,line);
+  if(ENGINE_V>=25)benchLines(rng,c,bD,at,extra,line);   /* merge fix: an older season replays as played */
   const fin=l=>({pts:2*l.f2+3*l.tpm+l.ft,reb:l.reb,ast:l.ast,stl:l.stl,blk:l.blk,tpm:l.tpm});
   const out=sl.map((s,j)=>({pl:s.x.pl,pos:s.x.P,line:fin(L[j])}));
   Object.keys(extra).forEach(nm=>{ const x=at[nm]; out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:fin(extra[nm])}) });

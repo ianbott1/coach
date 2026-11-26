@@ -487,7 +487,7 @@ function fourthDownCall(stall, togo, offElo, defElo){
       opts:[["go",`Go for it \u00b7 ${gp}% to convert`],
             ["kick",`Kick it \u00b7 ${dist} yds \u00b7 ${fp}% to make`],
             // a pooch punt from their 35 or further out; inside it a punt is a touchback (a tester: offered at their 24)
-            stall<=65?["punt","Pin them deep"]:null].filter(Boolean)};
+            (ENGINE_V>=25?stall<=65:stall<78)?["punt","Pin them deep"]:null].filter(Boolean)};
   }
   if (stall >= 44) {
     return {k:"fourth", h:`${fd} at ${where}`,
