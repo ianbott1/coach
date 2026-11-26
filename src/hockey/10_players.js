@@ -61,9 +61,9 @@ function teamLines(rng,c){
   const L={}; dressed.forEach(d=>L[d.n]={goals:0,ast:0,pts:0,sog:0});
   const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
   let mine=0;
-  ev.filter(e=>e.side===c.side).forEach(e=>{ const N=hkGoalNames(tm,e); e.nm=N.n; if(N.a)e.an=N.a; if(N.depth)e.dp=1;
+  ev.filter(e=>e.side===c.side).forEach(e=>{ const N=hkGoalNames(tm,e); e.nm=N.n; if(N.a)e.an=N.a; if(N.a2)e.an2=N.a2; if(N.depth)e.dp=1;
     if(L[N.n]){ L[N.n].goals++; if(!e.en&&!e.extra)mine++ } else if(!e.en&&!e.extra)mine++;
-    if(N.a&&L[N.a])L[N.a].ast++ });
+    if(N.a&&L[N.a])L[N.a].ast++; if(N.a2&&L[N.a2])L[N.a2].ast++ });
   const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
   // round 107 (engine 21): a goal into an empty net or with an extra man is a shot on goal (it was left out, and its
   // scorer had a shot more than his team's: Chicago's shooters 36, the team 35, test/ev-full.js)

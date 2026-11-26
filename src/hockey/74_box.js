@@ -12,7 +12,7 @@ function sportBox(g){
     ["Power plays",`${ppg("away")} of ${pen.home}`,`${ppg("home")} of ${pen.away}`]];
   const per=m=>m<20?"1st":m<40?"2nd":m<60?"3rd":"OT";
   const list=goals.slice().sort((a,b)=>a.m-b.m).map(e=>{ const tm=e.side==="home"?g.home:g.away, N=hkGoalNames(tm,e);
-    return {c:[`${per(e.m)} ${e.m}'`,esc(tAb(tm)),esc(N.n)+(N.a?` <span style="color:var(--muted)">(${esc(N.a)})</span>`:"")+(e.pp?" PP":e.en?" EN":"")]} });
+    return {c:[`${per(e.m)} ${e.m}'`,esc(tAb(tm)),esc(N.n)+(N.a?` <span style="color:var(--muted)">(${esc(N.a)}${N.a2?", "+esc(N.a2):""})</span>`:"")+(e.pp?" PP":e.en?" EN":"")]} });
   return boxTeams(g,rows,false)+(list.length?`<div class="boxhead">Goals</div>`+statTable(["","",""],list,3):"")
     +(g.so?`<div class="fnote">Level after overtime: ${esc(g.winner)} won the shootout.</div>`:"");
 }
