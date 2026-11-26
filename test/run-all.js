@@ -27,6 +27,10 @@ for(const [lg,f] of Object.entries(G)){
 add('saves (all six)',['saves.js'],{fast:true}); add('layouts (all six)',['layouts.js'],{timeout:1800000});   /* round 53: 559s with six games; a seventh passed 600s beside the others */
 add('sim and skip (all six)',['sim-and-skip.js'],{fast:true}); add('sim ahead (all six)',['sim-ahead.js'],{fast:true}); add('objectives (all six)',['objectives.js','3']); add('goals and seat badge',['goals.js']);
 add('migrate old saves (college football)',['migrate.js']);
+// round 111: watchability (real-time pacing, the play by play, live stats, the race the log decided)
+add('a speed change takes hold mid-stretch',['pb-rescale.js'],{timeout:900000}); add('the play by play in every sport',['pbp-feed.js'],{timeout:1200000});
+add('live player stats add up',['live-stats.js'],{timeout:1800000}); add('run of play never ahead of the field',['runplay-sync.js'],{timeout:1500000});
+add('baseball shows the race the log decided',['bs-plays.js'],{timeout:1500000});
 // college football
 add('h2h (cfb)',['h2h.js',D(G.cfb)]); add('moves (cfb)',['moves.js',D(G.cfb)]);
 add('firing (cfb)',['firing.js',D(G.cfb)],{timeout:2700000});   /* ~410s alone; over 900s when it shares the CPU with the browser tests (round 38); round 94: 1365s alone, past 1500s beside them */ add('clinch marks (nfl)',['clinch.js',D(G.nfl),'120'],{fast:true});
