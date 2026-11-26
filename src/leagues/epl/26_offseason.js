@@ -23,6 +23,9 @@ function budgetOf(u,t){
   if(d!=="PL"&&u&&u.chute&&u.chute[t])b=Math.max(b,u.chute[t]);
   return Math.round(b*100)/100;
 }
+/* a club's line for keeping its own men (re-signing, releasing): engine 27's green line in the top flight
+   (keep27, 28_money), the budget otherwise */
+const cpuLine=(u,t)=>typeof fo27==="function"&&fo27()&&typeof keep27==="function"?keep27(u,t):budgetOf(u,t);
 /* no exceptions in hockey: re-signing your own players fits under the cap too */
 const TAX_LINE=NFL_CAP;
 /* How well run a franchise is, from its slow-moving strength: good
@@ -175,7 +178,7 @@ function nflFreeAgentPreview(u,myTeam,users){
   const out=[];
   NAMES.forEach(t=>{
     if(t===myTeam)return;
-    const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R,budgetOf(u,t));
+    const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R,cpuLine(u,t));
     R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
       if(p.r<58||(eng26()?!vetOK(Object.assign({},p,{age:p.age+1})):p.age>=33))return;                  // likely to retire or go unsigned
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
@@ -331,7 +334,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   if(F27)loanBack27(u,rep,pool,leave);   // engine 27: the season's loans end (28_money)
   NAMES.forEach(t=>{
     const before=u.program[t], c=u.coach[t], R=u.roster[t], ch=chFor(t);
-    const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R,budgetOf(u,t));
+    const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R,cpuLine(u,t));
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
     u.program[t]=Math.max(LEAGUE.tuning.pFloor,Math.min(LEAGUE.tuning.pCeil,u.program[t]));   // the league's own range (was pro football's 1480-1920)
@@ -397,7 +400,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   rep.transfers={}; rep.humans=Object.keys(U_CH);
   Object.keys(U_CH).forEach(t=>{ if(u.roster[t])tWindow(u,t,U_CH[t]||{},rep,pool,leave,prog0) });
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
-  if(F27){ market27(u,rep,pool,leave,prog0,Object.keys(U_CH));   // engine 27: the computer's clubs buy and sell (28_money)
+  if(F27){ market27(u,rep,pool,leave,prog0,Object.keys(U_CH),rng);   // engine 27: the computer's clubs buy and sell (28_money)
     loans27(u,rep,pool,leave,U_CH);
     NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}})) }
 
@@ -421,7 +424,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // the academy's wages can tip a club over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
     const R=u.roster[t];
-    while(payroll(R)>budgetOf(u,t)){
+    const line=cpuLine(u,t);   // engine 27: past the spending rule's green line, not the board's (28_money)
+    while(payroll(R)>line){
       let wi=-1,wv=-1;
       R.forEach((p,i)=>{if(!p||i<POS.length||p.keep)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});   // not one you just signed
       if(wi<0){ // only starters left over: the most overpaid starter goes

@@ -27,8 +27,8 @@ the league's whole-squad spending.
   parachutes.
 - Real figures (sources below): top-flight revenue £6.8bn in 2024-25 (£340M a club), wages 65% of it; Championship
   revenue £942M, wages 93% of it in 2023-24.
-- Measured (`test/soccer-fo.js`, two careers, five seasons): top-flight revenue £331M a club; squad costs 63% of revenue
-  (seasons 59% to 69%; real wages 65%); the Championship 64% (real 93%: lower here, see Not yet).
+- Measured (`test/soccer-fo.js`, two careers, five seasons): top-flight revenue £333M a club; squad costs 60% of revenue
+  (seasons 50% to 64%; real wages 65%); the Championship 61% (real 93%: lower here, see Not yet).
 - Games: soccer. Files: `28_money.js`, `26_offseason.js` (the parachute clock, the relegation cut, `budgetOf`).
 - Tested: `test/soccer-fo.js` parts 2 and 4.
 - Not yet: League One and below keep the old budgets and kitties (their clubs aren't in the books).
@@ -41,7 +41,7 @@ the league's whole-squad spending.
   (its sanctions aren't published; the Premier League's are used). The season's books close at its end (`close27`:
   revenue by where the club finished, the ratio, any levy) and are shown on the books card in both windows.
 - Why: the brief: "the league's spending rule, with a points deduction for a breach".
-- Measured: two deductions in the ten seasons of `test/soccer-fo.js`, and one in `test/epl-rules.js`'s four (the
+- Measured: none to two deductions in the ten seasons of `test/soccer-fo.js` (0 in the last run), and one in `test/epl-rules.js`'s four (the
   computer's clubs keep to their boards' lines, which are under the rule; a deduction comes from a club whose revenue
   falls under its wage bill, as a relegated one's can).
   The rule bites a human club that spends past its line (a club that buys with the wage room of sales it then doesn't
@@ -85,13 +85,12 @@ the league's whole-squad spending.
   the summer's news (`rep.market`).
 - Why: before, only your bids moved players between clubs; the computer's clubs rebuilt through the academy and free
   transfers.
-- Measured (two careers, five summers): the top flight's gross £2.26bn in squad terms (summers £1.1bn to £3.1bn; real
-  £3.0bn in 2025, the record); the six richest clubs spend 36% of it (the real big six 49%); the Championship 14% of
-  the top flight's (real 8%); promoted clubs £37M each against the top flight's £47M average (real 2025: Sunderland
+- Measured (two careers, five summers): the top flight's gross £2.21bn in squad terms (summers £1.5bn to £3.3bn; real
+  £3.0bn in 2025, the record); the six richest clubs spend 47% of it (the real big six 49%; 36% before section 8); the
+  Championship 11% of the top flight's (real 8%); promoted clubs £28M each against the top flight's £46M average (real 2025: Sunderland
   £162M, Burnley £108M, Leeds £98M against £150M).
-- Not yet: the richest clubs spend less than real ones: their twelve's wages reach their 70% line, and the model can't
-  yet sell a star to make room (the sold man would leave the twelve with no buyer). Clubs don't yet sell to a club
-  abroad (the real top flight's net spend was £1.2bn of £3.0bn).
+- Not yet: clubs don't sell to a club abroad (only buy from one, section 8); a star can't yet be sold to make room under
+  the line (the sold man would leave the twelve with no buyer).
 
 ## 6. Loans (engine 27)
 - What changed: a young backup (21 or under) can go out on loan for the season to a club a division or two down that
@@ -99,7 +98,7 @@ the league's whole-squad spending.
   starter's season adds 1.2 to his summer's development, a bench season 0.3). If he's no better than both men at his
   position at home, he's let go. You can loan one out and borrow one in a summer (a bigger club's young player who'd
   start for you; you pay his wages). The computer's top-two-division clubs loan one young backup each a summer.
-- Measured: 137 loans in ten summers, all down the pyramid.
+- Measured: 109 loans in ten summers, all down the pyramid.
 - Tested: `test/soccer-fo.js` part 4.
 
 ## 7. The January window with fees (engine 27)
@@ -117,7 +116,7 @@ the league's whole-squad spending.
   season's end the fees, instalments, write-offs and loans go into next season's books (`eplJanCarry`, from `tdCarry`).
 - Why: before, January was one-for-one swaps with no money.
 - Real figures: £372M in January 2025, about £400M in January 2026.
-- Measured: January £273M in squad terms (the ten-season mean; one January with your deals in, £358M).
+- Measured: January £333M in squad terms (the ten-season mean; deadline day in one test season, £346M).
 - Games: soccer. Core: two guarded lines in `src/core/98_trades.js` (`tdApply` routes `x.epl27`, as it routes `x.nba`;
   `tdCarry` calls `eplJanCarry` before the swap), two in `src/core/98_trades_cpu.js` (`cpuDeadline` skips a division
   the league's `cpuSkip` names, and adds its deals to the season's `cpuTr` rather than replacing them; nothing else sets
@@ -129,6 +128,36 @@ the league's whole-squad spending.
 - Tested: `test/soccer-fo.js` part 3 (the screen, a buy, a sale, money, whole twelves, deadline day, a reload after
   deadline day and to the season's end, the books carried).
 - Not yet: no loans in January other than the ones that go with a deal; no rival bidders in January.
+
+## 8. Keeping the league's shape over a career (engine 27)
+- What changed: five pieces, found by measuring where the top of the league leaked over twenty seasons:
+  - The twelve's share of the wage bill by stature in the top flight (`sq27`): `SQ27` (2.4) at a small club, down to
+    three quarters of it at the top, since stars take a bigger share of a big club's bill.
+  - The board's line (70%) is where a computer club stops signing; the line where it lets its own men go (re-signing,
+    releasing over the line, must-sell) is the spending rule's green line in the top flight (`keep27`, `cpuLine`; 85%,
+    where the levy starts). The Championship's board line (95%) is already past its rule. Before, the big clubs, whose
+    twelve run near their line, released or failed to re-sign about one man a summer each.
+  - Signings from abroad (`abroad27`): before the home market, each of the seven biggest top-flight clubs may sign one
+    man from abroad, two and a half above the club's own level (its stature), where a starter is at least three below that, for
+    a fee, inside its buys, its money and its wage line. Before, the only men better than a big club's starters were at
+    the other big clubs.
+  - A player's ambition: in the top flight the market won't move a man more than six above the buying club's level
+    (ten for a promoted club, whose money talks; the Championship's owners pay over the odds for a promotion push and
+    are left alone).
+  - A loan prospect who will pass the backup at home (23 or under, ceiling above him) stays when he comes back, rather
+    than being let go.
+- Why: `test/longrun.js` (20 seasons, two careers) had the top flight's starters' spread 9.2 to 6.8, the wins spread down
+  a quarter (0.773) and scoring down (0.939): three bands out. The real league's big clubs stay big.
+- Measured (`test/longrun.js epl`, 20 seasons, two careers): starters' spread 9.4 to 8.1 (was 9.2 to 6.8); wins
+  spread late/early 0.857 (was 0.773; band 0.8-1.2); the top 1% -2.4 (was -3.2; band -3 or better); scoring a game
+  0.949 (was 0.939; band 0.95-1.05, one band out by a thousandth; between runs of the same idea it read 0.93 to 0.95);
+  every other band in. Short run (six seasons): MATCH (spread 9.4 to 8.8, wins 0.864, scoring 1.0). Engine 26 on the
+  same test: one band out (the median payroll, which engine 27 brings in). The market (`test/soccer-fo.js`): net spend
+  51% of gross (real 40%: £1.2bn of £3.0bn); the six richest clubs spend 47% of the gross (real 49%).
+- Games: soccer. Files: `28_money.js`, `26_offseason.js` (`cpuLine` at the three places the computer keeps or lets go).
+- Tested: `test/longrun.js epl` (full and short), `test/soccer-fo.js` part 4.
+- Not yet: the spread still narrows (9.4 to 8.1 in twenty seasons) and scoring drifts down about 5%, the last band
+  out; I couldn't tie the scoring to one cause (per position the ratings hold). The abroad market is one-way.
 
 ## Sources (read Nov 2026)
 - Premier League central payments 2024-25 (equal share £96.9M, merit about £2.6M a place, facility fees £8.9M to
@@ -149,7 +178,7 @@ the league's whole-squad spending.
   https://www.fcbusiness.co.uk/news/efl-clubs-approve-changes-to-financial-control-rules/
 - Transfer windows 2026-27 (15 June to 1 September; 1 January to 1 February):
   https://www.liverpoolfc.com/news/premier-league-confirms-dates-2026-27-transfer-windows
-- Summer 2025: top flight gross £3.0bn, net £1.2bn; Championship £240M (£145M in 2024); relegated clubs' sales £225M:
+- Summer 2025: top flight gross £3.0bn, net £1.2bn (the share that leaves the league, section 8); Championship £240M (£145M in 2024); relegated clubs' sales £225M:
   https://www.deloitte.com/uk/en/about/press-room/deloitte-premier-league-spending-record-eclipsed.html
 - Summer 2025 club by club (big six £1.53bn of £3.13bn; Sunderland £162M, Burnley £107.8M, Leeds £98M):
   https://www.si.com/soccer/premier-league-transfers-total-money-spent-clubs-2025-summer-window

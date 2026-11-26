@@ -26,7 +26,7 @@
 const path=require('path'), {load}=require('./harness.js');
 const file=process.argv.slice(2).find(a=>a.endsWith('.html'))||path.join(__dirname,'..','dist','soccer-coach.html');
 const X=['S','SEA','U','NAMES','CONF','LEAGUE','POS','BK','newDynasty','openOffseason','commitOffseason','doAdvance','live','liveTick','answerLive','ENGINE_V','fo27','budgetOf','payroll',
-  'rev27','cost27','chute27','kitty27','budget27','inst27','book27','amort27','hgBreak27','nonHG27','hg27','rcl27','ask27','tAnswer27','assess27','M27','SQ27','MAR1',
+  'rev27','cost27','sq27','chute27','kitty27','budget27','inst27','book27','amort27','hgBreak27','nonHG27','hg27','rcl27','ask27','tAnswer27','assess27','M27','SQ27','MAR1',
   'tradesView','jTargets27','jOffers27','jMoney27','jCheck27','jRecord27','jDo27','jDown27','jU27','jDeals27','ctDeadline','tdState','tdApply',
   'tWindowHTML','tMarket','tOffers','LOAN_DEV','nflAsk','tKey'];
 let bad=0, n=0; const ok=(c,m)=>{ n++; if(!c){ bad++; console.log('  FAIL '+m) } else console.log('  ok   '+m) };
@@ -127,14 +127,14 @@ ok(A.tdState().open&&A.LEAGUE.trade.tab()==='Transfers','January: the window is 
 if(!process.env.FO_QUICK){
 /* 4. the long run: two careers, five seasons, the league's money against the real one */
 console.log('Five seasons, two careers');
-const S={rev:[],ratioPL:[],ratioCH:[],gross:[],rich:[],chShare:[],prom:[],plAvg:[],ded:[],jan:[],loans:[],loanUp:0,loanAll:0,big:[]};
+const S={rev:[],ratioPL:[],ratioCH:[],gross:[],rich:[],net:[],chShare:[],prom:[],plAvg:[],ded:[],jan:[],loans:[],loanUp:0,loanAll:0,big:[]};
 for(const [team,seed] of [['Brentford',11],['Arsenal',7]]){
   const C=load({file,expose:X}); C.newDynasty(team,seed,'T');
   for(let y=0;y<5;y++){
     const PL=C.NAMES.filter(t=>C.CONF[t]==='PL'), CH=C.NAMES.filter(t=>C.CONF[t]==='CH');
     const rv=t=>C.rev27(C.U,t,C.CONF[t]).tot, rPL=PL.map(rv);
     S.rev.push(mean(rPL));
-    if(y>=1){ S.ratioPL.push(sum(PL.map(t=>C.cost27(C.U.roster[t])))/sum(rPL)); S.ratioCH.push(sum(CH.map(t=>C.cost27(C.U.roster[t])))/sum(CH.map(rv))) }
+    if(y>=1){ S.ratioPL.push(sum(PL.map(t=>C.cost27(C.U.roster[t],C.sq27(C.U,t,'PL'))))/sum(rPL)); S.ratioCH.push(sum(CH.map(t=>C.cost27(C.U.roster[t],C.sq27(C.U,t,'CH'))))/sum(CH.map(rv))) }
     toStep(C,()=>false);
     S.ded.push(Object.keys(C.SEA.ded||{}).length);
     const jan=C.jDeals27(C.SEA,true).filter(x=>x.cpu&&C.CONF[x.buyer]==='PL'); S.jan.push(sum(jan.map(x=>x.fee))*C.SQ27);
@@ -143,6 +143,7 @@ for(const [team,seed] of [['Brentford',11],['Arsenal',7]]){
     const by={}; pl.forEach(x=>by[x.to]=(by[x.to]||0)+x.fee);
     const nowPL=C.NAMES.filter(t=>C.CONF[t]==='PL'), rich=nowPL.slice().sort((a,b)=>C.rev27(C.U,b,'PL').tot-C.rev27(C.U,a,'PL').tot).slice(0,6);
     S.gross.push(gross*C.SQ27); S.rich.push(sum(rich.map(t=>by[t]||0))/Math.max(1,gross)); S.big.push(sum(BIG.map(t=>by[t]||0))/Math.max(1,gross));
+    S.net.push((gross-sum(M.filter(x=>x.dFrom==='PL').map(x=>x.fee)))/Math.max(1,gross));
     S.chShare.push(sum(M.filter(x=>x.dTo==='CH').map(x=>x.fee))/Math.max(1,gross));
     const prom=nowPL.filter(t=>C.U.moved&&C.U.moved.moves&&C.U.moved.moves[t]==='PL'&&C.S.myTeam!==t); prom.forEach(t=>S.prom.push(by[t]||0)); S.plAvg.push(gross/20);
     ((rep&&rep.loans)||[]).filter(l=>l.to&&l.from).forEach(l=>{ S.loanAll++; if(C.LEAGUE&&C.CONF[l.to]!==C.CONF[l.from])S.loanUp++ });
@@ -154,6 +155,7 @@ ok(mean(S.ratioPL)>=0.55&&mean(S.ratioPL)<=0.75,`top-flight squad costs ${Math.r
 ok(mean(S.ratioCH)>=0.6&&mean(S.ratioCH)<=1.1,`Championship squad costs ${Math.round(mean(S.ratioCH)*100)}% of revenue (real wages 93%)`);
 ok(mean(S.gross)>=1800&&mean(S.gross)<=3500,`top-flight summer gross £${(mean(S.gross)/1000).toFixed(2)}bn in squad terms (summers £${q(S.gross.map(x=>x/1000))}bn; real £3.0bn in 2025, the record)`);
 ok(mean(S.rich)>=0.30&&mean(S.rich)<=0.65,`the six richest clubs spend ${Math.round(mean(S.rich)*100)}% of it (the real big six 49% in 2025; the game's own big six ${Math.round(mean(S.big)*100)}%)`);
+ok(mean(S.net)>=0.2&&mean(S.net)<=0.6,`net spend ${Math.round(mean(S.net)*100)}% of gross, the money that leaves the league (real £1.2bn of £3.0bn, 40%: https://www.deloitte.com/uk/en/about/press-room/deloitte-premier-league-spending-record-eclipsed.html)`);
 ok(mean(S.chShare)>=0.04&&mean(S.chShare)<=0.16,`the Championship spends ${Math.round(mean(S.chShare)*100)}% of the top flight's gross (real 8%: £240M to £3.0bn)`);
 ok(S.prom.length&&mean(S.prom)>=0.5*mean(S.plAvg),`promoted clubs spend to stay up: £${f1(mean(S.prom))}M each against the top flight's £${f1(mean(S.plAvg))}M (real 2025: £98M-£162M against £150M)`);
 ok(mean(S.ded)<=2,`points deductions: ${sum(S.ded)} in ${S.ded.length} seasons (Premier League and Championship)`);

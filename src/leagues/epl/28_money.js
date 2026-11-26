@@ -26,7 +26,11 @@
 
    The game follows twelve men a club (six positions, a first choice and the man behind him). They are the core of a
    squad of 25: the rest of the squad, the bonuses and the manager bring a club's wage bill to about 2.4 times theirs
-   (SQ27, calibrated so that the Premier League's wages run about 60% of revenue). League One and below keep the wage
+   (SQ27, calibrated so that the Premier League's wages run about 60% of revenue). At a club of stars the twelve are a
+   bigger share of the bill (sq27, top flight only: down to three quarters of SQ27 at the top of the stature scale).
+   That, the green line for letting men go (keep27), signings from abroad (abroad27) and players' ambition (AMB27) keep
+   the big clubs big over a career: without them the top of the league wore down to the middle (test/longrun.js:
+   starters' spread 9.2 to 6.8 in twenty seasons, wins' spread down a quarter). League One and below keep the wage
    budgets they had: their money isn't the story, and the rule is the top two divisions'. */
 const M27={eq:96.9, merit:2.65, fac:[8.9,24.9], ch:11,
   chute:[0.55,0.45,0.20],
@@ -57,17 +61,21 @@ function rev27(u,t,d,pos){
 /* the amortisation the twelve carry: each fee spread over its contract, five years at most */
 const amort27=R=>R.reduce((s,p)=>s+(p&&p.am&&(p.amY||0)>0?p.am:0),0);
 /* squad costs, the whole squad's, and the ratio the rule reads */
-function cost27(R){ return Math.round(SQ27*(payroll(R)+amort27(R))*10)/10 }
-function scr27(u,t,R,d,pos,sales){ const r=rev27(u,t,d,pos); if(!r)return null; const c=cost27(R||u.roster[t]); return {rev:r, cost:c, sales:sales||0, ratio:c/Math.max(1,r.tot+(sales||0))} }
+const SQ_TOP=0.25;
+function sq27(u,t,d){ d=d||CONF[t]; return d!=="PL"?SQ27:SQ27*(1-SQ_TOP*Math.max(0,Math.min(1,stZ27(u,t,d)))) }   // the top flight's stars; a Championship bill is flatter
+function cost27(R,sq){ return Math.round((sq||SQ27)*(payroll(R)+amort27(R))*10)/10 }
+function scr27(u,t,R,d,pos,sales){ const r=rev27(u,t,d,pos); if(!r)return null; const c=cost27(R||u.roster[t],sq27(u,t,d)); return {rev:r, cost:c, sales:sales||0, ratio:c/Math.max(1,r.tot+(sales||0))} }
 /* the board's wage budget for the twelve, engine 27 (the top two divisions): its line on revenue, less the fees the
    twelve already carry. The old budgets (90 to 320 in the top flight, wages a quarter of it: the review's "the model
    doesn't bind at the top") stay for seasons begun on engine 26 and below, and for League One down */
 function budget27(u,t,d){ d=d||CONF[t]; const r=rev27(u,t,d); if(!r)return null;
-  return Math.max(1,Math.round((r.tot*M27.board[d]/SQ27-amort27(u.roster[t]||[]))*100)/100) }
+  return Math.max(1,Math.round((r.tot*M27.board[d]/sq27(u,t,d)-amort27(u.roster[t]||[]))*100)/100) }
+/* a club up this summer (or, before the drop and rise are made, one going up) */
+const prom27=(u,t)=>CONF[t]!=="PL"||!!(u.moved&&u.moved.year===u.year&&u.moved.moves&&u.moved.moves[t]==="PL");
 /* the summer's money for fees: a share of revenue (a promoted club's board finds more, to stay up), less instalments
    still owed and any levy, plus what's due from sales made by instalments and half of last summer's leftover */
 function kitty27(u,t,d){ d=d||CONF[t]; const r=rev27(u,t,d); if(!r)return null;
-  const prom=d==="PL"&&(CONF[t]!=="PL"||(u.moved&&u.moved.year===u.year&&u.moved.moves&&u.moved.moves[t]==="PL"));
+  const prom=d==="PL"&&prom27(u,t);
   const owe=owed27(u,t,u.year), due=due27(u,t,u.year), levy=(u.levy&&u.levy[t])||0;   // instalments made last summer fall due now
   return Math.max(0,Math.round((r.tot*M27.kit[d]*(prom?1.5:1)-owe+due-levy+((u.kitty&&u.kitty[t])||0))*10)/10) }
 /* instalments: owed by a buyer, due to a seller, by the summer they fall in */
@@ -130,29 +138,41 @@ function ask27(u,t,p,starter,must){
   if(must)f*=0.85;
   const c=rcl27(u,t,p); if(c&&f>c)f=c;
   return Math.max(0.05,Math.round(f*10)/10) }
-/* a club over its board's line must sell (a relegated club with top-flight wages, a club whose revenue fell) */
-const mustSell27=(u,t)=>ledgerDiv(CONF[t])&&payroll(u.roster[t])>budgetOf(u,t)+0.01;
+/* the board's line is where a club stops signing; the line where it lets men go is the spending rule's green line in the
+   top flight (85%, against the board's 70%): a club over its budget holds its players and buys nothing, as real ones
+   do (Liverpool's wages were 63% of revenue in 2023-24), and sells or releases only past the green line, where the levy
+   starts. In the Championship the board's line (95%) is already past the rule's (85%). Without it the big clubs, whose
+   twelve run near their line, released a man a summer and the top of the league wore down */
+function keep27(u,t){ const d=CONF[t], b=budgetOf(u,t); if(!fo27()||d!=="PL")return b; const r=rev27(u,t,d); if(!r)return b;
+  return Math.max(b,Math.round((r.tot*M27.green/sq27(u,t,d)-amort27(u.roster[t]||[]))*100)/100) }
+/* a club over that line must sell (a relegated club with top-flight wages, a club whose revenue fell) */
+const mustSell27=(u,t)=>ledgerDiv(CONF[t])&&payroll(u.roster[t])>keep27(u,t)+0.01;
 /* the computer's summer market (engine 27). Clubs buy as real ones do: the richest first and most (a share of revenue
    to spend, so the big clubs spend most), a promoted club's board finds half as much again to stay up, clubs over their
    line sell. A club buys a starter upgrade it can pay for now (40% of a fee of £20M or more down, the rest over two
    summers) and fit under its wage line, from its own division (a club its size or smaller) or up to two below; three
-   at most a summer. The seller's backup steps up; a seller with money buys in turn. Nothing is drawn: the summer's
-   order comes from the money and the rosters. */
+   at most a summer. The seller's backup steps up; a seller with money buys in turn. The home market draws nothing:
+   its order comes from the money and the rosters (only a man from abroad is drawn, abroad27). */
+const AMB27=6, AMB27_PROM=4;   // in the top flight a man more than 6 above a buying club's level (eloToRating of its stature) won't
+                                 // go there; a promoted club's money talks, four more (the Championship's owners pay over the odds
+                                 // for a promotion push: its wages were 93% of revenue, so it isn't held)
 const M27_BUYS=[3,2,1];   // a summer's fee signings for the twelve, at most, by tier: a Championship club's market is smaller (its clubs spent
                           // £240M gross in summer 2025 to the top flight's £3.0bn: Deloitte, cited at the top of this file)
-function market27(u,rep,pool,leave,prog,humans){
+function market27(u,rep,pool,leave,prog,humans,rng){
   const H=new Set(humans||[]), tierOf=t=>DIVS[CONF[t]].tier;
   const clubs=NAMES.filter(t=>!H.has(t)&&u.roster[t]&&tierOf(t)<=3);
   const K={}, buys={}, must={};
   clubs.forEach(t=>{ const d=CONF[t]; K[t]=ledgerDiv(d)?kitty27(u,t,d):tKitty(u,t,payroll(u.roster[t])); must[t]=mustSell27(u,t) });
   rep.market=rep.market||[]; u.saleP=u.saleP||{};
+  if(rng)abroad27(u,rep,pool,leave,clubs,K,buys,rng);   // first: a big club's scouts look abroad before they look down the table
   for(let round=0;round<3;round++){
     const order=clubs.filter(t=>K[t]>0.3&&(buys[t]||0)<M27_BUYS[tierOf(t)-1]).sort((a,b)=>K[b]-K[a]||(a<b?-1:1));
     order.forEach(B=>{
-      const R=u.roster[B], dB=CONF[B], cap=budgetOf(u,B); let best=null;
+      const R=u.roster[B], dB=CONF[B], cap=budgetOf(u,B), top=dB==="PL"?eloToRating(u.program[B]||1500)+AMB27+(prom27(u,B)?AMB27_PROM:0):99; let best=null;
       NAMES.forEach(Sl=>{ const S2=u.roster[Sl]; if(Sl===B||H.has(Sl)||!S2)return; const dt=tierOf(Sl)-tierOf(B); if(dt<0||dt>2)return;
         if(!tWilling(u,B,Sl,prog).ok)return;
         S2.forEach((p,j)=>{ if(!p||p.keep||!p.k||p.loan||(p.age-age26(p))>31)return;
+          if(p.r>top)return;                                               // a man well above the club's level wants a bigger stage
           const i=j%POS.length, s=R[i], gain=s?p.r-s.r:20; if(gain<3)return;
           const fee=ask27(u,Sl,p,j<POS.length,must[Sl]), down=fee>=10?Math.round(fee*0.4*10)/10:fee; if(down>K[B])return;
           const out=R[BK(i)], wage=nflAsk(p.r,p.p,p.age);
@@ -177,6 +197,30 @@ function market27(u,rep,pool,leave,prog,humans){
   }
   // what's left of each kitty: half carries over (as yours does)
   u.kitty=u.kitty||{}; clubs.forEach(t=>{ if(ledgerDiv(CONF[t]))u.kitty[t]=Math.round(Math.max(0,K[t])*0.5*10)/10 });
+}
+/* signings from abroad: much of the Premier League's money leaves it. Summer 2025: £3.0bn gross, £1.2bn net, so
+   two fifths of what the clubs paid went out of the league, most of it abroad
+   (https://www.deloitte.com/uk/en/about/press-room/deloitte-premier-league-spending-record-eclipsed.html). A top-flight club with the money signs a man from abroad at its own level (its stature: eloToRating) where a starter has fallen below
+   it, one a summer and before the home market, inside its buys and its wage line. Without it the only men better than a big club's starters
+   were at the other big clubs, and over a career the top of the league wore down to the middle (test/longrun.js). */
+const ABROAD27={lift:2.5, min:3, top:7};   // a man 2.5 above the club's level, for a starter at least 3 below that; the seven biggest clubs
+function abroad27(u,rep,pool,leave,clubs,K,buys,rng){
+  clubs.filter(t=>CONF[t]==="PL"&&expPos27(u,t,"PL")<=ABROAD27.top&&K[t]>0.3&&(buys[t]||0)<M27_BUYS[0]).sort((a,b)=>K[b]-K[a]||(a<b?-1:1)).forEach(B=>{
+    const R=u.roster[B], lvl=eloToRating(u.program[B]||1500), cap=budgetOf(u,B);
+    let i=-1, gap=0; POS.forEach((_,k)=>{ const g=lvl+ABROAD27.lift-(R[k]?R[k].r:0); if(g>gap){gap=g;i=k} });
+    if(i<0||gap<ABROAD27.min)return;
+    const age=22+rng.int(6), p=nflPlayer(rng,lvl,age,i);
+    p.r=Math.max(p.r,Math.round(lvl+ABROAD27.lift)); p.pot=Math.max(p.pot,p.r); p.k={sal:nflAsk(p.r,p.p,p.age),yrs:nflYears(p.age,p.p)};
+    if(R[i]&&p.r<R[i].r+ABROAD27.min)return;
+    const fee=tFee(p,true), down=fee>=10?Math.round(fee*0.4*10)/10:fee; if(down>K[B])return;
+    const out=R[BK(i)]; if(payroll(R)+p.k.sal-(out&&out.k?out.k.sal:0)>cap)return;
+    p.hg=0; if(hgBreak27(R,p,out,"PL"))return;
+    const now=fee>=10?inst27(u,B,null,fee,u.year):fee; K[B]-=now;
+    book27(p,fee,p.k.yrs); p.yrsHere=0; p.joined=u.year+1; p.keep=true; p.from="abroad";
+    const o=nflPlace(R,p);
+    if(o){ rep.released[B].push({n:o.n,p:o.p,r:o.r,sal:(o.k&&o.k.sal)||0,why:"market"}); if(o.r>=58){o.from=B;pool.push(o)} else leave(B,o,"released") }
+    buys[B]=(buys[B]||0)+1;
+    rep.market.push({to:B,from:null,abroad:true,n:p.n,p:p.p,r:p.r,age:p.age,fee:fee,dTo:"PL",dFrom:null}) });
 }
 
 /* ---- loans (engine 27) ----
@@ -203,7 +247,7 @@ function loanBack27(u,rep,pool,leave){
     (rep.loanBack=rep.loanBack||[]).push({n:p.n,p:p.p,from:t,to:home,got:p.loanGot});
     if(!H){ leave(t,p,"loan ended"); return }
     const k=POS.findIndex(P=>P.p===p.p), s=H[k], b=H[BK(k)];
-    if(s&&b&&p.r<b.r&&p.r<s.r){ p.from=home; pool.push(p); return }               // not good enough for his own club's twelve: let go
+    if(s&&b&&p.r<b.r&&p.r<s.r&&!(p.age<=23&&(p.pot||p.r)>b.r+2)){ p.from=home; pool.push(p); return }   // not good enough for his own club's twelve: let go (a prospect who'll pass the backup stays)
     const out=nflPlace(H,p); if(out){ rep.released[home].push({n:out.n,p:out.p,r:out.r,sal:(out.k&&out.k.sal)||0,why:"loan back"}); if(out.r>=58){out.from=home;pool.push(out)} else leave(home,out,"released") } });
     POS.forEach((_,i)=>{ if(!R[i]&&R[BK(i)]){ R[i]=R[BK(i)]; R[BK(i)]=null } }) }) }
 /* the summer's loans: yours out and in, then the computer's (a top-two-division club's young backup with a ceiling) */
