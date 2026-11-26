@@ -135,3 +135,48 @@ who hits, who plays. Everything below is gated on `ENGINE_V >= 26` (`bsV26()`, `
   `startLive` runs before the day's deals). Fixed for baseball on engine 26 only; the others need their own engine bump.
 - Browser checks (Playwright isn't installed): the bullpen card, the live button and the box score were checked
   through the harness only.
+
+## Follow-up: re-tuned on the merged build
+On the merge with the stats branch (its rates as `BS26R`: walks 0.066, a starter's form 0.02, the hitters' edge 0.035)
+pro baseball failed three bs-manager checks (runs 4.52 a side, the left-handed platoon gap .057, starters' ERA below
+relievers') and longrun's wins spread (16.5 a season against a band of 10-15.5; MLB 2024 12.3). All changes are on
+engine 26 only.
+
+### Changes
+- `BS26R` (src/baseball/50_game.js): walks 0.062, the hitters' edge 0.050, form kept at 0.02, and a new `g` 0.5: the
+  clubs' strength gap counts half on the day, the home edge in it whole (without that, home sides fell to 51.8%).
+- The chance shown before a game: a hook, `sportWpEdge`, in core `winProb` reads the gap the way the games play it
+  (0.72 of the edge, home edge whole). Favourites were shown 57.4% and won 55.4%; now shown 55.7%, won 55.8%.
+- The dugout: platoon for left-handed hitters 0.068 to 0.054, times through the order 0.021 to 0.017, relievers' rp0
+  -0.05 to -0.033, the left-handed relief arms a little better (lefty specialist +1, left-handed middle man 0).
+- A reliever on a busy pace (12 games or more and over half his club's games) waits in all but save and tie spots. The
+  busiest went from 88-90 games to 81-82 (MLB's busiest about 80).
+- test/bs-manager.js: the run level is judged against MLB 2021-25's 4.3-4.6 rather than engine 25's; the platoon reads
+  3,000 games (the switch-hitter gap, which is pure selection, read -0.019 on 2,000).
+
+### Why not form 0.12 or gap25
+The stats branch found that form 0.12 lined the shown chance up with results but sent shutouts back to about 16%; I
+saw the same, so form stays at 0.02 and the shown chance is fixed where it is computed. It suggested `tuning.gap25`
+for the wins spread, but gap25 applies from engine 25 on, so changing it would break engine 25's replay; `BS26R.g`
+does the same job on engine 26 alone.
+
+### Numbers (merged with review-improvements 7d501c8)
+- bs-manager: runs 4.45 a side, starters 4.56 ERA and relievers 4.25, platoon .040 and .018 (real .041 and .024),
+  switch -0.007, saves 45.2 a club, holds 77.2, 15.5 intentional walks a club.
+- bs-calibrate: runs 4.44 and 4.47, home 53.4%, wins spread 12.9, best record 108.
+- longrun mlb --short: runs 4.4 late, wins sd 14.1 late (one career, so noisy; a ten-season read is 12.9).
+- boxscores baseball: shutouts 13.5%, runs 4.4, walks 8.4%.
+
+### Tested
+- MATCH: bs-manager, bs-calibrate, `longrun.js mlb --short`, `boxscores.js baseball`, `statsum.js baseball --check`,
+  `boxscore.js baseball` (1347), `OLD=/home/claude/dist-e25 node test/engine-replay.js baseball`, `replay.js baseball`,
+  bs-pitch (9263), migrate (2253), saves, reload (18 of 18), `live-wp.js 200 baseball-coach-pro.html` (worst band 7.0).
+- `realism.js mlb`: favourites shown 55.7%, won 55.8%.
+- `stakes.js`: its one failure is soccer's (Manchester City's title), not baseball's.
+- Goldens re-recorded for pro baseball only, one at a time: fast 099a7208a787e997 to 446d2472a4050b57, full
+  164a0be539c5ab8d to f3a245c796f89a25, hot seat 22a6de51885cd0cf to 1296628ab653cb8d.
+
+### Not yet
+- longrun --short reads one career, so its wins spread swings by a point or more with the seed (14.1 here, 12.6 on
+  the build before the merge); the ten-season read in bs-calibrate is the steadier one.
+- Browser checks remain harness-only (Playwright isn't installed).
