@@ -1,5 +1,5 @@
 /* The surface fits above the action bar (round 102): during a Full match, all seven games, on laptop, desktop and phone
-   screens, with the page at its top, through the first stretches and the calls between, no part of the field is under the fixed bar (at 1280x800 the bar hid a quarter
+   screens, with the page at its top (round 111: a Full match's field is as tall as the window and the page scrolls to it, so there it's checked where the game leaves the page, and as no taller than the window above the bar), through the first stretches and the calls between, no part of the field is under the fixed bar (at 1280x800 the bar hid a quarter
    of baseball's field, home plate and the batter, and soccer's near touchline). No page errors.
      node test/fit.js     last line: MATCH or MISMATCH */
 const {chromium,devices}=require('playwright'); const path=require('path');
@@ -14,8 +14,8 @@ const DIST=process.env.DIST||path.join(__dirname,'..','dist');
    for(let k=0;k<6;k++){ await pg.evaluate(()=>doAdvance()); await pg.waitForTimeout(200); if(await pg.evaluate(()=>!!live&&!live.done))break }
    // through the first stretches and the calls between them (the win-chance bar arrives after the first and pushes the field down)
    let m=null, n=0;
-   for(let j=0;j<40;j++){ await pg.waitForTimeout(350); const q=await pg.evaluate(()=>{ if(live&&live.ask){ answerLive(live.ask.dp.opts[0][0]); return null } window.scrollTo(0,0); const c=document.querySelector('canvas.hlcv'); if(!c||!c.offsetHeight)return null; const r=c.getBoundingClientRect(), bar=document.querySelector('.actionbar'), top=bar&&bar.offsetHeight?bar.getBoundingClientRect().top:innerHeight;
-       return {cTop:Math.round(r.top),w:Math.round(r.width),hidden:Math.max(0,Math.round(r.bottom-top))} });
+   for(let j=0;j<40;j++){ await pg.waitForTimeout(350); const q=await pg.evaluate(()=>{ if(live&&live.ask){ answerLive(live.ask.dp.opts[0][0]); return null } const big=!!document.querySelector('.hlpitch.big'); if(!big)window.scrollTo(0,0); const c=document.querySelector('canvas.hlcv'); if(!c||!c.offsetHeight)return null; const r=c.getBoundingClientRect(), bar=document.querySelector('.actionbar'), top=bar&&bar.offsetHeight?bar.getBoundingClientRect().top:innerHeight;
+       return {cTop:Math.round(r.top),w:Math.round(r.width),hidden:Math.max(0,Math.round(r.bottom-top),big?Math.round(r.height-top):0),big} });
      if(q){ n++; if(!m||q.hidden>m.hidden)m=q } }
    if(m)m.n=n;
    const name=typeof vp==='string'?vp:vp.width+'x'+vp.height;
