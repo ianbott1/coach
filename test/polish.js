@@ -142,5 +142,21 @@ check('the board judges only what has happened (four games)',()=>{
     ok(/Off the mark Win your first game · \S/.test(t.replace(/\s+/g,' ')),`nba: after a sim the toast names the first win's game: "${t.replace(/\s+/g,' ').trim().slice(0,90)}"`) }
 });
 
+// Playtest (pro basketball): the second round's boxes read "to be decided" after the first round had finished, until
+// a game of it was played; the column was "Semifinals" beside "Conference Finals". Each box fills as soon as its teams
+// are known; the rounds are named as the league names them.
+check('pro basketball bracket fills as soon as a pairing is known (and hockey\'s)',()=>{ for(const lg of ['nba','nhl']){
+  const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0, checked=0; const bad=[];
+  while(api.SEA.phase==='week'&&n++<400)ev('simAdvance()');
+  while(api.SEA.phase!=='done'&&n++<700){ ev('SEA.userTeam=S.myTeam; SEA.advance()');
+    for(const sd of ev('Object.keys(LEAGUE.conf.sides)')){ const h=ev('confBracket')(sd), txt=h.replace(/<[^>]+>/g,' ');
+      if(lg==='nba'&&(/>Semifinals</.test(h)||!/Conference Semifinals/.test(h)))bad.push('labels: '+txt.slice(0,80));
+      const r1=(api.SEA.series.r1||[]).filter(x=>x.side===sd), r2=(api.SEA.series.r2||[]).filter(x=>x.side===sd);
+      if(r1.length===4&&r1.some(x=>x.winner)&&!r2.length){ checked++; const cols=h.split('class="bcol"'); const semi=cols[2]||'';
+        if(r1.every(x=>x.winner)&&/to be decided/.test(semi))bad.push(`${sd}, step ${api.SEA.step}: the first round is over and the semifinals still read "to be decided"`);
+        r1.filter(x=>x.winner).forEach(x=>{ if(semi.indexOf(x.winner.replace(/&/g,'&amp;'))<0)bad.push(`${sd}: ${x.winner} won its series and isn't in the next round's box`) }) } } }
+  ok(checked>0&&!bad.length,`${lg}: ${checked} looks between the rounds with the second round filled${bad.length?'; '+[...new Set(bad)].slice(0,3).join('; '):''}`);
+} });
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

@@ -105,3 +105,16 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
   getting in (the playtest's exact case); the toast had no game. After: ncaab no team alive in its tournament told it
   missed (299 team-rounds out with no hope are), cfb none before the show and 31 of 31 headed to their bowls, nba 12,
   nhl 16, mlb 12 playoff teams with no grade falling, the toast names Oct 28. MATCH.
+
+## Pro basketball's (and hockey's) bracket fills as soon as a pairing is known; "Conference Semifinals"
+- What: a playoff round not yet begun shows each pairing as soon as its teams are known (one winner beside "to be
+  decided" while the other series plays; both once both are done), with home court or ice as the round will give it
+  (nbaNextPairs in leagues/nba/97_views.js; the same in leagues/nhl/97_views.js); the Finals tab the same from the
+  conference finals. Pro basketball's columns read the league's round names: "First Round", "Conference Semifinals",
+  "Conference Finals" (ROUND_NAME), as the series lines already did.
+- Why: playtest (pro basketball): the second round's boxes read "to be decided" after the first round had finished,
+  until a game of round 2 was played; "Semifinals" beside "Conference finals". Hockey's bracket was built the same way
+  and showed the same gap.
+- Tested: `node test/polish.js "bracket fills"`: before the fix, nba's columns read "Semifinals" and a series winner
+  was missing from the next round's box (nhl the same: winners missing); after, nba 8 and nhl 8 looks between the
+  rounds with every known winner in the next box and no "to be decided" once the round is over. MATCH.
