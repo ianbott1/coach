@@ -370,33 +370,55 @@ const HL_SPORT=(function(){
   // round 108 (engine 22): the rink moves like hockey (sc-motion's rules): a longer, even lag behind the puck, the man
   // it goes to skating onto it, and nobody faster than his legs frame to frame (metres a stretch; the rink 60 by 26)
   const HP2=()=>typeof ENGINE_V==="undefined"||ENGINE_V>=22, HP_VMAX=1500;   // 7% of man-frames held back, 0.53 m on average (test/sc-motion.js hockey)
+  /* round 111 (Ian: "jankiness in the moment of players ... The timing also feels off"): as soccer's, the puck at a
+     pass's real speed and the man it reaches skating it on toward his next pass in the time left, the shapes following
+     it as it really moves (each touch eased the play to a stop); in game time, a stretch's minutes */
+  const HP_V=15, HP_SKATE=6.5, HP_VRUN=8;
+  function hpMsF(d){ return evPB.span(d)*60000 }
+  function hpDist(a,b){ return Math.hypot((b.a-a.a)*60,(b.ay-a.ay)*26) }
+  function hpTravel(a,b,segMs){ return Math.max(120,Math.min(0.8*segMs,hpDist(a,b)/(a.k==="ice"?22:HP_V)*1000+100)) }
+  function hpCarry(T,i,msF){ if(i<=0||i>=T.length-1)return {a:T[i].a,ay:T[i].ay}; const P=T[i], N=T[i+1], A=T[i-1], dd=hpDist(P,N); if(dd<1)return {a:P.a,ay:P.ay};
+    const rem=Math.max(0,(P.f-A.f)*msF-hpTravel(A,P,(P.f-A.f)*msF)), cd=Math.min(0.5*dd,HP_SKATE*rem/1000*0.8), w=cd/dd; return {a:hlLerp(P.a,N.a,w),ay:hlLerp(P.ay,N.ay,w)} }
+  function hpPuck(T,k,f,msF){ const a=T[k], b=T[Math.min(T.length-1,k+1)], segMs=Math.max(1,(b.f-a.f)*msF), u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
+    const A=hpCarry(T,k,msF);
+    // the move's last leg: the man on the puck skates it in to where the move ends (a pass there left the puck lying still till the next move)
+    if(b!==a&&k+1===T.length-1&&b.k==="end"&&a.k!=="ice"){ const C={a:hlLerp(A.a,b.a,0.4),ay:hlLerp(A.ay,b.ay,0.4)}, tf=hpTravel({a:A.a,ay:A.ay,k:a.k},C,segMs)/segMs;
+      if(u<tf){ const q=u/tf, e=1-Math.pow(1-q,1.4); return {a:hlLerp(A.a,C.a,e),ay:hlLerp(A.ay,C.ay,e),tr:q,A,rcv:C} }
+      const y=(u-tf)/Math.max(1e-6,1-tf); return {a:hlLerp(C.a,b.a,y),ay:hlLerp(C.ay,b.ay,y),tr:1,A,rcv:C} }
+    const tf=b===a?1:hpTravel({a:A.a,ay:A.ay,k:a.k},b,segMs)/segMs;
+    if(u<tf){ const q=u/tf, e=1-Math.pow(1-q,1.4); return {a:hlLerp(A.a,b.a,e),ay:hlLerp(A.ay,b.ay,e),tr:q,A} }
+    const R=k+1<=T.length-1?hpCarry(T,k+1,msF):{a:b.a,ay:b.ay}, y=Math.pow((u-tf)/Math.max(1e-6,1-tf),1.2); return {a:hlLerp(b.a,R.a,y),ay:hlLerp(b.ay,R.ay,y),tr:1,A} }
   function hpDraw(x,W,H,d,f){
     const L=live, P=hpPlan(L,d); let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
-    const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
-    const tr=Math.min(1,u/0.6), e=a.k==="ice"?tr:hlEase(tr), pa=hlLerp(a.a,b.a,e), py=hlLerp(a.ay,b.ay,e);
+    const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1, rt=HP2()&&evPB.rt, msF=hpMsF(d), PK=rt?hpPuck(T,k,f,msF):null;
+    const tr=rt?PK.tr:Math.min(1,u/0.6), e=a.k==="ice"?tr:hlEase(tr), pa=rt?PK.a:hlLerp(a.a,b.a,e), py=rt?PK.ay:hlLerp(a.ay,b.ay,e);
     const s=mv.side, toS=(X,Y)=>[W*PADX+X*W*(1-2*PADX), H*PADY+Y*H*(1-2*PADY)], toR=(sd,aa,yy)=>sd===0?[1-aa,1-yy]:[aa,yy];
     // the shapes a moment behind the puck
-    const shapeAt=fq=>{ const mm=P.moves.find(q=>fq>=q.f0&&fq<=q.f1)||mv, TT=mm.T; let kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++; const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.6));
+    const shapeAt=fq=>{ const mm=P.moves.find(q=>fq>=q.f0&&fq<=q.f1)||mv, TT=mm.T; let kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++;
+      if(rt){ const q=hpPuck(TT,kk,fq,msF), sh=hpShape(q.a,q.ay); return {s:mm.side,A:sh.A.map(p=>toR(mm.side,p[0],p[1])),D:sh.D.map(p=>toR(mm.side,p[0],p[1]))} }
+      const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.6));
       const sh=hpShape(hlLerp(A.a,B.a,tt),hlLerp(A.ay,B.ay,tt)); return {s:mm.side,A:sh.A.map(p=>toR(mm.side,p[0],p[1])),D:sh.D.map(p=>toR(mm.side,p[0],p[1]))} };
-    const acc=[[],[]]; (HP2()?[0,0.0025,0.005,0.0075,0.01,0.0125,0.015,0.0175,0.02,0.0225]:[0,0.005,0.01,0.015]).forEach((dt,q)=>{ const w=HP2()?1:4-q, S=shapeAt(Math.max(0,f-dt)); [[S.s,S.A],[1-S.s,S.D]].forEach(([si,arr])=>arr.forEach((p,i)=>{ if(!acc[si][i])acc[si][i]=[0,0,0]; acc[si][i][0]+=p[0]*w; acc[si][i][1]+=p[1]*w; acc[si][i][2]+=w })) });
+    const acc=[[],[]]; (rt?[0,1,2,3,4,5,6,7,8,9].map(q=>q*80/msF):HP2()?[0,0.0025,0.005,0.0075,0.01,0.0125,0.015,0.0175,0.02,0.0225]:[0,0.005,0.01,0.015]).forEach((dt,q)=>{ const w=HP2()?1:4-q, S=shapeAt(Math.max(0,f-dt)); [[S.s,S.A],[1-S.s,S.D]].forEach(([si,arr])=>arr.forEach((p,i)=>{ if(!acc[si][i])acc[si][i]=[0,0,0]; acc[si][i][0]+=p[0]*w; acc[si][i][1]+=p[1]*w; acc[si][i][2]+=w })) });
     let pos=[0,1].map(si=>acc[si].map(o=>[o[0]/o[2],o[1]/o[2]]));
     const [bx,by]=toR(s,pa,py);
     // a faceoff: both lines set at the dot, centres over the puck, wings on the hash marks, the D behind, until it's won
     if(k===0&&a.k==="faceoff"&&u<0.45){ const w=1-hlEase(u/0.45), a0=a.a, y0=a.ay, o=1-s;
       const FA=[null,[a0-0.13,y0-0.12],[a0-0.13,y0+0.12],[a0-0.014,y0],[a0-0.025,y0-0.09],[a0-0.025,y0+0.09]], FD=[null,[a0+0.13,y0-0.12],[a0+0.13,y0+0.12],[a0+0.014,y0],[a0+0.025,y0-0.09],[a0+0.025,y0+0.09]];
       for(let i=1;i<6;i++){ const pA=toR(s,FA[i][0],FA[i][1]), pD=toR(s,FD[i][0],FD[i][1]); pos[s][i]=[hlLerp(pos[s][i][0],pA[0],w),hlLerp(pos[s][i][1],pA[1],w)]; pos[o][i]=[hlLerp(pos[o][i][0],pD[0],w),hlLerp(pos[o][i][1],pD[1],w)] } }
-    if(tr<1){ const [ax,ay]=toR(s,a.a,a.ay); pos[s][a.s]=[hlLerp(pos[s][a.s][0],ax,0.85*(1-tr)),hlLerp(pos[s][a.s][1],ay,0.85*(1-tr))] }
-    { const [tx,ty]=toR(s,b.a,b.ay), wb=HP2()?0.95*hlEase(tr):0.4+0.55*tr; pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,wb),hlLerp(pos[s][b.s][1],ty,wb)] }
+    if(rt){ if(tr<1){ const [ax,ay]=toR(s,PK.A.a,PK.A.ay); pos[s][a.s]=[hlLerp(pos[s][a.s][0],ax,0.85*(1-tr)),hlLerp(pos[s][a.s][1],ay,0.85*(1-tr))] }
+      const R0=PK.rcv||b, [tx,ty]=tr<1?toR(s,R0.a,R0.ay):[bx,by], wb=tr<1?0.95*hlEase(tr):1; pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,wb),hlLerp(pos[s][b.s][1],ty,wb)] }
+    else { if(tr<1){ const [ax,ay]=toR(s,a.a,a.ay); pos[s][a.s]=[hlLerp(pos[s][a.s][0],ax,0.85*(1-tr)),hlLerp(pos[s][a.s][1],ay,0.85*(1-tr))] }
+    { const [tx,ty]=toR(s,b.a,b.ay), wb=HP2()?0.95*hlEase(tr):0.4+0.55*tr; pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,wb),hlLerp(pos[s][b.s][1],ty,wb)] } }
     if(b.hit!=null&&tr>0.6){ const o=1-s; pos[o][b.hit]=[hlLerp(pos[o][b.hit][0],bx,0.8),hlLerp(pos[o][b.hit][1],by,0.8)] }
     if(k===T.length-2&&mv.m.by!=null&&tr>0.5){ const o=1-s; pos[o][mv.m.by]=[hlLerp(pos[o][mv.m.by][0],bx,(tr-0.5)*1.6),hlLerp(pos[o][mv.m.by][1],by,(tr-0.5)*1.6)] }
     if(HP2()){ const Q=hpDraw.st, di=(L.drives||[]).indexOf(d); let df=-1;
       if(Q&&Q.d===d&&f>=Q.f)df=f-Q.f; else if(Q&&Q.di===di-1&&Q.f>0.97&&f<0.03&&d.seg%4!==0)df=f+1-Q.f;
-      let nCl=0, lagM=0; if(df>=0&&df<0.02){ const lim=HP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*60, dy=(q[1]-o[1])*26, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.6:1);
+      let nCl=0, lagM=0; if(df>=0&&df<0.02){ const lim=rt?HP_VRUN*df*msF/1000:HP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*60, dy=(q[1]-o[1])*26, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?(rt?1.4:2.2):1)*(i===0?0.6:1);
         if(m>L2&&m>0){ nCl++; lagM+=m-L2; return [o[0]+dx*L2/m/60,o[1]+dy*L2/m/26] } return q })) }
       pos=pos.map(A=>A.map(q=>[Math.max(0.01,Math.min(0.99,q[0])),Math.max(0.02,Math.min(0.98,q[1]))]));
       hpDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))}; hpDraw.cl={nCl,lagM} }
-    hpDraw.pos=pos; hpDraw.dbg={s,as:a.s,bs:b.s,u,bx,by,cl:hpDraw.cl};
+    hpDraw.pos=pos; hpDraw.dbg={s,as:a.s,bs:b.s,u,bx,by,cl:hpDraw.cl,k,nT:T.length,tr,fo:a.k,bk:b.k,same:a===b};
     const g=L.g, kits=hlKits(g.home,g.away), inks=kits.map(k=>k.fill), gks=hlFar(["#111318","#E8F56B","#C9A0FF","#FF9F43"],inks), r=Math.max(5,W/80);
     const [qx,qy]=toS(bx,by);
     [0,1].forEach(si=>{ const S=si===s?mv.six:mv.oSix, short=si===s?P.shortAt(s,f):P.shortAt(si,f);
@@ -416,7 +438,7 @@ const HL_SPORT=(function(){
     if(Date.now()-(hpDraw.t||0)>500){ hpDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=hpTallyHTML(hpTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
-  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>28000, clock:(d,f)=>{   /* round 104: twenty-eight seconds of play between the shots a stretch at Normal (was twelve): room for the touches */ const m=Math.min(60,Math.max(1,Math.floor(d.seg*5+f*5)+1)); return (m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'" }, skip:d=>d.seg>=SEGS};
+  const evPB={mode:"pb", rt:true, t0:d=>d.seg*5, span:d=>5, ms:d=>28000, clock:(d,f)=>{   /* round 104: twenty-eight seconds of play between the shots a stretch at Normal (was twelve): room for the touches */ const m=Math.min(60,Math.max(1,Math.floor(d.seg*5+f*5)+1)); return (m<=20?"1st":m<=40?"2nd":"3rd")+" \u00b7 "+m+"'" }, skip:d=>d.seg>=SEGS};
   function frame(x,W,H,c,t){
     const n=c.W.length, tb=0.72, ts=0.86;
     let bx,by;
