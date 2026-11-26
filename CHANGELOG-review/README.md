@@ -10,6 +10,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [people.md](people.md) | Traits and morale, conversations, press conferences, fans, storylines, the Staff room setting | All seven |
 | [realism.md](realism.md) | Board targets from expected wins; MLB, NFL, college football, NHL and college basketball calibration; `test/realism.js` | All seven |
 | [polish.md](polish.md) | Fifteen bugs found in play (carried-plan prompt, bench stats, nickel and dime, brackets, verdicts, sport words and more) | All seven |
+| [integrity.md](integrity.md) | Engine 26, long careers: ratings held to the opening league, hidden ceilings, aging by position, college programs and coaches, the summer's own dice; `test/longrun.js` | All seven |
 
 ## Rules kept
 
