@@ -4,12 +4,28 @@
    call screen with the staff's advice, and the replay view. */
 
 /* ---- names ---- */
-function bbPlayer(team,i,u,bn){
+/* the spot whose man the run of play names for a three or a bucket inside: a fixed pattern by the event's number (the
+   two guards and the wing took every named three, however the roster shot); engine 26 (stats): by the shares the box
+   score uses (position, rating, Shooting or Finishing), still by the event's number, so the clip and the box agree */
+function bbSlot(team,kind,u){ u=u||0;
+  if(typeof ENGINE_V==="undefined"||ENGINE_V<26)return kind==="three"?[1,2,0,1,2][u%5]:[4,3,4,2][u%4];
+  const R=typeof SEA!=="undefined"&&SEA&&SEA.roster&&SEA.roster[team]; if(!R)return kind==="three"?[1,2,0,1,2][u%5]:[4,3,4,2][u%4];
+  const k=kind==="three"?"tpm":"pts2", W=POS.map((P,i)=>{ const p=R[i]; if(!p)return 0; const r=ROLE26[P.p]||ROLE[P.p];
+    return (k==="tpm"?r.tpm:r.pts)*Math.pow(Math.max(0.55,1+(p.r-60)/20*BB_SLOPE26),2)*bbLean(p,k) }), T=W.reduce((a,b)=>a+b,0);
+  let x=((u*0.6180339887+0.31)%1)*T, i=0; while(i<4&&x>=W[i]){ x-=W[i]; i++ } return i }
+function bbPlayer(team,i,u,bn,off){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
   // an injured player isn't on the floor (Grokbot: "OUT 4 more weeks", and he hit threes)
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
-  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; const pick=(b&&(bn||(u%10)<2))||!p?b:p; return pick?pick.n:null;   // bn: the bench is in (round 93)
+  const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)]; let pick=(b&&(bn||(u%10)<2))||!p?b:p;   // bn: the bench is in (round 93)
+  // review round (playtest: a star "buries a three" while he sat with three fouls): the man sitting (off) isn't on the
+  // floor either: his backup has it, or with no backup the next starter
+  if(pick&&off&&pick.n===off)pick=b&&b!==pick?b:(()=>{ for(let k=1;k<5;k++){ const j=(i+k)%5, q=hurt.has(j)?null:R[j]; if(q&&q.n!==off)return q } return null })();
+  return pick?pick.n:null;
 }
+/* the star a stretch has on the bench (foul trouble, fouled out), by name: the engine's star sits from the stretch it is
+   called to the half (d.star: fouls, on the floor, fouled out) */
+function bbOff(d,side,team){ try{ const x=d&&d.star&&d.star[side]; return x&&(x[1]===false||x[2])?bbStar(team):null }catch(e){ return null } }
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
   let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }
@@ -25,11 +41,14 @@ function pickOf(a,u){return a[u%a.length]}
 function bbEventText(g,e,d){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, u=e.u||0, bn=!!(d&&d.bn&&d.bn[e.side]);
-  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u,bn); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
-  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u,bn); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
+  const off=bbOff(d,e.side,tm);
+  if(e.k==="three"){ const n=bbPlayer(tm,bbSlot(tm,"three",u),u,bn,off); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
+  if(e.k==="inside"){ const n=bbPlayer(tm,bbSlot(tm,"inside",u),u,bn,off); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
   if(e.k==="foul"){ const n=bbStar(tm); return {team:tm,tag:e.f>=BB.foulOut-2?"FOULS":"",text:`${n} picks up his ${ordw(e.f)} foul`} }
-  if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }
+  if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:e.again?`${bbStar(tm)} stays on the bench to start the half, still on ${e.f} fouls`:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }   // review round: the second sit on the same fouls read as a repeat
   if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
+  if(e.k==="to")return {team:tm,tag:"TIMEOUT",text:`${e.mine?"Timeout":"Timeout to stop the run"}${e.left!=null?` (${e.left} left)`:""}`};
+  if(e.k==="rot")return {team:tm,tag:"BENCH",text:e.rot==="tight"?"Tighten the rotation: the starters play heavy minutes":e.rot==="deep"?"Go deep into the bench: fresh legs, more minutes for the second unit":"Back to the usual rotation"};
   if(e.k==="cue")return {team:tm,tag:"",text:pickOf(BB_CUE[e.cue],u).replace("{t}",tm),cue:true};
   return {team:tm,tag:"",text:""};
 }
@@ -114,8 +133,22 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
       <div class="evr"><span class="evk">Fouls called on your team</span><span class="evv">${dp.called}</span></div>
       <div class="evr"><span class="evk">An ordinary crew, by now</span><span class="evv">about ${dp.avg}</span></div>
       <div class="evr"><span class="evk">Your star</span><span class="evv">${dp.f} of ${dp.out}</span></div>
+      ${dp.rot&&dp.rot!=="normal"?`<div class="evr"><span class="evk">Your rotation</span><span class="evv">${dp.rot==="tight"?"tight: he's out there more":"deep: he's out there less"}</span></div>`:""}
       <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div>
       <div class="evn">${foulRule()}</div></div>` }
+  // round 111: behind in the last minute: their free throws tonight against the league's
+  // (not tonight's free throws: a hot or cold night at the line says nothing about the next two, and the card says only
+  // what bears on the call)
+  if(dp.k==="defend"){ const opp=g.home===my?"away":"home";
+    return `<div class="evid"><div class="evh">${esc(g[opp])} at the line</div>
+      <div class="evr"><span class="evk">Free throws, the league over</span><span class="evv">${dp.avg}%</span></div>
+      <div class="evr"><span class="evk">You're down</span><span class="evv">${dp.down}</span></div>
+      <div class="evn">Fouling stops the clock and buys you more trips down the floor, at the price of their free throws. Playing it out lets them run a possession down, and gets you one more of your own.</div></div>` }
+  // round 111: a timeout: how many you have, what one does, and (when the defense is this call's) what they're running
+  if(dp.k==="timeout"||dp.k==="tomine"){
+    return `<div class="evid"><div class="evh">Your timeouts</div>
+      <div class="evr"><span class="evk">${dp.k==="tomine"?"Left after this one":"Left"}</span><span class="evv">${dp.left} of ${BB_GD.timeouts}</span></div>
+      <div class="evn">${timeoutNote()}</div></div>`+(d&&d.T&&(dp.k==="tomine"||dp.withDef)?evidenceHTML(g,my,d,{k:"read"}):"") }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
@@ -132,6 +165,8 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
     ${firstReadTip()}<div class="evn">League average: ${AV.three}% of shots from three, ${AV.paint} points in the paint, ${AV.pnr} pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
 }
 
+/* round 111: what a timeout does, said plainly (the rule, not the answer) */
+function timeoutNote(){ return `A run is mostly hot shooting, and most of it fades on its own; a timeout takes away the little that carries into the next stretch, and it's your chance to change the defense. ${BB.quarters?"The end of a quarter stops a run by itself.":"Half-time stops a run by itself."} Keep one for the last possession and you can draw up the final shot; with none left it's a scramble the length of the floor.` }
 /* ---- the run of play ---- */
 function playsHTML(drives,my,g,limit){
   let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
@@ -167,7 +202,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep"||dp.k==="close")&&DEFENSES[o]?DEFENSES[o].d:"";
+  const desc=o=>{ const k=String(o).replace(/^to:/,""); return (dp.k==="read"||dp.k==="prep"||dp.k==="close"||dp.k==="timeout"||dp.k==="tomine")&&DEFENSES[k]?DEFENSES[k].d:"" };
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
@@ -179,9 +214,9 @@ function liveCallView(){
     ${evidenceHTML(g,my,last,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
+      `<div class="say"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${desc(o[0])?`<small>${esc(desc(o[0]))}</small>`:""}</button>`).join("")}</div>
     <div class="grouphead">Run of play</div>

@@ -1,5 +1,5 @@
 {
- "fp": "50d8c2fb77ebe5fb",
+ "fp": "6584d4848247387b",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -350,6 +350,36 @@
    "fp": "50d8c2fb77ebe5fb",
    "from": "dc7ac367366af5f0",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "50d8c2fb77ebe5fb",
+   "from": "50d8c2fb77ebe5fb",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
+  },
+  {
+   "fp": "ba6709810ffe9967",
+   "from": "50d8c2fb77ebe5fb",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "d42ac54a5a832b2d",
+   "from": "ba6709810ffe9967",
+   "note": "rv2/soccer engine 26: the matchday (team sheet, shapes, five changes in three windows, condition and rotation)"
+  },
+  {
+   "fp": "b867e762d24c63b8",
+   "from": "d42ac54a5a832b2d",
+   "note": "engine 26 (rv2/stats2 follow-up): soccer's names follow the team sheet; the computer rests its keeper in a cup tie against a lower division"
+  },
+  {
+   "fp": "6584d4848247387b",
+   "from": "b867e762d24c63b8",
+   "note": "soccer follow-up: the top flight scores like the Premier League"
+  },
+  {
+   "fp": "6584d4848247387b",
+   "from": "6584d4848247387b",
+   "note": "Re-recorded once on the merged engine-26 build (round two)"
   }
  ],
  "out": [
@@ -359,20 +389,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "20-6-12",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "22-5-11",
+      "result": "Finished 2nd in the Premier League",
+      "grade": "B"
      },
-     "book": "05e7371b80236207"
+     "book": "ebb7dce3220a9391"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "11-9-18",
-      "result": "Finished 16th in the Premier League",
-      "grade": "C"
+      "rec": "12-7-19",
+      "result": "Finished 17th in the Premier League",
+      "grade": "C-"
      },
-     "book": "60da14195a5b38fd"
+     "book": "14f7bcfa0871c60e"
     }
    ]
   },
@@ -382,20 +412,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "11-14-13",
-      "result": "Finished 12th in the Premier League",
-      "grade": "C-"
+      "rec": "19-8-11",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "31038064206e47bd"
+     "book": "9e70090391ab517b"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "8-10-20",
-      "result": "Relegated (18th)",
+      "rec": "8-12-18",
+      "result": "Relegated (19th)",
       "grade": "D"
      },
-     "book": "db6bd1fbb6635b90"
+     "book": "21f8db6723c51ec2"
     }
    ]
   },
@@ -406,19 +436,19 @@
      "team": "Arsenal",
      "last": {
       "rec": "16-9-13",
-      "result": "Finished 8th in the Premier League",
+      "result": "Finished 7th in the Premier League",
       "grade": "C"
      },
-     "book": "ea199f2cf932c3cc"
+     "book": "32376fa1b11b89c9"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "15-15-16",
-      "result": "Finished 12th in the Championship",
-      "grade": "D"
+      "rec": "19-14-13",
+      "result": "Lost in the Championship play-offs (8th)",
+      "grade": "C"
      },
-     "book": "5f74d79473b0fbc9"
+     "book": "0b07510a551092b8"
     }
    ]
   }

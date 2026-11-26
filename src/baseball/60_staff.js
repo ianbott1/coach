@@ -99,6 +99,7 @@ const PEARL_AFTER=[` Woof!`,` (Tail going. Very hard.)`,` Can we go outside afte
   ` Ball. BALL. Sorry \u2014 the actual ball. Carry on.`];
 function pearlSay(line, seed){
   const n=Math.abs(seed|0);
+  if(typeof staffReal==="function"&&staffReal())return line;   // a realistic staff room: no dog, no asides
   if(n%6!==1)return line;
   return (n%12===1)
     ? PEARL_BEFORE[Math.floor(n/6)%PEARL_BEFORE.length]+line
@@ -108,7 +109,7 @@ function pearlSay(line, seed){
 function bearYell(kind, seed){
   const n=Math.abs(seed|0);
   // roughly one call in four, they lose the thread entirely
-  if(n%4===2){
+  if(n%4===2&&!(typeof staffReal==="function"&&staffReal())){
     const d=BEAR_YELL.distracted;
     return d[Math.floor(n/4)%d.length];
   }
@@ -136,6 +137,26 @@ function staffTake(dp, ctx){
     const b=dp.best&&APPROACH[dp.best]?dp.best:null;
     R.push({who:"pearl", pick:b?APPROACH[b].counter:"normal", line:pearlSay(b?["I've been watching every at-bat! ","I counted! ","I've been keeping a chart! ","Okay, okay, I see it now! "][Math.abs(seed|0)%4]+PEARL_SYS[b]:"I haven't seen enough to say!",seed)});
     R.push({who:"capy", pick:"spin", line:`It seems to me changing speeds rarely hurts. I have not, I admit, studied their swings.`});
+  }
+  else if(dp.v26&&(dp.k==="pull"||dp.k==="pen"||dp.k==="penu")){
+    // engine 26: who comes in. The third-base coach backs the man in; the analytics coordinator the freshest arm for the
+    // spot; the bench coach the man the book has for the inning (the assistant's pick)
+    const o=dp.opts.filter(x=>x[0].indexOf("pen:")===0), stay=dp.opts.find(x=>x[0]==="stay"||x[0]==="keep"), P=dp.pen||[];
+    const fresh=P.find(c=>!c.py&&!c.p2)||P[0], tired=dp.cur?dp.cur.np>=25:(dp.np||0)>=95||(dp.ra||0)>=3;
+    if(stay)R.push({who:"bears", pick:tired&&o[0]?o[0][0]:stay[0], line:tired?`He's done. Get ${P[0]?P[0].n:"the next man"} in there.`:`He's still got it. Let him finish this.`});
+    if(fresh)R.push({who:"pearl", pick:"pen:"+fresh.n, line:`${fresh.n} is ${fresh.py||fresh.p2?"the freshest we have":"fully rested"}${fresh.th==="L"?", and he's a lefty":""}. That's the arm I'd use.`});
+    if(o[0])R.push({who:"capy", pick:dp.want?"pen:"+dp.want:o[0][0], line:`The book has ${(dp.want||o[0][0].slice(4))} for this spot. I'd go with the book.`});
+  }
+  else if(dp.k==="ibb"){
+    R.push({who:"bears", pick:"pitch", line:`Pitch to him. We don't put people on for free.`});
+    R.push({who:"pearl", pick:(dp.gap||0)>=8?"walk":"pitch", line:(dp.gap||0)>=8?`The next man's a much easier out. Put him on.`:`There isn't much between the two of them. I'd pitch to him.`});
+    R.push({who:"capy", pick:dp.worth?"walk":"pitch", line:dp.worth?`It's late and the on-deck man is a lot weaker. The walk is the percentage play.`:`A free base is a big thing to give away here. I'd pitch to him.`});
+  }
+  else if(dp.k==="pinch"&&dp.vals){
+    const best=dp.vals[0];
+    R.push({who:"bears", pick:best?"ph:"+best[0]:"let", line:best?`Send up ${best[0]}. Make them answer it.`:`Let him hit.`});
+    R.push({who:"pearl", pick:diff<=0&&best?"ph:"+best[0]:"let", line:diff<=0&&best?`We need this run. ${best[0]} has the better at-bat against this pitcher.`:`We're ahead. Let him hit.`});
+    R.push({who:"capy", pick:dp.pick?"ph:"+dp.pick:"let", line:dp.pick?`${dp.pick} has the platoon edge here, and it's big enough to spend him.`:`The edge isn't big enough to spend the bench on.`});
   }
   else if(dp.k==="pull"){
     R.push({who:"bears", pick:"stay", line:bearYell("pull",seed)});

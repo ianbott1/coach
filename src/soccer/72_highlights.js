@@ -42,7 +42,7 @@ const HL_SPORT=(function(){
   function mk(L,e,kind,sh,sa){
     const g=L.g, red=kind==="red", aside=red?(e.side==="home"?"away":"home"):e.side, tm=aside==="home"?g.home:g.away, opp=aside==="home"?g.away:g.home, u=e.u||((e.m||0)*37)%100;
     const r=mulberry32(((e.m||0)*7919+u*131+(e.side==="home"?17:29))>>>0);
-    const shooter=kind==="goal"?scGoalBy(tm,e):scScorer(tm,u);
+    const onA=typeof scOnAt==="function"?scOnAt(L.drives,aside,e.m):null, shooter=kind==="goal"?scGoalBy(tm,e,onA):scScorer(tm,u,onA);   // engine 26: the men on the pitch then
     let text=""; try{ text=scEventTextIn(g,L.drives,e).text }catch(er){}
     // the move follows the commentary's words where they say how ("heads in at the near post", "from the penalty spot",
     // "blazes over"), else the event's draw
@@ -200,11 +200,14 @@ const HL_SPORT=(function(){
   const spSlotOf=(names,who)=>{ if(!who)return 2; for(let k=1;k<11;k++)if(names[k]&&who.indexOf(names[k])>=0)return k; return 2 };
   function spXI(L,team){ const key=team+"|"+(L.drives?L.drives.length:0); spXI.c=spXI.c||{}; if(spXI.c[key]&&spXI.c[key].L===L)return spXI.c[key];
     const R=(SEA.roster&&SEA.roster[team])||[], idx=Array(11).fill(-1), nm=Array(11).fill(null), nums=NUM.slice(), used={};
-    Object.keys(SLOT_N).forEach(u=>{ const s=SLOT_N[u], i=typeof SC_UNIT!=="undefined"?hlFit(team,SC_UNIT[u]):-1; if(i<0||!R[i])return; idx[s]=i; nm[s]=String(R[i].n).split(" ").slice(-1)[0]; nums[s]=shirtNo(team,i); used[nums[s]]=s });
+    // engine 26 (stats, follow-up): with a team sheet, each line's man is the one it has on now, and the partners are
+    // the men the roster doesn't carry (the man behind is on the bench, or on for the first choice)
+    const g0=L.g, sd0=g0?(g0.home===team?"home":g0.away===team?"away":null):null, ON=sd0&&typeof scOnAt==="function"?scOnAt(L.drives,sd0,null):null;
+    Object.keys(SLOT_N).forEach(u=>{ const s=SLOT_N[u], i=typeof SC_UNIT!=="undefined"?(ON?(ON[SC_UNIT[u]]?BK(SC_UNIT[u]):SC_UNIT[u]):hlFit(team,SC_UNIT[u])):-1; if(i<0||!R[i])return; idx[s]=i; nm[s]=String(R[i].n).split(" ").slice(-1)[0]; nums[s]=shirtNo(team,i); used[nums[s]]=s });
     // the partner in each pair is the line's second man (the engine shares the line's shots, goals and assists between
     // the two all match); none if he's hurt or already standing in for the first
     const hurt=new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]&&SEA.talent.active?SEA.talent.active(team).map(q=>q.idx):[]);
-    Object.keys(SP_PART).forEach(u=>{ const s=SP_PART[u], b=typeof SC_UNIT!=="undefined"?SC_UNIT[u]+6:-1; if(b<0||!R[b]||hurt.has(b)||idx.indexOf(b)>=0)return; idx[s]=b; nm[s]=String(R[b].n).split(" ").slice(-1)[0]; nums[s]=shirtNo(team,b); used[nums[s]]=s });
+    if(!ON)Object.keys(SP_PART).forEach(u=>{ const s=SP_PART[u], b=typeof SC_UNIT!=="undefined"?SC_UNIT[u]+6:-1; if(b<0||!R[b]||hurt.has(b)||idx.indexOf(b)>=0)return; idx[s]=b; nm[s]=String(R[b].n).split(" ").slice(-1)[0]; nums[s]=shirtNo(team,b); used[nums[s]]=s });
     let f=2; nums.forEach((v,k)=>{ if(idx[k]>=0)return; if(used[v]!==undefined){ while(used[f]!==undefined||nums.some((w,j)=>j!==k&&idx[j]>=0&&w===f))f++; nums[k]=f } used[nums[k]]=k });
     return spXI.c[key]={L:L,idx,nm,nums} }
   const spWho=(X,s)=>X.nm[s]||SP_POS[s];

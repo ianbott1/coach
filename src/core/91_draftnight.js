@@ -67,6 +67,10 @@ function draftPrior(u){
   Object.defineProperty(C,"_prior",{value:{r:mr,pot:mp,vr:vr,vp:vp},enumerable:false,configurable:true});   // not saved
   return C._prior;
 }
+/* a league's own draft board (pro football, LEAGUE.offseason.draftBoard(u)): {score(style,R,p) on a read, cpu(style,R,p,e,sd)
+   for a computer club's pick from the truth plus its scouts' error e (sd its spread), mock(p,sd): what a mock should allow for
+   that error}. null (the default, and every other league) keeps draftScore. */
+function draftBoardOf(u){ const f=typeof LEAGUE!=="undefined"&&LEAGUE.offseason&&LEAGUE.offseason.draftBoard; return f?f(u)||null:null }
 function draftRng(u){ return new RNG((((u.seed||0)*2246822519)^((u.year|0)*48271)^DRAFT_NIGHT)>>>0) }
 function draftScore(style,R,p){
   return style==="need"?nflGain(R,p)*1.6+p.r*0.3
@@ -78,6 +82,7 @@ function draftScore(style,R,p){
    mock, the teams between two picks. A club can hold two first-rounders, or none. */
 function pickOwnMap(u){ const P=u&&u.pickOwn; return P&&P.y===u.year?P.own||{}:{} }
 function dnOwnerAt(order,u,overall){ const N=order.length, rd=Math.ceil(overall/N), orig=order[(overall-1)%N], own=pickOwnMap(u);
+  if(LEAGUE.pickOwner){ const o=LEAGUE.pickOwner(u,orig,rd,(overall-1)%N+1); if(o)return o }   // pro basketball's pick ledger (traded picks, protections)
   return rd===1&&own[orig]?own[orig]:orig }
 function dnPicksOf(t,order,u,rounds){ order=order||dnOrder(); u=u||U; rounds=rounds||LEAGUE.offseason.draftRounds; const out=[];
   for(let o=1;o<=order.length*rounds;o++)if(dnOwnerAt(order,u,o)===t)out.push(o); return out }
@@ -86,6 +91,7 @@ function draftNight(u,rec,elo,users,rounds,stopFor){
   const rng=draftRng(u), order=nflDraftOrder(rec,elo,rng), N=order.length;
   const prospects=nflDraftClass(u).list.map(p=>Object.assign({},p));
   const used={}, picks=[]; let boardGone=null;
+  const DB=draftBoardOf(u);
   // each team's roster with its rookies placed as they're taken, so a later pick sees an earlier one (as before)
   const RR={}, rosterOf=t=>RR[t]||(RR[t]=u.roster[t].slice());
   const nextOf=(t,overall)=>{ for(let o=overall+1;o<=N*rounds;o++)if(dnOwnerAt(order,u,o)===t)return o; return null };
@@ -96,7 +102,8 @@ function draftNight(u,rec,elo,users,rounds,stopFor){
     // your staff work from your scouts' read, as you do (workouts included): beating them is judgment, not
     // hidden numbers. The dice are drawn either way, so nothing else moves.
     const wk=ch&&ch.workouts||[], read=ch?(p=>{ const x=scoutRead(u,t,p,wk.indexOf(p.pid)>=0); return Object.assign({},p,{r:x.sr,pot:x.spot}) }):null;
-    let bi=0,bs=-1e9; prospects.forEach((p,i)=>{if(p.taken)return; const e=rng.gauss(0,scout)*draftFogOf(u,p), s=read?draftScore(style,R,read(p)):draftScore(style,R,p)+e; if(s>bs){bs=s;bi=i}});
+    // a league's own board (LEAGUE.offseason.draftBoard: pro football's front office), null keeps the old one; the dice are the same
+    let bi=0,bs=-1e9; prospects.forEach((p,i)=>{if(p.taken)return; const e=rng.gauss(0,scout)*draftFogOf(u,p), s=read?(DB?DB.score(style,R,read(p)):draftScore(style,R,read(p))):DB?DB.cpu(style,R,p,e,scout*draftFogOf(u,p)):draftScore(style,R,p)+e; if(s>bs){bs=s;bi=i}});
     const staff=bi;
     // a coach's own board comes first: the highest player on it still there
     const board=(ch&&ch.board)||[];
@@ -187,11 +194,12 @@ function dnMock(avail,ahead,key,teams,t){
     const rr=p.sr!==undefined?p.sr:p.r, pp=p.spot!==undefined?p.spot:p.pot;
     const PR=pre?draftPrior(U):null, pv=PR?sr*sr*PR.vr/(PR.vr+sr*sr):sr*sr*k;   // what's still unknown about him
     return Object.assign({},p,{r:sh(rr),pot:sh(pp),pv:pv,fg:draftFogOf(U,p),sdx:Math.sqrt(pv+Math.pow(DRAFT_K.mock*draftFogOf(U,p),2))}) });
-  const base=teams?teams.slice(0,ahead).map(tm=>{ const R=U.roster[tm]||[]; return q.map(p=>draftScore("bpa",R,p)) }):null;
+  const DB=draftBoardOf(U), DM=DB&&teams?teams.slice(0,ahead).map(tm=>{ const R=U.roster[tm]||[], sc=(2.5-orgEdge(U,tm)*1.4)*DRAFT_K.fog; return q.map(p=>DB.mock(R,p,sc*p.fg)) }):null;   // [mean, spread] a pick
+  const base=DM?DM.map(a=>a.map(x=>x[0])):teams?teams.slice(0,ahead).map(tm=>{ const R=U.roster[tm]||[]; return q.map(p=>draftScore("bpa",R,p)) }):null;
   // each team ahead misjudges prospects as its own scouts do (draftNight: its org's scouting, foggier on the hard
   // reads), on top of what you don't know: one spread for every team mocked the board's top names gone too often
   // (test/draft-labels.js at every pick, Nov 2026)
-  const sdk=teams?teams.slice(0,ahead).map(tm=>{ const sc=(2.5-orgEdge(U,tm)*1.4)*DRAFT_K.fog*(DRAFT_K.mockOrg||0.7); return q.map(p=>Math.sqrt(p.pv+Math.pow(sc*p.fg,2))) }):null;
+  const sdk=DM?DM.map(a=>a.map(x=>x[1])):teams?teams.slice(0,ahead).map(tm=>{ const sc=(2.5-orgEdge(U,tm)*1.4)*DRAFT_K.fog*(DRAFT_K.mockOrg||0.7); return q.map(p=>Math.sqrt(p.pv+Math.pow(sc*p.fg,2))) }):null;
   for(let n=0;n<M;n++){ const taken=new Set(); for(let k=0;k<ahead;k++){ let bi=-1,bs=-1e9;
       q.forEach((p,i)=>{ if(taken.has(p.pid))return; const v=(base?base[k][i]:dnVal({sr:p.r,spot:p.pot}))+r.gauss(0,sdk?sdk[k][i]:p.sdx); if(v>bs){bs=v;bi=p.pid} }); if(bi<0)break; taken.add(bi) }
     taken.forEach(id=>gone[id]=(gone[id]||0)+1/M) }

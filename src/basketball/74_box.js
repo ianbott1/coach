@@ -14,9 +14,15 @@ function sportBox(g){
    team's points */
 function sportBoxPlayers(g,BL){
   const last=(g.drives||[]).filter(d=>d.ln).slice(-1)[0]; if(!last)return "";
+  // engine 26 (stats): each man's whole line (minutes, shots made and tried, turnovers, fouls, plus-minus), the starters
+  // first, then by minutes; every point is a named man's, so no bench row
+  if(["away","home"].some(sd=>BL[sd].some(x=>x.s.min>0)))return ["away","home"].map(sd=>{
+    const R=BL[sd].filter(x=>x.s.min>0||x.s.pts).slice().sort((a,b)=>((a.i>=0&&a.i<5)?0:1)-((b.i>=0&&b.i<5)?0:1)||b.s.min-a.s.min), s2=(m,a)=>`${m}-${a}`;
+    const rows=R.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.min,x.s.pts,s2(x.s.fgm,x.s.fga),s2(x.s.tpm,x.s.tpa),s2(x.s.ftm,x.s.fta),x.s.reb,x.s.ast,x.s.stl,x.s.blk,x.s.to,x.s.pf,(x.s.pm>0?"+":"")+x.s.pm].map(String)}));
+    return boxSide(g,sd,["","Min","Pts","FG","3PT","FT","Reb","Ast","Stl","Blk","TO","PF","+/-"],rows) }).join("");
   return ["away","home"].map(sd=>{ const L=last.ln[sd], pts=2*L.fgm2+3*L.tpm+L.ftm, R=BL[sd];
     const rows=R.map(x=>({c:[esc(boxName(x.n))+` <span style="color:var(--muted)">${esc(x.pos)}</span>`,x.s.pts,x.s.reb,x.s.ast,x.s.tpm,x.s.stl,x.s.blk].map(String)}));
     const rest=pts-R.reduce((t,x)=>t+x.s.pts,0), r3=L.tpm-R.reduce((t,x)=>t+x.s.tpm,0);
-    if(R.length)rows.push({c:[`<span style="color:var(--muted)">Rest of the bench</span>`,String(rest),"","",String(r3),"",""]});
+    if(R.length&&(rest>0||r3>0))rows.push({c:[`<span style="color:var(--muted)">Rest of the bench</span>`,String(rest),"","",String(r3),"",""]});
     return boxSide(g,sd,["","Pts","Reb","Ast","3PM","Stl","Blk"],rows) }).join("");
 }

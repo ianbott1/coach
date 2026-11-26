@@ -1,5 +1,5 @@
 {
- "fp": "45cff08c498c4f41",
+ "fp": "bbdb0e66ee53efd9",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -615,90 +615,115 @@
    "fp": "45cff08c498c4f41",
    "from": "45cff08c498c4f41",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "097abda59fbeee03",
+   "from": "45cff08c498c4f41",
+   "note": "round 111 (rv/gameday) engine 25: basketball timeouts and runs, the rotation buttons, the last-minute foul-or-play-it-out call; the computer's own games unchanged, the user's live games move with the new calls (golden answers cycle through every option)"
+  },
+  {
+   "fp": "42de9274ba906b25",
+   "from": "097abda59fbeee03",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "6195913450ea13f8",
+   "from": "42de9274ba906b25",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "3d172cb74e14ffdb",
+   "from": "6195913450ea13f8",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "bbdb0e66ee53efd9",
+   "from": "3d172cb74e14ffdb",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
-    "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "games": "8b4733819fbcbfda",
+    "post": "cffd73005bd52354",
+    "champion": "Florida",
+    "rec": "07d98ba3b8fb83d5",
+    "poll": "0a0138ce733562c1",
+    "heis": "b947c74f5785b20e",
+    "history": "0e89ee4981a10a84",
+    "universe": "9e6e49b4824aa151",
+    "screens": "a2b1a3e1cb674675"
    },
    {
     "year": 2027,
-    "games": "8b71fa244157a983",
-    "post": "d8420014f6a573a7",
-    "champion": "Kansas",
-    "rec": "cb0c3ecc030bed49",
-    "poll": "6104f50439b52067",
-    "heis": "28a248eac8caf373",
-    "history": "1cfe3e490fe2066c",
-    "universe": "1201eb0eed5137f3",
-    "screens": "f9ad6f1d8fef3b6a"
+    "games": "3c9494c60339af51",
+    "post": "7b28393529644fb4",
+    "champion": "BYU",
+    "rec": "db44903daea1a23b",
+    "poll": "6bd7eba3941df6f0",
+    "heis": "4f140d066779fefb",
+    "history": "f4118a6cf2a9e98e",
+    "universe": "a1a2caed94b6d4a7",
+    "screens": "2987138e182b873f"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "579ab9b17a5abc4e",
-    "post": "fbe3aca85b0afff3",
-    "champion": "Kansas",
-    "rec": "41226e6462dc1cff",
-    "poll": "26edc4b624e67dc9",
-    "heis": "942c9abdaed040d4",
-    "history": "df81ab6f6095ef61",
-    "universe": "c8dd6c65cf73eba9",
-    "screens": "c039db1878c5348d"
+    "games": "c6136b4a243757a3",
+    "post": "74d03f13dc28679e",
+    "champion": "Michigan",
+    "rec": "3357d553c1b3fd9a",
+    "poll": "f408dfd729d9dbc9",
+    "heis": "247f06f92cf20b76",
+    "history": "09a7cf06830d6901",
+    "universe": "7328ace1705158d4",
+    "screens": "90496fe880d6dc47"
    },
    {
     "year": 2027,
-    "games": "0bf3825a8491afed",
-    "post": "af8b5d5ec45a2356",
-    "champion": "Tennessee",
-    "rec": "5c8ec1099f2db11c",
-    "poll": "9a4ecb50cbc55f8a",
-    "heis": "ef6bde742321790a",
-    "history": "29b9279493cb5e15",
-    "universe": "aed5cccc2bc23039",
-    "screens": "6661cbd84ab5b719"
+    "games": "6f3b363478db1c1a",
+    "post": "6775ccf208d87771",
+    "champion": "Arizona",
+    "rec": "0ce12f1d335a4108",
+    "poll": "762096877d172fef",
+    "heis": "6ca53d252ab831d0",
+    "history": "0d6b11f09c369f6b",
+    "universe": "90c72ad7355cec5c",
+    "screens": "96e41495f93e45f5"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "d8345ccdb39e7f1a",
-    "post": "fa9101419af9ee3d",
-    "champion": "Illinois",
-    "rec": "da7875b27f313df1",
-    "poll": "dbdd18f0523ce927",
-    "heis": "1ae6b7cab1508080",
-    "history": "19307abf6ac1bf1f",
-    "universe": "2f83e65e774c7024",
-    "screens": "c462ef207c623d03"
+    "games": "2f1dea53f9f05d04",
+    "post": "151e1ffa31ec1d72",
+    "champion": "Kentucky",
+    "rec": "8f136addf6f05c0c",
+    "poll": "6da299813247e9bd",
+    "heis": "1da9d6984d7f1d36",
+    "history": "6818b8080cc8b060",
+    "universe": "7b795250fa7536a6",
+    "screens": "dbfb91562ee76a02"
    },
    {
     "year": 2027,
-    "games": "ef9cef075f497453",
-    "post": "cb8e62f02ff87475",
-    "champion": "Michigan",
-    "rec": "38fb16f56e37e8b3",
-    "poll": "2acaa39089e082dd",
-    "heis": "f92ecd8e6f821427",
-    "history": "5d5d55ca8c20f031",
-    "universe": "662e2b7be7041649",
-    "screens": "a0e58cf0897d88d4"
+    "games": "9b245aa194904522",
+    "post": "86a01fd0f36e4718",
+    "champion": "Arkansas",
+    "rec": "7e6f7b559f8b588a",
+    "poll": "bf9530ab96e77b9c",
+    "heis": "558baca26df13d09",
+    "history": "9406b7463c751370",
+    "universe": "9bc1ca03573fcd51",
+    "screens": "db6c7fea71615e24"
    }
   ],
   "schedules#60": [
    {
-    "all": "5d4c89ca5a02fd1c"
+    "all": "afbf90b52cfdab21"
    }
   ]
  }

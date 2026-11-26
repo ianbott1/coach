@@ -15,6 +15,19 @@ const NFL_CAP=110;
    the league within a few years. */
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1690)/100));
 const AGE_SHIFT={QB:3,RB:-2};
+/* engine 26 (review round 2): aging, retirement and who is kept read the position's shift (core ageBase26).
+   Quarterbacks a year later again: they hold into their early thirties and start into their late thirties
+   (Brady to 45, Rodgers 41, Flacco 40). The re-sign and free-agent cut-offs ignored the shift, so in 360 seasons no
+   starting quarterback was older than 34. */
+const AGE26={QB:4,RB:-2};
+/* a quarterback grows like anyone to 27, then ages at half speed to 35 (four years in hand by then): shifted whole, the
+   young ones grew for four more years too and pushed the veterans out (one starter 35 or older a season) */
+const age26=p=>{ const P=String(p.p).replace(/\d+$/,""); if(P==="QB"){ const a=p.age||0; return a<=27?0:a<=35?(a-27)*0.5:AGE26.QB } return AGE26[P]||0 };
+/* a veteran stays while he's good: to lim anyone useful (lim as before), three years more a man well above the bar */
+/* engine 26: the bars read the position's place in the league (core REFPOS26: a starting quarterback sits 1.7 below
+   the league's starters, so the flat bar let few reach it, fewer still at 36) */
+const bar26=p=>eng26()?((REFPOS26.nfl||{})[String(p.p).replace(/\d+$/,"")]||0):0;
+const vetOK=(p,lim)=>eng26()?(p.age-age26(p)<=lim||(p.age-age26(p)<=lim+3&&p.r>=RS_BAR+6+bar26(p))):p.age<=lim;
 const POS_PAY={QB:1.75,EDGE:1.15,OT:1.0,WR:1.05,WR2:0.8,CB:0.95,DT:0.9,LB:0.7,S:0.7,RB:0.6};
 
 /* What the market pays veterans, scaled so payrolls of the players the sim
@@ -22,7 +35,13 @@ const POS_PAY={QB:1.75,EDGE:1.15,OT:1.0,WR:1.05,WR2:0.8,CB:0.95,DT:0.9,LB:0.7,S:
    so the cap never bit). Rookie scales and minimums are real and stay. */
 const PAY=+((typeof process!=="undefined"&&process.env&&process.env.PAY_NFL)||1.75);
 const MAX_SAL=0.2*NFL_CAP;      // the league's maximum contract, as a share of the cap
+/* the front office (27_frontoffice): a converted career is paid on the real 2026 scale; these read whichever is in force */
+const nflMax=()=>foNew()?FO_MAX:MAX_SAL;
+const nflMin=()=>foNew()?FO_MIN:0.9;
+/* the cap the twenty tracked players are measured against for the season ahead (payroll counts the rest of the roster) */
+function nflCapRoom(u,t){ return foNew(u)?FO_CAP-foDeadNext(u,t):NFL_CAP }
 function nflAsk(r,pos,age){
+  if(foNew())return foAsk(r,pos,age);
   const x=Math.max(0,(r-55)/35);
   let s=(0.8+34*Math.pow(x,2.4))*(POS_PAY[pos]||1);
   const a=age-(AGE_SHIFT[pos]||0);
@@ -30,29 +49,30 @@ function nflAsk(r,pos,age){
   return Math.round(Math.max(0.8,Math.min(MAX_SAL,s*PAY))*10)/10;   // veterans' pay, scaled to the cap; the minimum is real
 }
 function nflYears(age,pos){const a=age-(AGE_SHIFT[pos]||0); return a<=26?4:a<=29?3:a<=31?2:1}
-function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)}
+function payroll(roster){return roster.reduce((s,p)=>s+(p&&p.k?p.k.sal:0),0)+(foNew()?FO_DEPTH:0)}   // the twenty, and on the real scale the rest of the 53
 /* a hard cap: the empty spots left after a signing are filled at the minimum,
    so free agency keeps that much back (fill-ins tipped teams to 102%) */
-const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*0.9;
+const fillReserve=R=>Math.max(0,R.filter(x=>!x).length-1)*nflMin();
 const ROOKIE_ROOM=8;                        // what re-signing leaves free for the draft class
+const nflRookieRoom=()=>foNew()?FO_ROOKIE_ROOM:ROOKIE_ROOM;
 /* Which expiring players a team keeps: the best first, while they fit. Worth
    keeping means a starter at least as good as the league's middle starter, or a useful backup at a fair price,
    not past 32 (round 63: the bar was 66 and kept about a quarter of expiring deals). */
 const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.FB_RS)||65), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.FB_RB)||59);
 function nflResignPlan(R){
-  const exp=[], keep={}; let pay=0; RESIGN_WHY={};
+  const exp=[], keep={}; let pay=foNew()?FO_DEPTH:0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
-    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=3*PAY)&&p.age<=32;
-    keep[i]=worth&&pay+ask<=NFL_CAP-ROOKIE_ROOM;
+    const worth=(i<POS.length?p.r>=RS_BAR+bar26(p):p.r>=RB_BAR&&ask<=3*PAY*foK())&&vetOK(p,32);
+    keep[i]=worth&&pay+ask<=(foNew()?FO_CAP:NFL_CAP)-nflRookieRoom();
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
-      :p.age>32?`his age: ${p.age+1} next season`
-      :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
+      :!vetOK(p,32)?`his age: ${p.age+1} next season`
+      :i<POS.length&&p.r<RS_BAR+bar26(p)?`rated ${p.r}: below what the staff want in a starter`
       :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
-      :i>=POS.length&&ask>3*PAY?`asking ${money2(ask)}: too much for a backup`
+      :i>=POS.length&&ask>3*PAY*foK()?`asking ${money2(ask)}: too much for a backup`
       :`no room under the cap for his ${money2(ask)} ask`;
     if(keep[i])pay+=ask;
   });
@@ -146,9 +166,9 @@ function nflFreeAgentPreview(u,myTeam,users){
     if(t===myTeam)return;
     const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R);
     R.forEach((p,i)=>{ if(!p||p.k.yrs>1||plan[i])return;
-      if(p.r<58||p.age>=33)return;                  // likely to retire or go unsigned
+      if(p.r<58||(eng26()?!vetOK(Object.assign({},p,{age:p.age+1}),33):p.age>=33))return;                  // likely to retire or go unsigned
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
-                ask:Math.round(Math.min(MAX_SAL,nflAsk(p.r,p.p,p.age+1)*1.1)*10)/10});   // a signing's markup never passes the maximum contract (Instinct: a $22.9M ask over a $20.8M max)
+                ask:Math.round(Math.min(nflMax(),nflAsk(p.r,p.p,p.age+1)*1.1)*10)/10});   // a signing's markup never passes the maximum contract (Instinct: a $22.9M ask over a $20.8M max)
     });
   });
   return out.sort((a,b)=>(b.r+(b.pot-b.r)*0.3-b.age*0.2)-(a.r+(a.pot-a.r)*0.3-a.age*0.2));
@@ -158,7 +178,7 @@ function nflFreeAgentPreview(u,myTeam,users){
    is young, less once he is past 29, and less the more he is paid. */
 function tradeValue(p){
   const young=Math.max(0,27-p.age)/5;
-  return p.r+(p.pot-p.r)*0.4*young-Math.max(0,p.age-29)*1.5-p.k.sal/PAY*0.25;
+  return p.r+(p.pot-p.r)*0.4*young-Math.max(0,p.age-29)*1.5-p.k.sal/(PAY*foK())*0.25;
 }
 const tradeKey=(t,p)=>t+"|"+p.n+"|"+p.p;
 /* Offers for one of your players under contract past this season: up to
@@ -183,7 +203,7 @@ function nflTradeOffers(u,myTeam,idx,humans){
       if(!q||q.k.yrs<2||need.indexOf(j%POS.length)<0)return;
       if(j<POS.length&&(!T[BK(j)]||T[BK(j)].r<q.r-8))return;   // they won't gut a spot
       const qv=tradeValue(q); if(qv<gv*0.88||qv>gv*1.08)return;
-      if(myPay-give.k.sal+q.k.sal>NFL_CAP||theirPay-q.k.sal+give.k.sal>NFL_CAP)return;
+      if(myPay-give.k.sal+q.k.sal>nflCapRoom(u,myTeam)||theirPay-q.k.sal+give.k.sal>nflCapRoom(u,t))return;
       const fit=Math.abs(qv-gv)-(R[j%POS.length]?(q.r-R[j%POS.length].r)*0.5:0);
       if(!best||fit<best.fit)best={fit:fit,q:q,j:j};
     });
@@ -200,7 +220,7 @@ function nflApplyTrade(u,myTeam,T,rep,leave,pool){
   if(gi<0||qi<0){rep.trade[myTeam]={done:false,gave:gn,gp:gp,got:qn,qp:qp,with:tt,
       why:gi<0?gn+" retired before it could go through":qn+" retired before it could go through"};return}
   const give=mine[gi], get=theirs[qi];
-  mine[gi]=null; theirs[qi]=null;
+  mine[gi]=null; theirs[qi]=null; give._tr=get._tr=1;   // traded, not released: no dead money
   // each lands where he fits; whoever drops off the end is released
   [[mine,get,myTeam],[theirs,give,tt]].forEach(([R,p,t])=>{
     p.yrsHere=0; p.joined=u.year+1; p.keep=true;
@@ -210,7 +230,7 @@ function nflApplyTrade(u,myTeam,T,rep,leave,pool){
   });
   rep.trade[myTeam]={done:true,gave:give.n,gp:give.p,got:get.n,qp:get.p,r:get.r,with:tt};
 }
-const rookieSal=o=>o<=32?Math.round((10-7*(o-1)/31)*10)/10:o<=64?1.6:1.0;
+const rookieSal=o=>foNew()?foRookie(o).aav:o<=32?Math.round((10-7*(o-1)/31)*10)/10:o<=64?1.6:1.0;
 
 /* what a player adds at his spot: over the backup, or over the starter */
 function nflGain(roster,p){
@@ -253,9 +273,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     if(u.alumni[t].length>40){u.alumni[t].sort((a,b)=>b.peak-a.peak);u.alumni[t].length=40}
   };
 
+  const FN=foNew(u); if(FN)foSnapStart(u);
   NAMES.forEach(t=>{
     const before=u.program[t], c=u.coach[t], R=u.roster[t], ch=chFor(t);
     const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R);
+    // the front office: the franchise tag (yours, or the computer's on its best man it can't keep), fifth-year options
+    const tagI=FN?(ch&&ch.fo?(ch.tag!=null&&R[ch.tag]&&R[ch.tag].k.yrs<=1?ch.tag:null):foCpuTag(u,t,R,plan)):null;
+    if(FN){ const OP=ch&&ch.fo?(ch.opt||{}):foOptPlan(R); R.forEach((p,i)=>{ if(foOptAble(p)&&OP[i]){ p.k.opt=foOptSal(p); p.k.yrs++; rep.opts=rep.opts||{}; (rep.opts[t]=rep.opts[t]||[]).push({n:p.n,p:p.p,sal:p.k.opt}) } }) }
     // the organisation moves slowly: results nudge it, they don't define it
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
     u.program[t]=Math.max(1480,Math.min(1920,u.program[t]));
@@ -264,35 +288,42 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     for(let i=0;i<R.length;i++){
       const p=R[i]; if(!p)continue;
       p.yrsHere=(p.yrsHere||0)+1;
-      if(p.k.yrs>1){p.k.yrs--;continue}
+      if(p.k.yrs>1){p.k.yrs--; if(FN)foAgeDeal(p.k); continue}
       const ask={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)};
-      const keep=!!plan[i];
-      if(keep){p.k=ask;rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:ask.sal,yrs:ask.yrs})}
+      const keep=!!plan[i]||tagI===i;
+      if(keep&&FN){ p.k=tagI===i?foTagDeal(p,u.year+1):foContract(ask.sal,ask.yrs,p.r,(ch&&ch.deal&&ch.deal[i])||"ask",u.year+1);
+        rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:p.k.sal,yrs:p.k.yrs,gt:p.k.gt,tag:tagI===i?1:undefined}) }
+      else if(keep){p.k=ask;rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:ask.sal,yrs:ask.yrs})}
       else{R[i]=null;rep.released[t].push({n:p.n,p:p.p,r:p.r});
-        if(p.r>=58&&p.age<=33){p.from=t;pool.push(p)} else leave(t,p,"released")}
+        if(p.r>=58&&vetOK(p,33)){p.from=t;pool.push(p)} else leave(t,p,"released")}
     }
+    if(FN)foSnap(u,t,R);   // the contracts the season ahead starts from: a release from here on leaves dead money
     // 2. aging
-    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev*0.5:0;
+    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev*0.5:0; const E26=eng26();
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
     R.forEach((p,i)=>{
       if(!p)return;
       const was=p.r; p.age++; p.c=p.age;
-      const a=p.age-(AGE_SHIFT[p.p]||0);
-      const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
+      const a=p.age-(E26?age26(p):(AGE_SHIFT[p.p]||0));
+      const base=E26?ageBase26(a):a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(i%POS.length)<5?ocq*0.02:dcq*0.02;
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      const g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i),2.0);
+      const mu=base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0);
+      if(E26)develop26(u,p,a,mu,rng,{leap:0,floor:35});   // engine 26: never past 99 (core 20_engine)
+      else{
+      const g=rng.gauss(mu,2.0);
       p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
+      }
       p.peak=Math.max(p.peak||0,p.r);
       if(p.r-was>=5)rep.grew[t].push({n:p.n,p:p.p,age:p.age,from:was,to:p.r,leap:p.leap===u.year});   // the report's "big summers"
     });
     // 3. retirement
     R.forEach((p,i)=>{
       if(!p)return;
-      const a=p.age-(AGE_SHIFT[p.p]||0);
+      const a=p.age-(E26?age26(p):(AGE_SHIFT[p.p]||0));
       const odds=a>=36?0.9:a>=35?0.6:a>=34?0.35:a>=33?0.18:a>=32?0.08:0;
-      if(rng.r()<odds+(p.r<55&&a>=29?0.3:0)){R[i]=null;rep.retired[t].push({n:p.n,p:p.p,age:p.age,r:p.r});leave(t,p,"retired")}
+      if(rng.r()<odds+(p.r<55&&a>=29?0.3:0)){R[i]=null;p._ret=1;rep.retired[t].push({n:p.n,p:p.p,age:p.age,r:p.r});leave(t,p,"retired")}
     });
     // a starter's empty spot goes to his backup first
     POS.forEach((_,i)=>{if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}});
@@ -308,16 +339,22 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // 4. the draft: drawn before the summer began (draft night), placed now
   delete u.draftClass;
   const picks=placeDraftNight(u,DN,rep,pool,leave,null);
+  if(FN){ NAMES.forEach(t=>u.roster[t].forEach(p=>{ if(p&&p.drafted&&p.draft&&p.draft.year===u.year&&p.k&&p.k.v!==2)p.k=foRookie(p.draft.overall,u.year+1) }));
+    foSettle(u); NAMES.forEach(t=>foSnap(u,t,u.roster[t])) }   // the rookies on the scale; anyone cut so far leaves his dead money
 
   // a draft class can tip a team over: release the worst-value backups until it fits
   NAMES.forEach(t=>{
     const R=u.roster[t];
-    while(payroll(R)+R.filter(x=>!x).length*0.9>NFL_CAP){        // the empty spots will cost the minimum: count them now
-      let wi=-1,wv=-1;
-      R.forEach((p,i)=>{if(!p||i<POS.length)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
+    while(payroll(R)+R.filter(x=>!x).length*nflMin()>nflCapRoom(u,t)){        // the empty spots will cost the minimum: count them now
+      // what a cut saves: his cap hit, less the dead money he leaves (the real scale; none before)
+      const sv=p=>p.k.sal-(FN?foDeadOf(p):0);
+      let wi=-1,wv=0;
+      R.forEach((p,i)=>{if(!p||i<POS.length||sv(p)<=0.05)return; const v=sv(p)/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}});
       if(wi<0){ // only starters left over: the most overpaid starter goes
-        R.forEach((p,i)=>{if(!p)return; const v=p.k.sal/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}})}
-      const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true});
+        R.forEach((p,i)=>{if(!p||sv(p)<=0.05)return; const v=sv(p)/Math.max(1,p.r-45); if(v>wv){wv=v;wi=i}})}
+      if(wi<0)break;                                                 // nobody's release would save anything
+      const out=R[wi]; R[wi]=null; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true,dead:FN?foDeadOf(out):undefined});
+      if(FN){ foAddDead(u,t,foDeadOf(out)); out._dc=1 }
       if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released");
     }
   });
@@ -334,11 +371,11 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const p=pool.find(x=>!x.signed&&faKey(x.from,x)===key);
       const [team,n,pos]=key.split("|");
       if(!p){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:"wasn't on the market (retired or re-signed)"});return}
-      const cost=Math.round(Math.min(MAX_SAL,p.ask*1.1)*10)/10;
+      const cost=Math.round(Math.min(nflMax(),p.ask*1.1)*10)/10;
       const bk=R[BK(p.i)];
       if(bk&&bk.keep){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`no room at ${pos}: it would cut ${bk.n}, whom you just signed`});return}
-      if(payroll(R)+cost+fillReserve(R)>NFL_CAP){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
-      p.signed=true; p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
+      if(payroll(R)+cost+fillReserve(R)>nflCapRoom(u,t)){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you didn't have the room`});return}
+      p.signed=true; p.k=FN?foContract(cost,nflYears(p.age,p.p),p.r,"ask",u.year+1):{sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       p.keep=true;                                  // not to be cut again this offseason
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from,target:true});
@@ -355,17 +392,17 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   for(let round=0;round<4;round++){
     const shoppers=NAMES.slice().sort((a,b)=>payroll(u.roster[a])-payroll(u.roster[b]));
     shoppers.forEach(t=>{
-      const R=u.roster[t], st=styleOf(t), room=NFL_CAP*limit[st]-payroll(R)-fillReserve(R);
+      const R=u.roster[t], st=styleOf(t), room=nflCapRoom(u,t)*limit[st]-payroll(R)-fillReserve(R);
       let best=null,bv=0;
-      pool.forEach(p=>{if(p.signed||p.age>maxAge[st]||p.from===t)return;
+      pool.forEach(p=>{if(p.signed||(eng26()?p.age-age26(p):p.age)>maxAge[st]||p.from===t)return;
         const bk=R[BK(p.i)]; if(bk&&bk.keep)return;    // would cut a target you just signed
         const cost=Math.round(p.ask*(1+Math.max(0,rng.gauss(0.05,0.08)))*(1-orgEdge(u,t)*0.06)*10)/10;
         if(cost>room)return;
-        const v=nflGain(R,p)-cost/PAY*0.08;
+        const v=nflGain(R,p)-cost/(PAY*foK())*0.08;
         if(v>bv){bv=v;best=[p,cost]}});
       if(!best||bv<0.8)return;
       const [p,cost]=best; p.signed=true;
-      p.k={sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
+      p.k=FN?foContract(cost,nflYears(p.age,p.p),p.r,"ask",u.year+1):{sal:cost,yrs:nflYears(p.age,p.p)}; p.yrsHere=0; p.joined=u.year+1;
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from});
       if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
@@ -374,12 +411,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   pool.filter(p=>!p.signed).forEach(p=>leave(p.from,p,"unsigned"));
   NAMES.forEach(t=>u.roster[t].forEach(p=>{if(p)delete p.keep}));
 
+  if(FN){ foSettle(u); foSettleEnd(u) }   // everyone released this summer leaves his dead money
   // 6. fill the gaps, and put the best man at each spot
   NAMES.forEach(t=>{
     const R=u.roster[t];
     for(let i=0;i<R.length;i++)if(!R[i]){
       const p=nflPlayer(rng,53+rng.range(0,5),24+rng.int(8),i%POS.length);
-      p.k={sal:0.9,yrs:1}; p.joined=u.year+1; R[i]=p;
+      p.k=FN?foMinDeal(u.year+1):{sal:0.9,yrs:1}; p.joined=u.year+1; R[i]=p;
       rep.filled[t].push({n:p.n,p:p.p,r:p.r});
     }
     POS.forEach((_,i)=>{const s=R[i],b=R[BK(i)]; if(b.r>s.r+1){R[i]=b;R[BK(i)]=s}});
@@ -393,7 +431,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
     draft:{picks:picks}, contracts:rep,
-    cap:Object.fromEntries(NAMES.map(t=>[t,Math.round(payroll(u.roster[t])*10)/10]))};
+    cap:Object.fromEntries(NAMES.map(t=>[t,Math.round((payroll(u.roster[t])+(FN?foDead(u,t):0))*10)/10]))};   // (u.year is the new season by now)
 }
 
 LEAGUE.cap=NFL_CAP;
@@ -427,7 +465,15 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=11.5)return {w:w,l:"A deep playoff run. Anything less is a disappointment.",t:"SUPER BOWL OR BUST"};
+      if(xw>=10)return {w:w,l:"Win the division and a playoff game.",t:"CONTEND"};
+      if(xw>=8.5)return {w:w,l:`Get into the playoffs. ${w} wins should do it.`,t:"PLAYOFFS"};
+      if(xw>=6.5)return {w:w,l:"Be competitive in December and show the rebuild is working.",t:"PUSH FORWARD"};
+      return {w:w,l:`Show progress. ${w} wins would be real movement here.`,t:"BUILD SOMETHING"} }
     if(p>=1790)return {w:12,l:"A deep playoff run. Anything less is a disappointment.",t:"SUPER BOWL OR BUST"};
     if(p>=1720)return {w:10,l:"Win the division and a playoff game.",t:"CONTEND"};
     if(p>=1650)return {w:9,l:"Get into the playoffs. Nine wins should do it.",t:"PLAYOFFS"};

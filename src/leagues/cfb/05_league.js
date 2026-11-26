@@ -190,9 +190,11 @@ const LEAGUE={
 
   /* how much Heisman voters care about each position's production */
   awards:{mvp:"Heisman",
-    weights:{QB:1.14,RB:1.68,WR:1.68,WR2:0.7,OT:0.47,EDGE:1.02,DT:0.62,LB:0.85,CB:0.78,S:0.5}},
+    weights:{QB:1.14,RB:1.68,WR:1.68,WR2:0.7,OT:0.47,EDGE:1.02,DT:0.62,LB:0.85,CB:0.78,S:0.5},
+    /* engine 26: the race compares each player with his position; this is the voters' premium on top */
+    premium26:{QB:1.12,RB:0.99,WR:0.95,WR2:0.75,EDGE:0.85,CB:0.85,S:0.75,LB:0.8,DT:0.75,OT:0.5}},
 
-  tuning:{wpK:{safe:380,balanced:440,aggressive:580}, fb14g:0.94, fb14gap:1.12, wpK14:{safe:355,balanced:411,aggressive:542},   /* engine 14's own curve (scratch r91 fitk.js: 457 -> 427 on the same fit, the plans in proportion) */   /* round 91 (engine 14): scoring, favourites and margin held where they were once computer clubs pick plans (underdogs take risks) */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
+  tuning:{wpK:{safe:380,balanced:440,aggressive:580}, fb14g:0.94, fb14gap:1.12, wpK14:{safe:355,balanced:411,aggressive:542}, wpK25:{safe:401,balanced:464,aggressive:612},   /* engine 25 (review round): refit on 16 seasons (13,500 games, test/realism.js + likelihood): shown 88% won 83%, 82% won 79%; the plans in proportion */   /* engine 14's own curve (scratch r91 fitk.js: 457 -> 427 on the same fit, the plans in proportion) */   /* round 91 (engine 14): scoring, favourites and margin held where they were once computer clubs pick plans (underdogs take risks) */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
     
     hfa:62            // baseline home-field edge, Elo
   },

@@ -104,6 +104,7 @@ const PEARL_AFTER=[` Woof!`,` (Tail going. Very hard.)`,` Can we go outside afte
   ` Ball. BALL. Sorry \u2014 the actual ball. Carry on.`];
 function pearlSay(line, seed){
   const n=Math.abs(seed|0);
+  if(typeof staffReal==="function"&&staffReal())return line;   // a realistic staff room: no dog, no asides
   if(n%6!==1)return line;
   return (n%12===1)
     ? PEARL_BEFORE[Math.floor(n/6)%PEARL_BEFORE.length]+line
@@ -113,7 +114,7 @@ function pearlSay(line, seed){
 function bearYell(kind, seed){
   const n=Math.abs(seed|0);
   // roughly one call in four, they lose the thread entirely
-  if(n%4===2){
+  if(n%4===2&&!(typeof staffReal==="function"&&staffReal())){
     const d=BEAR_YELL.distracted;
     return d[Math.floor(n/4)%d.length];
   }
@@ -194,6 +195,12 @@ function staffTake(dp, ctx){
       ? `We're the better team out there! Open it up and let's finish them.`
       : `Shootouts are fun! Let's keep the puck and not give them anything.`,seed)});
     R.push({who:"capy", pick:"hold", line:`An odd-man rush the other way, I'm afraid, ends a great many overtimes.`});
+  }
+  else if(dp.k==="pull"&&dp.dn){   // engine 26: now, a minute or two earlier than the league, or the league's habit
+    const L=typeof live!=="undefined"&&live&&live.drives||[], k=live&&live.userIsHome?0:1, e=L.reduce((t,d)=>t+(d.shots?d.shots[k]-d.shots[1-k]:0),0), mid=dp.dn>=2?"four":"three";
+    R.push({who:"bears", pick:"now", line:bearYell("pull",seed)});
+    R.push({who:"pearl", pick:e>=6?"now":mid, line:pearlSay(e>=6?`We've outshot them by ${e} tonight. Give them the extra man now!`:`We need a goal, but they've matched us all night. A minute earlier than usual, not five.`,seed)});
+    R.push({who:"capy", pick:"normal", line:`An empty net, I'm afraid, rather invites them to score into it.`});
   }
   else if(dp.k==="pull"){
     R.push({who:"bears", pick:"early", line:bearYell("pull",seed)});

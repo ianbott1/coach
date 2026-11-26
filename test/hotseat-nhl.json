@@ -1,5 +1,5 @@
 {
- "fp": "09fe8f46858a32ee",
+ "fp": "971fa75188a62ca2",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -385,6 +385,26 @@
    "fp": "09fe8f46858a32ee",
    "from": "09fe8f46858a32ee",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "e725cb5fde56da90",
+   "from": "09fe8f46858a32ee",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
+  },
+  {
+   "fp": "954d331fcfa162f2",
+   "from": "e725cb5fde56da90",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "194928a238357ea7",
+   "from": "954d331fcfa162f2",
+   "note": "round 2 rv2/hockey (engine 26): the goalie pull at real benches' times, tonight's lines and legs, the timeout"
+  },
+  {
+   "fp": "971fa75188a62ca2",
+   "from": "194928a238357ea7",
+   "note": "Re-recorded once on the merged engine-26 build (round two)"
   }
  ],
  "out": [
@@ -394,20 +414,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-41-12",
+      "rec": "34-39-11",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "B-"
      },
-     "book": "9749c05006b847a2"
+     "book": "61d7b770962e94cc"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "31-50-3",
+      "rec": "33-41-10",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "b8a69e9d01258c83"
+     "book": "c3bfa820626cf985"
     }
    ]
   },
@@ -417,20 +437,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-43-12",
+      "rec": "35-40-9",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "114e0de39817fa9c"
+     "book": "d119ca77898e710c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "42-35-7",
-      "result": "Losing season",
-      "grade": "B+"
+      "rec": "44-34-6",
+      "result": "Missed the playoffs",
+      "grade": "C+"
      },
-     "book": "0536f7c7966761fb"
+     "book": "4f19d3a0f7212d64"
     }
    ]
   },
@@ -440,20 +460,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-30-11",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "31-43-10",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "15bdf04af5212e78"
+     "book": "6f2d74a99f3a180b"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "29-48-7",
+      "rec": "34-44-6",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "dd134845b9fa86c2"
+     "book": "7f3ca9ef24c96d00"
     }
    ]
   }

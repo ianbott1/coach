@@ -1,5 +1,5 @@
 {
- "fp": "f214c1e9bd9f5025",
+ "fp": "cff8cc43147de1ef",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -150,21 +150,41 @@
    "fp": "f214c1e9bd9f5025",
    "from": "f214c1e9bd9f5025",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "1a99adc5490ddf33",
+   "from": "f214c1e9bd9f5025",
+   "note": "Pro football front office (rv/nfl-fo): computer clubs draft from a real board; the 2026 cap ($301.2M) and real contracts; a kicker and punter whose ratings move field goals and punts. Games, records and screens differ from season 1 (in-season trades on the new contracts, kicks)"
+  },
+  {
+   "fp": "5ff55da6769956fc",
+   "from": "1a99adc5490ddf33",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "402d34ff185e18b8",
+   "from": "5ff55da6769956fc",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; football: completions, QB runs, two backs, picks spread, MVP by slot"
+  },
+  {
+   "fp": "cff8cc43147de1ef",
+   "from": "402d34ff185e18b8",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "03d9a62996f32a50",
-    "post": "9a97ef2d7b9b4bc5",
-    "champion": "New Orleans",
-    "rec": "9e0100c131c9cc8f",
-    "poll": "44f7189f05bd9377",
-    "heis": "ac04dcfdb5834804",
-    "history": "509f74bb6a73f72b",
-    "universe": "54ca01c1f69b2ea2",
-    "screens": "32c7ee79450888b4"
+    "games": "0b33abec688d92c0",
+    "post": "57afa5d25294ffb9",
+    "champion": "Baltimore",
+    "rec": "3b630f26d168d3e8",
+    "poll": "89818df40c08738a",
+    "heis": "08794c02feee4cdd",
+    "history": "479a58c254bfe144",
+    "universe": "87ff791294da7b46",
+    "screens": "5634a68b6c9512ab"
    }
   ]
  }

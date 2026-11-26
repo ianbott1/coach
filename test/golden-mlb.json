@@ -1,5 +1,5 @@
 {
- "fp": "1ebdddcc4e20204a",
+ "fp": "f3a245c796f89a25",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -275,59 +275,84 @@
    "fp": "1ebdddcc4e20204a",
    "from": "1ebdddcc4e20204a",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "9db89b876029b4ea",
+   "from": "1ebdddcc4e20204a",
+   "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
+  },
+  {
+   "fp": "11ad5725c23c4f20",
+   "from": "9db89b876029b4ea",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "164a0be539c5ab8d",
+   "from": "11ad5725c23c4f20",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; baseball: walks 0.080 to 0.066, starter form 0.02, hitters' edge 0.035 (shutouts 19% to 13%)"
+  },
+  {
+   "fp": "f3a245c796f89a25",
+   "from": "164a0be539c5ab8d",
+   "note": "round 112 follow-up: MLB re-tuned on the merged build (engine 26)"
+  },
+  {
+   "fp": "f3a245c796f89a25",
+   "from": "f3a245c796f89a25",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "3d5153dfcd8c114e",
-    "post": "ea40287c68cafad9",
-    "champion": "San Diego",
-    "rec": "7d949ee2c854cfb8",
-    "poll": "6b40d8b4cdc9d8de",
-    "heis": "7d5b897b0d9b6c32",
-    "history": "da15fbfd7101bc37",
-    "universe": "56c8183973a51f1f",
-    "screens": "1612d5c806ff6c05"
+    "games": "dd170032864f09b7",
+    "post": "561d257d51b6f90b",
+    "champion": "NY Yankees",
+    "rec": "c66819d525412c7b",
+    "poll": "1fbef619e9248e15",
+    "heis": "79b5379ede74e6b1",
+    "history": "5b92ecc86380066c",
+    "universe": "12f1a8a433bbbbdb",
+    "screens": "2dfebd1e777a26dc"
    },
    {
     "year": 2027,
-    "games": "65a1a5d715c40c67",
-    "post": "bad36f6d60532f8a",
-    "champion": "Houston",
-    "rec": "c4e613880ca2a9ed",
-    "poll": "bee24a447b87d565",
-    "heis": "773ec581dad87a9c",
-    "history": "6acd7d078226bbb4",
-    "universe": "0e503d756a19b330",
-    "screens": "49217556b3802e33"
+    "games": "50ca9fb83e5ff5e9",
+    "post": "d0ae2b627dea2177",
+    "champion": "Milwaukee",
+    "rec": "b537071d8dc655cb",
+    "poll": "15575c51d10c2a7a",
+    "heis": "5d0751e9079a81ac",
+    "history": "1c607d4cda66cb5a",
+    "universe": "17d7edcbb7819ccc",
+    "screens": "879ba144da3d9433"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "abe739d49baf153f",
-    "post": "8aaf7e8aa772ad4d",
-    "champion": "LA Dodgers",
-    "rec": "fb7cecfa7faad8b4",
-    "poll": "8b06c4145b3597e1",
-    "heis": "c538f6ec29f1dea8",
-    "history": "2776d71e098b91d8",
-    "universe": "c04512530a010990",
-    "screens": "d8c11aef312cc5ae"
+    "games": "94d91feb0a0d956f",
+    "post": "3145bc4640403fcc",
+    "champion": "Philadelphia",
+    "rec": "5d3a6530c85a7beb",
+    "poll": "e69c01bcc481829d",
+    "heis": "e4588a93ae26b1ef",
+    "history": "ab21a833ef4dc0e3",
+    "universe": "af5cc9cd60982fcb",
+    "screens": "a8b918f745fe9e36"
    },
    {
     "year": 2027,
-    "games": "88a0371b52e58170",
-    "post": "db2fe55acf519f7a",
-    "champion": "NY Mets",
-    "rec": "253cfe6202274537",
-    "poll": "d5ad3a32919dca35",
-    "heis": "eac2183831bc1117",
-    "history": "53e39dd404565cdb",
-    "universe": "49e8d24da1631d6f",
-    "screens": "c9701884af330e6e"
+    "games": "986ed56d3f26ea08",
+    "post": "3582e36644b752b9",
+    "champion": "San Diego",
+    "rec": "5919f057337e2e50",
+    "poll": "21583e33aaf15b13",
+    "heis": "37909452e89cb6cc",
+    "history": "e540e8870b6bd0f7",
+    "universe": "9fc24c5ddc9739b8",
+    "screens": "826ad48e5620afc8"
    }
   ],
   "schedules#60": [

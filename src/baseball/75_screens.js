@@ -33,6 +33,9 @@ function bsEventText(g,e){
   if(e.k==="sb")return {team:tm,tag:"SB",text:`${who} steals second`};
   if(e.k==="cs")return {team:tm,tag:"CS",text:`${who} is thrown out stealing`};
   if(e.k==="ph")return {team:tm,tag:"",text:e.nm?`${e.nm} pinch-hits${e.was?" for "+e.was:""}`:`send up a pinch hitter`};
+  // engine 26: the pitching change and the intentional walk
+  if(e.k==="pc")return {team:tm,tag:"",text:`Pitching change: ${e.nm} (${BS26_ROLE[e.role]||"relief"}, ${e.th==="L"?"left":"right"}-handed)${e.was?" replaces "+e.was:""}`};
+  if(e.k==="ibb")return {team:tm,tag:"",text:`walk ${e.nm||"him"} intentionally`};
   return {team:tm,tag:"",text:""};
 }
 const shown=e=>true;
@@ -98,7 +101,7 @@ function lineScore(g,drives,now){
   const ls=drives.length?drives[drives.length-1]:null, done={h:ls?ls.sh:0,a:ls?ls.sa:0};
   const part=now&&(now.h>done.h||now.a>done.a)?{h:now.h-done.h,a:now.a-done.a}:null;
   const n=Math.max(SEGS,drives.length+(part?1:0)), cell=(v,b)=>`<td${b?' class="b"':''}>${v===null||v===undefined?"":v}</td>`;
-  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell((()=>{ const hh=bsShownHits(); return hh?hh[side==="h"?0:1]:null })()!=null?bsShownHits()[side==="h"?0:1]:drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;   /* round 105: in the full match, the hits as shown (held through a call inside an inning) */
+  const row=(side,tm)=>`<tr><th>${esc(tm.length>11?tm.slice(0,10)+"\u2026":tm)}</th>${Array.from({length:n},(_,i)=>{ const d=drives[i]; if(!d&&part&&i===drives.length)return cell(part[side]||0); return cell(d?(side==="h"&&d.seg>=SEGS-1&&d.h===0&&d.sh>d.sa&&!(d.ev||[]).some(e=>e.side==="home"&&e.k!=="pc"&&e.k!=="ibb")&&i===drives.length-1&&live&&live.done?"x":d[side]):null) }).join("")}${cell(now?now[side]:done[side],true)}${cell((()=>{ const hh=bsShownHits(); return hh?hh[side==="h"?0:1]:null })()!=null?bsShownHits()[side==="h"?0:1]:drives.length?drives[drives.length-1].hits?drives[drives.length-1].hits[side==="h"?0:1]:"":"")}</tr>`;   /* round 105: in the full match, the hits as shown (held through a call inside an inning) */
   return `<div class="linescore"><table><tr><th></th>${Array.from({length:n},(_,i)=>`<td>${i+1}</td>`).join("")}<td class="b">R</td><td>H</td></tr>${row("a",g.away)}${row("h",g.home)}</table></div>`;
 }
 function liveScoreboard(){
@@ -127,6 +130,24 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">How ${esc(g[opp])} are hitting <span>three innings</span></div>
       ${rows.map(r=>`<div class="evr ${r[2]?'lo':''}"><span class="evk">${r[0]}</span><span class="evv">${r[2]?r[2]+" ":""}${r[1]}</span></div>`).join("")}
       <div class="evn">League average: ${Math.round(100*A[0])}% of balls in play pulled, ${A[1].toFixed(1)} pitches an at-bat, ${A[2].toFixed(2)} swings and misses. &#9650; well above it, &#9660; well below. Pull hitters pull it; patient hitters see pitches; contact hitters don't miss. Three innings is a small sample.</div></div>`; }
+  // engine 26: the bullpen calls show the men: role, hand, rest and season, and your starter's pitches and times through
+  if(dp.v26&&(dp.k==="pull"||dp.k==="pen"||dp.k==="penu")){ const team=my, sl=n=>{ const s=bsRelief(team)[n]; return s&&s.g?`${s.g} games, ${(s.er*27/Math.max(1,s.outs)).toFixed(2)} ERA${s.sv?`, ${s.sv} saves`:""}${s.hld?`, ${s.hld} holds`:""}`:"first outing" };
+    const rest=c=>c.py>0&&c.p2>0?"third day running":c.py>0?`${c.py} pitches yesterday`:c.p2>0?"pitched the day before":"rested";
+    const now=dp.cur?`<div class="evr ${dp.cur.np>=30?'hi':''}"><span class="evk">In now: ${esc(dp.cur.n)}</span><span class="evv">${dp.cur.np} pitches, ${dp.cur.bf} batters${dp.cur.ra?`, ${nOf(dp.cur.ra,"run")}`:""}</span></div>`
+      :dp.sp?`<div class="evr ${dp.np>=90?'hi':''}"><span class="evk">${esc(dp.sp)}, your starter</span><span class="evv">${dp.np} pitches${dp.bf!=null?`, ${dp.bf} batters (${["","first","second","third","fourth"][Math.min(4,dp.tto||1)]} time through)`:""}${dp.ra?`, ${nOf(dp.ra,"run")}`:""}</span></div>`:"";
+    return `<div class="evid"><div class="evh">Your bullpen</div>${now}
+      ${(dp.pen||[]).map(c=>`<div class="evr ${c.py>0&&c.p2>0||c.py>=BS26.heavy?'lo':''}"><span class="evk">${esc(c.n)}: ${esc(BS26_ROLE[c.role]||"relief")}, ${c.th==="L"?"left":"right"}-handed</span><span class="evv">${esc(rest(c))}; ${esc(sl(c.n))}</span></div>`).join("")}
+      <div class="evn">Hitters do better each time through the order (MLB starters 2016-25: .713 OPS the first time, .747 the second, .780 the third), and a starter loses a little with every pitch past about ${BS26.p0}. A reliever who pitched yesterday is a shade slower, and much slower on a third day running. Left-handed hitters hit left-handed pitchers worst. A new pitcher must face three batters or finish the inning.</div></div>` }
+  if(dp.k==="ibb"){ const line=nm=>{ const P=dp.team?bsPlayer(dp.team,nm):null, L=P&&P.st2; return L&&L.ab?`${(L.h/L.ab).toFixed(3).replace(/^0/,"")}, ${L.hr||0} HR`:"no at-bats yet" };
+    return `<div class="evid"><div class="evh">The intentional walk</div>
+      <div class="evr hi"><span class="evk">Up: ${esc(dp.up||"their hitter")}</span><span class="evv">${esc(line(dp.up))}</span></div>
+      <div class="evr"><span class="evk">On deck: ${esc(dp.next||"the next man")}</span><span class="evv">${esc(line(dp.next))}</span></div>
+      <div class="evn">A walk puts the winning run a base nearer and sets up a force at every base. It pays only when the man on deck is a much weaker hitter (here ${dp.gap} rating points). Your assistant walks him from the seventh in a game within two runs, when the gap is ${BS26.ibbGap} points or more.</div></div>` }
+  if(dp.k==="pinch"&&dp.vals){ const pl=bsBatsWords;
+    return `<div class="evid"><div class="evh">The pinch hitter, against ${esc(dp.pn||"their pitcher")} (${dp.th==="L"?"left":"right"}-handed)</div>
+      <div class="evr"><span class="evk">Up: ${esc((dp.q.match(/\. (.+?) is up/)||[])[1]||"your hitter")}</span><span class="evv">rated ${dp.upR!=null?dp.upR:"-"}, ${pl(dp.upBats)}, ${dp.upV!=null?Math.round(dp.upV):"-"} against this pitcher</span></div>
+      ${dp.vals.map(v=>`<div class="evr ${dp.upV!=null&&v[1]-dp.upV>=BS26.phMin?'hi':''}"><span class="evk">Bench: ${esc(v[0])}</span><span class="evv">rated ${v[2]}, ${pl(v[3])}, ${v[1]} against this pitcher</span></div>`).join("")}
+      <div class="evn">Against a pitcher of the other hand a hitter is worth about ${Math.round(BS26.platL/BS26.xPt)} points more if he bats left, ${Math.round(BS26.platR/BS26.xPt)} if he bats right (a switch-hitter always has the platoon side). A pinch hitter stays in for the rest of the game. Your assistant sends one up when he's ${BS26.phMin} points better against this pitcher and you're not ahead.</div></div>` }
   if(dp.k==="pull")return `<div class="evid"><div class="evh">${dp.sp?esc(dp.sp)+", your starter today":"Your starter today"}</div>
       <div class="evr ${dp.bf>=24?'hi':''}"><span class="evk">Batters faced</span><span class="evv">${dp.bf}</span></div>
       <div class="evr ${dp.ra>=3?'hi':''}"><span class="evk">Runs allowed</span><span class="evv">${dp.ra}</span></div>
@@ -190,9 +211,9 @@ function liveCallView(){
     ${evidenceHTML(g,my,last,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
+      `<div class="say"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${desc(o[0])?`<small>${esc(desc(o[0]))}</small>`:""}</button>`).join("")}</div>
     <div class="grouphead">Run of play</div>
@@ -284,4 +305,12 @@ function staffRolesHTML(){
         <div class="psub">${p.pot>p.r?"ceiling "+p.pot:"at ceiling"}${line?" &middot; "+esc(line):""}</div></div>
       ${i<POS.length&&ROLE_SEL===null?`<button class="promo" data-feat="${i}" aria-pressed="${S.featured===i}">${S.featured===i?"Featured":"Feature"}</button>`:""}
       <button class="promo" data-role="${i}" aria-pressed="${sel}">${sel?"Cancel":ROLE_SEL!==null?"Swap here":"Move"}</button><span class="prate">${p.r}</span></div>` }).join("");
-  return `<div class="grouphead">Pitching staff</div><div class="note">${ROLE_SEL!==null?`Now tap the job to give ${esc((R[ROLE_SEL]||{}).n||"")}: the two trade places.`:"Five starters take a game each; the closer has the 9th, the set-up man the 8th, the long man comes in early. Tap Move, then another pitcher, to trade their jobs; Feature gives a top-four arm more innings and faster development."}</div><div class="card" style="padding:6px 12px">${rows}</div>` }
+  return `<div class="grouphead">Pitching staff</div><div class="note">${ROLE_SEL!==null?`Now tap the job to give ${esc((R[ROLE_SEL]||{}).n||"")}: the two trade places.`:"Five starters take a game each; the closer has the 9th, the set-up man the 8th, the long man comes in early. Tap Move, then another pitcher, to trade their jobs; Feature gives a top-four arm more innings and faster development."}</div><div class="card" style="padding:6px 12px">${rows}</div>${bsPenCardHTML(my)}` }
+/* engine 26: today's bullpen, all nine by name: the job, the hand, the rating, yesterday's work and the season so far.
+   The three from the roster are the jobs above; the other six are the club's own arms, named by the club's season */
+function bsPenCardHTML(my){ if(typeof bsV26!=="function"||!bsV26())return ""; const P=bsPen26(my,SEA.step); if(!P||!P.length)return ""; const S0=bsRelief(my);
+  const rows=P.map(([n,r,l,role,py,p2])=>{ const s=S0[n], rest=py>0&&p2>0?"third day running: only in a pinch":py>=BS26.heavy?`${py} pitches yesterday: resting`:py>0?`pitched yesterday (${py})`:p2>0?"pitched the day before":"rested";
+    const line=s&&s.g?`${s.g} G, ${(s.er*27/Math.max(1,s.outs)).toFixed(2)} ERA${s.sv?`, ${s.sv} SV`:""}${s.hld?`, ${s.hld} HLD`:""}`:"no outings yet";
+    return `<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname"><span style="color:var(--muted);font-size:12px;display:inline-block;min-width:78px">${esc(BS26_ROLE[role]||"relief")}</span>${esc(n)} <span style="color:var(--muted)">${l?"LHP":"RHP"}</span></div>
+      <div class="psub">${esc(rest)} &middot; ${esc(line)}</div></div><span class="prate">${r}</span></div>` }).join("");
+  return `<div class="grouphead">Bullpen today</div><div class="note">Who's fresh. A reliever who pitched yesterday is a shade slower today; nobody goes a third day running unless there's no one else. Your assistant brings them in by the inning and the score; on game day you can call for one yourself.</div><div class="card" style="padding:6px 12px">${rows}</div>` }

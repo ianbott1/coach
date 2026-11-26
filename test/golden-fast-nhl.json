@@ -1,5 +1,5 @@
 {
- "fp": "55b61b4531d1e1c8",
+ "fp": "2f341c78ae4f3c9c",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -160,21 +160,41 @@
    "fp": "55b61b4531d1e1c8",
    "from": "55b61b4531d1e1c8",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "7db5d2fc482e864c",
+   "from": "55b61b4531d1e1c8",
+   "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
+  },
+  {
+   "fp": "8a7ce9c311be32a6",
+   "from": "7db5d2fc482e864c",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "24f09140552c641b",
+   "from": "8a7ce9c311be32a6",
+   "note": "round 2 rv2/hockey (engine 26): the goalie pull at real benches' times (empty-net goals 0.14 to 0.29 a game), tonight's lines and legs, the timeout"
+  },
+  {
+   "fp": "2f341c78ae4f3c9c",
+   "from": "24f09140552c641b",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b375b5824914dfb",
-    "post": "2ce5cd62c82d3d44",
-    "champion": "Columbus",
-    "rec": "55f305fef7c7b9eb",
-    "poll": "3930f4d04e8ea79e",
-    "heis": "cb6ffd0cc49ff6af",
-    "history": "fa786d72b291d325",
-    "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "games": "677c3541db7e3248",
+    "post": "7e4deaf3ac246194",
+    "champion": "Washington",
+    "rec": "80e1e43dfb839dd1",
+    "poll": "d67349cf5478543e",
+    "heis": "7d8cf393e386e237",
+    "history": "c3bdaf62442bfd9c",
+    "universe": "985fdb3fc7753f36",
+    "screens": "da734f853cabdc9c"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "32a8fcd0b28207d3",
+ "fp": "d56afe564468b3ef",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -405,6 +405,31 @@
    "fp": "32a8fcd0b28207d3",
    "from": "32a8fcd0b28207d3",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "376046d08aa668d7",
+   "from": "32a8fcd0b28207d3",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
+  },
+  {
+   "fp": "b2cfe8aa3af5a4e8",
+   "from": "376046d08aa668d7",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "272caca2a88715c4",
+   "from": "b2cfe8aa3af5a4e8",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "d56afe564468b3ef",
+   "from": "272caca2a88715c4",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "d56afe564468b3ef",
+   "from": "d56afe564468b3ef",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "out": [
@@ -414,20 +439,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "4-8",
-      "result": "No bowl game",
-      "grade": "F"
+      "rec": "11-3",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A+"
      },
-     "book": "28ccf88599b03aa7"
+     "book": "6f1b734bdf8dc584"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "791b367e20628950"
+     "book": "2c638003152bb981"
     }
    ]
   },
@@ -437,20 +462,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Gasparilla Bowl",
+      "rec": "5-7",
+      "result": "No bowl game",
       "grade": "C-"
      },
-     "book": "90fe9e98ccc9d7e2"
+     "book": "484a85f0c2e096bc"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "6-7",
-      "result": "Lost the Hawaii Bowl",
-      "grade": "A-"
+      "rec": "3-9",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "1f9fbf522418a70c"
+     "book": "94d3c9adf2c9a275"
     }
    ]
   },
@@ -460,20 +485,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Holiday Bowl",
-      "grade": "C+"
+      "rec": "9-4",
+      "result": "Won the Holiday Bowl",
+      "grade": "A-"
      },
-     "book": "8370994afe185c85"
+     "book": "71d10fc91b9e09d0"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the New Mexico Bowl",
-      "grade": "A"
+      "rec": "4-8",
+      "result": "No bowl game",
+      "grade": "B-"
      },
-     "book": "08ab6b33b6ffb4dd"
+     "book": "6972330da1c94550"
     }
    ]
   }

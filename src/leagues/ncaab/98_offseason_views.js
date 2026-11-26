@@ -5,7 +5,7 @@
    and asks offseasonBlock() whether the user may move on yet. */
 
 function budgetLeft(){
-  if(!S.off)return 0;
+  if(!S.off||!S.off.picks.budget)return 0;   // engine 26: no buckets (core 92_market)
   const B=S.off.picks.budget;
   return S.off.pool-LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0);
 }
@@ -29,6 +29,7 @@ function offseasonBanner(){
   if(cls)rec=`<div class="bnews"><b>Recruiting:</b> ${esc(cls.l)} &mdash;
     ranked ${cls.rank} of ${cls.of} nationally.</div>`;
   if(cls&&cls.board&&cls.board.length)rec+=rbBannerHTML(cls.board);
+  if(last.league.market)rec+=pxBannerHTML(last.league.market,my);
   if(pin&&pin.length)rec+=`<div class="bnews"><b>Transfer portal, in:</b> ${pin.map(p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+", from "+esc(p.from)+(p.start?", starting":"")+")").join(", ")}.</div>`;
   if(pout&&pout.length)rec+=`<div class="bnews small"><b>Transfer portal, out:</b> ${pout.map(p=>esc(p.n)+" ("+esc(p.p)+", "+p.r+"): "+esc(p.why)).join("; ")}.</div>`;
   const missed=(ptg||[]).filter(x=>!x.got);
@@ -97,8 +98,11 @@ function portalHTML(num){
   // who he'd push down, on today's roster: a transfer who starts sends your backup there away, and that can
   // be the recruit you've just signed (Muse: a recruit lost his spot to the coach's own portal signing, unwarned)
   const R=U.roster[my]||[];
+  // review round (playtest: "he'd back up Bergeron", a graduating senior): the depth chart he'd join is next season's,
+  // so the seniors and the players leaving through the portal aren't on it
+  const gone=new Set(all.filter(e=>e.from===my).map(e=>e.n));
   const bumpWord=e=>{ const i=POS.findIndex(P=>P.p===e.p); if(i<0)return "";
-    const st=R[i], bk=R[BK(i)];
+    const D=R.filter(p=>p&&(p.p||"")===e.p&&!(p.c>=3)&&!gone.has(p.n)).sort((a,b)=>b.r-a.r), st=D[0], bk=D[1];
     if(!st||e.r>st.r)return `he'd start over ${st?esc(st.n):"nobody"}${bk?`, and ${esc(bk.n)} or a new ${esc(e.p)} recruit would lose his place`:""}`;
     if(!bk||e.r>bk.r)return `he'd back up ${esc(st.n)}${bk?`; ${esc(bk.n)} or a new ${esc(e.p)} recruit would lose his place`:""}`;
     return `on today's roster he wouldn't make your top two at ${esc(e.p)}` };
@@ -197,9 +201,22 @@ function offseasonScreen(){
       <span class="cgrade">${esc(c.grade)}</span></div></div>`).join("");
   });
   const step=(A.userOpen||S.off.poach.length)?1:0;
-  const B=P.budget, used=LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
+  const B=P.budget||{}, used=LEAGUE.offseason.budget.buckets.reduce((s,b)=>s+(B[b.k]||0),0), left=S.off.pool-used;
   if(A.userOpen)h+=`<div class="note">Pick your next job first: the plan, budget and board below are for wherever you go.</div>`;   // it read as the old program's (Grokbot)
   h+=collegePlanHTML(P);
+  if(pxOn()){   // engine 26: the money is spent on players (core 92_market)
+    h+=pxScreenHTML(step+1);
+    h+=`<div class="grouphead">${step+4}. Recruiting focus</div>`;
+    h+=Object.keys(LEAGUE.offseason.recruitFocus).map(k=>`<div class="opt ${P.recruit===k?'on':''}" data-rec="${k}">
+      <div class="fname">${esc(LEAGUE.offseason.recruitFocus[k].l)}</div>
+      <div class="cdesc">${esc(LEAGUE.offseason.recruitFocus[k].d)}</div></div>`).join("");
+    h+=recruitBoardHTML(P,step+5);
+    h+=`<div class="grouphead">${step+6}. Team philosophy</div>`;
+    h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
+      <div class="fname">${esc(PHILOSOPHY[k].l)}</div>
+      <div class="cdesc">${esc(PHILOSOPHY[k].d)}</div></div>`).join("");
+    return h;
+  }
   h+=`<div class="grouphead">${step?"2":"1"}. Budget &mdash; ${S.off.pool} to spend</div>`;
   h+=coachMark("budget","You must spend every point. Facilities compound for years but only if you keep the job; retention and development pay off right away.");
   h+=`<div class="note">Every point you put somewhere is a point you didn't put
@@ -236,6 +253,7 @@ Object.assign(LEAGUE.ui,{
   offseasonBanner:offseasonBanner,
   /* null when the offseason choices are complete, else what the button says */
   offseasonBlock(){
+    if(pxOn())return pxBlock();
     const n=budgetLeft();
     return n>0?"Allocate "+n+" more":n<0?"Over budget":null;
   },
@@ -254,5 +272,6 @@ Object.assign(LEAGUE.ui,{
       B[k]=nv; save(); render();});
     document.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{
       S.off.picks.recruit=b.dataset.rec;save();render()});
+    if(pxOn())pxBind();
   }
 });

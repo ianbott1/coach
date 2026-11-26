@@ -1,5 +1,5 @@
 {
- "fp": "80594fd4d73af457",
+ "fp": "1296628ab653cb8d",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -165,6 +165,31 @@
    "fp": "80594fd4d73af457",
    "from": "a8057d553642d8e4",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "70282015ae24bd2a",
+   "from": "80594fd4d73af457",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
+  },
+  {
+   "fp": "8cd6f6a3a427a33e",
+   "from": "70282015ae24bd2a",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "22a6de51885cd0cf",
+   "from": "8cd6f6a3a427a33e",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; baseball: walks 0.080 to 0.066, starter form 0.02, hitters' edge 0.035 (shutouts 19% to 13%)"
+  },
+  {
+   "fp": "1296628ab653cb8d",
+   "from": "22a6de51885cd0cf",
+   "note": "round 112 follow-up: MLB re-tuned on the merged build (engine 26)"
+  },
+  {
+   "fp": "1296628ab653cb8d",
+   "from": "1296628ab653cb8d",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "out": [
@@ -174,20 +199,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "84-78",
-      "result": "Missed the postseason",
-      "grade": "C"
+      "rec": "58-104",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "b9c781ba258fe510"
+     "book": "842d158a8e283294"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "71-91",
+      "rec": "64-98",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "22f8cae8e412ab31"
+     "book": "7e30e0cc4b170f6d"
     }
    ]
   },
@@ -199,18 +224,18 @@
      "last": {
       "rec": "70-92",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C+"
      },
-     "book": "bf94aba46f35f5a6"
+     "book": "7c95626bc812ae73"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "73-89",
+      "rec": "65-97",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "614670e3f6b417a3"
+     "book": "b91ae711a8665314"
     }
    ]
   }

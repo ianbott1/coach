@@ -78,8 +78,14 @@ function confBracket(sd){
   let r1=ser("r1");
   if(!r1.length&&SEA.step>=LEAGUE.weeks){ SEA._seed(); const q=SEA.side[sd]||[], t=i=>SEA.seeds[q[i]]?q[i]:null;
     r1=[[0,7],[3,4],[2,5],[1,6]].map(([x,y])=>({hi:t(x),lo:t(y),w:{}})) }
-  return `<div class="bracket">${col("First round",pad(r1,4).map(seriesBox))}${col("Semifinals",pad(ser("r2"),2).map(seriesBox))}${col("Conference finals",pad(ser("r3"),1).map(seriesBox))}</div>`;
+  // review round (playtest: the second round's boxes read "to be decided" after the first round had finished, until a
+  // game of it was played): a round not yet begun shows each pairing as soon as its men are known
+  const r2=ser("r2").length?ser("r2"):nbaNextPairs(r1,2), r3=ser("r3").length?ser("r3"):nbaNextPairs(r2,1);
+  return `<div class="bracket">${col(ROUND_NAME.r1,pad(r1,4).map(seriesBox))}${col(ROUND_NAME.r2,pad(r2,2).map(seriesBox))}${col(ROUND_NAME.r3,pad(r3,1).map(seriesBox))}</div>`;
 }
+/* the next round's pairings from this round's winners so far (the better seed first, as _makeSeries draws them) */
+function nbaNextPairs(prev,n){ const out=[]; for(let i=0;i<n;i++){ const a=prev[2*i]&&prev[2*i].winner||null, b=prev[2*i+1]&&prev[2*i+1].winner||null;
+    if(!a&&!b){ out.push(null); continue } const hi=a&&b?(SEA.seeds[a]<SEA.seeds[b]?a:b):(a||b), lo=a&&b?(hi===a?b:a):null; out.push({hi:hi,lo:lo,w:{}}) } return out }
 function nflBracket(){
   const my=S.myTeam, mine=SEA.mySeries(my), live=mine&&!mine.winner&&SEA.phase!=="done";
   const tabs=["East","West","Finals","Play-in"];
@@ -93,7 +99,8 @@ function nflBracket(){
     h+=gs.length?gs.map(g=>`<div class="brow ${g.home===my||g.away===my?'mine':''}">${esc(g.title)}: <b>${esc(g.winner)}</b> ${Math.max(g.hp,g.ap)}-${Math.min(g.hp,g.ap)} ${esc(g.loser)}</div>`).join("")
       :`<div class="note">Seventh and eighth play for the 7 seed; ninth and tenth for a chance at the 8.</div>`;
   } else if(nbaPostTab==="Finals"){
-    h+=`<div class="bracket"><div class="bcol"><div class="bhead">NBA Finals</div><div class="bgames">${seriesBox((SEA.series.r4||[])[0])}</div></div></div>`;
+    const fin=(SEA.series.r4||[])[0]||(()=>{ const w=(SEA.series.r3||[]).map(x=>x.winner).filter(Boolean); return w.length?{hi:w[0],lo:w[1]||null,w:{}}:null })();
+    h+=`<div class="bracket"><div class="bcol"><div class="bhead">NBA Finals</div><div class="bgames">${seriesBox(fin)}</div></div></div>`;
   } else h+=confBracket(nbaPostTab);
   return h;
 }

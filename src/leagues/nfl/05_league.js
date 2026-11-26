@@ -59,11 +59,16 @@ const LEAGUE={
     /* MVP voters care about quarterbacks above everything */
     weights:{QB:2.2,RB:1.05,WR:0.95,WR2:0.35,OT:0.15,EDGE:0.8,DT:0.35,LB:0.35,CB:0.4,S:0.3},
     /* the MVP race compares each player with his position; this is the voters' premium on top */
-    premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6}},
+    premium:{QB:+((typeof process!=="undefined"&&process.env&&process.env.QBP)||1.12),RB:1,WR:0.97,EDGE:0.95,WR2:0.8,CB:0.85,S:0.8,LB:0.8,DT:0.8,OT:0.6},
+    /* engine 26: grouped by the slot he played (86_awards), the backs' scale is wider than the passers'; a quarterback
+       has won the AP MVP in 21 of the 25 seasons since 2000, a back the other four */
+    premium26:{QB:1.12,RB:0.93,WR:0.9,EDGE:0.88,WR2:0.75,CB:0.8,S:0.75,LB:0.75,DT:0.75,OT:0.55}},
 
   tuning:{wpK:{safe:257,balanced:300,aggressive:393}, softDrive:[100,0.5], softWp:[100,0.5],   /* round 39: gapScale 2.2 -> 1.6 and a big mismatch softened past 100: favourites 73.5% -> 66% (NFL ~66%), margin 14.0 -> 11.9, best records 13-16 over 16 seasons (17-0 before), top chance shown ~94%; refit 210 -> 300, the plans in proportion */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
-    wpK14:{safe:265,balanced:309,aggressive:405},   // round 91 (engine 14): refit (scratch r91 fitk.js: 311 -> 320 on the same fit), the plans in proportion
-    hfa:20, drives:10, gapScale:1.6, gameState:true, fb14g:0.962},   // round 91 (engine 14): scoring held where it was once computer clubs pick plans                  // less home field than on campus; fewer, longer drives
+    wpK14:{safe:265,balanced:309,aggressive:405},
+    wpK25:{safe:249,balanced:290,aggressive:380},   // engine 25 (review round): with gap25 1.2 (below), refit on 80 seasons (22,800 games, test/realism.js + likelihood, k 288 best); the plans in proportion to wpK14
+    gap25:+((typeof process!=="undefined"&&process.env&&process.env.GAP25)||1.2),   /* engine 25 (review round): a rating gap counts 1.2 of itself on a drive (core gapScale25). Pro football played too even: favourites won 64.4% (NFL ~66%), wins sd 2.7 (2024: 3.65), home 52.3% (2024: 53.3%); now 65.7%, 2.9, 53.1%, margin 11.5 -> 11.8 */
+     hfa:20, drives:10, gapScale:1.6, gameState:true, fb14g:0.962},   // round 91 (engine 14): scoring held where it was once computer clubs pick plans                  // less home field than on campus; fewer, longer drives
   venues:{"Seattle":10,"Kansas City":9,"Green Bay":9,"Buffalo":8,"Denver":8,"Philadelphia":7,
     "New Orleans":7,"Baltimore":6,"Pittsburgh":6,"Minnesota":5,"LA Chargers":-6,"LA Rams":-4,
     "Las Vegas":-3,"Jacksonville":-2,"Tampa Bay":-2,"Arizona":-2},

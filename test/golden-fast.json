@@ -1,5 +1,5 @@
 {
- "fp": "30c6ece58cf32d78",
+ "fp": "1a2a58de5b2e862e",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -145,21 +145,46 @@
    "fp": "30c6ece58cf32d78",
    "from": "30c6ece58cf32d78",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "6215247027f5a481",
+   "from": "30c6ece58cf32d78",
+   "note": "review polish: a new career's rosters take distinct first names and surnames (attributes are read from a name's hash, so games move); 'Pin them deep' only from the opponent's 35 out; backups' lines; screens"
+  },
+  {
+   "fp": "3b79ac6211a15e85",
+   "from": "6215247027f5a481",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "ba4de2ec5cc1b078",
+   "from": "3b79ac6211a15e85",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "1a2a58de5b2e862e",
+   "from": "ba4de2ec5cc1b078",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "1a2a58de5b2e862e",
+   "from": "1a2a58de5b2e862e",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "1dede2795cb4e7ad",
-    "post": "9415b158a2c02390",
-    "champion": "Ohio State",
-    "rec": "fdad2e3cad9aef25",
-    "poll": "b598e68e8e87dfc2",
-    "heis": "c15cc548db28d6ea",
-    "history": "103a796d2863e60b",
-    "universe": "1b20d91c1b4f9bc1",
-    "screens": "97bd0fa8c835b056"
+    "games": "754b27aa00429d61",
+    "post": "2a0972f17a1ce989",
+    "champion": "Notre Dame",
+    "rec": "aa1abe9122581bb2",
+    "poll": "2e690f279429fc19",
+    "heis": "ec904f66bbdd4e4d",
+    "history": "f58de2863e3c985e",
+    "universe": "1fbab0535b25d378",
+    "screens": "54e8639d49a2baaa"
    }
   ]
  }

@@ -10,11 +10,12 @@ const HL_SPORT=(function(){
   /* who's on the floor for a stretch (round 80: starters open each half and close, the bench in for parts of each
      quarter); the shooter's slot (si) is the man the run of play names. Round 100: the full match's play between the
      moments uses it too, so every man there has his number and name (Grokbot: "a court of unnamed dots") */
-  function onFloor(team,salt,seg,bn,si,nm){ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
+  function onFloor(team,salt,seg,bn,si,nm,off){ const R=(SEA.roster&&SEA.roster[team])||[], hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]), bk=i=>typeof BK==="function"?BK(i):i+5;
     let h=0; for(const ch of team+salt)h=(h*31+ch.charCodeAt(0))>>>0;
     return [0,1,2,3,4].map(i=>{ const st=hurt.has(i)?-1:i, b=R[bk(i)]&&!hurt.has(bk(i))?bk(i):-1;
       if(i===si){ if(b>=0&&R[b].n===nm)return b; if(st>=0)return st; return b>=0?b:i }
       const x=(((h+i*97+(seg+1)*53)%100)+0.5)/100, benchIn=bn||(seg>=0&&x<(BENCH_P[seg%8]||0));
+      if(off&&st>=0&&R[st]&&R[st].n===off&&b>=0)return b;   // review round: the star sitting with fouls is off the floor
       return st<0?(b>=0?b:i):benchIn&&b>=0?b:st }) }
   function clips(L,d,mode){
     const g=L.g, out=[];
@@ -37,9 +38,10 @@ const HL_SPORT=(function(){
     const r=mulberry32((u*131+(typeof e.m==="string"?e.m.length*977:0)+(e.side==="home"?17:29))>>>0);
     const kind=e.k==="last"||e.k==="lastmiss"?(e.choice==="three"?"three":"two"):e.k;
     const made=e.k!=="lastmiss";
-    const idx=kind==="three"?[1,2,0,1,2][u%5]:kind==="inside"?[4,3,4,2][u%4]:(u%2?0:1);
+    const idx=kind==="three"||kind==="inside"?bbSlot(tm,kind,u):(u%2?0:1);
     const bnA=!!(d&&d.bn&&d.bn[e.side]), bnD=!!(d&&d.bn&&d.bn[e.side==="home"?"away":"home"]);
-    let nm=""; try{ nm=bbPlayer(tm,idx,u,bnA)||(e.k==="last"||e.k==="lastmiss"?bbStar(tm):"") }catch(er){}
+    const offA=typeof bbOff==="function"?bbOff(d,e.side,tm):null, offD=typeof bbOff==="function"?bbOff(d,e.side==="home"?"away":"home",e.side==="home"?g.away:g.home):null;
+    let nm=""; try{ nm=bbPlayer(tm,idx,u,bnA,offA)||(e.k==="last"||e.k==="lastmiss"?bbStar(tm):"") }catch(er){}
     if(e.k==="last"||e.k==="lastmiss"){ try{ nm=bbStar(tm) }catch(er){} }
     // the spot: a three from the corner, the wing or the top; inside at the rim; a two from the elbow
     const spot=kind==="three"?[[0.92,0.035],[0.77,0.14],[0.69,0.5],[0.77,0.86],[0.92,0.965]][Math.floor(r()*5)]:kind==="inside"?[0.93,0.5+(r()-0.5)*0.12]:[0.84,0.38+r()*0.24];
@@ -55,7 +57,7 @@ const HL_SPORT=(function(){
     // in for the late first and third quarters and the start of the second and fourth (about the bench's fifth of the
     // minutes), each position on its own rhythm; the shooter's man is the one the run of play names, starter or backup
     const opp=e.side==="home"?g.away:g.home, seg=d&&typeof d.seg==="number"?d.seg:-1;
-    const floor=(team,salt,shooter,bn)=>onFloor(team,salt,seg,bn,shooter?idx:-1,nm);
+    const floor=(team,salt,shooter,bn)=>onFloor(team,salt,seg,bn,shooter?idx:-1,nm,shooter?offA:offD);
     const an=hlNamed(tm,floor(tm,"a",true,bnA)), dn=hlNamed(opp,floor(opp,"d",false,bnD)), kits=hlKits(g.home,g.away);
     const legend=[{team:tm,kit:kits[e.side==="home"?0:1],list:an.filter(Boolean)},{team:opp,kit:kits[e.side==="home"?1:0],list:dn.filter(Boolean)}];
     return {kind,made,last,e,tm,home:e.side==="home",W,rec,nm:nm?String(nm).split(" ").slice(-1)[0]:"",m:e.m,base:last?3600:2600,inks,an,dn,legend,
@@ -174,7 +176,7 @@ const HL_SPORT=(function(){
   /* the men the screen showed scoring in a stretch it played back: [side 0/1, kind 3 / 2 / 1 (a free throw), roster slot],
      kept with the game so the box score credits them (teamLines) */
   function namesOf(L,d){ if(!d||!Array.isArray(d.pl))return null; const g=L.g, plan=pbPlan(d), out=[];
-    const five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+    const five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"",bbOff(d,"home",g.home)),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"",bbOff(d,"away",g.away))};
     plan.P.forEach(q=>q.acts.forEach(a=>{ const sl=five[q.side][a.who]; if(sl==null)return;
       if(a.t==="make"){ out.push([q.side,a.three?3:2,sl]); if(a.and1&&a.ftm)out.push([q.side,1,sl]) }
       else if(a.t==="ft"){ for(let z=0;z<a.m;z++)out.push([q.side,1,sl]) } }));
@@ -216,7 +218,7 @@ const HL_SPORT=(function(){
     let hs=PB.h0, as=PB.a0; for(let j=0;j<pi;j++){ if(plan.P[j].side===0)hs+=plan.P[j].pts; else as+=plan.P[j].pts }
     const home=cur.side===0, aT=home?g.home:g.away, dT=home?g.away:g.home, c={home:home};
     const bnA=!!(d.bn&&d.bn[home?"home":"away"]), bnD=!!(d.bn&&d.bn[home?"away":"home"]);
-    const NM=pbDraw._n=pbDraw._n&&pbDraw._n.d===d?pbDraw._n:{d:d,home:hlNamed(g.home,onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"")),away:hlNamed(g.away,onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,""))};
+    const NM=pbDraw._n=pbDraw._n&&pbDraw._n.d===d?pbDraw._n:{d:d,home:hlNamed(g.home,onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"",bbOff(d,"home",g.home))),away:hlNamed(g.away,onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"",bbOff(d,"away",g.away)))};
     const an=home?NM.home:NM.away, dn=home?NM.away:NM.home;
     // phases: bring it up (to tb), work it round (to tw), then the possession's acts share the rest
     const acts=cur.acts, na=acts.length, G=cur.w/plan.tot*spanOf(d)*60, gs=(d.seg*spanOf(d)+f*spanOf(d))*60, PT=BB_RT?pbTimes(G,acts,cur.trans):null, tb=PT?PT.tb:0.22, tw=PT?PT.tw:0.42;
@@ -338,12 +340,12 @@ const HL_SPORT=(function(){
   const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
   function liveStats(L){ const g=L.g, rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
     const add=(tm,sl,k,v)=>{ if(sl==null||sl<0)return; const key=tm+"|"+sl, R=(SEA.roster&&SEA.roster[tm])||[]; (rows[key]=rows[key]||{tm,nm:sur(R[sl]&&R[sl].n),pts:0,reb:0,stl:0,tpm:0})[k]+=v };
-    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"",bbOff(d,"home",g.home)),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"",bbOff(d,"away",g.away))};
       plan.P.forEach(q=>{ if(Tl!=null&&q.at+q.w>Tl)return; const A=q.side, tA=A?g.away:g.home, tD=A?g.home:g.away, fa=five[A], fd=five[1-A];
         q.acts.forEach(a=>{ if(a.t==="make"){ add(tA,fa[a.who],"pts",a.pts+(a.and1&&a.ftm?1:0)); if(a.three)add(tA,fa[a.who],"tpm",1) } else if(a.t==="ft")add(tA,fa[a.who],"pts",a.m);
           else if(a.t==="miss"){ if(a.reb==="off")add(tA,fa[a.rb],"reb",1); else add(tD,fd[a.rb],"reb",1) } else if(a.t==="to")add(tD,fd[a.st],"stl",1) }) }) };
     (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,null));
     const P=L.pb; if(P&&P.d&&!L.done&&Array.isArray(P.d.pl)){ const el=P.frozen!=null?P.frozen:Date.now()-P.at; one(P.d,Math.min(1,el/Math.max(1,P.ms))*pbPlan(P.d).tot) }
     return lsOut(rows,(a,b)=>b.pts-a.pts||b.reb-a.reb,r=>r.pts||r.reb||r.stl?`${r.pts} pts, ${r.reb} reb${r.stl?", "+r.stl+" stl":""}${r.tpm?", "+r.tpm+" 3PM":""}`:"") }
-  return {liveStats, drawPos:()=>pbDraw.pos||null, pbSpan:spanOf, pbPlan, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  return {liveStats, drawPos:()=>pbDraw.pos||null, pbSpan:spanOf, pbPlan, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, allLabel:"Every big basket", fullLabel:"Full game", goalsLabel:"Crunch time"};
 })();

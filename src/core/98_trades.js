@@ -107,6 +107,21 @@ function tdAsk(t,b){
   const my=S.myTeam; if(tdHurt(t,b))return {hurt:true,list:[]}; if(tdRecent(t))return {recent:true,list:[]};
   const list=[]; SEA.roster[my].forEach((p,a)=>{ if(!p||tdGrp(a)!==tdGrp(b)||tdHurt(my,a))return; const d=tdDeal(t,a,b); if(d&&d.yes)list.push(d) });
   return {list:list.sort((x,y)=>y.now-x.now||y.fut-x.fut)} }
+/* review round (playtest, pro basketball: asking about a player said only "Nobody of yours at his position would get
+   him"): who of yours comes closest, and what stands in the way, in the deal's own terms (words only: the trade model
+   is untouched). A club wants more than an even swap, values now or two years ahead by where it stands, keeps under
+   the cap, and won't give you more than you give. */
+function tdAskWhy(t,b){ try{ const my=S.myTeam, M=SEA.roster[my];
+    const D=M.map((p,a)=>p&&tdGrp(a)===tdGrp(b)&&!tdHurt(my,a)?tdDeal(t,a,b):null).filter(Boolean);
+    if(!D.length)return " You have nobody healthy at his position to offer.";
+    const w=tdWin(t), want=w>0.6?"they're contending and want more help now":w<0.4?"they're building and want more for the years ahead":"they want more, now or in two years";
+    const fit=D.filter(d=>!d.over&&d.fair), unfair=D.filter(d=>!d.over&&!d.fair), cap=D.filter(d=>d.over);
+    if(fit.length){ const d=fit.sort((x,y)=>y.score-x.score)[0];
+      return ` Closest: ${tdPl(my,d.give,d.a)}, and it isn't enough: ${want}. A second player or a first-round pick can sometimes bridge it.` }
+    if(unfair.length){ const d=unfair.sort((x,y)=>(x.now+x.fut)-(y.now+y.fut))[0];
+      return ` They'd take ${tdPl(my,d.give,d.a)}, but no club gives more than it gets: that swap would leave you better off now and in two years together.` }
+    if(cap.length)return ` Every swap would put one of you over the ${LEAGUE.taxLine?"tax line":"cap"}.`;
+    return "" }catch(e){ return "" } }
 // carry a trade out: on the season's rosters (also as a reload replays it)
 // two for two around one man: yours at a (shop) or theirs at b (ask); the second pair at any other position
 function tdPackages(t,a,b){
@@ -124,6 +139,7 @@ function tdShopTwo(a){ const out=[]; tdClubs().forEach(t=>{ if(tdRecent(t))retur
 function tdAskTwo(t,b){ if(tdRecent(t)||tdHurt(t,b))return []; return tdPackages(t,null,b).sort((x,y)=>(y.now+y.fut)-(x.now+x.fut)).slice(0,3) }
 const tdGo=d=>`${esc(d.t)}|${d.a}|${d.b}`+(d.give2?`|${d.a2}|${d.b2}`:"||")+(d.pk?`|${d.pk}`:"");
 function tdApply(sea,x){
+  if(x&&x.nba&&typeof nbaTdApply==="function")return nbaTdApply(sea,x);   // pro basketball's trade machine (leagues/nba 98_fo_trades)
   const my=x.my||S.myTeam, M=sea.roster[my], T=sea.roster[x.t]; if(!M||!T)return false;
   const find=(R,i,n)=>R[i]&&R[i].n===n?i:R.findIndex(p=>p&&p.n===n);
   const pairs=[[find(M,x.a,x.gn),find(T,x.b,x.qn)]]; if(x.gn2)pairs.push([find(M,x.a2,x.gn2),find(T,x.b2,x.qn2)]);
@@ -145,11 +161,12 @@ function tdDo(d){
 function tdCarry(u){
   // once a season (round 85: at the season's end, on a reload, at the summer's commit); kept off the save (not enumerable)
   if(u._tdc===SEA.year)return; Object.defineProperty(u,"_tdc",{value:SEA.year,writable:true,configurable:true,enumerable:false});
-  const own={}; tdAllTrades().forEach(x=>{ if(x.pk){ const g=x.pk==="mine"?(x.my||S.myTeam):x.t; own[g]=g===x.t?(x.my||S.myTeam):x.t } });
+  const own={}; tdAllTrades().forEach(x=>{ if(x.pk&&!x.nba){ const g=x.pk==="mine"?(x.my||S.myTeam):x.t; own[g]=g===x.t?(x.my||S.myTeam):x.t } });
   if(Object.keys(own).length)u.pickOwn={y:SEA.year,own:own};   // round 86: whose first-round pick each club holds, for the summer's draft
   const L={}; coachMoves().forEach(([tm,P])=>{ const o=tdLog(P||{}); Object.keys(o).forEach(k=>(L[k]=L[k]||[]).push(...o[k])) });   // every coach's (round 84)
   ((SEA&&SEA.cpuTr)||[]).forEach(x=>(L[x.step]=L[x.step]||[]).push(x));   // and the computer's clubs' (round 85), after yours on deadline day
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
+    if(x.nba){ if(typeof nbaTdCarry==="function")nbaTdCarry(u,x); return }   // pro basketball's trade machine
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
       const a=M.findIndex(p=>p&&p.n===gn), b=T.findIndex(p=>p&&p.n===qn); if(a<0||b<0)return;
@@ -169,6 +186,7 @@ function tdTwoRows(L,my){ if(!L.length)return "";
   return `<div class="fnote" style="margin-top:8px">Two for two:</div>`+L.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)} and ${tdPl(my,d.give2,d.a2)}</div>
     <div class="psub">for ${esc(d.t)}${/s$/.test(d.t)?"'":"'s"} ${tdPl(d.t,d.get,d.b)} and ${tdPl(d.t,d.get2,d.b2)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${tdGo(d)}">Trade</button></div>`).join("") }
 function tradesView(){
+  if(LEAGUE.trade.on&&LEAGUE.trade.on())return LEAGUE.trade.view();   // a league's own trade machine (pro basketball's front office)
   const my=S.myTeam, st=tdState(), R=SEA.roster[my];
   let h=`<div class="note">${esc(st.why)} Up to ${TD_MAX} trades a season: one for one at the same position, or two for two (a pair at each of two positions). A club weighs now against two years ahead by where it stands, under the cap, and you always give a little more than you get.</div>`;
   const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
@@ -192,10 +210,11 @@ function tradesView(){
       h+=`<div style="margin:8px 0">${t} on ${tdPl(t,T[b],b)} <button class="promo" data-tdask="-1">Back</button></div>`+
         (A.hurt?`<div class="fnote">He's injured: not now.</div>`:A.recent?`<div class="fnote">They've traded with you in the last ${TD_GAP} ${LEAGUE.daily?"days":"weeks"}: not yet.</div>`:
          A.list.length?`<div class="fnote">They'd take any of these for him:</div>`+A.list.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)}</div><div class="psub">Your team: ${tdLine(d)}</div></div><button class="promo" data-tdgo="${esc(t)}|${d.a}|${d.b}">Trade</button></div>`).join(""):
-         `<div class="fnote">Nobody of yours at his position would get him${tdWin(t)>0.7?": they're contending and he helps them win now":""}.</div>`)+(A.hurt||A.recent?"":tdTwoRows(tdAskTwo(t,b),my)+tdPickRows(tdAskPick(t,b),my,"With your first-round pick")) }
+         `<div class="fnote">Nobody of yours at his position would get him${tdWin(t)>0.7?": they're contending and he helps them win now":""}.${tdAskWhy(t,b)}</div>`)+(A.hurt||A.recent?"":tdTwoRows(tdAskTwo(t,b),my)+tdPickRows(tdAskPick(t,b),my,"With your first-round pick")) }
     else h+=T.map((q,b)=>q?`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(t,q,b)}${tdHurt(t,b)?` <span class="outtag">OUT</span>`:""}</div></div>${tdHurt(t,b)?"":`<button class="promo" data-tdask="${b}">Ask</button>`}</div>`:"").join("") }
   return h+`</div>` }
 function bindTrades(){
+  if(LEAGUE.trade&&LEAGUE.trade.on&&LEAGUE.trade.on()){ LEAGUE.trade.bind(); return }
   document.querySelectorAll("[data-tdshop]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdshop; TD_UI={shop:i<0?null:i,club:TD_UI.club}; render() });
   document.querySelectorAll("[data-tdask]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.tdask; TD_UI={club:TD_UI.club,ask:i<0?null:i}; render() });
   document.querySelectorAll("[data-tdno]").forEach(b=>b.onclick=()=>{ TD_UI={no:b.dataset.tdno}; render() });
@@ -229,6 +248,7 @@ function tdIncoming(){
 function tdMark(d){ if(!S.tdShown||S.tdShown.y!==SEA.year)S.tdShown={y:SEA.year,s:{},k:[]};
   const key=d.t+"|"+d.give.n; if(S.tdShown.s[SEA.step]===undefined){ S.tdShown.s[SEA.step]=key; if(S.tdShown.k.indexOf(key)<0)S.tdShown.k.push(key) } }
 function tdOfferCard(){
+  if(LEAGUE.trade&&LEAGUE.trade.on&&LEAGUE.trade.on())return LEAGUE.trade.offerCard?LEAGUE.trade.offerCard():"";
   if(!LEAGUE.trade||!SEA.roster)return ""; const k=SEA.year+"|"+SEA.step; if(TD_UI.no===k)return "";
   const sh=S.tdShown&&S.tdShown.y===SEA.year?S.tdShown:null; let d=null;
   if(sh&&sh.s[SEA.step]!==undefined){ const [t,gn]=String(sh.s[SEA.step]).split("|"), R=SEA.roster[S.myTeam], a=R.findIndex(p=>p&&p.n===gn);

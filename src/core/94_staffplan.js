@@ -60,6 +60,14 @@ function staffPlanReset(){
 }
 /* college: the staff's plan is the even split and a balanced class */
 function collegePlanHTML(P){
+  if(typeof pxOn==="function"&&pxOn()){   // engine 26: the roster economy (core 92_market)
+    const RF=LEAGUE.offseason.recruitFocus, rf=RF[P.recruit]?P.recruit:"balanced", bd=(P.rboard||[]).length, you=` <span class="planyou">your change</span>`;
+    const t=pxTeam(), st=pxStaffKeep(pxU(),t,SEA.rec), changed=rf!=="balanced"||bd||(P.offers||[]).length||Object.keys(P.keep||{}).some(k=>k in st&&!!P.keep[k]!==!!st[k]);
+    return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
+    <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
+    ${pxPlanRow(P,you)}
+    <div class="planrow"><b>Recruiting</b> ${esc(RF[rf]?RF[rf].l:"Balanced")}${rf!=="balanced"?you:RF[rf]?": "+esc(RF[rf].d):""}${bd?` &middot; your board of ${bd}`:""}</div></div>`;
+  }
   const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets, B=P.budget||{};
   // the staff's split is a quarter each, rounded (10 points: 3-2-2-3), so compare with that exactly, not
   // with "all equal" (it said "your change" before anything was touched: Instinct, Grokbot)
@@ -240,7 +248,11 @@ function callImpact(args,seed,answers,meHome,runs){
     // way" because the pick was level with the assistant's while a third option was the one that mattered; Muse:
     // "grade the dramatic calls"). Not for football, which grades every option in its own list.
     let best=null; if(IMPACT_ALL&&A.dp.k!=="read"&&A.dp.k!=="prep"&&typeof verdictDefault==="undefined"){
-      A.dp.opts.forEach(o=>{ const v=o[0]; if(v===pick||v===def||/assistant/i.test(o[1]))return; let r=0; for(let m=0;m<runs;m++)r+=score(play(j,v,m));
+      // round 112: baseball's engine-26 calls name two or three men beside keeping him, so two or more options besides
+      // yours and his; they share the replays of one (each on the first of the same dice), or a pinch-hit call took
+      // three times the replays of a call in any other game, past four seconds at the final out
+      const alts=A.dp.opts.filter(o=>!(o[0]===pick||o[0]===def||/assistant/i.test(o[1]))), ar=A.dp.v26&&alts.length>1?Math.ceil(runs/alts.length):runs;
+      alts.forEach(o=>{ const v=o[0]; let r=0; for(let m=0;m<ar;m++)r+=score(play(j,v,m)); r*=runs/ar;
         if(!best||r>best.r)best={k:v,r:r} }); }
     const bo=best&&best.r>Math.max(rp,rd)?{alt:lab(best.k),altv:Math.round((best.r-rp)/runs*1000)/1000,wa:Math.round(best.r/runs*100)}:{};
     out.push(Object.assign({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:{mine:cf.mine,theirs:cf.theirs}, dd:cf.dd||undefined, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)},bo));
@@ -416,6 +428,8 @@ function setLivePlan(e,side,plan){
   if(!e||!plan)return;
   // round 108: a change on the bench, "sub:<unit>" (soccer: 0 the back, 1 midfield, 2 up front); it leaves the plan alone
   if(typeof plan==="string"&&plan.indexOf("sub:")===0){ if(typeof e.subNow==="function")e.subNow(side,+plan.slice(4)); return }
+  // round 111: a sport's own live button, "act:<id>" (basketball: a timeout); it leaves the plan alone
+  if(typeof plan==="string"&&plan.indexOf("act:")===0){ if(typeof e.act==="function")e.act(side,plan.slice(4)); return }
   if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
   // engine 22: the latest word wins. A change after the late call (soccer, hockey) was kept in the mode the late
   // answer had already overruled, so from 65' on it did nothing (measured: Park the bus when level, 0.37 against 0.39)

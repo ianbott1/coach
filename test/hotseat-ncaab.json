@@ -1,5 +1,5 @@
 {
- "fp": "4d085cb93511b9d4",
+ "fp": "b4b323afc23491d6",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -360,6 +360,31 @@
    "fp": "4d085cb93511b9d4",
    "from": "4d085cb93511b9d4",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "c02d5ae543b0c6c2",
+   "from": "4d085cb93511b9d4",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
+  },
+  {
+   "fp": "0524ef359d58ce8e",
+   "from": "c02d5ae543b0c6c2",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "a99742c5d24942c1",
+   "from": "0524ef359d58ce8e",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "36e3598098423c4e",
+   "from": "a99742c5d24942c1",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "b4b323afc23491d6",
+   "from": "36e3598098423c4e",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "out": [
@@ -369,20 +394,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "35-2",
-      "result": "Lost in the Elite Eight",
-      "grade": "A+"
+      "rec": "31-6",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "ecab9f1eb7d841ac"
+     "book": "837f216917139aad"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "27-8",
-      "result": "Lost in the Second Round",
-      "grade": "B"
+      "rec": "34-4",
+      "result": "Lost in the Final Four",
+      "grade": "A"
      },
-     "book": "b5c8271c142c4fcc"
+     "book": "19e5b3b271bc4ffb"
     }
    ]
   },
@@ -392,20 +417,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-3",
-      "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "rec": "24-9",
+      "result": "Lost in the First Round",
+      "grade": "B-"
      },
-     "book": "9049ac00db289ad6"
+     "book": "eb0cc5a588c9b92a"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "25-6",
+      "rec": "21-11",
       "result": "Lost in the First Round",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "06ab0a02e60d15e8"
+     "book": "8baef4c73a00a55b"
     }
    ]
   },
@@ -417,18 +442,18 @@
      "last": {
       "rec": "18-13",
       "result": "Missed the NCAA tournament",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "8520f59f5a7d9031"
+     "book": "85b5be78a33d009c"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "26-8",
-      "result": "Lost in the First Round",
-      "grade": "B-"
+      "rec": "27-8",
+      "result": "Lost in the Second Round",
+      "grade": "B+"
      },
-     "book": "aa403501c83a6d10"
+     "book": "999060b90be77016"
     }
    ]
   }

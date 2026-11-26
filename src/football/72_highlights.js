@@ -466,6 +466,6 @@ const HL_SPORT=(function(){
     const cur=typeof HL!=="undefined"&&HL.cur; if(cur&&cur.kind==="drive"&&!L.done&&cur._shownI!=null&&(typeof liveShown!=="function"||liveShown().indexOf(cur.d)<0))one(cur,cur._shownI);
     return lsOut(rows,(a,b)=>(b.py+b.ry+b.cy)-(a.py+a.ry+a.cy),r=>[r.att?`${r.cmp}/${r.att}, ${r.py} yds passing`:"",r.car?`${r.car} car, ${r.ry} yds`:"",r.rec?`${r.rec} rec, ${r.cy} yds`:""].filter(Boolean).join("; ")) }
   return {liveStats, drivePos:()=>driveFrame.pos||null, replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
-           clips, pitch, idle, frame, headClock, footText, headLive, goalsLabel:"Late touchdowns",
+           clips, pitch, idle, frame, headClock, footText, headLive, allLabel:"Every big play", fullLabel:"Full game", goalsLabel:"Late touchdowns",
            namesOf:(L,d)=>d&&Array.isArray(d._pb)?d._pb:null, playText, leadUp, playsFor:(L,d)=>{ const out=clips0(L,d,"full"); const c=mkDrive(L,d,out); return c?{plays:c.plays,start:c.start,end:c.end,left:c.left,forced:c.forced,conv:c.conv,rec:c.rec,next:out.map(o=>({kind:o.kind,los:o.los,togo:o.togo,len:o.len}))}:null }};
 })();

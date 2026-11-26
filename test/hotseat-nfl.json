@@ -1,5 +1,5 @@
 {
- "fp": "028fe72b3eea2f64",
+ "fp": "12f25479b979308c",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -430,6 +430,26 @@
    "fp": "028fe72b3eea2f64",
    "from": "028fe72b3eea2f64",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "023f5d25eed0f0a3",
+   "from": "028fe72b3eea2f64",
+   "note": "Pro football front office (rv/nfl-fo): draft board, 2026 cap and real contracts, kicker and punter. No crashes; both coaches' seasons differ"
+  },
+  {
+   "fp": "519ff910b4e06870",
+   "from": "023f5d25eed0f0a3",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "8dec97f4cb158ecd",
+   "from": "519ff910b4e06870",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; football: completions, QB runs, two backs, picks spread, MVP by slot"
+  },
+  {
+   "fp": "12f25479b979308c",
+   "from": "8dec97f4cb158ecd",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "out": [
@@ -439,20 +459,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "6dcb459521b5e6da"
+     "book": "759f9c10f6c26d44"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "5-12",
+      "rec": "4-13",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "978455b071bbff5c"
+     "book": "c32290e761cc7df0"
     }
    ]
   },
@@ -462,20 +482,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the wild card round",
-      "grade": "B-"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "2c6c8983a2460872"
+     "book": "6c26e050b54fe743"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "B"
      },
-     "book": "610ff42ec4b92d1e"
+     "book": "2197aa19df00111f"
     }
    ]
   },
@@ -485,20 +505,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "6-11",
-      "result": "Losing season",
-      "grade": "D"
+      "rec": "9-8",
+      "result": "Lost in the wild card round",
+      "grade": "C+"
      },
-     "book": "6abd08de089791d1"
+     "book": "13a98cb724cf6a49"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "12-5",
-      "result": "Lost the conference championship",
+      "result": "Lost in the divisional round",
       "grade": "A+"
      },
-     "book": "05e9cbbb1d05db03"
+     "book": "5863a9fb24cd9dcd"
     }
    ]
   }

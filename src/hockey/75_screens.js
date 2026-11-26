@@ -41,6 +41,7 @@ const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: ever
    the star factor 0.35 (0.55), the depth share 0.3 shared evenly between a starter and the man behind him */
 const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||1), ps:+(HK13_ENV("HK17C_PS")||0.35), un:+(HK13_ENV("HK17C_UN")||0.3), lk:+(HK13_ENV("HK17C_LK")||0.06), lmax:+(HK13_ENV("HK17C_LMAX")||1.2), dw:+(HK13_ENV("HK17C_DW")||1)};
 const hkV17=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=17;
+const HK26_S=+(HK13_ENV("HK26_S")||0.35), HK26_R=+(HK13_ENV("HK26_R")||0.7), HK26_PS=+(HK13_ENV("HK26_PS")||0.2), HK26_A2=+(HK13_ENV("HK26_A2")||0.35);
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
@@ -49,7 +50,7 @@ function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof 
 function hkDressed(tm,W,lk){
   const R=SEA.roster&&SEA.roster[tm]; if(!R)return [];
   const hurt=new Set(SEA.talent?SEA.talent.active(tm).map(x=>x.idx):[]), dep=typeof deployOf==="function"?deployOf(SEA,tm):{}, out=[];
-  const PS=hkV17()?HK17C.ps:hkV13()?HK13.pstar:HK_PSTAR, DW=hkV13()?HK13.depthw:HK_DEPTHW, star=p=>Math.max(0.3,1+(p.r-60)/20*PS);
+  const PS=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26?HK26_PS:hkV17()?HK17C.ps:hkV13()?HK13.pstar:HK_PSTAR, DW=hkV13()?HK13.depthw:HK_DEPTHW, star=p=>Math.max(0.3,1+(p.r-60)/20*PS);
   ["C","LW","RW","D","D2"].forEach(unit=>{ const i=HK_UNIT[unit], g=i<3?"f":"d", k=dep[g]||"bal", b=typeof DEPLOY!=="undefined"&&DEPLOY[g].opts[k]?DEPLOY[g].opts[k].b:POS[i].bench;
     const wu=W[unit]*(hkV17()&&i>=3&&W===HK_GW?HK17C.dw:1);   // round 94: defencemen's share of goals (dw)
     const st=hurt.has(i)?null:R[i], bk=hurt.has(BK(i))?null:R[BK(i)], top=wu*(1-b)/0.7, dp=wu*DW*b/0.3;
@@ -61,7 +62,7 @@ function hkWPick(L,x,not){ const T=L.reduce((t,o)=>t+(o.n===not?0:o.w),0); if(!(
   for(const o of L){ if(o.n===not)continue; v-=o.w; if(v<0)return o.n } const r=L.filter(o=>o.n!==not); return r.length?r[r.length-1].n:null }
 /* the men the roster doesn't carry (the bottom six, the third pair) score about one goal in six: the log says which line */
 const HK_UNNAMED=0.17, HK_DEPTH_WHO=["The fourth line","The third line","A depth forward","The third pair"];
-function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
+function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, a2:e.an2||null, depth:!!e.dp};
   if(typeof ENGINE_V!=="undefined"&&ENGINE_V<4){ const u=e.u||0, n=hkSkater(tm,u), a=hkSkater(tm,(u*7+3)%100);   // a season begun before round 74 names as it did
     return {n:n, a:(e.en||e.extra||!a||a===n||a==="a forward")?null:a} }
   const u=e.u||0, D=hkDressed(tm,HK_GW,"sht"), T=D.reduce((t,o)=>t+o.w,0), x=(u+0.5)/100;
@@ -72,15 +73,27 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, depth:!!e.dp};
   // where a club dresses eighteen, so the bottom six's goals land on them (mean 60 against round 90's 55 and its 45-57 band)
   // flat, a man behind the starters three times a starter (r90/reg.js: star-weighted gave one backup 91; backups alone let
   // 50-rated men lead; 3:1 leaders 51-68, mean 60, points 110, a backup or two in the top ten)
-  const DB=hkV16()?D.map(o=>({n:o.n,w:hkV17()?(o.i>=6?HK17C.d:HK17C.s):(o.i>=6?3:1)})):[];
+  // engine 26 (stats): the bottom six's goals go mostly to the men behind the starters (HK26_S a starter's weight to
+  // their one; a spare playing for a hurt starter counts as the starter), the better of them more (HK26_R) and forwards
+  // more than defencemen: shared evenly, a top-line forward took a fifth of the depth goals on top of his own, and a
+  // 49-rated spare could lead the league
+  const v26=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26, nP=POS.length;
+  const w26=o=>{ const second=o.i>=nP&&D.some(q=>q!==o&&q.i%nP===o.i%nP), u=POS[o.i%nP].p;
+    return (second?1:HK26_S)*Math.max(0.3,1+(o.p.r-60)/20*HK26_R)*(HK_GW[u]||HK_GW.C)/HK_GW.C };
+  const DB=hkV16()?D.map(o=>({n:o.n,w:v26?w26(o):hkV17()?(o.i>=6?HK17C.d:HK17C.s):(o.i>=6?3:1)})):[];
   if(x>=1-UN&&DB.length)n=hkWPick(DB,(x-(1-UN))/UN)||DB[0].n;
   else if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
-  const a=(e.en||e.extra)?null:hkWPick(hkDressed(tm,HK_AW,"pas"),(((u*7+3)%100)+0.5)/100,n);
-  return {n:n, a:a||null, depth:depth} }
+  const AW=(e.en||e.extra)?null:hkDressed(tm,HK_AW,"pas"), a=AW?hkWPick(AW,(((u*7+3)%100)+0.5)/100,n):null;
+  // engine 26 (stats): a second assist, from the scorer's own line, on HK26_A2 of the goals with a first one (one assist a
+  // goal left the points leader at 108-122 where the NHL's were 121-153, and two or three 100-point men where it had 5-9)
+  let a2=null; if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=26&&a&&!depth&&(((u*13+5)%100)+0.5)/100<HK26_A2){
+    const me=D.find(o=>o.n===n), top=me?me.i<6:true, L2=AW.filter(o=>o.n!==n&&o.n!==a&&(o.i<6)===top);
+    a2=hkWPick(L2,(((u*31+11)%100)+0.5)/100,n) }
+  return {n:n, a:a||null, a2:a2||null, depth:depth} }
 /* a played game's goals and assists by name, for one side (core: Season._resolve credits them) */
 function hkLogCredit(tm,side,drives){
   const C={}, add=(nm,k)=>{ if(!nm||nm==="a forward")return; (C[nm]=C[nm]||{goals:0,ast:0})[k]++ };
-  (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const N=hkGoalNames(tm,e); add(N.n,"goals"); add(N.a,"ast") }));
+  (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const N=hkGoalNames(tm,e); add(N.n,"goals"); add(N.a,"ast"); add(N.a2,"ast") }));
   return C;
 }
 function hkGoalie(team,backup){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "the goalie";
@@ -123,11 +136,14 @@ function hkEventText(g,e,swapped,used){
   if(e.k==="pen"){ const n=hkSkater(tm,u); return {team:tm,tag:"PENALTY",text:`${n} two minutes for ${pickOf(HK_PENS,u>>2)}`} }
   if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:pickFresh(HK_SAVE,u,"save",used).replace("{g}",surname(gk)).replace("{s}",surname(hkSkater(opp,u)))} }
   if(e.k==="pull")return {team:tm,tag:"",text:`pull the goalie for an extra attacker`};
+  if(e.k==="gback")return {team:tm,tag:"",text:`put the goalie back in`};
+  if(e.k==="to")return {team:tm,tag:"TIMEOUT",text:`call their timeout`};
+  if(e.k==="ln")return {team:tm,tag:"",text:{roll:"roll four lines",set:"go back to their lines as set",top:"lean on their top six",short:"shorten the bench"}[e.ln]||""};   // engine 26: level again, or out of reach
   if(e.k==="cue")return {team:tm,tag:"",text:pickFresh(HK_CUE[e.cue],u,"cue"+e.cue,used).replace("{t}",tm).replace(/\{o\}/g,opp),cue:true};
   if(e.k==="swap"){ return {team:tm,tag:"",text:`${hkGoalie(tm,true)} comes in for ${surname(hkGoalie(tm,false))}`} }
   return {team:tm,tag:"",text:""};
 }
-const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
+const shown=e=>e.k==="pull"?!e.cont:e.k!=="cue"||((e.u||0)%3===0);   // engine 26: a goalie still out as a stretch starts isn't pulled again
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
   const b0=(drives[0]&&drives[0].bk)||{}, rows=[], sw={home:!!b0.home,away:!!b0.away}, used={}; let last=null; const said=new Set();
@@ -251,7 +267,8 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">${G?esc(G.n):"Your goalie"} tonight${N.bk?" (the backup, in since the change)":""}</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${N.ga} on ${N.sa} shots (${sv})</span></div>
       <div class="evr"><span class="evk">Expected from those shots</span><span class="evv">${N.xga.toFixed(1)}</span></div>
-      <div class="evn">Pulled, he isn't stopping anything. ${N.sa&&N.ga<N.xga-1?"He's been better than his shots tonight.":N.sa&&N.ga>N.xga+1?"He's let in more than his shots were worth.":"About what his shots were worth."} Early means more time six-on-five, and more time with the net empty.</div></div>` }
+      ${hkGdV()&&live&&live.eng?pullEdgeRows(g,my):""}
+      <div class="evn">Pulled, he isn't stopping anything. ${N.sa&&N.ga<N.xga-1?"He's been better than his shots tonight.":N.sa&&N.ga>N.xga+1?"He's let in more than his shots were worth.":"About what his shots were worth."} Early means more time six-on-five, and more time with the net empty.${hkGdV()?` Six on five, a side scores about ${(HK_GD.f6*60).toFixed(1)} goals an hour and gives up ${(HK_GD.ag*60).toFixed(1)} into the empty net: the better side tonight gains more from the time, the weaker one gives up more.`:""}</div></div>` }
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>
@@ -262,6 +279,12 @@ function evidenceHTML(g,my,d,dp){
   return "";
 }
 
+/* engine 26: the pull card's evidence on who's better tonight: the chance before the puck dropped and the shots so far */
+function pullEdgeRows(g,my){ const side=g.home===my?"home":"away", e=live.eng.gap!==undefined?(side==="home"?live.eng.gap:-live.eng.gap):0;
+  const sh=(live.drives||[]).reduce((t,d)=>{ if(d.shots){ t[0]+=d.shots[side==="home"?0:1]; t[1]+=d.shots[side==="home"?1:0] } return t },[0,0]);
+  const w=e>60?"Us, clearly":e>20?"Us, a little":e<-60?"Them, clearly":e<-20?"Them, a little":"Even";
+  return `<div class="evr ${Math.abs(e)>60?'hi':''}"><span class="evk">The better side tonight, on paper</span><span class="evv">${w}</span></div>
+      <div class="evr"><span class="evk">Shots on goal so far</span><span class="evv">${sh[0]}-${sh[1]}</span></div>` }
 /* ---- the run of play ---- */
 function playsHTML(drives,my,g,limit){
   let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
@@ -306,9 +329,9 @@ function liveCallView(){
     ${evidenceHTML(g,my,last,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
+      `<div class="say"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${desc(o[0])?`<small>${esc(desc(o[0]))}</small>`:""}</button>`).join("")}</div>
     <div class="grouphead">Run of play</div>

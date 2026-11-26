@@ -83,14 +83,14 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff,board){
       const base=[6.2,4.0,2.2][pl.c];
       const feat=(featured!==undefined&&featured!==null&&featured===i)?3.8:0;
       const side=(i%POS.length)<5 ? (staff?staff.oc:0) : (staff?staff.dc:0);
-      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0),3.0);
+      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0)+(typeof moraleDev==="function"?moraleDev(pl):0),3.0);   // round 111: a happy, professional player grows a touch faster
       pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
       pl.peak=Math.max(pl.peak||0,pl.r);
       pl.c++;
       // stars leave early for the draft
       let keepOdds=bud?Math.max(0,1-bud.retention):1;
       if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
-      if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
+      if(!pxOn() && pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){   // engine 26: decided at the window (pxPro)
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
         leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured,
                       starter:i<POS.length, car:pl.car||null, from:pl.from||null,
@@ -198,6 +198,9 @@ function applyBudget(u,t,alloc){
   };
 }
 
+/* engine 26: the programs' spread held to the opening one (core 20_engine), before the January window; the screen's
+   preview of the window does the same to a copy (LEAGUE.market.before, core 92_market pxU) */
+function cfbPreWindow(u){ if(typeof eng26==="function"&&eng26())programRecentre26(u) }
 function offseasonRosters(u,rng,healthy,elo,rec,choices){
   /* One human or several: each coached program gets its own choices. */
   const U_CH = choices.users || (choices.userTeam?{[choices.userTeam]:choices}:{});
@@ -206,11 +209,15 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   choices=choices||{};
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
+  cfbPreWindow(u);
 
   if(ut&&choices.coach){
     const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0};
   }
+  /* engine 26: the January window, before the spring's development (core 92_market). It replaces the budget's
+     four buckets: the money is spent on players now, every program's, by the same rules */
+  const market=pxOn()?pxMarket(u,rec,U_CH,false):null;
 
   NAMES.forEach(t=>{
     const before=u.program[t];
@@ -224,7 +231,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const focus=(ch&&ch.recruit)?ch.recruit:"balanced";
     let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev:0;
     let bud=null;
-    if(ch&&ch.budget){
+    if(ch&&ch.budget&&!market){
       bud=applyBudget(u,t,ch.budget);
       devMod+=bud.devBonus;
       u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
@@ -235,6 +242,11 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
                            {oc:ocq*0.030, dc:dcq*0.030},
                            ch&&ch.board&&ch.board.length?ch.board.map(x=>Object.assign({},x)):null);
     leavers[t]=churn[t].leaving;
+    // underclassmen who declared at the window, and seniors a transfer passed: the draft takes them with the rest
+    if(market&&market.pro[t])market.pro[t].forEach(x=>leavers[t].push({n:x.pl.n,p:x.pl.p,r:x.r,early:true,featured:x.featured,
+      starter:x.k<POS.length,car:x.pl.car||null,from:x.pl.from||null,peak:Math.max(x.pl.peak||0,x.r),idx:x.k%POS.length}));
+    if(market&&market.grad[t])market.grad[t].forEach(pl=>leavers[t].push({n:pl.n,p:pl.p,r:pl.r,starter:false,
+      car:pl.car||null,from:pl.from||null,peak:pl.peak||pl.r,idx:pl.i%POS.length}));
     u.trueBase[t]=rosterElo(u.roster[t])
                  +(c.t<=1?ROOKIE_DIP:0)
                  +rng.gauss(0,ROSTER_NOISE);
@@ -259,7 +271,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const q=eloToRating(u.program[t])
            +c.q*0.055 +(c.rec||0)*0.55
            +(focus.r||0)*0.45 +(focus.pot||0)*0.12
-           +((ch2&&ch2.budget)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
+           +((ch2&&ch2.budget&&!market)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
            +((ch2&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
            +rng.gauss(0,2.6);
     const signed=6+Math.round(rng.range(0,3));
@@ -286,9 +298,11 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     u.nextRealign=u.year+4+rng.int(4);
   }
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
+  // for tests: the whole window, kept off the save (it holds every program's window: a few hundred KB)
+  if(market&&typeof S!=="undefined"&&S)Object.defineProperty(S,"lastMarket",{value:market,writable:true,configurable:true,enumerable:false});
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
-          draft:draftResult};
+          draft:draftResult, market:market};
 }
 
 LEAGUE.offseason={
@@ -298,20 +312,47 @@ LEAGUE.offseason={
   budget:{buckets:BUCKETS, pool:budgetPool},
   /* the league's offseason choices, as the offseason screen starts them */
   open(u,t,wins){
+    if(pxOn())return {pool:0, picks:{recruit:"balanced", keep:{}, offers:[]}};   // engine 26: the market's choices
     const pool=budgetPool(u,t,wins);
     return {pool:pool, picks:{recruit:"balanced",
       budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
               facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
   },
   /* ...and as run() reads them */
-  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget} }
+  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget, keep:P.keep||{}, offers:P.offers||[]} }
+};
+
+/* the roster economy (core 92_market, engine 26): football's part of the House settlement's cap, and the window */
+LEAGUE.market={
+  sport:"football", share:0.75,       // the share of the $21.3M cap schools give football (the common 75/15/5/5 split)
+  // a power-conference roster: $11M at the bottom of the Power Four, rising with prestige to $38M at the top (the
+  // cap's football share, $16.0M, paid in full by most, and a collective on top for a contender), so most power rosters
+  // land at $14-16M and contenders at $30M and more (CBS Sports, 2026); a Group of Six roster $1.5-6M, a few million
+  p4Base:11, p4Top:27, p4lo:1550, p4span:450, g6Base:1.5, g6Top:4.5, g6lo:1250, g6span:400,
+  // what the open market pays a year: a starter at a contender about $1M, the best quarterbacks $3-5M (ESPN, Jan 2026),
+  // the lines $1M and more; a Group of Six starter tens of thousands
+  v0:1.2, r0:82, k:9.5, floor:0.02,
+  pos:{QB:2.2,OT:1.25,EDGE:1.25,DT:1.1,WR:1.0,CB:1.0,WR2:0.8,RB:0.75,LB:0.75,S:0.7},
+  rosterLimit:105, window:"Jan 4-13", maxIn:8, posPush:{QB:0.3}, draft:"NFL draft",
+  before:u=>cfbPreWindow(u),          // what the offseason does to the league before the window
+  // underclassmen declare in January, beside the window: the early-entry rule developRoster used, on the rating he'd
+  // reach this spring
+  pro(pl){ const c=pl.c||0, rE=Math.min(pl.pot||pl.r,pl.r+[6.2,4.0,2.2][c]); return c+1>=2&&rE>=76?{p:(rE-74)/34,r:Math.round(rE)}:null }
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the
    result line from seasonResult. */
 LEAGUE.goals={
   /* what the job demands, by program strength */
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=10.5)return {w:w,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
+      if(xw>=8.5)return {w:w,l:`${w} wins and a New Year's bowl. Contend in the conference.`,t:"CONTEND"};
+      if(xw>=7.5)return {w:w,l:`${w} wins and a decent bowl. Beat someone you shouldn't.`,t:"PUSH FORWARD"};
+      if(xw>=5.5)return {w:w,l:`Get to a bowl game. ${w} wins keeps everyone happy.`,t:"BOWL ELIGIBLE"};
+      return {w:w,l:`Show progress. ${w} wins would be real movement here.`,t:"BUILD SOMETHING"} }
     if(p>=1860)return {w:11,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
     if(p>=1700)return {w:9,l:"Nine wins and a New Year's bowl. Contend in the conference.",t:"CONTEND"};
     if(p>=1540)return {w:8,l:"Eight wins and a decent bowl. Beat someone you shouldn't.",t:"PUSH FORWARD"};
@@ -328,6 +369,7 @@ LEAGUE.goals={
     else if(/quarterfinal/i.test(result))s+=1.8;
     else if(/first round|Playoff/i.test(result))s+=1.4;
     else if(/^Won the/.test(result))s+=0.8;
+    else if(/^Headed to the/.test(result))s+=0.5;   // review round: a bowl berth, still to play
     else if(/^Lost the/.test(result))s+=0.2;
     else if(/No bowl|Losing season/.test(result))s-=(exp.w>=6?1.0:0.2);
     const g=s>=4?"A+":s>=2.6?"A":s>=1.6?"A-":s>=0.9?"B+":s>=0.2?"B":s>=-0.6?"B-":
@@ -343,6 +385,8 @@ LEAGUE.goals={
 
 /* ---- the history book: what only college football records ---- */
 LEAGUE.historyExtras=function(sea,off,my){
+  const x=historyExtras0(sea,off,my); if(off.market)x.market=pxHistory(off.market,my); return x };   // engine 26's window, when it ran
+function historyExtras0(sea,off,my){
   const bowlOf={}; sea.bowls.forEach(g=>{
     bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
   return {id:"cfb", bowls:bowlOf,

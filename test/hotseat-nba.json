@@ -1,5 +1,5 @@
 {
- "fp": "d9c452b4879407ca",
+ "fp": "8c17f3940dfb150d",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -350,6 +350,31 @@
    "fp": "d9c452b4879407ca",
    "from": "d9c452b4879407ca",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "42e172741a178e58",
+   "from": "d9c452b4879407ca",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
+  },
+  {
+   "fp": "6ece100e30e8c7cc",
+   "from": "42e172741a178e58",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "ca10c375e973ad22",
+   "from": "6ece100e30e8c7cc",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; basketball: full lines, lean 1.4x, usage cap"
+  },
+  {
+   "fp": "247584ca9044eeba",
+   "from": "ca10c375e973ad22",
+   "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
+  },
+  {
+   "fp": "8c17f3940dfb150d",
+   "from": "247584ca9044eeba",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "out": [
@@ -359,20 +384,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-48",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "57-25",
+      "result": "Lost in the conference semifinals",
+      "grade": "B+"
      },
-     "book": "57d8be836875e857"
+     "book": "e56fdad271bf8b47"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
+      "rec": "16-66",
+      "result": "Losing season",
       "grade": "C"
      },
-     "book": "4e5bf18ae892a5ce"
+     "book": "f592afbf244863d2"
     }
    ]
   },
@@ -382,20 +407,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-53",
+      "rec": "33-49",
       "result": "Losing season",
       "grade": "F"
      },
-     "book": "c4be8b5dd12f81bf"
+     "book": "c6fac8a169c097af"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "36-46",
-      "result": "Lost in the first round",
-      "grade": "C-"
+      "rec": "27-55",
+      "result": "Losing season",
+      "grade": "B-"
      },
-     "book": "5a69c15acc87110d"
+     "book": "d3f4682134a256eb"
     }
    ]
   },
@@ -405,20 +430,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
-      "grade": "C"
+      "rec": "35-47",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "05225029811faefa"
+     "book": "354441612ab87f09"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "45-37",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "40-42",
+      "result": "Lost in the first round",
+      "grade": "B+"
      },
-     "book": "43e7f8eab4c175a3"
+     "book": "b34ff4ba9cbaf3ab"
     }
    ]
   }

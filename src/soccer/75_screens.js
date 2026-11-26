@@ -5,8 +5,14 @@
 
 /* ---- names ---- */
 const SC_UNIT={GK:0,CB:1,FB:2,CM:3,W:4,ST:5};
-function scPlayer(team,unit,u){
+/* engine 26 (stats, follow-up): who was on the pitch in each unit at a minute, from the team sheet the game kept: the
+   first stretch's xi0 (1 where the man behind started) and each stretch's sb (the units changed as it began, at its
+   first minute). null for a game played without a sheet (before engine 26), which names as it did. */
+function scOnAt(drives,side,m){ if(!Array.isArray(drives))return null; const d0=drives.find(d=>d&&d.xi0); if(!d0||!d0.xi0[side])return null;
+  const on=d0.xi0[side].slice(); drives.forEach(d=>{ const L=d&&d.sb&&d.sb[side]; if(L&&d.seg*5<(m==null?1e9:m))L.forEach(u=>{ on[u]=on[u]?0:1 }) }); return on }
+function scPlayer(team,unit,u,on){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
+  if(Array.isArray(on)){ const i=SC_UNIT[unit], p=on[i]?R[BK(i)]:R[i], q=on[i]?R[i]:R[BK(i)]; return p?p.n:q?q.n:null }   // the man the sheet had on
   const i=SC_UNIT[unit], hurt=new Set(typeof ENGINE_V!=="undefined"&&ENGINE_V<4?[]:SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);   // (a season begun before round 74: as it was)
   const p=hurt.has(i)?null:R[i], b=hurt.has(BK(i))?null:R[BK(i)];   // round 74: an injured man isn't on the pitch (as in hockey)
   // the bench gets a game now and then (rotation, a knock)
@@ -18,21 +24,25 @@ function scPlayer(team,unit,u){
 const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 /* round 89 (engine 12): who scores leans with Finishing, who assists with Passing (1.4x a spread, as the other boxes) */
 function scLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!p||typeof attrOf!=="function")return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
-  return Math.exp(0.35*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)) }
-function scScorer(team,u){
+  const x=Math.exp(0.35*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD));
+  return ENGINE_V>=26?Math.max(1/1.4,Math.min(1.4,x)):x }   // engine 26 (stats): held to 1.4x either way, as basketball's
+/* engine 26 (stats): who scores, by unit: the striker's share 0.38 -> SC_GOAL26.ST (the Golden Boot averaged 34 and reached 58,
+   where it has been 27-36 in the last three Premier League seasons), the rest to wingers, midfield and set pieces */
+const SC_GOAL26={ST:+((typeof process!=="undefined"&&process.env&&process.env.SC26_ST)||29),W:28,CM:23,CB:11,FB:9};
+function scScorer(team,u,on){
   // who scores: strikers most, then wingers, midfield, defenders off set pieces
   let x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
-  if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=12&&SEA&&SEA.roster&&SEA.roster[team]){ const R=SEA.roster[team], B={ST:38,W:26,CM:20,CB:8,FB:8};
-    const w=Object.keys(B).map(k=>[k,B[k]*scLean(R[SC_UNIT[k]],"fin")]), T=w.reduce((t,o)=>t+o[1],0); let v=(x+0.5)/100*T;
+  if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=12&&SEA&&SEA.roster&&SEA.roster[team]){ const R=SEA.roster[team], B=ENGINE_V>=26?SC_GOAL26:{ST:38,W:26,CM:20,CB:8,FB:8};
+    const w=Object.keys(B).map(k=>[k,B[k]*scLean(R[Array.isArray(on)&&on[SC_UNIT[k]]?BK(SC_UNIT[k]):SC_UNIT[k]]||R[SC_UNIT[k]],"fin")]), T=w.reduce((t,o)=>t+o[1],0); let v=(x+0.5)/100*T;
     for(const [k,wk] of w){ v-=wk; if(v<0){ unit=k; break } } }
-  return {n:scPlayer(team,unit,u)||"a forward", unit:unit};
+  return {n:scPlayer(team,unit,u,on)||"a forward", unit:unit};
 }
 /* a goal's scorer: the man the season stamped on it when the game was played (round 74: a rewatch after a knock or a
    transfer names the same man), else the event's own draw */
-function scGoalBy(team,e){ return e&&e.nm?{n:e.nm,unit:e.un||"ST"}:scScorer(team,(e&&e.u)||0) }
+function scGoalBy(team,e,on){ return e&&e.nm?{n:e.nm,unit:e.un||"ST"}:scScorer(team,(e&&e.u)||0,on) }
 /* a game you watched: the goals go to the men the commentary named (core 80_season) */
 function scLogCredit(tm,side,drives){
-  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scGoalBy(tm,e); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
+  const C={}; (drives||[]).forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k!=="goal"||e.side!==side)return; const s=scGoalBy(tm,e,scOnAt(drives,side,e.m)); if(!s.n||s.n==="a forward")return; (C[s.n]=C[s.n]||{goals:0}).goals++ }));
   return C;
 }
 const FINISH={
@@ -58,15 +68,15 @@ function pickOf(a,u){return a[u%a.length]}
    (Muse, round 50). Each booking is named once and remembered; a second yellow goes to someone not yet booked, and
    the red to the booked centre-back. */
 const CARD_NAMES=typeof WeakMap!=="undefined"?new WeakMap():null;
-function cardName(g,e,tm,u){
+function cardName(g,e,tm,u,on){
   if(CARD_NAMES&&CARD_NAMES.has(e))return CARD_NAMES.get(e);
   const B=(g.__bk=g.__bk||{}), bk=(B[tm]=B[tm]||{names:[],cb:null});
   let n;
-  if(e.k==="red")n=bk.cb||scPlayer(tm,"CB",1);
+  if(e.k==="red")n=bk.cb||scPlayer(tm,"CB",1,on);
   else{ const order=e.def?["CB","FB","CM","W","ST"]:[pickOf(["CM","FB","W","ST"],u),"CM","FB","W","ST","CB"];
-    for(const unit of order){ const c=scPlayer(tm,unit,u); if(c&&bk.names.indexOf(c)<0){ n=c; break } }
-    if(!n)n=scPlayer(tm,"CM",u);
-    if(n){ bk.names.push(n); if(e.def&&!bk.cb&&n===scPlayer(tm,"CB",u))bk.cb=n } }
+    for(const unit of order){ const c=scPlayer(tm,unit,u,on); if(c&&bk.names.indexOf(c)<0){ n=c; break } }
+    if(!n)n=scPlayer(tm,"CM",u,on);
+    if(n){ bk.names.push(n); if(e.def&&!bk.cb&&n===scPlayer(tm,"CB",u,on))bk.cb=n } }
   if(CARD_NAMES)CARD_NAMES.set(e,n); return n }
 /* one event as a line of commentary */
 /* round 72: a scorer's goals in one match each get their own words ("cuts inside and curls it into the far corner"
@@ -75,28 +85,34 @@ function scFinish(s,u,used){ const L=FINISH[s.unit]; if(!used)return pickOf(L,u>
   const k=s.unit+"|"+s.n, S=used[k]=used[k]||new Set(); if(S.size>=L.length)S.clear();
   const n=L.length, i0=((u>>2)%n+n)%n; for(let j=0;j<n;j++){ const i=(i0+j)%n; if(!S.has(i)){ S.add(i); return L[i] } } return L[i0] }
 /* the words for one event as the match has them so far: every earlier goal counted, so a row and its clip agree */
-function scEventTextIn(g,drives,e){ const used={}; for(const d of drives||[])for(const x of d.ev||[]){ if(x===e)return scEventText(g,x,used); if(x.k==="goal")scEventText(g,x,used) }
+function scEventTextIn(g,drives,e){ const used={__D:drives}; for(const d of drives||[])for(const x of d.ev||[]){ if(x===e)return scEventText(g,x,used); if(x.k==="goal")scEventText(g,x,used) }
   return scEventText(g,e) }
 function scEventText(g,e,used){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, opp=e.side==="home"?g.away:g.home, u=e.u||0;
-  if(e.k==="goal"){ const s=scGoalBy(tm,e); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
-  if(e.k==="save"){ const s=scScorer(tm,u), gk=scPlayer(opp,"GK",u)||"the keeper";
+  // engine 26: the men the team sheet had on at that minute (the match's drives: the caller's, else the game's)
+  const D=(used&&used.__D)||(g&&g.drives)||(typeof live!=="undefined"&&live&&live.g===g?live.drives:null), on=scOnAt(D,e.side,e.m), onO=scOnAt(D,e.side==="home"?"away":"home",e.m);
+  if(e.k==="goal"){ const s=scGoalBy(tm,e,on); return {team:tm,tag:"GOAL",text:`${s.n} ${scFinish(s,u,used)}`} }
+  if(e.k==="save"){ const s=scScorer(tm,u,on), gk=scPlayer(opp,"GK",u,onO)||"the keeper";
     // round 72: the row is the keeper's, as its sentence is: "Fulham Orozco gets down to keep out Faulkner" put
     // Sunderland's keeper under Fulham (Instinct); every other row names the team of the man it starts with, as hockey's saves do
     return {team:opp,tag:"",text:`${surname(gk)} ${pickOf(SAVE,u>>3)} ${surname(s.n)}`} }
-  if(e.k==="miss"){ const s=scScorer(tm,u); return {team:tm,tag:"",text:`${s.n} ${pickOf(MISS,u>>3)}`} }
-  if(e.k==="yellow"){ const n=cardName(g,e,tm,u);
-    return {team:tm,tag:"YELLOW",text:`${n||"a defender"} booked${e.def&&n===scPlayer(tm,"CB",u)?" (centre-back)":""}`} }
-  if(e.k==="red"){ const n=cardName(g,e,tm,u); return {team:tm,tag:"RED",text:`${n||"The centre-back"} sees a second yellow. Down to ten.`} }
+  if(e.k==="miss"){ const s=scScorer(tm,u,on); return {team:tm,tag:"",text:`${s.n} ${pickOf(MISS,u>>3)}`} }
+  if(e.k==="yellow"){ const n=cardName(g,e,tm,u,on);
+    return {team:tm,tag:"YELLOW",text:`${n||"a defender"} booked${e.def&&n===scPlayer(tm,"CB",u,on)?" (centre-back)":""}`} }
+  if(e.k==="red"){ const n=cardName(g,e,tm,u,on); return {team:tm,tag:"RED",text:`${n||"The centre-back"} sees a second yellow. Down to ten.`} }
   if(e.k==="cue"){ const line=pickOf(CUE[e.cue],u).replace("{t}",tm).replace("{o}",opp).replace("{s}",u%2?"left":"right");
     return {team:tm,tag:"",text:line,cue:true} }
+  // engine 26: a change (the names the engine kept when it was made) and a change of approach
+  if(e.k==="sub")return {team:tm,tag:"SUB",text:`${surname(e.pin||"")} on for ${surname(e.pout||"")}${e.u!=null&&SC_UNITW[e.u]?" ("+SC_UNITW[e.u]+")":""}`};
+  if(e.k==="shift")return {team:tm,tag:"",text:`${tm} ${SC_SHIFT[e.app]||"change their approach"}`};
   return {team:tm,tag:"",text:""};
 }
+const SC_SHIFT={press:"push up and press higher",block:"drop deeper and sit on it",wing:"look to work it wide",direct:"start going long and direct"};
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Penalties":"Extra time"):segClock(d.seg) }
 /* the replay script: one row per event, a quiet row for a quiet spell */
 function driveScript(g,drives){
-  const out=[], used={};
+  const out=[], used={__D:drives};
   drives.forEach(d=>{
     if(d.seg>=SEGS){ const hw=d.pens?d.pens==="home":d.sh>d.sa, tm=hw?g.home:g.away;
       (d.ev||[]).forEach(e=>{const t=scEventText(g,e,used); out.push({seg:d.seg,clock:e.m+"'",team:t.team,outcome:t.tag,text:t.text,h:d.sh,a:d.sa})});
@@ -244,7 +260,7 @@ function statStrip(g,d){
 
 /* ---- the run of play ---- */
 function playsHTML(list,my,g){
-  const rows=[], used={};
+  const rows=[], used={__D:list};
   list.forEach(d=>{
     const ev=(d.ev||[]).filter(e=>e.k!=="cue"||((e.u||0)%3===0));
     let sh=d.sh-d.h, sa=d.sa-d.a;
@@ -293,9 +309,9 @@ function liveCallView(){
     ${dp.k==="prep"?reportHTML(dp,g,my):dp.k==="read"||dp.k==="flank"?evidenceHTML(g,my,last,dp.k):dp.k==="late"||dp.k==="final"?legsHTML(dp)+tableStakesHTML(g,my):""}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length,g:g,my:my}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
+      `<div class="say"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${desc(o[0])?`<small>${esc(desc(o[0]))}</small>`:""}</button>`).join("")}</div>
     <div class="grouphead">Run of play</div>

@@ -536,6 +536,26 @@ Round 111: watching (no engine change: engine 24, the sims' files untouched; Ian
   bs-call-hold, sc-subs-taps, runplay-sync, live-stats, pbp-feed, pb-rescale, all pass. runplay-sync now cuts a stretch
   every so often so its samples reach scoring (at the new pace soccer's 45 s saw only 0-0) and needs two scores seen.
 
+Round 112, from the November 26 design review (merged from review-improvements; its branch rv/gameday): game day as coaching (engine 25, BB_GD_V in basketball/50_game.js).
+- Basketball timeouts: BB_GD.timeouts a game (pro 7, college 4: NBA Rule 5 VI; NCAA men's broadcast games). A run (a
+  stretch won by BB_GD.runPts, 8) carries BB_GD.momentum (0.012 on each side's make rate) into the next stretch unless
+  the side it hurt calls a timeout or a period ends (college half-time, the pros' quarters). Small on purpose: matched
+  studies put the real effect at about nothing (arxiv 2009.06750, 2011.11691). You're asked on a run against you
+  (k "timeout": a timeout with the defense picked there, graded as a read; or save it), never 20 either way, not gated
+  by the spread (being asked would say your defense is wrong). The live bar's Timeout button (core liveActsHTML; pm
+  "act:to", engine st.act/actsFor) calls one at the next break and asks what you change (k "tomine"). A down-two last
+  possession with no timeout left is a scramble (BB_GD.noTO 0.85 of the make rate). The computer and the assistant
+  call one on every run they face while they have one, so computer games are those of engine 24 (test/bb-gameday.js).
+- Basketball rotation (BB_GD.rot: the bench's share, tight 0.12, usual 0.20, deep 0.28; live bar buttons act:rot:*).
+  Each stretch, R_SLOPE x (0.20 - share) x the starters' gap over the bench (gameCtx rot, bbRotOf) in Elo; the extra
+  minutes (st.xm, in six-stretch units of tight) cost F x xm x (1 - staK x Stamina) in the last two stretches and
+  overtime, F set so the league's mean gap (gMean) nets to nothing. The star's foul rate follows his minutes. The
+  computer plays the usual rotation: no change to its games. st.legs: what the bar shows, from the same sum.
+- Basketball's last minute, behind by one to eight (k "defend", core GATE_KINDS): asked inside the last stretch. playSeg
+  stops before the trailing side's fouls (st.lpD: the stretch so far, for eng.partial; st.lpFinish: the rest), and the
+  answer plays it: foul (the old loop, the assistant's) or play it out (one possession each). Nothing is drawn while it
+  waits, so the computer's games and an unasked game are as before.
+
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
   the answer (planScoutHTML, core 99_app): for each plan, your roster's lean and the opponent's answer to it as league
@@ -3428,7 +3448,8 @@ audits (bb-screens, nba-screens, nhl-screens, epl-screens), the reads
 (sc-decisions, hk-reads, bb-reads college/pro: league calibration plus each
 call's worth), offseason systems (draftboard, fatargets, trades, bb-portal),
 and long-run history checks against the real leagues (bb-march,
-nba-history, nhl-history).
+nba-history, nhl-history, longrun: 20 seasons in all seven against the
+opening league and the real one; --short in the fast tier).
 Reports (run by hand): draft-night and draft-years (what a hand pick is
 worth), calibrate, advisors, calls, the engine harnesses
 (bb-engine, hk-engine, hk-decisions), the long-run recorders.
@@ -3504,6 +3525,95 @@ next career milestone when close, and a mood read from those facts (not a
 mechanic). Milestones per sport and level are in SPORT.milestones (college:
 milestonesCollege) and reach the weekly news. Pro careers count from the
 dynasty's first season (generated players have no earlier history).
+
+## The roster economy (core/92_market.js, engine 26)
+
+College football and college basketball (LEAGUE.market switches it on; the other
+five games include the file and never call it). It replaces the offseason
+budget's four buckets and, in college basketball, the old portal (runPortal).
+
+- Money: pxBudget(u,t,rec) by conference tier and program Elo, raised by a good
+  season. `two` is the part the screen's players cost (football 45%: the other
+  85 of 105; basketball 90%). pxValue(pl): what the open market pays a player,
+  by rating, position and room to grow.
+- The window (pxMarket, run in LEAGUE.offseason.run before developRoster):
+  0. the draft: LEAGUE.market.pro(pl) (each game's early-entry rule, on the
+     rating he'll reach) says who declares (pxPro, hashed); he leaves with the
+     seniors (rep.pro, pushed into the league's leavers), so developRoster
+     skips its own early-entry roll on engine 26.
+  1. asks: each other non-senior asks his value; the staff (and every computer
+     program) pays the most important first, up to keepShare of the money; a
+     person's keep map overrides. Whether he enters is a hash against a push
+     (buried, new head coach, a star who'd start a level up, a losing team,
+     morale and trust from the people layer, unpaid).
+  2. the market, best first: every program with a need and the money bids;
+     people bid only on their offers. He signs where pxBidBase plus his own
+     hashed part is best, or walks away below `reserve`.
+  3. fills: an empty slot is the next man up from the rest of the roster.
+- Determinism: every decision is a hash (pxH) of the player, program and year,
+  so pxPreview (dry: copies, the season's morale banked as bankCareers does)
+  is the market the commit runs. A job move gives both programs a new head
+  coach in the preview, as at the commit.
+- Engine: pxOn() needs ENGINE_V>=26. The offseason runs on the finished
+  season's engine, so an engine-25 season's winter is the old one.
+- Reports: S.lastMarket (tests), history league.market (pxHistory: the counts
+  and the coached teams' part), the banner (pxBannerHTML).
+- Tests: test/cfb-portal.js (the league against real figures, the preview, an
+  engine-25 season's winter), test/bb-portal.js.
+
+## The people (core/93_morale.js, engine 25)
+
+A living human layer under the numbers, the same in all seven games (small
+per-sport hooks only: veteran = college senior or pro 30+, staff job titles).
+
+- Traits: ambition, loyalty, temperament, professionalism, leadership, 1-20,
+  fixed by the player's name (traitsOf; no RNG, nothing saved).
+- Morale (p.mo, 3-97, words delighted/happy/settled/uneasy/unhappy/furious)
+  moves after each game: the result, starting or not, a backup who thinks he
+  should start, form, a pro's final year, a losing run on a short fuse, a
+  benching (more if the man who took the job is 4+ years younger), promises
+  kept or broken. It reverts toward each man's own base. Carried between
+  seasons through the banked roster (pl.moC, tr, mentor), 40% of the way.
+- Team morale (POS-weighted starters + the room's chemistry), centred on the
+  league's own mean, is worth at most MO_WP (2%) of a level game's chance;
+  the home crowd (fans 5-98) at most FAN_WP (0.8%) more. moraleEdge() adds
+  it in matchupElo and _resolve. Development: moraleDev() nudges the aging
+  gauss mean by at most +/-0.8 (a mentor +0.4). No extra RNG draws.
+- Conversations (talkNext/talkOpts/applyTalk): one question at a time, never
+  closer than the league's gap (2 steps of the schedule; 7 days in the daily leagues):
+  a trade request, a benched veteran, minutes, a bigger role, a rift after a
+  losing run, the press (capped: a few a season, two in a play-off run),
+  contract talk, a rookie's mentor, a captain. Answers are logged in
+  S.talks[year:step] and replayed by rebuild(); a question left alone is
+  answered by your assistant at your next game, and changes nobody's mood.
+  Shown in "Needs a decision" (class attn talk: sim doesn't stop for it).
+- Fans (P.fan) and the room (P.chem) on the team card's dressing-room line;
+  banked into U.fans and U.caps at season's end.
+- Storylines (S.saga, per coach): duels, captains, a title chase, bitter
+  departures and returns, into the season's history entry (entry.people),
+  its season story and the next opponent's line. Nothing there moves a game.
+- Staff room: realistic names and jobs (staffNameOf/staffFaceOf/staffLineOf)
+  by default in the pro leagues, the cast in college; Help's "Staff room"
+  sets S.staffReal. Only the voices change, never the advice.
+- Old saves: a season begun before engine 25 has no people (pplOn()); every
+  new field has a default. PEOPLE_ON=0 (env) turns the layer off for probes.
+- Tests: test/morale.js (questions, bounds, reloads, carry-over; per game),
+  test/probes/morale-calib.js (calibration against ENGINE_NOW=24).
+
+## Long careers (engine 26, core 20_engine.js, test/longrun.js)
+
+A league in its twentieth season should look like its first. Each summer that closes an engine-26 season:
+- recentre26 holds the starters to the opening league (REF26, REFPOS26: ten fresh universes per league): the mean
+  both ways, the spread and the top 1% from above, each position's place; soccer by division. Every man moves by his
+  own hashed rounding. attrRecentre26 (93_attrs.js) does the same for the attributes' average lean.
+- develop26 (the pro leagues): ageBase26 by effective age (each league's AGE26 shift: goalies, keepers, pitchers later;
+  an NFL quarterback at half speed from 27 to 35); a breakout reveals a hidden ceiling (ceil26, from the name, no
+  dice) and never passes it or 99.
+- college: programRecentre26 holds the programs' spread; a CPU coach retires from his tenth season; college
+  basketball anchors to its 64-team-era level (ANCHOR26_OF).
+- offseasonRng (99_app.js): the summer's dice by career and year (engine 25 kept RNG(0)).
+The offseason runs on the engine of the season it closes, so a season begun on 25 keeps its summer. Measured (20
+seasons, 2 pro and 4 college careers): see CHANGELOG-review/integrity.md.
 
 ## Real data
 

@@ -1,5 +1,5 @@
 {
- "fp": "b0d4fc8493ebefae",
+ "fp": "cd65e7fb1e461f4c",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -590,59 +590,84 @@
    "fp": "b0d4fc8493ebefae",
    "from": "b0d4fc8493ebefae",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "7f265d5b9a428baa",
+   "from": "b0d4fc8493ebefae",
+   "note": "Pro basketball front office (rv/nba-fo): the real 2026-27 cap sheet and contracts, fifteen on a roster, the trade machine, free agency over days, the owner and the tax. New careers start on it, so universe, seasons and screens change on purpose."
+  },
+  {
+   "fp": "7e053079b973a78e",
+   "from": "7f265d5b9a428baa",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "35b5aa4aab9e8a0d",
+   "from": "7e053079b973a78e",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; basketball: full lines, lean 1.4x, usage cap"
+  },
+  {
+   "fp": "afa71f67cad4b966",
+   "from": "35b5aa4aab9e8a0d",
+   "note": "engine 26 (rv2/stats2 follow-up): the plans' three-point shares held near the league's (0.29/0.49, every side 0.20-0.53 of its shots), the fit paid on the other shots; blocks bunch on the rim protectors"
+  },
+  {
+   "fp": "cd65e7fb1e461f4c",
+   "from": "afa71f67cad4b966",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "466eba38045fb0ae",
-    "post": "51a7b9ee928aa9fa",
-    "champion": "Boston",
-    "rec": "aa929acbb3d41009",
-    "poll": "f7d6b103e4e40c76",
-    "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "games": "f4f93325f01e228a",
+    "post": "00e4f34aa4563827",
+    "champion": "Orlando",
+    "rec": "b5dc1a1f90b036d1",
+    "poll": "41d6363b0bdc54f5",
+    "heis": "d2a779e43b634a3c",
+    "history": "78d87833f5bff51a",
+    "universe": "634763e7e2119794",
+    "screens": "326dd0b25ddb078f"
    },
    {
     "year": 2027,
-    "games": "899826989fbd818c",
-    "post": "8780356bb1bf5799",
-    "champion": "Sacramento",
-    "rec": "4e57bfc4bc60432a",
-    "poll": "ce81856e9e87c2d1",
-    "heis": "02ebadf6932b7f6a",
-    "history": "01efbe25cfd940ee",
-    "universe": "bb81ea2771bbbf45",
-    "screens": "593c82311b570ecc"
+    "games": "7d056dd9b99ff8ce",
+    "post": "b571543be546cedf",
+    "champion": "Oklahoma City",
+    "rec": "5d61d2210650aee0",
+    "poll": "6e65793617b906a5",
+    "heis": "2c46682fb736f032",
+    "history": "7eb382009f22f339",
+    "universe": "159b517abb754023",
+    "screens": "9d0fb852a2039979"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "5ae0d55b8fedaf30",
-    "post": "bc0e6de8d734c0ed",
-    "champion": "New York",
-    "rec": "a57c9276f2b2f4b1",
-    "poll": "6a2e8da5986046a7",
-    "heis": "635d996bb8c406fc",
-    "history": "e96eb46ec64147d8",
-    "universe": "a6287fc5e42e1707",
-    "screens": "888e82025ec3196a"
+    "games": "ca9aa07b03d0cd29",
+    "post": "cce01613cf639e6f",
+    "champion": "Houston",
+    "rec": "e52a5b79944a871b",
+    "poll": "ebd0109f707c4331",
+    "heis": "827255945f877f5b",
+    "history": "5c302e87d48138b6",
+    "universe": "f28ea4a54cccab21",
+    "screens": "f4bb77062d942eb7"
    },
    {
     "year": 2027,
-    "games": "79af3b7241d7dfc7",
-    "post": "2a4afd9e8e820781",
-    "champion": "Houston",
-    "rec": "a5064622f237ee7d",
-    "poll": "0b46b8960550d70e",
-    "heis": "746e3a3070225b55",
-    "history": "0eaf33ad660bf773",
-    "universe": "2a51ad4ab26ac914",
-    "screens": "0a726c25a6ad77b4"
+    "games": "4664a17a202f58f1",
+    "post": "a969412f54c10af7",
+    "champion": "Oklahoma City",
+    "rec": "4dd0d4c00afa07a4",
+    "poll": "515e9ef6d13c425a",
+    "heis": "f13bfef24639c3fc",
+    "history": "93c1ba72b753ffd3",
+    "universe": "cf78277180266af4",
+    "screens": "5759f2a7338ada26"
    }
   ],
   "schedules#60": [

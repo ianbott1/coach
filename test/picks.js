@@ -7,7 +7,7 @@ const {chromium}=require('playwright'),path=require('path');
 for(const [f,team] of [['basketball-coach-pro.html','Boston'],['football-coach-pro.html','Kansas City']])for(const kind of ['theirs','mine']){
   const p=await b.newPage({viewport:{width:1265,height:900}}),errs=[];p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+path.join(process.env.DIST||path.join(__dirname,'..','dist'),f));await p.waitForTimeout(300);
-  const r=await p.evaluate(([team,kind])=>{newDynasty(team,kind==='mine'?13:5,'P');S.title=false;S.guide=false;let n=0;while(!tdState().open&&n++<400)simAdvance();for(let i=0;i<3;i++)simAdvance();
+  const r=await p.evaluate(([team,kind])=>{newDynasty(team,kind==='mine'?13:5,'P');S.title=false;S.guide=false;if(LEAGUE.trade.on&&LEAGUE.trade.on())return {skip:1};   /* pro basketball's front office: its own trade machine, tested by nba-fo.js */let n=0;while(!tdState().open&&n++<400)simAdvance();for(let i=0;i<3;i++)simAdvance();
     const my=S.myTeam, R=SEA.roster[my]; let d=null;
     if(kind==='theirs'){ for(let a=0;a<R.length&&!d;a++){ const L=tdShopPick(a); if(L.length)d=L[0] } }
     else { for(const t of tdClubs()){ for(let bb=0;bb<SEA.roster[t].length&&!d;bb++){ const L=tdAskPick(t,bb); if(L.length)d=L[0] } if(d)break } }
@@ -22,6 +22,7 @@ for(const [f,team] of [['basketball-coach-pro.html','Boston'],['football-coach-p
     const a0=JSON.stringify(D.picks.map(x=>[x.overall,x.team,x.pid])); save(); stashCoach&&stashCoach(); rebuild(); const a1=JSON.stringify(dnState().picks.map(x=>[x.overall,x.team,x.pid]));
     let commitErr=null; try{ for(let c=0;c<6&&S.off;c++){ if(LEAGUE.ui.offseasonBlock()!==null&&S.off.picks.resign)Object.keys(S.off.picks.resign).forEach(q=>S.off.picks.resign[q]=false); commitOffseason() } }catch(e){commitErr=e.message}
     return {line,first,theirFirst,mineAll:mine,got,byOther,stop:!!D.stop,same:a0===a1,phase:SEA.phase,year:SEA.year,commitErr,shot:shot?shot[1]:''} },[team,kind]);
+if(r.skip){console.log(f.padEnd(26),'its own trade machine: see test/nba-fo.js');await p.close();continue}
   if(r.err){ console.log(f,kind,r.err); bad++; await p.close(); continue }
   console.log(`${f} (${kind==='theirs'?'their pick to you':'your pick to them'}): ${r.line}; your first-rounders ${JSON.stringify(r.first)}, theirs ${JSON.stringify(r.theirFirst)}; your picks made ${JSON.stringify(r.got)}`);
   ok(r.first.length===(kind==='theirs'?2:0),`you hold ${kind==='theirs'?'two first-rounders':'no first-rounder'} (${r.first.length})`);

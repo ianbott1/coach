@@ -1,5 +1,5 @@
 {
- "fp": "c81a35489f0479ac",
+ "fp": "6d260910eb44fe43",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -130,21 +130,51 @@
    "fp": "c81a35489f0479ac",
    "from": "c81a35489f0479ac",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "76f20e72c6618f2b",
+   "from": "c81a35489f0479ac",
+   "note": "round 111 engine 25: basketball timeouts (the run call, your own timeout) change the user's live games; computer games unchanged"
+  },
+  {
+   "fp": "56a93041991eab8e",
+   "from": "76f20e72c6618f2b",
+   "note": "round 111 step 2: the rotation buttons on the live bar (screens only; results unchanged)"
+  },
+  {
+   "fp": "3818fb2b6bcbfc4c",
+   "from": "56a93041991eab8e",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "1b8eb6589a1574a3",
+   "from": "3818fb2b6bcbfc4c",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "2af2de7bb465972c",
+   "from": "1b8eb6589a1574a3",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
+  },
+  {
+   "fp": "6d260910eb44fe43",
+   "from": "2af2de7bb465972c",
+   "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
-    "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "games": "8b4733819fbcbfda",
+    "post": "cffd73005bd52354",
+    "champion": "Florida",
+    "rec": "07d98ba3b8fb83d5",
+    "poll": "0a0138ce733562c1",
+    "heis": "b947c74f5785b20e",
+    "history": "0e89ee4981a10a84",
+    "universe": "9e6e49b4824aa151",
+    "screens": "a2b1a3e1cb674675"
    }
   ]
  }
