@@ -46,7 +46,10 @@ function mlbAfterWeek(sea,w){
         M.now[k]={idx:i,who:e.who,up:c.n,sits:1,from:c.lvl,day:w+1};
         M.log.push({t:t,day:w+1,kind:"il",who:e.who,days:e.w,up:c.n,from:c.lvl,starts:bench.n,p:POS[i].p}); return }
       const before=injuryCost(R,i), man=JSON.parse(JSON.stringify(c));
-      man.p=bench?bench.p:POS[i].p; man.i=b; man.lvl=null; man.up=1;
+      man.p=bench?bench.p:POS[i].p; man.i=i; man.lvl=null; man.up=1;
+      // his mood in the clubhouse starts where his own nature puts it (a man with none: the room's morale, and with it the
+      // league's, reads NaN, and every game is played at NaN strength)
+      if(typeof moBase==="function")man.mo=Math.round(moBase(man)); else delete man.mo;
       if(typeof attrOn==="function"&&attrOn()&&typeof attrGen==="function"&&(!Array.isArray(man.at)||man.ar!==man.r)){ man.at=attrGen(u,man); man.ar=man.r }
       R[b]=man; M.now[k]={idx:i,who:e.who,up:c.n,back:bench||null,from:c.lvl,day:w+1};
       const after=injuryCost(R,i); if(before<0&&after<0)e.m=e.m*after/before;   // the gap the injury leaves, with the call-up in it

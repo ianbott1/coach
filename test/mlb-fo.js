@@ -58,8 +58,11 @@ for(let y=1;y<=SEASONS;y++){
   const f40=T.every(t=>A.mlb40(U(),t)<=40);
   play(A);
   const w=T.map(t=>A.SEA.rec[t][0]);
+  // the games themselves: runs a side and shutouts (a call-up with no clubhouse mood once made every game NaN-strong: 1-0)
+  let G=0, runs=0, so=0; A.SEA.weeks.slice(0,A.LEAGUE.weeks).forEach(W=>W.games.forEach(x=>{ if(x.hp==null)return; G++; runs+=x.hp+x.ap; if(!x.hp||!x.ap)so++ }));
+  const rs=runs/Math.max(1,G)/2, shut=100*so/Math.max(1,G), moOk=!A.SEA.ppl||Number.isFinite(A.SEA.ppl.mid);
   rows.push({y:A.SEA.year,med:q(pays,0.5),lo:Math.min(...pays),hi:Math.max(...pays),over:pays.filter(x=>x>A.MLB$.cbt).length,u100:pays.filter(x=>x<100).length,
-    mean:sal.reduce((s,x)=>s+x,0)/sal.length,smed:q(sal,0.5),wsd:sd(w),best:Math.max(...w),cls,f40});
+    mean:sal.reduce((s,x)=>s+x,0)/sal.length,smed:q(sal,0.5),wsd:sd(w),best:Math.max(...w),cls,f40,rs,shut,moOk});
   if(y===2){   // the first front-office season of the run: the injured list, and a replay
     const M=A.SEA.mlb, L=M?M.log.filter(x=>x.kind==='il'):[], rec=JSON.stringify(A.SEA.rec);
     A.rebuild(); play(A);
@@ -77,8 +80,9 @@ for(let y=1;y<=SEASONS;y++){
     winters.push({qo:cnt('qo'),acc:T.reduce((s,t)=>s+L.qo[t].filter(x=>x.accepted).length,0),signed:cnt('signed'),farmUp:cnt('farmUp'),forfeit:cnt('forfeit'),
       payers:T.filter(t=>L.bills[t].tax>0).length,top:Math.max(0,...T.flatMap(t=>L.signed[t].map(x=>x.sal)))}) }
 }
-rows.forEach(r=>console.log(`${r.y}: payroll median ${r.med.toFixed(0)}, ${r.lo.toFixed(0)}-${r.hi.toFixed(0)}, ${r.over} over $244M, ${r.u100} under $100M | salary mean ${r.mean.toFixed(2)} median ${r.smed.toFixed(2)} | classes ${JSON.stringify(r.cls)} | wins sd ${r.wsd.toFixed(1)} best ${r.best}`));
+rows.forEach(r=>console.log(`${r.y}: payroll median ${r.med.toFixed(0)}, ${r.lo.toFixed(0)}-${r.hi.toFixed(0)}, ${r.over} over $244M, ${r.u100} under $100M | salary mean ${r.mean.toFixed(2)} median ${r.smed.toFixed(2)} | classes ${JSON.stringify(r.cls)} | wins sd ${r.wsd.toFixed(1)} best ${r.best} | runs a side ${r.rs.toFixed(2)}, shutouts ${r.shut.toFixed(1)}%`));
 winters.forEach((x,i)=>console.log(`  winter ${i+1}: ${x.qo} qualifying offers (${x.acc} taken), ${x.signed} free agents signed (top $${x.top.toFixed(1)}M), ${x.farmUp} up from the farm, ${x.forfeit} picks forfeited, ${x.payers} tax payers`));
+ok(rows.every(r=>r.rs>=4.0&&r.rs<=4.8&&r.shut<=17.5&&r.moOk),'every season scores like MLB with its call-ups: runs a side 4.0-4.8, shutouts 17.5% or fewer (2024: 4.39, 13.2%; baseball-reference.com/leagues/majors/2024-misc.shtml)');
 console.log('injured list:',JSON.stringify({n:il.n,same:il.same,ex:il.ex}));
 ok(il.n>=5,'starters on the injured list bring men up from the farm');
 ok(il.same,'a reload replays the season the same, call-ups and all');
