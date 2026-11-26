@@ -86,4 +86,11 @@ and the 2023-2024 and 2022-2023 pages): goals 2.85, 3.28, 2.93; draws 22.9%, 21.
 40.8%; champions on 89, 91, 84.
 
 ## How it was tested
-See the report at the end of the branch's work (the commit message lists each run).
+- `node test/sc-manager.js` (new, fast tier, about 80 to 120 seconds): MATCH, 27 checks.
+- `OLD=/home/claude/dist-e25 node test/engine-replay.js soccer`: MATCH (14 steps on the engine-25 build, reloaded).
+- `node test/migrate.js`, `node test/reload.js dist/soccer-coach.html` (18 of 18), `node test/saves.js`: MATCH.
+- `sc-decisions`, `sc-final`, `sc-keeper`, `sc-subs` (engine 25), `epl-rules`, `epl-screens`, `epl-cup`: MATCH.
+- Goldens matched before (fast 50a11f33f0298177, full 37372a2a26a345c9, hot seat ba6709810ffe9967) and were
+  re-recorded for engine 26: fast 9491d6ac34f5d216, full a6ffa8f0162a94c1, hot seat d42ac54a5a832b2d.
+- Not run: browser tests (no Playwright here), among them `test/sc-subs-taps.js`, which taps the engine-22 change
+  buttons and will need the engine-26 ones.
