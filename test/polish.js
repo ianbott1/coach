@@ -79,5 +79,11 @@ check('no soccer wording outside soccer (six games)',()=>{
   const api=load('epl'), ev=api.ev; ok(ev('hlAllLabel()')==='Every chance'&&ev('hlFullLabel()')==='Full match'&&/top side, a cup tie/.test(ev('SIM_BIG')),'soccer keeps Every chance, Full match, a top side, a cup tie');
 });
 
+// Playtest: pro basketball's plan said "Over forty minutes the better team wins"; the pros play 48 (college 40).
+check('a game is as long as its league plays it (basketball, hockey, soccer)',()=>{
+  const want={ncaab:/Over forty minutes/,nba:/Over forty-eight minutes/,nhl:/Over sixty minutes/,epl:/Over ninety minutes/};
+  for(const lg of Object.keys(want)){ const api=load(lg), d=api.ev('PLANS.safe.d'); ok(want[lg].test(d),`${lg}: "${d.slice(0,80)}"`) }
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

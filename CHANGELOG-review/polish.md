@@ -60,3 +60,11 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js soccer`: the live screen, Settings, the sim sheet, the first jobs and the achievements in
   cfb, nfl, ncaab, nba, nhl, mlb carry none of "Every chance", "Full match", "top side", "good side", "cup tie", "better
   side", and say "Full game"; soccer keeps its words. MATCH.
+
+## Pro basketball's plan says forty-eight minutes
+- What: "Work it inside" reads "Over forty-eight minutes the better team wins" in pro basketball (college keeps forty).
+  Every "forty"/"40 minutes" string in all seven was checked: the only other game-length lines are hockey's sixty and
+  soccer's ninety, both right.
+- Why: playtest: pro basketball said forty. NBA games are four 12-minute quarters
+  (https://official.nba.com/rule-no-5-scoring-and-timing/), college two 20-minute halves.
+- Tested: `node test/polish.js "as long"`: ncaab forty, nba forty-eight, nhl sixty, epl ninety. MATCH.
