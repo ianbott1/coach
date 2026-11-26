@@ -1,5 +1,5 @@
 {
- "fp": "42de9274ba906b25",
+ "fp": "6195913450ea13f8",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -625,6 +625,11 @@
    "fp": "42de9274ba906b25",
    "from": "097abda59fbeee03",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "6195913450ea13f8",
+   "from": "42de9274ba906b25",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
   }
  ],
  "result": {
@@ -637,21 +642,21 @@
     "rec": "0b8c7f14ce7df2e9",
     "poll": "87d16a0d9ac0f59e",
     "heis": "01c2a01f118bfe4d",
-    "history": "ccf3c0c3e3602d2e",
-    "universe": "79c78577efbd8655",
-    "screens": "b54612cb35dcff03"
+    "history": "46babb28fb09c2d2",
+    "universe": "93770a3a59664167",
+    "screens": "a03aac7ef65297af"
    },
    {
     "year": 2027,
-    "games": "b5faf303d9a1ec6b",
-    "post": "33795b55d49bfc24",
-    "champion": "Marquette",
-    "rec": "e055f714aa046735",
-    "poll": "d382443212a743b6",
-    "heis": "5f095586d7d7571d",
-    "history": "141e481632935306",
-    "universe": "8e71046f37a7a625",
-    "screens": "573acdb3d3ed73ad"
+    "games": "4f823a7a75bed8d4",
+    "post": "d64899cd62f489be",
+    "champion": "USC",
+    "rec": "8237e19cbff8fbc3",
+    "poll": "82ef796d28258f21",
+    "heis": "3999882ce4fb0530",
+    "history": "57988de6ca9a4dee",
+    "universe": "838843294464623a",
+    "screens": "c74106aaa2a59ca5"
    }
   ],
   "Coppin State#2024": [
@@ -663,21 +668,21 @@
     "rec": "2afb2c239a7bece1",
     "poll": "dd749a68d4413c97",
     "heis": "def229392e07739c",
-    "history": "3b3264d3c0721677",
-    "universe": "8a94b07ae7cac602",
-    "screens": "9386b7b42649fd68"
+    "history": "98243c439d40d18a",
+    "universe": "c0ec91a310940b97",
+    "screens": "c6c0e28aff3cccce"
    },
    {
     "year": 2027,
-    "games": "375eaf49b15d48ac",
-    "post": "93e4da0cfe6f0368",
+    "games": "ba3e44d6555aa287",
+    "post": "b675f42205b4cf23",
     "champion": "North Carolina",
-    "rec": "6b7d20bf3c9d2bd4",
-    "poll": "3fa037c6aec5d97a",
-    "heis": "118d2eb373fd56b6",
-    "history": "567860f6295b2e7c",
-    "universe": "11c760a30eef96b2",
-    "screens": "2ea92f19d4c5895d"
+    "rec": "95e7ecf77d279f41",
+    "poll": "abde189dea2bcd85",
+    "heis": "07a6dd3589e241eb",
+    "history": "6f6dde7e9d1f7736",
+    "universe": "a5df1ee084db3f9f",
+    "screens": "2829edfb57c0927f"
    }
   ],
   "Gonzaga#777": [
@@ -689,21 +694,21 @@
     "rec": "57abc8f8900d6cbc",
     "poll": "b07ae08d409b5421",
     "heis": "225af2c963a07b70",
-    "history": "3a0327299da5e13b",
-    "universe": "e96b0701c65018e3",
-    "screens": "d5faf345363419a5"
+    "history": "a091069ae1d8fb2f",
+    "universe": "15f75940c5d0fc5c",
+    "screens": "7eca1ccde2dcdfbd"
    },
    {
     "year": 2027,
-    "games": "0c79a2c2ee9ee681",
-    "post": "a519c6eace3a692b",
-    "champion": "Iowa State",
-    "rec": "725da04112c74176",
-    "poll": "e73b10d53685671d",
-    "heis": "abd9161aa69a24f2",
-    "history": "9a55f97b88443c9a",
-    "universe": "9f3023f46d199ef9",
-    "screens": "387345a78284501f"
+    "games": "6f43c2169c2176d8",
+    "post": "a693423cdad275cb",
+    "champion": "USC",
+    "rec": "64a62c3926f751ad",
+    "poll": "73b718207922b01e",
+    "heis": "c5b667660b00e5ad",
+    "history": "9958a57483a4bc60",
+    "universe": "b8df57dd392bd881",
+    "screens": "6a9fee86029a33df"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "3818fb2b6bcbfc4c",
+ "fp": "1b8eb6589a1574a3",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -145,6 +145,11 @@
    "fp": "3818fb2b6bcbfc4c",
    "from": "56a93041991eab8e",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "1b8eb6589a1574a3",
+   "from": "3818fb2b6bcbfc4c",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
   }
  ],
  "result": {
@@ -157,9 +162,9 @@
     "rec": "0b8c7f14ce7df2e9",
     "poll": "87d16a0d9ac0f59e",
     "heis": "01c2a01f118bfe4d",
-    "history": "ccf3c0c3e3602d2e",
-    "universe": "79c78577efbd8655",
-    "screens": "b54612cb35dcff03"
+    "history": "46babb28fb09c2d2",
+    "universe": "93770a3a59664167",
+    "screens": "a03aac7ef65297af"
    }
   ]
  }
