@@ -3175,6 +3175,7 @@ function strengthWords(d){
   return a<25?"about where it was":a<75?(up?"a little stronger":"a little weaker"):a<150?(up?"stronger":"weaker"):(up?"much stronger":"much weaker");
 }
 function payrollLine(t){
+  if(LEAGUE.payrollLine)return LEAGUE.payrollLine(t);   // pro basketball's cap sheet: cap, tax and aprons (leagues/nba)
   if(typeof payroll!=="function"||!LEAGUE.cap)return "";
   const R=(SEA&&SEA.roster&&SEA.roster[t])||(U&&U.roster&&U.roster[t]); if(!R||!R.some(p=>p&&p.k))return "";
   const pay=payroll(R), lim=LEAGUE.budgetOf?LEAGUE.budgetOf(U,t):LEAGUE.cap, room=lim-pay;
