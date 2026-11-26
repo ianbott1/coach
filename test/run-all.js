@@ -68,6 +68,7 @@ add('a decision card is seen above the pinned Play button (laptop and desktop, b
 add('the summer plan hires the candidate rated best (four games)',['staff-default.js'],{timeout:1800000});
 add('a soccer save names the keeper who played',['sc-keeper.js'],{fast:true});
 add("hockey's game day: the goalie pull at real benches' times, tonight's lines and legs, the timeout (engine 26)",['hk-gameday.js'],{fast:true,timeout:900000});
+add("hockey's front office: the 2026-27 cap and its floor, twenty-three and a reserve list, restricted and unrestricted free agency, offer sheets, arbitration, buyouts, against the real league's cap sheets (engine 27)",['hockey-fo.js'],{fast:true,timeout:900000});
 add('playtest slips stay fixed: wording, stats, the board, the bracket (all seven)',['polish.js'],{fast:true,timeout:1800000});
 add('pro basketball: the win chance follows the score in overtime (browser)',['ot-wp.js'],{fast:true,timeout:900000});
 add('hockey: no even-strength goal inside the other side\'s penalty',['hk-pp-goal.js'],{fast:true});
