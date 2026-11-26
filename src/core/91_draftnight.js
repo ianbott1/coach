@@ -78,6 +78,7 @@ function draftScore(style,R,p){
    mock, the teams between two picks. A club can hold two first-rounders, or none. */
 function pickOwnMap(u){ const P=u&&u.pickOwn; return P&&P.y===u.year?P.own||{}:{} }
 function dnOwnerAt(order,u,overall){ const N=order.length, rd=Math.ceil(overall/N), orig=order[(overall-1)%N], own=pickOwnMap(u);
+  if(LEAGUE.pickOwner){ const o=LEAGUE.pickOwner(u,orig,rd,(overall-1)%N+1); if(o)return o }   // pro basketball's pick ledger (traded picks, protections)
   return rd===1&&own[orig]?own[orig]:orig }
 function dnPicksOf(t,order,u,rounds){ order=order||dnOrder(); u=u||U; rounds=rounds||LEAGUE.offseason.draftRounds; const out=[];
   for(let o=1;o<=order.length*rounds;o++)if(dnOwnerAt(order,u,o)===t)out.push(o); return out }
