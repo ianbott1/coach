@@ -1,5 +1,5 @@
 {
- "fp": "1a99adc5490ddf33",
+ "fp": "5ff55da6769956fc",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -155,21 +155,26 @@
    "fp": "1a99adc5490ddf33",
    "from": "f214c1e9bd9f5025",
    "note": "Pro football front office (rv/nfl-fo): computer clubs draft from a real board; the 2026 cap ($301.2M) and real contracts; a kicker and punter whose ratings move field goals and punts. Games, records and screens differ from season 1 (in-season trades on the new contracts, kicks)"
+  },
+  {
+   "fp": "5ff55da6769956fc",
+   "from": "1a99adc5490ddf33",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "98e3a54103092a9d",
-    "post": "ba69a6b24289792e",
-    "champion": "LA Rams",
-    "rec": "d770d858850011e7",
-    "poll": "5e0000cccc8fc725",
-    "heis": "a9f2df332371a701",
-    "history": "96563ce252467ecd",
-    "universe": "f0ad93547147e72c",
-    "screens": "607e8f1d2769cfaf"
+    "games": "216ddeb0e4ceff58",
+    "post": "f69739e230185b96",
+    "champion": "Kansas City",
+    "rec": "5ab7158be27f2c58",
+    "poll": "bf37a9685dcbcf1e",
+    "heis": "009b8c9b3313d49d",
+    "history": "7881d9a9fa7518a8",
+    "universe": "9e85d9f8c31dbec7",
+    "screens": "0c13cb6f8f7b0581"
    }
   ]
  }

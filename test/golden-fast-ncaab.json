@@ -1,5 +1,5 @@
 {
- "fp": "56a93041991eab8e",
+ "fp": "3818fb2b6bcbfc4c",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -140,21 +140,26 @@
    "fp": "56a93041991eab8e",
    "from": "76f20e72c6618f2b",
    "note": "round 111 step 2: the rotation buttons on the live bar (screens only; results unchanged)"
+  },
+  {
+   "fp": "3818fb2b6bcbfc4c",
+   "from": "56a93041991eab8e",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "e8c8c7ac441de239",
-    "post": "92e7df992e23516e",
+    "games": "2df5b2ebc995cf83",
+    "post": "4c9b9b443f9792eb",
     "champion": "Kentucky",
-    "rec": "09dad5445d7185d4",
-    "poll": "4240a967b3fef259",
-    "heis": "dd994c11b697e524",
-    "history": "10f87eb41c03cb65",
-    "universe": "acaaffc1287a2788",
-    "screens": "375274ee03b7c66f"
+    "rec": "0b8c7f14ce7df2e9",
+    "poll": "87d16a0d9ac0f59e",
+    "heis": "01c2a01f118bfe4d",
+    "history": "ccf3c0c3e3602d2e",
+    "universe": "79c78577efbd8655",
+    "screens": "b54612cb35dcff03"
    }
   ]
  }

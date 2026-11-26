@@ -1,5 +1,5 @@
 {
- "fp": "e381d9e5fb2e8b43",
+ "fp": "50a11f33f0298177",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -150,21 +150,26 @@
    "fp": "e381d9e5fb2e8b43",
    "from": "3d45da509d39d7b9",
    "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
+  },
+  {
+   "fp": "50a11f33f0298177",
+   "from": "e381d9e5fb2e8b43",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "a535b50304cdfe00",
-    "post": "cec788ef4c6c0e4b",
-    "champion": "Arsenal",
-    "rec": "cf8f89d31ccebf68",
-    "poll": "1654660bd2888ced",
-    "heis": "065f6e734e9dbdc7",
-    "history": "8526fe2171a3e13d",
-    "universe": "d44bd69fe2f99477",
-    "screens": "2465a9d8d8b4acd9"
+    "games": "1fd83e2bd664825d",
+    "post": "80479a984693125a",
+    "champion": "Manchester United",
+    "rec": "e77fed74c16f7deb",
+    "poll": "c0bd2a6b4af2fb30",
+    "heis": "14750437202280fd",
+    "history": "245f770158caacfa",
+    "universe": "cea8e6101522d5b6",
+    "screens": "254c9e5d6dde2757"
    }
   ]
  }

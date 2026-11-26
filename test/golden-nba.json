@@ -1,5 +1,5 @@
 {
- "fp": "7f265d5b9a428baa",
+ "fp": "7e053079b973a78e",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -595,59 +595,64 @@
    "fp": "7f265d5b9a428baa",
    "from": "b0d4fc8493ebefae",
    "note": "Pro basketball front office (rv/nba-fo): the real 2026-27 cap sheet and contracts, fifteen on a roster, the trade machine, free agency over days, the owner and the tax. New careers start on it, so universe, seasons and screens change on purpose."
+  },
+  {
+   "fp": "7e053079b973a78e",
+   "from": "7f265d5b9a428baa",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "aa7a81e1003bed77",
-    "post": "9548b07623d63c01",
-    "champion": "Detroit",
-    "rec": "dc2161cbe2f04b97",
-    "poll": "2c32d626e4b0c056",
-    "heis": "283b9dce59145d8c",
-    "history": "2db40ae386e09226",
-    "universe": "05ab698903ac1d13",
-    "screens": "4366eb0949013d68"
+    "games": "351d0f5235c761d2",
+    "post": "05a9b7880823b197",
+    "champion": "Orlando",
+    "rec": "dbe1e8eeb6764ed7",
+    "poll": "d3449e7283915560",
+    "heis": "f24a3347e7caa7f8",
+    "history": "9ae25f41df3ad31e",
+    "universe": "0fb285b7839119fd",
+    "screens": "6ae1d70196fb9c00"
    },
    {
     "year": 2027,
-    "games": "145705cc48672264",
-    "post": "2e0492a1b0e1c86a",
-    "champion": "Sacramento",
-    "rec": "c0bb74bdd76cbc8e",
-    "poll": "ca86640b2698b345",
-    "heis": "db515cea31b08fa4",
-    "history": "a88be44719dc94e7",
-    "universe": "6bc368ac6baa2cfa",
-    "screens": "ae3f1284caf8dfcc"
+    "games": "3b187c72e2cfb2f0",
+    "post": "e5ab1882f9cca365",
+    "champion": "Philadelphia",
+    "rec": "951010acceaa6cc4",
+    "poll": "e36250bcec62acc8",
+    "heis": "39162c4ad2e4384e",
+    "history": "9dbb6f5462ed2a58",
+    "universe": "cf846909ed850af6",
+    "screens": "5703cf48346514e2"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "827e0ea776887327",
-    "post": "0161108b1ea5c96d",
-    "champion": "Oklahoma City",
-    "rec": "590344ff777ef30a",
-    "poll": "72ec3d4a3ba7ad57",
-    "heis": "f49c77b38d25c3f3",
-    "history": "76f9e0d909343ba3",
-    "universe": "acdb31fab2a1f2dc",
-    "screens": "b84b665bf50b3794"
+    "games": "b5bd6c5b9a4a426c",
+    "post": "5d99391bc4f54559",
+    "champion": "Phoenix",
+    "rec": "a3097372629143d6",
+    "poll": "86b51c9713443b89",
+    "heis": "f12255af80b58d72",
+    "history": "c9d93ab37d08acbf",
+    "universe": "e31e74fc470dba77",
+    "screens": "f1dc272d5dea690a"
    },
    {
     "year": 2027,
-    "games": "d4b91519f78f2f1f",
-    "post": "38e3744ce06f91d6",
+    "games": "8a6fee4465f88b84",
+    "post": "6f1b51c34852e896",
     "champion": "Oklahoma City",
-    "rec": "64164fc7109d043d",
-    "poll": "5a72f99f90a51239",
-    "heis": "e32738b3aa460ac6",
-    "history": "da27639b773e7993",
-    "universe": "b1f0b6eaf59a065a",
-    "screens": "e8c555064b496590"
+    "rec": "3c09e1d6d3d13193",
+    "poll": "bddc52e0453f72bf",
+    "heis": "440e71c68a0d7989",
+    "history": "d15bfeb7f0d3da35",
+    "universe": "4085c18cb73b446b",
+    "screens": "50c26fd9eaeb5d3c"
    }
   ],
   "schedules#60": [

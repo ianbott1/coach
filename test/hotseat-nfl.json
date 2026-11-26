@@ -1,5 +1,5 @@
 {
- "fp": "023f5d25eed0f0a3",
+ "fp": "519ff910b4e06870",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -435,6 +435,11 @@
    "fp": "023f5d25eed0f0a3",
    "from": "028fe72b3eea2f64",
    "note": "Pro football front office (rv/nfl-fo): draft board, 2026 cap and real contracts, kicker and punter. No crashes; both coaches' seasons differ"
+  },
+  {
+   "fp": "519ff910b4e06870",
+   "from": "023f5d25eed0f0a3",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "out": [
@@ -444,20 +449,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost the Super Bowl",
-      "grade": "B+"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "d206d7417b3a60e8"
+     "book": "1cf18f310897c466"
     },
     {
      "team": "Tennessee",
      "last": {
       "rec": "4-13",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "18d84ceb5d79905f"
+     "book": "9e633e8387477566"
     }
    ]
   },
@@ -467,20 +472,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "11-6",
-      "result": "Lost in the wild card round",
-      "grade": "B+"
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "B"
      },
-     "book": "300c94a8a46f954b"
+     "book": "66051d5831b64e46"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
+      "rec": "4-13",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "0fbf4d1ed80ba25f"
+     "book": "370944ba5b5f63de"
     }
    ]
   },
@@ -494,16 +499,16 @@
       "result": "Lost in the wild card round",
       "grade": "B"
      },
-     "book": "c28a478e66912e31"
+     "book": "c50d7a541621ee75"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "11-6",
+      "rec": "13-4",
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "05abc04dbd33ebab"
+     "book": "789c6c45c6abec20"
     }
    ]
   }

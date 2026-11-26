@@ -1,5 +1,5 @@
 {
- "fp": "6215247027f5a481",
+ "fp": "3b79ac6211a15e85",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -150,21 +150,26 @@
    "fp": "6215247027f5a481",
    "from": "30c6ece58cf32d78",
    "note": "review polish: a new career's rosters take distinct first names and surnames (attributes are read from a name's hash, so games move); 'Pin them deep' only from the opponent's 35 out; backups' lines; screens"
+  },
+  {
+   "fp": "3b79ac6211a15e85",
+   "from": "6215247027f5a481",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "35a2179918fda954",
-    "post": "e995a34523a358a9",
-    "champion": "Notre Dame",
-    "rec": "a522c07cca71eac2",
-    "poll": "64bc6e834a3a6134",
-    "heis": "4b9fa7093991ae80",
-    "history": "d4c63fa5692c4360",
-    "universe": "98797595e2fa1d7f",
-    "screens": "9a7d9e75673dd7e9"
+    "games": "28eb3177b1b52086",
+    "post": "f650e6d7c97421b2",
+    "champion": "Ohio State",
+    "rec": "90070c50c9489033",
+    "poll": "b86bc4267140e3e4",
+    "heis": "19422758f67a94a0",
+    "history": "c8fddc0638537dbe",
+    "universe": "cff4677800c5cc5d",
+    "screens": "fbc03f94e531a7e7"
    }
   ]
  }

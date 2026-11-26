@@ -1,5 +1,5 @@
 {
- "fp": "7db5d2fc482e864c",
+ "fp": "8a7ce9c311be32a6",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -165,21 +165,26 @@
    "fp": "7db5d2fc482e864c",
    "from": "55b61b4531d1e1c8",
    "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
+  },
+  {
+   "fp": "8a7ce9c311be32a6",
+   "from": "7db5d2fc482e864c",
+   "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b375b5824914dfb",
-    "post": "2ce5cd62c82d3d44",
-    "champion": "Columbus",
-    "rec": "55f305fef7c7b9eb",
-    "poll": "3930f4d04e8ea79e",
-    "heis": "cb6ffd0cc49ff6af",
-    "history": "fa786d72b291d325",
-    "universe": "18a791ee655ca54a",
-    "screens": "25e6d275f2f79455"
+    "games": "e6c9649933e840c0",
+    "post": "822d828a30cc61d4",
+    "champion": "Los Angeles",
+    "rec": "babc9790fe42cb6a",
+    "poll": "c1091ba2a45e5f98",
+    "heis": "588a323304c4a9f0",
+    "history": "9a813fb1ad8da80c",
+    "universe": "196e395e262667c9",
+    "screens": "84cd1912218d521d"
    }
   ]
  }
