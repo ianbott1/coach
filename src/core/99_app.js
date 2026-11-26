@@ -1390,6 +1390,7 @@ function endSeason(rng,choices,act,seasonTeam){
   if(typeof tdCarry==="function")tdCarry(U);   // round 83: the season's trades into next season's rosters, before the careers are banked
   SEA.bankCareers(U);
   SEA.bankPeople(U);   // round 111
+  if(typeof loreBank==="function")loreBank();   // engine 27: the record book, the champions, the awards (core 93_lore)
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
     S.calls=keep;
@@ -1406,6 +1407,7 @@ function endSeason(rng,choices,act,seasonTeam){
   if(eng26())U.rc26=recentre26(U);   // engine 26: the league held to its opening level and spread (core 20_engine)
   if(typeof peopleDepart==="function"&&before)peopleDepart(before,entry,my);   // round 111: who left, and how
   const off=Object.assign({},act,B);
+  if(typeof loreSummer==="function")loreSummer(off);   // engine 27: who retired, the Hall of Fame, the carousel (core 93_lore)
   const exp=S.expNow||expectations();
   const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my],my);
   S.history.push(Object.assign(entry,{
@@ -2030,6 +2032,7 @@ function seasonMissed(h){return h.miss!==undefined?!!h.miss:/Short of the mark|A
 function missedTwiceFor(team,history,exp){
   const now=seasonGrade(SEA.rec[team][0],SEA.rec[team][1],SEA.seasonResult(team),exp);
   const prev=(history||[]).find(h=>h.year===SEA.year-1&&h.team===team);
+  if(typeof loreOn==="function"&&loreOn())return bossFires(team,history,now);   // engine 27: the owner's patience (core 93_lore)
   return !!(now.miss&&prev&&seasonMissed(prev));
 }
 function missedTwice(my,exp){return missedTwiceFor(my,S.history,exp)}
@@ -2047,7 +2050,8 @@ function seatVerdict(my){
     const g=seasonGrade(w,l,r,exp); if(!g||!g.g)return "";
     const aim=exp.l?String(exp.l).replace(/\.$/,""):"";
     return `The board's verdict so far: ${g.g}, ${String(g.l||"").replace(/\.$/,"").toLowerCase()}. It weighs the season together: ${w} wins${exp.w?` against the ${exp.w} it hoped for`:""}${r?`, and ${r.replace(/\.$/,"").replace(/^[A-Z](?=[a-z])/,c=>c.toLowerCase())}`:""}${aim?` against its aim (${aim})`:""}. ${g.miss?"That's short, and the job is under pressure.":"Taken together, the job is safe."}` }catch(e){ return "" } }
-function seatWhyNow(){ return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
+function seatWhyNow(){ if(typeof loreOn==="function"&&loreOn())return bossBrink(S.myTeam,S.history)?bossWhy(S.myTeam,S.history):"";   // engine 27 (core 93_lore)
+  return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
 /* where you stand against that rule: missed last year here, you're on the
    hot seat all season; on pace to miss this year, you're under pressure */
 function seatBadge(){
@@ -2062,8 +2066,10 @@ function seatBadge(){
   // and names the target missed, so a second-round exit isn't read as failure out of nowhere (Grokbot, hockey)
   // just "HOT SEAT": the reason ran the badge onto three lines and over the coach's name at 390px (Ian,
   // Instinct); it's on hover and at the top of the board's objectives (seatWhy)
-  const hot=`<span class="seat hot" title="${esc(seatWhy(prev)||"You missed last season's target. Miss this one too and the job goes.")}">HOT SEAT</span>`;
-  if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Secure</span>`;   // one calm word, not two (Instinct: "Settled" and "Secure" read as different)
+  // engine 27: the owner's patience decides when the seat is hot (core 93_lore bossBrink)
+  const lore27=typeof loreOn==="function"&&loreOn(), brink=lore27?bossBrink(my,S.history):!!(prev&&seasonMissed(prev));
+  const hot=`<span class="seat hot" title="${esc((lore27?bossWhy(my,S.history):seatWhy(prev))||"You missed last season's target. Miss this one too and the job goes.")}">HOT SEAT</span>`;
+  if(w+l<4)return brink?hot:`<span class="seat cool">Secure</span>`;   // one calm word, not two (Instinct: "Settled" and "Secure" read as different)
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
   const paceW=Math.round(w/(w+l)*games);
   // a league table grades by position, and a season without a result graded "on course" every week:
@@ -2083,7 +2089,7 @@ function seatBadge(){
     if(SEA.phase!=="week"&&typeof SEA.seasonResult==="function"){ let r2=""; try{ r2=SEA.seasonResult(my)||"" }catch(e){}
       g=seasonGrade(w,l,r2,exp) }
     else g=seasonGrade(paceW,games-paceW,res,exp) }
-  if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
+  if(g.miss)return brink?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool"${seatVerdict()?` title="${esc(seatVerdict())}"`:""}>Secure</span>`;
 }
 
@@ -2901,6 +2907,7 @@ function weekNews(W){
   }
   if(typeof milestoneNews==="function")milestoneNews(my).forEach(x=>items.push(x));
   if(typeof peopleNews==="function")peopleNews(my).forEach(x=>items.push(x));   // round 111: your dressing room
+  if(typeof loreWeekNews==="function")loreWeekNews(my).forEach(x=>items.push(x));   // engine 27: the league around you (core 93_lore)
   items.sort((x,y)=>(y.p||0)-(x.p||0));
   return items;
 }
@@ -3388,7 +3395,7 @@ function dynastyView(){
   let h=`<div class="dateline"><h2>Dynasty</h2>
     <span>${(()=>{ const n=historyNow().length; return n+" season"+(n===1?"":"s")+" done" })()}${SEA&&SEA.phase!=="done"&&!S.history.some(h=>h.year===SEA.year)&&(SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1])>0?" &middot; "+SEA.year+" under way":""}</span></div>`;
   h+=`<div class="subtabs">${[["program","You"],["coaches","Coaches"],["teams","Teams"],
-    ["league","History"],["shared","Online"]].map(([k,l])=>
+    ["league","History"]].concat(LEAGUE.lore&&(U.lore||eng27())?[["records","Records"]]:[]).concat([["shared","Online"]]).map(([k,l])=>
     `<button class="subtab" data-d="${k}" aria-pressed="${dynTab===k}">${l}</button>`).join("")}</div>`;
 
   if(dynTab==="program"){
@@ -3413,6 +3420,7 @@ function dynastyView(){
         <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
         <span class="stoprec">${careerRec(s,s.team,s.from,s.to)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`}).join("")}</div>`;
+    if(typeof bossHTML==="function")h+=bossHTML();   // engine 27: your owner and his patience (core 93_lore)
     h+=yourSeasonsHTML();
     h+=filmRoomHTML();
     h+=cabinetHTML();
@@ -3451,6 +3459,7 @@ function dynastyView(){
   }
 
   if(dynTab==="coaches")return h+coachesView();
+  if(dynTab==="records"&&typeof loreBookHTML==="function")return h+loreBookHTML();   // engine 27 (core 93_lore)
   if(dynTab==="shared")return h+leagueView();
 
   // league history
@@ -3978,8 +3987,8 @@ function render0(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}${advPlanTag()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
-      (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+(typeof loreNightHTML==="function"?loreNightHTML():"")+LEAGUE.ui.offseasonScreen():
+      (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner()+(typeof loreSummerHTML==="function"?loreSummerHTML():""):
        flash&&flash.type==="digest"?digestBlock():"")+
       (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(S.history&&S.history.length)&&!(SEA.rec[S.myTeam]||[]).some(x=>x>0)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
@@ -4008,6 +4017,7 @@ function render0(){
   document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
+    if(b.dataset.lt&&typeof loreTab!=="undefined"){loreTab=b.dataset.lt}
     else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
     else if(b.dataset.sttab){standTab=b.dataset.sttab}   // round 69

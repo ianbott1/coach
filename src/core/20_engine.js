@@ -15,7 +15,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||26);   // 26: hockey game day (the goalie pull as real benches pull, lines and legs, the timeout: HK_GD_V); soccer's matchday (the team sheet and formation, five changes in three windows, condition and rotation); the college roster economy (revenue sharing, NIL, the transfer portal: core 92_market); box scores, leaders and awards a stats fan believes (stats lines in all seven, MVP and Heisman by slot, baseball's walks); long-career integrity (ratings held to the opening league, ceilings, aging by position, the summer's own dice); baseball's dugout (handedness and platoons, a named bullpen with roles and rest, pitch counts and times through the order, the lineup card, holds, the call is who: BS_V26); 25: the review round: game day as coaching (basketball timeouts and runs: BB_GD_V), results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit), the people; 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||27);   // 27: a league with a memory (records, Hall of Fame, awards night, the coaching carousel at real rates, owners); 26: hockey game day (the goalie pull as real benches pull, lines and legs, the timeout: HK_GD_V); soccer's matchday (the team sheet and formation, five changes in three windows, condition and rotation); the college roster economy (revenue sharing, NIL, the transfer portal: core 92_market); box scores, leaders and awards a stats fan believes (stats lines in all seven, MVP and Heisman by slot, baseball's walks); long-career integrity (ratings held to the opening league, ceilings, aging by position, the summer's own dice); baseball's dugout (handedness and platoons, a named bullpen with roles and rest, pitch counts and times through the order, the lineup card, holds, the call is who: BS_V26); 25: the review round: game day as coaching (basketball timeouts and runs: BB_GD_V), results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit), the people; 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -165,6 +165,8 @@ function gapScale25(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=25&&LEAGU
      (recentre26); the attributes' average lean likewise (attrRecentre26, core 93_attrs)
    - the summer's dice are the career's own (core 99_app offseasonRng). */
 function eng26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=26 }
+/* engine 27 (review round 3, league life): see core 93_lore */
+function eng27(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=27 }
 /* the mean summer change before the cap at potential, by effective age (age less the position's shift) */
 function ageBase26(a){ return a<=21?2.8:a<=22?2.4:a<=23?1.9:a<=24?1.5:a<=25?1.2:a<=26?1.0:a<=27?0.9:a<=28?0.8:a<=29?0.5
   :a<=30?-0.2:a<=31?-1.0:a<=32?-2.0:a<=33?-3.0:a<=34?-4.0:-5.4 }
@@ -568,6 +570,7 @@ function offseasonCoaching(u,rng,rec,elo,users){
   const userTeam=Object.keys(users)[0];
   const fired=[],hires=[],poached=[];
   if(!u.coach){u.coach={};NAMES.forEach(t=>{u.coach[t]=newCoach(rng,u.program[t]);u.coach[t].hired=false})}
+  const mid27={}; if(eng27()&&typeof loreMid==="function")loreMid().forEach(m=>{ if(!isUser(m.t))mid27[m.t]=m });
 
   NAMES.forEach(t=>{
     const wp=rec[t][0]/Math.max(1,rec[t][0]+rec[t][1]);
@@ -578,6 +581,14 @@ function offseasonCoaching(u,rng,rec,elo,users){
     }
     const heat=seatHeat(u,rec,elo,t);
     const change=(heat>=4.6)||(wp<0.25&&u.coach[t].t>=2);
+    // engine 27 (league life): the real leagues' rate of change (LEAGUE.lore.coach, sources in leagues/<id>/89_lore.js
+    // and CHANGELOG-review/league-life.md). A club that fired its coach in season (core 93_lore loreMid) changes now;
+    // the rest by the old rule (keep: how often a hot seat ends in a firing) and a smaller chance below it (x, from
+    // heat h), by hash so no other dice move
+    const LC=eng27()&&LEAGUE.lore&&LEAGUE.lore.coach;
+    if(LC){ if(mid27[t]||(change&&hash01("fire|"+(u.seed||0)+"|"+t+"|"+u.year)<LC.keep)||(!change&&LC.x>0&&heat>LC.h&&u.coach[t].t>=1
+        &&hash01("fire2|"+(u.seed||0)+"|"+t+"|"+u.year)<LC.x*Math.min(1,(heat-LC.h)/2))){fired.push(t);u.bad[t]=0}
+      return }
     if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}
   });
 
@@ -585,6 +596,13 @@ function offseasonCoaching(u,rng,rec,elo,users){
   // twenty seasons, and UCLA won 6 of 20 titles in one career). From his tenth season, 5% a year and 2.5 more each year
   // after (about sixteen seasons for one who is never fired); drawn from a hash, so no other dice move
   const retired=[];
+  // engine 27: a pro coach retires or steps away too (from his sixth season, LEAGUE.lore.coach.ret a year)
+  if(eng27()&&LEAGUE.lore&&LEAGUE.lore.coach&&LEAGUE.lore.coach.ret)NAMES.forEach(t=>{
+    const c=u.coach[t]; if(!c||c.you||isUser(t)||fired.indexOf(t)>=0||!(c.t>=5))return;
+    if(hash01("pret|"+(u.seed||0)+"|"+t+"|"+u.year)<LEAGUE.lore.coach.ret*(1+(c.t-5)*0.15)){
+      retired.push({team:t,name:c.n,q:c.q,t:c.t});
+      u.coach[t]=newCoach(rng,u.program[t]); u.coach[t].since=u.year+1;
+      hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+c.n+", who retired"}) } });
   if(eng26()&&(LEAGUE.id==="cfb"||LEAGUE.id==="ncaab"))NAMES.forEach(t=>{
     const c=u.coach[t]; if(!c||c.you||isUser(t)||fired.indexOf(t)>=0||!(c.t>=10))return;
     if(hash01("cret|"+(u.seed||0)+"|"+t+"|"+u.year)<Math.min(0.35,0.05+0.025*(c.t-10))){
@@ -642,7 +660,10 @@ function offseasonCoaching(u,rng,rec,elo,users){
     if(u.coach[t].hired&&u.coach[t].t===0)return;
     const old=u.coach[t].n;
     u.coach[t]=newCoach(rng,u.program[t]); u.coach[t].since=u.year+1;   // his first season (coachYear)
-    hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+old});
+    // engine 27: about a third of interim coaches keep the job (by hash)
+    const m=mid27[t]; if(m&&hash01("keep|"+t+"|"+u.year)<0.35){ u.coach[t].n=m.i;
+      hires.push({team:t,name:m.i,q:u.coach[t].q,reason:"the interim coach, kept on after "+m.n+" was fired"}); return }
+    hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+(m?m.n:old)});
   });
 
   // ordinary staff churn everywhere else
