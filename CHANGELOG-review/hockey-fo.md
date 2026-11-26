@@ -2,7 +2,8 @@
 
 Game: pro hockey only (`hockey-coach-pro.html`, league `nhl`). Code is in `src/leagues/nhl` (new: `24_hkcap.js`,
 `27_hkrun.js`, `28_hkviews.js`, `29_hktrades.js`; edited: `26_offseason.js`, `98_offseason_views.js`) except for small
-guarded hooks in `src/core/98_trades.js` and `src/core/98_trades_cpu.js` (entry 7). Nothing in `src/hockey/` changed.
+guarded hooks in `src/core/98_trades.js` and `src/core/98_trades_cpu.js` (entry 7). The follow-up (end) touches the
+game day and the box score in `src/hockey/`, gated on engine 27.
 Everything that moves a result is gated on engine 27: a career's summer runs on the new rules when it follows an engine-27
 season (`hkSummer()`), and the career is on them from then on (`u.hkFO`). `ENGINE_NOW` is 27.
 Test: `node test/hockey-fo.js [seasons=20] [seed=11]` (20 summers, about a minute alone; in the fast tier).
@@ -170,7 +171,45 @@ limit, no floor, no restricted free agents, no entry-level deals, no buyouts, no
   engine 26 already sits near the top of. Goals a game are unchanged (6.4). Not tuned here: the leaders' share is
   the game day's (src/hockey), and the band is the brief's to keep.
 
+## Follow-up: the power play across stretches, and the bottom six scoring
+
+What: two engine-27 changes in `src/hockey/` (engine 26 replays as before).
+- A goal timed inside the other side's penalty that has no free minute in its stretch to move to (the short stretch
+  before the tail, 55'-57', with a penalty in it or carried into it) is now a power-play goal, counted in the team's
+  power-play goals (`50_game.js`). Before, it stayed an even-strength goal inside the penalty.
+- The roster carries twenty-three now, so the men it used to leave out are on it. The third line, the third pair and
+  the fourth line's forwards (slots 12-16 and 18-20: twelve forwards and six defencemen, as a club dresses) take part
+  of the depth goals, each at 0.4 of a second-unit man's weight (`HK27_X`). Their goals go on their own box lines and
+  season stats (`10_players.js`, `75_screens.js`), and the highlight puts the scorer on the ice in his own number
+  (`72_highlights.js`). League goals a game don't move: the scorers change, not the score.
+
+Why: test/hk-pp-goal.js failed on engine 27 (a 55' goal inside a 55' penalty). Separately, the top goal scorer ran
+over the real range: `longrun --short` had 76.0 against 45-72, and the NHL's 2015-25 leaders scored 44-69. Ten skaters
+took every goal.
+
+Game(s): pro hockey.
+
+Tested: the top goal scorer and goals a game, from 4 seeds × 5 seasons each:
+
+| | Top scorer | 50-goal men a season | Goals a game |
+|---|---|---|---|
+| Engine 26 | 73.2 | 20 | 6.2 |
+| Engine 27 before the follow-up (2 seeds) | 71.8 | | |
+| Engine 27 now | 64.7 (60.2-67.8 by seed) | 13 | 6.3 |
+
+Lower than engine 26 and inside the real league's range. A weight of 0.25 gave 68.4 and 0.5 gave 65.0, so the
+seed-to-seed spread is as big as the choice. On the final build:
+- MATCH: hk-pp-goal (131 goals, 22 on the power play, none inside a penalty), `longrun.js --short` (all seven games;
+  hockey's top scorer 68.3 late, goals a game 6.3), `boxscores.js hockey` (50-goal men 9, band 0-14), hockey-fo,
+  engine-replay with OLD=/home/claude/dist-e26 (all seven), migrate (2253 of 2253), reload (18 of 18), saves,
+  nhl-screens (706), nhl-history, hk-lines (225 of 225 shooters the scorer), hk-gameday, hk-reads, hk-pb.
+- ev-full.js and hk-clipjoin.js need Playwright's browsers, which aren't installed here, so they didn't run.
+
+Not yet: assists stay with the top ten (the bottom six get goals, not assists). The bottom six don't get shots on the
+box score beyond their goals.
+
 ## Files
 - New: `src/leagues/nhl/24_hkcap.js`, `27_hkrun.js`, `28_hkviews.js`, `29_hktrades.js`, `test/hockey-fo.js`.
+- Follow-up: `src/hockey/10_players.js`, `50_game.js`, `72_highlights.js`, `75_screens.js`.
 - Edited: `src/leagues/nhl/26_offseason.js`, `src/leagues/nhl/98_offseason_views.js`, `src/core/20_engine.js`
   (`ENGINE_NOW` 27), `src/core/98_trades.js`, `src/core/98_trades_cpu.js`, `test/run-all.js` (fast tier).
