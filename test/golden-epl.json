@@ -1,5 +1,5 @@
 {
- "fp": "88ca02c152e19fa6",
+ "fp": "5d8d34cc52c3eefb",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -625,6 +625,11 @@
    "fp": "88ca02c152e19fa6",
    "from": "81a3e9c7c3acfef6",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "5d8d34cc52c3eefb",
+   "from": "88ca02c152e19fa6",
+   "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (screens only, no result moves)"
   }
  ],
  "result": {
@@ -677,7 +682,7 @@
     "heis": "49f71dda3d50bc34",
     "history": "2d1e07cf69550cda",
     "universe": "8d8fbbefd24aa844",
-    "screens": "f4b19c00e2f1021a"
+    "screens": "075ae76c1f602adb"
    }
   ],
   "schedules#60": [

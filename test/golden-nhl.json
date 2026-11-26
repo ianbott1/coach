@@ -1,5 +1,5 @@
 {
- "fp": "4ec2632811ce6fd7",
+ "fp": "1caeb51121d24eb1",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -655,6 +655,11 @@
    "fp": "4ec2632811ce6fd7",
    "from": "59e1d056a68c44ff",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "1caeb51121d24eb1",
+   "from": "4ec2632811ce6fd7",
+   "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (screens only, no result moves)"
   }
  ],
  "result": {
@@ -681,7 +686,7 @@
     "heis": "64c97b4a3c514d62",
     "history": "887ed5e333bcfa56",
     "universe": "792a7a4e86c4133f",
-    "screens": "3755a0d58d6f1bf3"
+    "screens": "7206e49811d11cb1"
    }
   ],
   "Edmonton#777": [
@@ -695,7 +700,7 @@
     "heis": "5fc420f36f7be3b3",
     "history": "d7ad22569417e39e",
     "universe": "1d620e551570f653",
-    "screens": "754795d94b07da78"
+    "screens": "e1a9971a27e4ecd7"
    },
    {
     "year": 2027,
@@ -707,7 +712,7 @@
     "heis": "831e79806fcb8f4f",
     "history": "61c58fc45c771ec5",
     "universe": "d5ff87e78e312584",
-    "screens": "5c6b0c5c97ccdde7"
+    "screens": "b7e7ab013f7fd11b"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "56e3687e1568df7b",
+ "fp": "b783dd22199c7e86",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -175,21 +175,26 @@
    "fp": "56e3687e1568df7b",
    "from": "1a2a58de5b2e862e",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "b783dd22199c7e86",
+   "from": "56e3687e1568df7b",
+   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "cf5b7dc4350aea9b",
-    "post": "c96910eecfd00c11",
-    "champion": "Ohio State",
-    "rec": "cd3144d7b2ce2ce3",
-    "poll": "8b4427b12d0e5dc3",
-    "heis": "5a7815fb7627f95e",
-    "history": "c51e90aad2d51b6e",
-    "universe": "06b0f9d4ea16cce8",
-    "screens": "a2dc536a22aeaaf9"
+    "games": "78fcb551f734b487",
+    "post": "8fce42596a452855",
+    "champion": "BYU",
+    "rec": "4a61d277661bca83",
+    "poll": "f3632456ee66ef2c",
+    "heis": "29370f8d7813f22b",
+    "history": "7937929f7d222a18",
+    "universe": "0614460e23dc569d",
+    "screens": "250156be9b57bc56"
    }
   ]
  }

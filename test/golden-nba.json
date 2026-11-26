@@ -1,5 +1,5 @@
 {
- "fp": "edf9496069051884",
+ "fp": "4ba1c0ba8791b199",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -620,6 +620,11 @@
    "fp": "edf9496069051884",
    "from": "cd65e7fb1e461f4c",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "4ba1c0ba8791b199",
+   "from": "edf9496069051884",
+   "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (screens only, no result moves)"
   }
  ],
  "result": {
@@ -660,7 +665,7 @@
     "heis": "827255945f877f5b",
     "history": "0285076455345b22",
     "universe": "3f3dbc4d96c8527b",
-    "screens": "8aac901c2f68114f"
+    "screens": "ac3879218752457c"
    },
    {
     "year": 2027,
@@ -672,7 +677,7 @@
     "heis": "89e38a1bb8ed1ce1",
     "history": "c743fdb6013c0c90",
     "universe": "15bfcb42d5b1d986",
-    "screens": "927fe9502b21fadf"
+    "screens": "92d8d5546a448108"
    }
   ],
   "schedules#60": [

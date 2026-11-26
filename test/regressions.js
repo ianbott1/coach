@@ -339,7 +339,11 @@ for(const [f,team,adv] of GAMES.filter(g=>!/soccer/.test(g[0])).map(g=>[g[0],g[1
     // (baseball's context is its lineups and tonight's starters, which the chance doesn't carry: the test played without
     // them before round 94 and still does; only the lineup's lean, which its plan fit plays from. Round 94 measured the
     // gap the rest makes at equal ratings: Seattle 58% over the Dodgers, Miami 55% over Colorado, scratch r94 neut.js)
-    const ctx=ctx0&&ctx0.lz?{lz:ctx0.lz}:ctx0;
+    // (rv3/fixes-odds: since engine 26 the clubs' gap is played through the lineup card, the men's attributes and the
+    // bullpens, and the chance was refit on those games (BS26_WP), so a game with only the lean is no longer the game:
+    // Colorado, 201 better, won 51% of them against 57% shown and 57% of full games. Baseball now plays its whole context,
+    // as the season does; the chance carries tonight's starters at their engine-26 worth on engine 27 (BS27_SPQ))
+    const ctx=ctx0;
     for(let i=0;i<N;i++){ const g=A.playGame(r,e.h,e.a,'balanced',op,{neutral:true,ctx:ctx}); if(g.h>g.a)w++; else if(g.h===g.a)w+=0.5 }
     const d=shown-w/N; sum+=d; n++; if(Math.abs(d)>Math.abs(worst)){ worst=d; wmsg=`${opp} (gap ${Math.round(e.h-e.a)}): shows ${(100*shown).toFixed(0)}%, wins ${(100*w/N).toFixed(0)}%` } }
   ok(Math.abs(sum/n)<0.03&&Math.abs(worst)<0.07,`${f}${adv?' after '+adv+' weeks':''}: the chance shown against the engine over ${n} opponents: mean ${(100*sum/n).toFixed(1)} points, worst ${wmsg}`) }

@@ -86,6 +86,21 @@ const FB14=Object.assign({a:+(FB14_ENV("FB14_A")||2.5),
   g:+(FB14_ENV("FB14_G")||((LEAGUE.tuning&&LEAGUE.tuning.fb14g)||1)),
   gap:+(FB14_ENV("FB14_GAP")||((LEAGUE.tuning&&LEAGUE.tuning.fb14gap)||1)),
   pw:Object.assign({safe:{acc:1.5,hnd:1.5,blk:1.5,arm:0.6,spd:0.6}, aggressive:{arm:1.5,spd:1.5,acc:0.6,hnd:0.6,blk:0.6}}, FB14_ENV("FB14_PW")?JSON.parse(FB14_ENV("FB14_PW")):{})});
+/* engine 27 (rv3/fixes-odds): each term worth the same per point again. Engine 27's fourth downs (51_tactics) are decided
+   from where a drive stalls, so the yards a stalled drive gains (Blocking against Pass rush) became points: a point of
+   either was worth 113-125 Elo against about 39-63 for every other term (engine 26: all 45-64), and the turnover terms lost a
+   quarter (fb27To follows the gap less steeply). A roster's shape is meant to change how it plays, not what it's worth,
+   and the chance shown, the plan fits and the computer's plans are all read on that rule: college football's Alabama
+   was shown 48% against BYU and won 62% (their weak pass rush gave Alabama 18 more yards on every stalled drive). Each
+   attribute's terms are scaled on engine 27 by its worth on 26 over its worth on 27 (scratch odds/worth.js: home's lean
+   at +-1, 20,000 games a side on common dice, both builds), so a point is worth on 27 what it was on 26. */
+const FB27_CW=Object.assign({
+  nfl:{arm:1.165,acc:1.540,spd:1.127,hnd:1.540,blk:0.338,str:1.205,cov:1.413,tkl:1.373,rsh:0.331,strD:1.264,spdD:1.193},
+  cfb:{arm:1.12,acc:1.364,spd:1.092,hnd:1.364,blk:0.458,str:1.102,cov:1.308,tkl:1.40,rsh:0.438,strD:1.137,spdD:1.15}}[LEAGUE.id==="nfl"?"nfl":"cfb"],
+  FB14_ENV("FB27_CW")?JSON.parse(FB14_ENV("FB27_CW")):{});
+const FB27_CMAP={arm:["arm"],acc:["acc","accS"],spd:["spd"],hnd:["hnd","hndS"],blk:["blk"],str:["str"],cov:["covT","covI"],tkl:["tklB","tklF"],rsh:["rsh"],strD:["strD"],spdD:["spdD"]};
+const FB14_C27=(()=>{ const c=Object.assign({},FB14.c); Object.keys(FB27_CMAP).forEach(a=>FB27_CMAP[a].forEach(k=>{ c[k]*=FB27_CW[a]==null?1:FB27_CW[a] })); return c })();
+function fbC(){ return fb27()?FB14_C27:FB14.c }   // the terms a drive plays with (engine 27: FB14_C27)
 const FB_OK=["arm","acc","spd","hnd","blk","str"], FB_DK=["cov","tkl","rsh","str","spd"];
 const FB_VIS={QB:"acc",RB:"spd",WR:"hnd",OL:"blk",LB:"cov",DB:"cov"};
 function fbV14(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=14 }
@@ -100,7 +115,7 @@ function fbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x
 /* one side's drives against the other's defense: changes to the drive's rates (td, to: chance a drive; brk: touchdown
    chance at a 73-yard field, scaled by the field's length; sus: touchdowns and field goals both, as a share; gain: yards
    on a stalled drive). The plan realises some terms more than others (FB14.pw). */
-function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=FB14.c, w=FB14.pw[plan]||{}, m=k=>w[k]!=null?w[k]:1;
+function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=fbC(), w=FB14.pw[plan]||{}, m=k=>w[k]!=null?w[k]:1;
   return {td:c.arm*m("arm")*O.arm-c.covT*D.cov, to:-c.acc*m("acc")*O.acc-c.hnd*m("hnd")*O.hnd+c.covI*D.cov+c.tklF*D.tkl,
     brk:c.spd*m("spd")*O.spd-c.tklB*D.tkl-c.spdD*D.spd, gain:c.blk*m("blk")*O.blk-c.rsh*D.rsh,
     sus:c.str*m("str")*O.str+c.accS*m("acc")*O.acc+c.hndS*m("hnd")*O.hnd-c.strD*D.str} }
@@ -111,7 +126,7 @@ function fbSideMods(ctx,planH,planA,hum){ const S=ctx&&ctx.sh; if(!fbV14()||!S||
   // points: c.arm/(a R_SLOPE) a touchdown point per Elo; Accuracy's drives the same through c.accS)
   if(planAmpV())[["home",planH],["away",planA]].forEach(([sd,pl])=>{ if(!M[sd]||!pl||pl==="balanced")return;
     const F=fbLg(hum&&hum[sd]?FB14_FIT:FB14_FITC)[pl]; if(!F)return; const f=fbFitOf(F,S[sd]), o=sd==="home"?"away":"home", E=(hum&&hum[sd]&&planVsV()?planVsTot(planAmp(f,FB17),-fbVsOf(S[o].d,pl),FB17.cap):planAmp(f,FB17))-f, u=E/(FB14.a*R_SLOPE);   // engine 23 (round 109): a person's plan against their defence
-    if(pl==="aggressive")M[sd].td+=FB17.ga*u*FB14.c.arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*FB14.c.accS });
+    if(pl==="aggressive")M[sd].td+=FB17.ga*u*fbC().arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*fbC().accS });
   return M }
 /* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
    path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */

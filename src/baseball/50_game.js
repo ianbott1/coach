@@ -737,7 +737,15 @@ function sportPlanCap(){ return BS17.cap }
    average, so the card read the same whoever pitched). Measured (r109 spq.js, 20,000 games a cell, equal clubs): a
    starter's q is worth 853 Elo a unit, so ten rating points over his rotation's mean about 43 Elo, 4 points of chance */
 const BS23_SPQ=853;
-function sportTonightEdge(t){ if(!planVsV()||typeof SEA==="undefined"||!SEA)return 0; const sp=spCtx(t,cardStepFor(t)); return sp&&sp.q?BS23_SPQ*sp.q:0 }
+/* engine 27 (rv3/fixes-odds): what tonight's starter is worth since the dugout (engine 26: pitch counts, times through the
+   order, a starter's form all but gone). Measured on the merged build (scratch odds/bsspq2.js: eight pairs, each side's
+   starter at +-0.04 of q, 12,000 games a side on common dice): 1,180 to 1,655 Elo a unit, mean 1,465. The chance counted
+   853 a unit and then, with the whole edge, BS26_WP of it (614): the card read Seattle 51% against the Dodgers on a day
+   its starter was 0.049 better than theirs, and the games gave Seattle 59%. On 27 the starter counts BS27_SPQ through
+   BS26_WP's reading, so 1,465 on the curve. */
+const BS27_SPQ=+((typeof process!=="undefined"&&process.env&&process.env.BS27_SPQ)||1465);
+function sportTonightEdge(t){ if(!planVsV()||typeof SEA==="undefined"||!SEA)return 0; const sp=spCtx(t,cardStepFor(t)); if(!sp||!sp.q)return 0;
+  return (eng27()&&bsV26()?BS27_SPQ/BS26_WP:BS23_SPQ)*sp.q }
 function sportPlanVsWhy(o,k,v){ const sp=spCtx(o,cardStepFor(o)), nm=sp?esc(sp.n):"their starter", z=bsSpZ(o,cardStepFor(o));   // round 110: his lean, as the card says it (the old "doesn't miss many bats" read as his strikeouts: Muse, 7 in 5.2 innings)
   return `${nm} starts for ${esc(o)}, leaning to ${z>=0?"Stuff over Control":"Control over Stuff"}` }
 const PLAN_LEAN={safe:"contact and eye",aggressive:"power"};

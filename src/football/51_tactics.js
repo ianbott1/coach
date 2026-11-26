@@ -300,3 +300,40 @@ function fb27Ctx(h,a,year,step,fav,seed,sea){ try{ if(!fb27())return undefined; 
     const auto=Object.assign(fb27CpuOff(t,year,U[sd],U[od],oppSch),fb27CpuDef(t,year,sch,U[sd],U[od]));
     o.g[sd]=mine||auto; o.auto=o.auto||{}; o.auto[sd]=auto; o.sch=o.sch||{}; o.sch[sd]=sch; if(mine)o.user[sd]=1 });
   return o }catch(e){ return undefined } }
+
+/* ---- the game plan in the chance shown (engine 27, rv3/fixes-odds) ----
+   The chance before a game (core gameEdge) counted the plan word's fit and worth but not the weekly game plan, which
+   every engine-27 game plays: each side's levers against the other's units (fb27Mods: Elo on that side's drives, so
+   half of it on the game), and each option's style, which is worth more or less with the gap (a hurry-up helps the
+   better side, slowing it down and the blitz scheme help the underdog). GP_W: each option's worth past its Elo terms,
+   [at even, per Elo of its own side's gap], measured against the default plan at gaps -250 and +250, 60,000 games a
+   point, no units, each game its own seed so a tempo's possessions come at their average (scratch odds/gpslope3.js,
+   gpcombo.js: the offense's mix and tempo together, a defense's shell and pressure as its scheme plays them). The plans
+   are both clubs' assistants' (yours too, so the card doesn't move with your taps, round 110's rule; your plan's own
+   worth is on the plan card), and a computer defense is any of its three schemes, its usual one fbFavW() times in
+   fbFavW()+2, as a game you coach draws it.
+   College football only. Over 162 pairs (eight clubs, two seeds, 1,500 games a pair, scratch odds/wide.js) the chance
+   missed the engine by 2.63 points on average without it and 2.18 with it (pairs off by more than 7: 9 and 6). In the pro
+   game it measured no better (105 pairs, 2,000 games a pair: 2.85 without, 2.98 with), so it is left out there (GP_W
+   null); its table is kept for the next look. */
+const GP_W_NFL={"o.run.slow":[2.8,-0.0212],"o.run.norm":[2.1,-0.0001],"o.run.fast":[2,0.0281],"o.bal.slow":[3.8,-0.0214],"o.bal.fast":[-2,0.02],"o.pass.slow":[0.4,-0.0316],"o.pass.norm":[-0.1,-0.0072],"o.pass.fast":[1.6,0.0081],"d.c1.high":[8.6,-0.023],"d.c2.low":[4.4,0.0223],"d.c2m.low":[4.4,-0.0028],"cov.c1":[-1.7,-0.013],"cov.c2":[8.6,0.0069],"cov.c2m":[9.3,-0.0164],"blitz.low":[-2.3,0.0077],"blitz.high":[10.2,-0.0136],"key.rb":[1.1,0.0002],"key.wr":[1.1,0.0002],"key.qb":[1.1,0.0002]};   // measured as the college table; not used
+const GP_W=typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?null:Object.assign({"o.run.slow":[-3.1,-0.0225],"o.run.norm":[-4.4,-0.0047],"o.run.fast":[-4.3,0.0418],"o.bal.slow":[0.1,-0.0214],"o.bal.fast":[-1.3,0.0231],"o.pass.slow":[1,-0.0385],"o.pass.norm":[2,-0.0086],"o.pass.fast":[2,0.0182],"d.c1.high":[-2.7,-0.0357],"d.c2.low":[3.3,0.0253],"d.c2m.low":[2.8,0.0051],"cov.c1":[-3.4,-0.0298],"cov.c2":[6.2,0.0055],"cov.c2m":[5.4,-0.0119],"blitz.low":[-4.3,0.0144],"blitz.high":[-1.7,-0.0182],"key.rb":[-0.9,0.0009],"key.wr":[-0.9,0.0009],"key.qb":[-0.9,0.0009]},
+  typeof process!=="undefined"&&process.env&&process.env.GP_W?JSON.parse(process.env.GP_W):{});
+function gpStyleAt(g,gap){ g=gpOk(g); const at=v=>v?v[0]+v[1]*gap:0;
+  // the offense's mix and tempo together; the defense's shell and pressure as a scheme plays them, else each alone; the key
+  let x=at(GP_W["o."+g.mix+"."+g.tempo]); const dv=GP_W["d."+g.cov+"."+g.blitz];
+  x+=dv?at(dv):at(GP_W["cov."+g.cov])+at(GP_W["blitz."+g.blitz]); return x+at(GP_W["key."+g.key]) }
+/* home's edge (Elo) from both game plans, d: home's gap. 0 before engine 27. */
+function sportPlanDayEdge(home,away,d){
+  if(!fb27()||typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[home]||!SEA.roster[away]||!GP_W)return 0;
+  try{ const yr=SEA.year, my=typeof S!=="undefined"&&S?S.myTeam:null, step=typeof cardStepFor==="function"?cardStepFor(my===home?away:home):SEA.step;
+    const fav={home:clubScheme(home,yr),away:clubScheme(away,yr)}, C=fb27Ctx(home,away,yr,step,fav,strHash(home+"|"+away+"|"+yr+"|"+step),SEA);
+    if(!C||!C.auto||!C.u||!C.u.home||!C.u.away)return 0;
+    const U=C.u, T={home:home,away:away};
+    const ways=sd=>{ const g=gpOk(C.auto[sd]); if(T[sd]===my)return [[g,1]];   // your assistant's, its scheme as drawn for the game
+      const od=sd==="home"?"away":"home";
+      return SCHEME_KEYS.map(k=>[Object.assign({},g,fb27CpuDef(T[sd],yr,k,U[sd],U[od]),{key:g.key}),k===fav[sd]?fbFavW():1]) };
+    const H=ways("home"), A=ways("away"); let e=0, w=0;
+    H.forEach(([gh,wh])=>A.forEach(([ga,wa])=>{ const x=(fb27Mods(gh,ga,U.home,U.away).elo-fb27Mods(ga,gh,U.away,U.home).elo)/2+gpStyleAt(gh,d)-gpStyleAt(ga,-d);
+      e+=wh*wa*x; w+=wh*wa }));
+    return w?e/w:0 }catch(e){ return 0 } }
