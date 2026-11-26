@@ -211,6 +211,9 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const c=choices.coach;
     u.coach[ut]={n:c.n,q:c.q,t:0,hired:true,arch:c.arch,rec:c.rec||0};
   }
+  /* engine 26: the January window, before the spring's development (core 92_market). It replaces the budget's
+     four buckets: the money is spent on players now, every program's, by the same rules */
+  const market=pxOn()?pxMarket(u,rec,U_CH,false):null;
 
   NAMES.forEach(t=>{
     const before=u.program[t];
@@ -224,7 +227,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const focus=(ch&&ch.recruit)?ch.recruit:"balanced";
     let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev:0;
     let bud=null;
-    if(ch&&ch.budget){
+    if(ch&&ch.budget&&!market){
       bud=applyBudget(u,t,ch.budget);
       devMod+=bud.devBonus;
       u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
@@ -235,6 +238,9 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
                            {oc:ocq*0.030, dc:dcq*0.030},
                            ch&&ch.board&&ch.board.length?ch.board.map(x=>Object.assign({},x)):null);
     leavers[t]=churn[t].leaving;
+    // seniors a transfer passed in January: they graduate with the rest
+    if(market&&market.grad[t])market.grad[t].forEach(pl=>leavers[t].push({n:pl.n,p:pl.p,r:pl.r,starter:false,
+      car:pl.car||null,from:pl.from||null,peak:pl.peak||pl.r,idx:pl.i%POS.length}));
     u.trueBase[t]=rosterElo(u.roster[t])
                  +(c.t<=1?ROOKIE_DIP:0)
                  +rng.gauss(0,ROSTER_NOISE);
@@ -259,7 +265,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const q=eloToRating(u.program[t])
            +c.q*0.055 +(c.rec||0)*0.55
            +(focus.r||0)*0.45 +(focus.pot||0)*0.12
-           +((ch2&&ch2.budget)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
+           +((ch2&&ch2.budget&&!market)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
            +((ch2&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
            +rng.gauss(0,2.6);
     const signed=6+Math.round(rng.range(0,3));
@@ -286,9 +292,10 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     u.nextRealign=u.year+4+rng.int(4);
   }
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
+  if(market&&typeof S!=="undefined"&&S)S.lastMarket=market;      // for tests: the whole window
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
-          draft:draftResult};
+          draft:draftResult, market:market};
 }
 
 LEAGUE.offseason={
@@ -298,13 +305,28 @@ LEAGUE.offseason={
   budget:{buckets:BUCKETS, pool:budgetPool},
   /* the league's offseason choices, as the offseason screen starts them */
   open(u,t,wins){
+    if(pxOn())return {pool:0, picks:{recruit:"balanced", keep:{}, offers:[]}};   // engine 26: the market's choices
     const pool=budgetPool(u,t,wins);
     return {pool:pool, picks:{recruit:"balanced",
       budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
               facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
   },
   /* ...and as run() reads them */
-  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget} }
+  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget, keep:P.keep||{}, offers:P.offers||[]} }
+};
+
+/* the roster economy (core 92_market, engine 26): football's part of the House settlement's cap, and the window */
+LEAGUE.market={
+  sport:"football", share:0.75,       // the share of the $21.3M cap schools give football (the common 75/15/5/5 split)
+  // the cap's football share at a power-conference school paying it in full ($16.0M; a few pay less), and the
+  // collective on top for a contender: most power rosters $14-16M, contenders $30M and more, near $40M at the top
+  // (CBS Sports, 2026); a Group of Six roster a few million
+  p4Base:11, p4Top:27, p4lo:1550, p4span:450, g6Base:1.5, g6Top:4.5, g6lo:1250, g6span:400,
+  // what the open market pays a year: a starter at a contender about $1M, the best quarterbacks $3-5M (ESPN, Jan 2026),
+  // the lines $1M and more; a Group of Six starter tens of thousands
+  v0:1.2, r0:82, k:9.5, floor:0.02,
+  pos:{QB:2.2,OT:1.25,EDGE:1.25,DT:1.1,WR:1.0,CB:1.0,WR2:0.8,RB:0.75,LB:0.75,S:0.7},
+  rosterLimit:105, window:"Jan 4-13", maxIn:8, posPush:{QB:0.3}
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the
@@ -352,6 +374,8 @@ LEAGUE.goals={
 
 /* ---- the history book: what only college football records ---- */
 LEAGUE.historyExtras=function(sea,off,my){
+  const x=historyExtras0(sea,off,my); if(off.market)x.market=pxHistory(off.market,my); return x };   // engine 26's window, when it ran
+function historyExtras0(sea,off,my){
   const bowlOf={}; sea.bowls.forEach(g=>{
     bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
   return {id:"cfb", bowls:bowlOf,

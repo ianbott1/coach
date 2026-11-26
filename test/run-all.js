@@ -37,6 +37,7 @@ add('free-agent targets (nfl)',['fatargets.js',D(G.nfl)]); add('trades (nfl)',['
 // college basketball
 add('bracket (ncaab)',['bb-bracket.js','12']); add('screens (ncaab)',['bb-screens.js']);
 add('transfer portal (ncaab)',['bb-portal.js','4']);
+add('the roster economy: revenue sharing, NIL and the transfer portal against the real sport (cfb)',['cfb-portal.js'],{fast:true});
 add('March vs history (ncaab)',['bb-march.js','2','100'],{long:true});
 // pro basketball
 add('playoffs (nba)',['nba-playoffs.js','4']); add('screens (nba)',['nba-screens.js']); add('the front office: cap sheet, fifteen, trades, free agency, an old career (nba)',['nba-fo.js'],{timeout:1200000});
