@@ -164,3 +164,29 @@ MATCH: `test/saves.js`, `test/migrate.js` (2,253 checks), `test/reload.js` for b
 +0.2). On three more seeds the same strategy reads +0.75 here and +0.04 on the base build, so the check sits at the
 base build's own mean; the market moves the season's dice, not the board.
 
+
+## Follow-up: the preview on the merged build (rv2/college2)
+
+**What changed.** College football's offseason re-centres the programs' spread (integrity's `programRecentre26`) just
+before the January window. The screen's preview ran on the programs as the season left them, so on the merged build
+it missed by an entrant or two in ten winters of twelve. The step is now one function, `cfbPreWindow`, which runs at
+the commit as before. `LEAGUE.market.before` hands it to the screen, and `pxU()` (core 92_market) runs it on a copy of
+the league. The preview, the budget, the asks, the chances and the staff's plan all read that copy. Nothing moved in
+the order. Basketball re-centres after its window, so it needed nothing.
+
+**Why.** The screen's preview has to be the window that runs.
+
+**Game(s).** College football; core code shared with college basketball.
+
+**Tested.** On the merged build:
+
+- `test/cfb-portal.js`: MATCH 5,107. The preview was the market in 12 of 12 winters, and 10 of 24 offers signed against
+  10.0 by the chances.
+- `test/bb-portal.js`: MATCH 4,458.
+- `test/engine-replay.js` with OLD=/home/claude/dist-e25: MATCH for both games.
+- `test/longrun.js --short`: every college band is in. The run's two misses are pro baseball's wins sd and soccer,
+  which crashes on this build.
+- Fast goldens: the same fingerprints before and after this fix (football 1a2a58de, basketball 2af2de7b). The merge
+  itself had moved both games off their recorded goldens, so all six were re-recorded one at a time on this build.
+
+**Not yet.** Nothing.
