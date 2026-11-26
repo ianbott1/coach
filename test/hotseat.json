@@ -1,5 +1,5 @@
 {
- "fp": "b2cfe8aa3af5a4e8",
+ "fp": "c7c2a89e85ac321c",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -415,6 +415,11 @@
    "fp": "b2cfe8aa3af5a4e8",
    "from": "376046d08aa668d7",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "c7c2a89e85ac321c",
+   "from": "b2cfe8aa3af5a4e8",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "out": [
@@ -428,7 +433,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A+"
      },
-     "book": "f46b3b7dd0bd9ebd"
+     "book": "589f8c8f817189db"
     },
     {
      "team": "Rice",
@@ -437,7 +442,7 @@
       "result": "Lost the Hawaii Bowl",
       "grade": "A-"
      },
-     "book": "2116c4fafeab8711"
+     "book": "9f0845f50d37bf29"
     }
    ]
   },
@@ -447,11 +452,11 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "14-2",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "6-7",
+      "result": "Lost the Military Bowl",
+      "grade": "C"
      },
-     "book": "01c81be432f862a1"
+     "book": "b5ce9f50ae57bc97"
     },
     {
      "team": "Rice",
@@ -460,7 +465,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "d4416e8070ca4325"
+     "book": "b8f6b6c9c286d691"
     }
    ]
   },
@@ -470,20 +475,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-5",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A-"
+      "rec": "13-3",
+      "result": "Eliminated in the national title game",
+      "grade": "A+"
      },
-     "book": "e36539cf1adc893c"
+     "book": "7737317ede16f292"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "5-7",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "A-"
      },
-     "book": "70d4f7da9e3480eb"
+     "book": "a1c561b46e151d8b"
     }
    ]
   }

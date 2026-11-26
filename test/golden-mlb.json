@@ -1,5 +1,5 @@
 {
- "fp": "11ad5725c23c4f20",
+ "fp": "e11949cf6cd7558e",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -285,6 +285,11 @@
    "fp": "11ad5725c23c4f20",
    "from": "9db89b876029b4ea",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "e11949cf6cd7558e",
+   "from": "11ad5725c23c4f20",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "result": {
@@ -297,21 +302,21 @@
     "rec": "8cfec14df36733e7",
     "poll": "1a1194b6eb7af2cd",
     "heis": "52d392c8bde291f9",
-    "history": "70aaef234aa11be3",
-    "universe": "bee125cdf2e3a9f5",
-    "screens": "f67ec6e4e1d79f47"
+    "history": "d49f3ed2bee8bfad",
+    "universe": "4112250c2851e2fc",
+    "screens": "d9048de1c906cc81"
    },
    {
     "year": 2027,
-    "games": "58fb54e404ae0b53",
-    "post": "683f936780a0ac65",
-    "champion": "Texas",
-    "rec": "e9ddfc480615b6a0",
-    "poll": "7e28f544100f341b",
-    "heis": "925b7ee2b136d4d8",
-    "history": "b402eff488343370",
-    "universe": "f001a12a6e429678",
-    "screens": "e4a6d6652d830da3"
+    "games": "eeceeeeb6c9f682f",
+    "post": "adb86eae3d829a79",
+    "champion": "Milwaukee",
+    "rec": "d72bca343d3b203d",
+    "poll": "bd0a4931e2f420e0",
+    "heis": "0bc1ac02f6dd6f2c",
+    "history": "9a47f4f85c6f6e6e",
+    "universe": "4dc33f4ff36296d1",
+    "screens": "a8a4aeb33f5d520f"
    }
   ],
   "Colorado#777": [
@@ -323,21 +328,21 @@
     "rec": "7cda5c10f7f904f4",
     "poll": "a926ef3d06536e22",
     "heis": "0e4922346eac692f",
-    "history": "2c2ede660e589f19",
-    "universe": "fa02ec470c8ac262",
-    "screens": "84100df49d319ce5"
+    "history": "31030464670168b8",
+    "universe": "0d88f23cb3ad98ba",
+    "screens": "c065a4db648dfbdb"
    },
    {
     "year": 2027,
-    "games": "f2f01183195f688a",
-    "post": "02a7716c49eceb62",
-    "champion": "Houston",
-    "rec": "ffd8885bb44e904e",
-    "poll": "ccd4dc441fa56bec",
-    "heis": "2bb14a650784ce55",
-    "history": "8fe624be974ff550",
-    "universe": "d3e41034ff6c3b34",
-    "screens": "546d236cf26b2b12"
+    "games": "51098ddad46435c0",
+    "post": "30f765d1d9626869",
+    "champion": "LA Dodgers",
+    "rec": "5ccc1ad36bbb82cc",
+    "poll": "33e1740ffdb9024b",
+    "heis": "3aac02e0f8b43387",
+    "history": "a51189564f0bb0ab",
+    "universe": "1bb0390e341548c7",
+    "screens": "7c9da32bcc0b5a78"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "3818fb2b6bcbfc4c",
+ "fp": "a7a9bfcfa1b30821",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -145,21 +145,26 @@
    "fp": "3818fb2b6bcbfc4c",
    "from": "56a93041991eab8e",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "a7a9bfcfa1b30821",
+   "from": "3818fb2b6bcbfc4c",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "2df5b2ebc995cf83",
-    "post": "4c9b9b443f9792eb",
-    "champion": "Kentucky",
-    "rec": "0b8c7f14ce7df2e9",
-    "poll": "87d16a0d9ac0f59e",
-    "heis": "01c2a01f118bfe4d",
-    "history": "ccf3c0c3e3602d2e",
-    "universe": "79c78577efbd8655",
-    "screens": "b54612cb35dcff03"
+    "games": "dabb375517967047",
+    "post": "1a40db2b0fc1fd3a",
+    "champion": "North Carolina",
+    "rec": "cba14da669f4dbf9",
+    "poll": "c5c8aa1c349cac00",
+    "heis": "f9c4b05a5d8a6260",
+    "history": "2765e0d4e4ef4162",
+    "universe": "c98b558897a76658",
+    "screens": "014aefc1940ade0c"
    }
   ]
  }

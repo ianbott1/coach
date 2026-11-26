@@ -1,5 +1,5 @@
 {
- "fp": "954d331fcfa162f2",
+ "fp": "3af501b90b0732bf",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -395,6 +395,11 @@
    "fp": "954d331fcfa162f2",
    "from": "e725cb5fde56da90",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "3af501b90b0732bf",
+   "from": "954d331fcfa162f2",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "out": [
@@ -408,7 +413,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "92609f65b556d146"
+     "book": "420379f37a0a6e30"
     },
     {
      "team": "Montreal",
@@ -417,7 +422,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "929af5f9835a1791"
+     "book": "adde1475278ca04e"
     }
    ]
   },
@@ -427,20 +432,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "35-33-16",
+      "rec": "32-43-9",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "08ecfd20f5310154"
+     "book": "91bad1117d63441e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "42-37-5",
-      "result": "Losing season",
-      "grade": "B"
+      "rec": "48-28-8",
+      "result": "Lost in the conference final",
+      "grade": "A"
      },
-     "book": "208be3ad8027565e"
+     "book": "09743cf030e24abc"
     }
    ]
   },
@@ -450,20 +455,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-30-10",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "33-42-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "bebb9ca3e2820f26"
+     "book": "59f951b017785caa"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "40-31-13",
+      "rec": "25-42-17",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C+"
      },
-     "book": "45693db5b71181fc"
+     "book": "713beee7e459b85f"
     }
    ]
   }

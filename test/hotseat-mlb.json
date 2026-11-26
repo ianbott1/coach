@@ -1,5 +1,5 @@
 {
- "fp": "8cd6f6a3a427a33e",
+ "fp": "de0dc6a55782c519",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -175,6 +175,11 @@
    "fp": "8cd6f6a3a427a33e",
    "from": "70282015ae24bd2a",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "de0dc6a55782c519",
+   "from": "8cd6f6a3a427a33e",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "out": [
@@ -188,7 +193,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "cef0dfc6dd0b9559"
+     "book": "01ec85f8422a3398"
     },
     {
      "team": "Boston",
@@ -197,7 +202,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "8e80e7f1e25d4c2c"
+     "book": "d55a37d06d8e82c5"
     }
    ]
   },
@@ -207,20 +212,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
+      "rec": "72-90",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C"
      },
-     "book": "01b0f76db509f199"
+     "book": "ab947bbcfc169eab"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "69-93",
+      "rec": "45-117",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "8be99dab2eefb048"
+     "book": "c291cab675bbaa27"
     }
    ]
   }

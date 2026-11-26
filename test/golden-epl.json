@@ -1,5 +1,5 @@
 {
- "fp": "37372a2a26a345c9",
+ "fp": "b16ec10379df75b8",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -600,6 +600,11 @@
    "fp": "37372a2a26a345c9",
    "from": "96515f597d10284b",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "b16ec10379df75b8",
+   "from": "37372a2a26a345c9",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "result": {
@@ -612,21 +617,21 @@
     "rec": "e77fed74c16f7deb",
     "poll": "c0bd2a6b4af2fb30",
     "heis": "14750437202280fd",
-    "history": "245f770158caacfa",
-    "universe": "cea8e6101522d5b6",
-    "screens": "254c9e5d6dde2757"
+    "history": "378154b7491d2a33",
+    "universe": "3f571541955b5ef6",
+    "screens": "89ecbca770a53b91"
    },
    {
     "year": 2027,
-    "games": "16ac1570e98ec7b4",
-    "post": "3a18c09f65128867",
-    "champion": "Manchester City",
-    "rec": "a87707dfb9a0fca0",
-    "poll": "d7810344b48c80e3",
-    "heis": "9e027ae9a58d91b2",
-    "history": "01e5547d1e556792",
-    "universe": "db7ab16a9e65c718",
-    "screens": "4a482dfe94f8e2c3"
+    "games": "d8a0a3d84ea2ba4b",
+    "post": "5dcbcb6bdd1f4884",
+    "champion": "Arsenal",
+    "rec": "5e2b7ddc50a0284e",
+    "poll": "84d3f88501247e5f",
+    "heis": "5633941a13647481",
+    "history": "bf09dbc95a56a4f4",
+    "universe": "72eeb32275292de5",
+    "screens": "32025d783ceb34f0"
    }
   ],
   "Wrexham#777": [
@@ -638,21 +643,21 @@
     "rec": "4f2ed1c64ecbc570",
     "poll": "d80a4d4ddf81693c",
     "heis": "b227bffd94c3627d",
-    "history": "f822e23dd30b2600",
-    "universe": "64e9b414c13316e7",
-    "screens": "ded204438a2b26c4"
+    "history": "622834d64953565d",
+    "universe": "ab8cdd7010bc919f",
+    "screens": "33732fc4e0537d5e"
    },
    {
     "year": 2027,
-    "games": "2543a7a63ca9e364",
-    "post": "3c417d075c48482e",
+    "games": "2ad31b9ed683a879",
+    "post": "3ae09432400a8cb7",
     "champion": "Manchester City",
-    "rec": "6ff2bd4bb933292a",
-    "poll": "692db10d0515ae80",
-    "heis": "0e5c7b3e312a7282",
-    "history": "2579afc18ce2788f",
-    "universe": "71a56f1571e1263c",
-    "screens": "aa766e02e98d6d65"
+    "rec": "9d3bd55531e8722f",
+    "poll": "6b2e13d4c8221eca",
+    "heis": "238364153476e350",
+    "history": "6e9a1d8e05390fc5",
+    "universe": "f465243413bf896f",
+    "screens": "0516f0f80695bb48"
    }
   ],
   "schedules#60": [

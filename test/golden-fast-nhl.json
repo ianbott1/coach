@@ -1,5 +1,5 @@
 {
- "fp": "8a7ce9c311be32a6",
+ "fp": "fc189bcdecb511ec",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -170,6 +170,11 @@
    "fp": "8a7ce9c311be32a6",
    "from": "7db5d2fc482e864c",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "fc189bcdecb511ec",
+   "from": "8a7ce9c311be32a6",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "result": {
@@ -182,9 +187,9 @@
     "rec": "babc9790fe42cb6a",
     "poll": "c1091ba2a45e5f98",
     "heis": "588a323304c4a9f0",
-    "history": "9a813fb1ad8da80c",
-    "universe": "196e395e262667c9",
-    "screens": "84cd1912218d521d"
+    "history": "fb37254b88a7548c",
+    "universe": "eac602519d461b6a",
+    "screens": "dc11c1009fe3c8b3"
    }
   ]
  }

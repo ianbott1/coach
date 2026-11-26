@@ -1,5 +1,5 @@
 {
- "fp": "0524ef359d58ce8e",
+ "fp": "37bf9ec7083170ad",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -370,6 +370,11 @@
    "fp": "0524ef359d58ce8e",
    "from": "c02d5ae543b0c6c2",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "37bf9ec7083170ad",
+   "from": "0524ef359d58ce8e",
+   "note": "engine 26 (rv2/integrity, long careers): the offseason's dice by career and year; ratings held to the opening league each summer (level, spread, top 1%, by position; soccer by division); hidden ceilings; aging by position; college programs' spread held, a long-serving college coach retires, college basketball at its 64-team-era level; NBA rookies further from the same ceiling; free-agent and re-sign cut-offs read the age shift"
   }
  ],
  "out": [
@@ -379,20 +384,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "38-2",
-      "result": "Lost the national championship",
-      "grade": "A+"
+      "rec": "35-2",
+      "result": "Lost in the Elite Eight",
+      "grade": "A"
      },
-     "book": "c941601933884a5c"
+     "book": "c0984ee802565d81"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "34-3",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "33-4",
+      "result": "Lost in the Sweet 16",
+      "grade": "A-"
      },
-     "book": "33cc62b197dad152"
+     "book": "d393c8b6be8c7952"
     }
    ]
   },
@@ -402,20 +407,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "25-9",
-      "result": "Lost in the Second Round",
-      "grade": "B-"
+      "rec": "23-9",
+      "result": "Lost in the Opening Round",
+      "grade": "C"
      },
-     "book": "503a98d3557706b1"
+     "book": "415ef2abe7198e16"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "26-8",
+      "rec": "27-8",
       "result": "Lost in the Second Round",
-      "grade": "B+"
+      "grade": "B"
      },
-     "book": "ef8318c931f8653f"
+     "book": "9b499b89f75a3460"
     }
    ]
   },
@@ -425,20 +430,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-5",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "25-11",
+      "result": "Lost in the Sweet 16",
+      "grade": "B-"
      },
-     "book": "0d259afb50fa57a1"
+     "book": "840a6df99681558e"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "29-6",
-      "result": "Lost in the Sweet 16",
-      "grade": "B+"
+      "rec": "34-4",
+      "result": "Lost in the Final Four",
+      "grade": "A+"
      },
-     "book": "def25a2dda834e6f"
+     "book": "e72466cb43bb3d75"
     }
    ]
   }
