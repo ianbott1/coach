@@ -102,7 +102,10 @@ if(typeof LEAGUE!=="undefined"){
   const res0=LEAGUE.reservesHTML, pl0=LEAGUE.payrollLine;
   LEAGUE.reservesHTML=function(my,hurt){ return (res0?res0(my,hurt):"")+mlbReservesHTML(my) };
   LEAGUE.payrollLine=function(t){
-    if(!U||!U.mlbFO)return pl0?pl0(t):(function(){ const R=(SEA&&SEA.roster&&SEA.roster[t])||U.roster[t]; return R?`<div class="progline">Payroll <b>${money2(payroll(R))}</b> of ${money2(NFL_CAP)} cap</div>`:"" })();
+    if(!U||!U.mlbFO){ if(pl0)return pl0(t);   // a career before the front office: the core's own line (core 99_app payrollLine)
+      const R=(SEA&&SEA.roster&&SEA.roster[t])||(U&&U.roster&&U.roster[t]); if(!R||!R.some(p=>p&&p.k))return "";
+      const pay=payroll(R), lim=NFL_CAP, room=lim-pay;
+      return `<div class="progline">Payroll <b>${money2(pay)}</b> of ${money2(lim)} cap &middot; ${room>=0?`${money2(room)} of room`:`<span class="dn">${money2(-room)} over</span>`}</div>` }
     const pay=mlbTaxPay(U,t), rep=mlbRep(U,t), bill=mlbTaxBill(pay,rep), B=mlbBudget(U,t);
     return `<div class="progline">Payroll <b>${money2(pay)}</b> &middot; ${pay>MLB$.cbt?`<span class="dn">${money2(pay-MLB$.cbt)} over the tax line, a ${money2(bill)} bill</span>`:`${money2(MLB$.cbt-pay)} under the tax line`} &middot; owner's limit ${money2(B)}</div>` };
   ui.offseasonBanner=function(){ const h=ban0(); if(!U||!U.mlbFO)return h; const i=h.lastIndexOf('<button class="cardbtn"'); return i<0?h+mlbBannerHTML():h.slice(0,i)+mlbBannerHTML()+h.slice(i) };
