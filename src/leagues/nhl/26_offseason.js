@@ -532,14 +532,16 @@ LEAGUE.goals={
 /* the history book: what only the pros record */
 LEAGUE.historyExtras=function(sea,off,my){
   const C=off.contracts||{};
-  return {id:"nfl",
+  const hk=C.buyouts?{buyouts:C.buyouts[my]||[], arb:C.arb[my]||[], rfa:C.rfa[my]||[], up:C.up[my]||[], res:(C.res[my]||[]).filter(x=>x.elc),
+    os:(C.os||[]).filter(e=>e.from===my||e.to===my), osMine:(C.osMine&&C.osMine[my])||[], floor:C.floor&&C.floor[my]||0}:null;   // the front office's summer (engine 27)
+  return Object.assign(hk?{hk:hk}:{},{id:"nfl",
     draft:((off.draft&&off.draft.picks)||[]).filter(d=>d.team===my||d.d.round===1&&d.d.pick<=10)
       .map(d=>({n:d.n,p:d.p,team:d.team,r:d.r,pot:d.pot,from:d.from,d:d.d,made:d.made,pid:d.pid})),
     signed:(C.signed&&C.signed[my])||[], resigned:(C.resigned&&C.resigned[my])||[],
     released:(C.released&&C.released[my])||[], retired:(C.retired&&C.retired[my])||[], grew:(C.grew&&C.grew[my])||[], payroll:C.cap?C.cap[my]:null,
     targets:(C.targets&&C.targets[my])||[], trade:(C.trade&&C.trade[my])||null,
     boardGone:(C.boardGone&&C.boardGone[my])||[],
-    payroll:off.cap?off.cap[my]:null};
+    payroll:off.cap?off.cap[my]:null});
 };
 LEAGUE.migrateHistory=function(h){return {id:"nfl"}};
 LEAGUE.seasonLine=function(h,t,r,seed){
@@ -550,4 +552,4 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
-LEAGUE.trade={get by(){ return hkFO()?HK$.deadline:"Mar 6" }};   // round 83: the deadline, early March; the front office (engine 27): March 1, the 2027 date   // round 83: the deadline, early March
+LEAGUE.trade={get by(){ return hkFO()?HK$.deadline:"Mar 6" }};   // round 83: the deadline, early March; the front office (engine 27): March 1, the 2027 date

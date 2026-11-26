@@ -33,17 +33,17 @@ function hkResignPlan(u,t,R,aim){
   const keep={}; RESIGN_WHY={};
   const dead=hkDeadOf(u,t), exp=[]; let pay=dead;
   R.forEach((p,i)=>{ if(!p)return; if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal });
-  const lim=HK$.cap*(aim||0.985)-hkFill(R.map((p,i)=>exp.indexOf(i)>=0?null:p))*0.4;
+  const lim=HK$.cap*(aim||0.985); let open=HK_N-R.filter(Boolean).length+exp.length;   // the places still to fill, each at least the minimum
   exp.sort((a,b)=>hkVal(R[b])-hkVal(R[a])).forEach(i=>{
     const p=R[i], st=hkStatus(p), ask=st==="UFA"?hkAsk(p.r,p.age+1):hkRfaAsk(p), old=!vetOK(Object.assign({},p,{age:p.age+1}));
     const good=p.r>=hkBar(i)||(st!=="UFA"&&p.r>=hkBar(i)-3&&(p.pot||p.r)>=p.r+3);
-    const fits=pay+ask<=lim;
+    const fits=pay+ask+(open-1)*HK$.min<=lim;
     keep[i]=good&&!old&&fits?(st==="UFA"?true:"q"):false;
     RESIGN_WHY[i]=keep[i]?(st==="UFA"?(i<POS.length?"a first-unit player worth what he's asking":"useful at a fair price"):`restricted: qualify him and sign him for about ${hkMoney(ask)}`)
       :old?`his age: ${p.age+1} next season`
       :!good?`rated ${p.r}: not enough for ${i<POS.length?"the first unit":i<2*POS.length?"the top nine":"the roster"}`
       :`no room under the cap for his ${hkMoney(ask)} ask`;
-    if(keep[i])pay+=ask });
+    if(keep[i]){ pay+=ask; open-- } });
   return keep }
 /* a buyout the computer makes: an older man paid far over what he's worth now, with years left; the cap he frees has
    to buy a better man (one a summer at most) */
@@ -126,8 +126,7 @@ function hkRun(u,rng,healthy,elo,rec,choices){
     u.program[t]+=0.05*(elo[t]-u.program[t])+c.q*COACH_BUILD*0.4+rng.gauss(0,9);
     u.program[t]=Math.max(1300,Math.min(1720,u.program[t]));
     c.t++;
-    R.forEach(p=>{ if(p){ hkService(p); p.svc++ } });
-    hkResOf(u,t).forEach(p=>{ hkService(p); if(p.k)p.svc++ });
+    R.forEach(p=>{ if(p)hkService(p) });
     // buyouts, in June: the years after this one, at a third of the cap hit (a sixth under 26) for twice as long
     const bo=ch?(ch.buyouts||[]).map(key=>R.findIndex(p=>p&&faKey(t,p)===key)).filter(i=>i>=0):hkCpuBuyout(u,t,R);
     bo.forEach(i=>{ const p=R[i]; if(!p||p.k.yrs<2)return; const left=p.k.yrs-1, hit=hkBuyHit(p);
@@ -160,6 +159,8 @@ function hkRun(u,rng,healthy,elo,rec,choices){
       p.k={sal:sal,yrs:yrs,v:3}; p.osY=u.year;
       rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:sal,yrs:yrs,st:s}); rep.rfa[t].push({n:p.n,p:p.p,r:p.r,q:true,sal:sal,yrs:yrs});
     }
+    // a season accrued (after the summer's contract calls, which go by the seasons the screen showed)
+    R.forEach(p=>{ if(p)p.svc++ }); hkResOf(u,t).forEach(p=>{ hkService(p); if(p.k)p.svc++ });
     // aging (as before), and the reserve list's prospects grow too
     let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev*0.5:0;
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
@@ -271,7 +272,7 @@ function hkRun(u,rng,healthy,elo,rec,choices){
       pool.forEach(p=>{ if(p.signed||p.age-age26(p)>maxAge||mine.some(o=>o.p===p))return;
         const g=hkGain(R,p); if(g<=0)return;
         let cost=hk2(p.ask*(1+Math.max(0,rng.gauss(0.05,0.07))+(room>3*p.ask?0.05:0))*(1-orgEdge(u,t)*0.05));
-        if(cost>room&&cost>HK$.min+0.05){ if(room>=p.ask*0.85&&room>HK$.min)cost=hk2(room); else return }
+        if(cost>room&&cost>HK$.min+0.05){ if(room>=p.ask*0.85&&room>HK$.min)cost=hk2(Math.min(HK_TOP,room)); else return }
         const v=g-Math.max(0,cost-free-HK$.min)*0.3;
         if(v>bv){ bv=v; best=[p,cost] } });
       if(!best||bv<0.3)return;

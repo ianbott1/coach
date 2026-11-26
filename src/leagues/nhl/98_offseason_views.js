@@ -129,7 +129,9 @@ function offseasonBanner(){
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
-  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  if(X.payroll!=null)rec+=X.hk?`<div class="bnews small"><b>Cap hit after the summer:</b> ${hkMoney(X.payroll)} of ${hkMoney(HK$.cap)} (the cap; the floor ${hkMoney(HK$.floor)}).</div>`
+    :`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  if(X.hk)rec+=hkBannerHTML(X.hk,my);   // the front office's summer: buyouts, arbitration, restricted men, offer sheets, call-ups (28_hkviews)
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.${G.some(p=>p.leap)?` <span class="planwhy">A breakout: now and then a young player takes a big step in a summer.</span>`:""}</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
@@ -169,7 +171,7 @@ function offseasonBanner(){
           <span class="dpick">${d.d.round}.${String(d.d.pick).padStart(2,"0")}</span>
           <div class="fmain"><div class="fname">${esc(d.n)}
             <span class="dpos">${esc(d.p)}</span></div>
-          <div class="fnote">${esc(d.from)} &middot; rated ${d.r}, ceiling ${d.pot}${d.made?"":" &middot; practice squad"}</div></div>
+          <div class="fnote">${esc(d.from)} &middot; rated ${d.r}, ceiling ${d.pot}${d.made?"":X.hk?" &middot; reserve list":" &middot; practice squad"}</div></div>
           <span class="dovr">#${d.d.overall}</span></div>`).join("");
     })()}
     <button class="cardbtn" data-card="${S.history.length-1}">Season card &mdash; share ${last.year}</button>
@@ -255,6 +257,8 @@ function offseasonScreen(){
   // the roster you'd carry into the new year, and what it costs
   const R=U.roster[S.myTeam], expiring=Object.keys(P.asks||{}).map(Number);
   const pay=nflPlannedPay(), room=LEAGUE.cap-pay;
+  if(hkFO(U))h+=hkSummerHTML(P,n);   // the front office (engine 27, 28_hkviews)
+  else {
   h+=staffPlanHTML(P);
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");
@@ -270,11 +274,12 @@ function offseasonScreen(){
       <button class="promo" data-resign="${i}" aria-pressed="${on}" title="${on?"Tap to let him go":"Tap to re-sign him"}">${on?"Re-signing":"Letting go"}</button></div>
       <div class="cdesc">Asking $${a.sal.toFixed(1)}M a year for ${a.yrs} year${a.yrs===1?"":"s"}${
         p.age>=31?" &middot; on the wrong side of thirty":""}.</div>${staffTag(i)}</div>`}).join("");
+  }
   h+=`<div class="grouphead">${n(2)}. Free agency</div>`;
   const FA=LEAGUE.offseason.faStyles;
   h+=Object.keys(FA).map(k=>`<div class="opt ${P.fa===k?'on':''}" data-fa="${k}">
     <div class="fname">${esc(FA[k].l)}</div><div class="cdesc">${esc(FA[k].d)}</div></div>`).join("");
-  h+=nflTargetsHTML(P,room);
+  h+=hkFO(U)?hkTargetsHTML(P):nflTargetsHTML(P,room);
   h+=nflTradeHTML(P);
   h+=`<div class="grouphead">${n(3)}. The draft</div>`;
   h+=dnSectionHTML();
@@ -282,6 +287,7 @@ function offseasonScreen(){
   h+=Object.keys(DR).map(k=>`<div class="opt ${P.draft===k?'on':''}" data-draft="${k}">
     <div class="fname">${esc(DR[k].l)}</div><div class="cdesc">${esc(DR[k].d)}</div></div>`).join("");
   h+=nflBoardHTML(P);
+  if(hkFO(U))h+=hkReserveHTML(my);
   h+=`<div class="grouphead">${n(4)}. Team philosophy</div>`;
   h+=Object.keys(PHILOSOPHY).map(k=>`<div class="opt ${P.phil===k?'on':''}" data-phil="${k}">
     <div class="fname">${esc(PHILOSOPHY[k].l)}</div>
@@ -295,6 +301,7 @@ Object.assign(LEAGUE.ui,{
   /* null when you can go on; otherwise what the button says */
   offseasonBlock(){
     if(!S.off)return null;
+    if(hkFO(U))return hkBlock();   // the front office: twenty-three under the cap
     // your own players may take you over the cap, up to the tax line
     const over=nflPlannedPay()-(LEAGUE.taxLine||LEAGUE.cap);
     return over>0?"Over the tax line by $"+over.toFixed(1)+"M":null;
@@ -302,6 +309,7 @@ Object.assign(LEAGUE.ui,{
   bindOffseason(){
     if(S.off&&S.off.dn&&dnOn()){ bindDraftNight(); return }
     bindDraftSection();
+    if(hkFO(U))hkBind();
     document.querySelectorAll("[data-resign]").forEach(b=>b.onclick=()=>{
       const i=+b.dataset.resign; S.off.picks.resign[i]=!S.off.picks.resign[i]; save(); render();});
     document.querySelectorAll("[data-fa]").forEach(b=>b.onclick=()=>{

@@ -25,7 +25,7 @@
 const path=require('path'), {load}=require('./harness.js');
 const FILE=process.env.HK_FILE||path.join(__dirname,'..','dist','hockey-coach-pro.html');
 const Y=+process.argv[2]||20, SEED=+process.argv[3]||11;
-const X=['S','SEA','U','NAMES','newDynasty','openOffseason','commitOffseason','LEAGUE','HK$','hkCapHit','hkContracts','hkResOf','hkFO','POS','render','ENGINE_V'];
+const X=['S','SEA','U','NAMES','faKey','hkFreeAgentPreview','hkStatus','newDynasty','openOffseason','commitOffseason','LEAGUE','HK$','hkCapHit','hkContracts','hkResOf','hkFO','POS','render','ENGINE_V'];
 const A=load({file:FILE,expose:X});
 let bad=0; const ok=(c,m)=>{ console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++ };
 const q=(a,p)=>{ const b=a.slice().sort((x,y)=>x-y); return b[Math.floor(p*(b.length-1))] }, avg=a=>a.reduce((s,x)=>s+x,0)/Math.max(1,a.length);
@@ -46,17 +46,47 @@ const snap=(label)=>{ const U=A.U, sh=[], hits=[];
   const m=avg(hits); Z.top.push(Math.max(...hits)/CAP); Z.mean.push(m/CAP); Z.above.push(hits.filter(x=>x>m).length/hits.length); Z.min.push(hits.filter(x=>x<=H.min+0.001).length/hits.length);
   if(label)console.log(`  ${label}: median ${(100*q(sh,.5)).toFixed(1)}% of the cap (lowest ${(100*Math.min(...sh)).toFixed(1)}%, highest ${(100*Math.max(...sh)).toFixed(1)}%), within 3% ${sh.filter(x=>x>=0.97).length}, 8%+ room ${sh.filter(x=>x<=0.92).length}; top hit $${Math.max(...hits).toFixed(2)}M, mean $${m.toFixed(2)}M`) };
 snap('opening night, 2026');
+/* the summer screen, read as text: your cap line, expiring men by status, buyouts, your offers, the reserve list; then
+   your choices go through and the banner says what came of them */
+let SCR=null;
+const txt=h=>h.replace(/<[^>]+>/g,' ').replace(/&middot;/g,'·').replace(/&mdash;/g,'—').replace(/&minus;/g,'-').replace(/\s+/g,' ');
+function screens(){
+  const P=A.S.off.picks, t=A.S.myTeam, R=A.U.roster[t], h=txt(A.LEAGUE.ui.offseasonScreen()); SCR0=A.LEAGUE.ui.offseasonBlock();
+  const exp=Object.keys(P.asks).map(Number), rfa=exp.find(i=>P.asks[i].st!=='UFA'), arb=exp.find(i=>P.asks[i].st==='RFA-A');
+  if(arb!=null){ P.resign[arb]='arb'; P.arbYrs={[arb]:2} } else if(rfa!=null)P.resign[rfa]='q';
+  const bo=R.filter(p=>p&&!p.k.elc&&p.k.yrs>=2&&p.k.sal>=2).sort((a,b)=>b.k.sal-a.k.sal)[0]; if(bo)P.buyouts=[A.faKey(t,bo)];
+  const pre=A.hkFreeAgentPreview(A.U,t), ufa=pre.find(x=>x.st==='UFA'), os=pre.find(x=>x.st==='RFA');
+  P.targets=[ufa,os].filter(Boolean).map(x=>x.key); P.bids={}; if(ufa)P.bids[ufa.key]={sal:Math.min(H.max,ufa.ask*1.25),yrs:ufa.yrs}; if(os)P.bids[os.key]={sal:Math.min(H.max,os.ask*1.4),yrs:5};
+  const h2=txt(A.LEAGUE.ui.offseasonScreen());
+  SCR={h:h,h2:h2,arb:arb,rfa:rfa,bo:bo&&bo.n,ufa:ufa&&ufa.n,os:os&&os.n,block:SCR0} }
+let SCR0;
 for(let y=0;y<Y;y++){
   let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance();
   A.NAMES.forEach(t=>Z.pts.push(A.SEA.rec[t][0]*2+(A.SEA.otl?A.SEA.otl[t]||0:0)));
-  A.openOffseason(); for(let c=0;c<4;c++){ if(!A.S.off)break; if(A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
+  A.openOffseason(); if(y===1)screens(); for(let c=0;c<4;c++){ if(!A.S.off)break; if(A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
   const r=A.S.lastNbaRep&&A.S.lastNbaRep.rep; if(r){ const n=k=>A.NAMES.reduce((s,t)=>s+(r[k][t]||[]).length,0);
     Z.os.push(r.os.length); Z.buy.push(n('buyouts')); Z.arb.push(n('arb')); Z.sign.push(n('signed')); Z.rfaQ.push(n('rfa')); Z.up.push(n('up')) }
   snap(y<3||y===Y-1||y%5===4?`after summer ${y+1} (${A.U.year})`:null);
 }
+if(SCR){ const h=SCR.h, h2=SCR.h2; console.log('  the summer screen: '+h.slice(h.indexOf('Expiring contracts'),h.indexOf('Expiring contracts')+420).trim()+' ...');
+  ok(/Cap hit \$[\d.]+M · cap \$104M/.test(h)&&/of 23 signed for next season · \d+ of 50 contracts · the floor is \$76\.9M/.test(h),'the summer screen leads with the cap hit, the twenty-three and the fifty contracts');
+  ok(SCR.block===null,`the staff's plan fits under the cap as the screen opens (${SCR.block||'no block'})`);
+  ok(/(unrestricted|restricted)/.test(h)&&(SCR.rfa==null||/Qualify and sign/.test(h)&&/Don't qualify/.test(h)),'expiring men by status: re-sign or let go, qualify or not');
+  ok(SCR.arb==null||/Arbitration/.test(h)&&/an arbitrator would award about \$/.test(h2)&&/Two years/.test(h2),`arbitration offered to a man with the rights, its term your choice${SCR.arb==null?' (none this summer)':''}`);
+  ok(/Buyouts/.test(h)&&(!SCR.bo||/Buying out/.test(h2)&&/a year against the cap for/.test(h2)),'buyouts, their dead money spelled out');
+  ok(/Free agents and offer sheets you want/.test(h)&&(!SCR.os||/an offer sheet costs (a|two|four|no)/.test(h2))&&/\+ \$250K/.test(h2),'free agents and offer sheets with your price and years, a sheet\'s picks shown');
+  ok(/Reserve list · \d+ prospect/.test(h),'the reserve list on the summer screen');
+  const X=A.S.history[A.S.history.length-2]&&A.S.history[A.S.history.length-2].league||{}, last=A.S.history.find(z=>z.year===2027)||{}, L=last.league||{}, b=L.hk;
+  ok(!!b&&(!SCR.bo||b.buyouts.some(x=>x.n===SCR.bo)),`your buyout went through${SCR.bo?' ('+SCR.bo+')':''}`);
+  ok(!!b&&(SCR.arb==null||b.arb.length>0),'your arbitration case was heard');
+  ok(!!b&&(!SCR.os||b.os.some(e=>e.n===SCR.os)||b.osMine.some(x=>x.n===SCR.os)),`your offer sheet was sent or its reason given${SCR.os?' ('+SCR.os+')':''}`); }
+{ const t=A.S.myTeam, rv=txt(A.LEAGUE.reservesHTML(t,{})), pl=txt(A.LEAGUE.payrollLine(t));
+  ok(/The rest of the twenty-three/.test(rv)&&/Reserve list · \d+ prospect/.test(rv),'the roster tab lists the rest of the twenty-three and the reserve list');
+  ok(/Cap hit \$[\d.]+M of \$104M · /.test(pl),`the club card's cap line: ${pl.trim()}`) }
 console.log(`  summers: offer sheets ${avg(Z.os).toFixed(2)} (${Z.os.join(',')}), buyouts ${avg(Z.buy).toFixed(1)}, arbitration ${avg(Z.arb).toFixed(1)}, free-agent signings ${avg(Z.sign).toFixed(0)}, restricted decisions ${avg(Z.rfaQ).toFixed(0)}, prospects up ${avg(Z.up).toFixed(1)}`);
 console.log(`  rosters: contracts ${avg(Z.contracts).toFixed(1)} a club (most ${Math.max(...Z.contracts)}), entry-level ${avg(Z.elc).toFixed(1)}, reserve list ${avg(Z.res).toFixed(1)}, at the minimum ${(100*avg(Z.min)).toFixed(0)}%`);
 const mu=avg(Z.pts), sd=Math.sqrt(avg(Z.pts.map(x=>(x-mu)**2)));
+ok(A.U.year===2026+Y,`every summer ran (the league is in ${A.U.year})`);
 ok(Z.over===0,`no club over the $104.0M cap after a summer (${Z.over} of ${Z.nTeams})`);
 ok(Z.under===0,`no club under the $76.9M floor (${Z.under} of ${Z.nTeams})`);
 ok(q(Z.share,0.5)>=0.94&&q(Z.share,0.5)<=1.0,`median payroll ${(100*q(Z.share,.5)).toFixed(1)}% of the cap (real 94-100%; 2025-26: 97.7%)`);

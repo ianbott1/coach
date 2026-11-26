@@ -18,7 +18,8 @@
      the award's term is the other side's choice, one or two years; a club may walk away from a big award
                                                     https://flamesnation.ca/news/cba-school-article-12-salary-arbitration
      the 2027 trade deadline, March 1      https://www.yardbarker.com/nhl/articles/2027_nhl_trade_deadline_set_for_march_1/s1_16958_44098157
-     a 23-man active roster against the cap          https://capwages.com/articles/nhl-salary-cap-explained
+     a 23-man active roster against the cap; up to 10% over the cap in the summer, under it by opening night
+                                                    https://capwages.com/articles/nhl-salary-cap-explained
    The game keeps 2026-27 money every season (the ratings are held to the opening league too: core recentre26).
 
    The roster: the twelve the engine plays (a first unit and a man behind each, slots 0-11) and eleven more to make
