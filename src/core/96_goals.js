@@ -169,7 +169,7 @@ function objectivesMet(my,orig){ const L=seasonObjectives(my), n=(orig?L:objecti
 /* ---- achievements ---- */
 const ACH=[
   {id:"firstwin", l:"Off the mark",         d:"Win your first game"},
-  {id:"giant",    l:"Giant-killer",          d:"Beat a side rated far above yours (a one-in-four shot)"},
+  {id:"giant",    l:"Giant-killer",          d:"Beat a "+sideWord()+" rated far above yours (a one-in-four shot)"},
   {id:"perfect",  l:"Every read right",      d:"Get every read right in a game with three or more (reads, not calls)", reads:true},
   {id:"reader",   l:"Reads the game",        d:"Get 70% of your reads right over a season (12 or more)", reads:true},
   {id:"board",    l:"The board's favourite", d:"Meet all three objectives in a season"},
@@ -177,7 +177,7 @@ const ACH=[
   {id:"champ",    l:"Champions",             d:"Win the title"},
   {id:"b2b",      l:"Back to back",          d:"Win the title two seasons running"},
   {id:"dynasty",  l:"Dynasty",               d:"Three titles in five seasons"},
-  {id:"rebuild",  l:"From the ground up",    d:"Win the title with a side that started in the bottom half"},
+  {id:"rebuild",  l:"From the ground up",    d:"Win the title with a "+sideWord()+" that started in the bottom half"},
   {id:"promoted", l:"Going up",              d:"Win promotion", soccer:true},
   {id:"cup",      l:"Cup winners",           d:"Win the FA Cup", soccer:true},
   {id:"century",  l:"Century",               d:"Win 100 games", dyn:()=>ACH_CENT()!==100?`Win ${ACH_CENT().toLocaleString("en-US")} games`:null},

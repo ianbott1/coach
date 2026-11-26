@@ -92,6 +92,12 @@ function planKey(step,half){ return half?step+"#1":step }
 /* round 72: the first highlights setting, named for what it shows in each sport ("Goals only" meant little in baseball:
    Instinct) */
 function hlGoalsLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.goalsLabel)||"Goals only" }
+/* review round (playtest: "Every chance" and "Full match" on basketball's, hockey's, football's and baseball's live
+   screens): each sport names its own modes; soccer keeps these */
+/* soccer's "side", everyone else's "team" (review round: "a top side" in pro basketball) */
+function sideWord(){ return typeof LEAGUE!=="undefined"&&LEAGUE.text&&LEAGUE.text.unit==="club"?"side":"team" }
+function hlAllLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.allLabel)||"Every chance" }
+function hlFullLabel(){ return (typeof HL_SPORT!=="undefined"&&HL_SPORT.fullLabel)||"Full match" }
 function planFor(step,half){ const P=S.plans||{}; return (half&&P[step+"#1"]!==undefined?P[step+"#1"]:P[step])||"balanced" }
 
 function liveSeed(step){
@@ -333,7 +339,7 @@ function setPlanMidGame(p){
 /* the bar under the live game: your plan from here, and how much of the game to watch */
 function livePlanBarHTML(){
   if(!live||live.done||typeof PLANS==="undefined")return "";
-  const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["full","Full match"],["off","Off"]];
+  const cur=livePlanNow(), HLM=[["goals",hlGoalsLabel()],["key","Key moments"],["all",hlAllLabel()],["full",hlFullLabel()],["off","Off"]];
   return `<div class="liveplan" style="margin:8px 16px 2px">${guideNote("live",GUIDE_LIVE)}${live.h2h?"":`<div class="fnote" style="margin-bottom:4px">Game plan from here${(live.pm||[]).length?" (changed in this game)":""}</div>
     <div class="wspeed">${Object.keys(PLANS).concat(Object.keys(liveExtra())).map(k=>`<button class="spbtn${planArmed(k)?" armed":""}" id="mp-${k}" data-midplan="${k}" aria-pressed="${cur===k}">${planArmed(k)?"Tap again: ":""}${esc(livePlanLabel(k))}</button>`).join("")}</div>${liveSubsHTML()}`}
     ${typeof hlCan==="function"&&hlCan()?`<div class="fnote" style="margin:6px 0 4px">Highlights</div>
@@ -2378,8 +2384,8 @@ function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k
       if(typeof PLAN_VS_WORDS!=="undefined"&&PLAN_VS_WORDS[k])return `${esc(C.opp)} ${PLAN_VS_WORDS[k][vs<0?0:1]}`;
       return vs<0?`${esc(C.opp)} have the ${PLAN_LEAN[k]} to play that game too`:`${esc(C.opp)} don't have the ${PLAN_LEAN[k]} to play that game` }
     if(top[0]==="f")return `your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`;
-    return sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight") }
-  return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better side tonight"):(k==="aggressive"?"as the better side tonight":"as the underdog tonight")) }
+    return sh>0?(k==="aggressive"?"as the underdog tonight":"as the better "+sideWord()+" tonight"):(k==="aggressive"?"as the better "+sideWord()+" tonight":"as the underdog tonight") }
+  return Math.abs(f)>=Math.abs(sh)?`your ${PLAN_LEAN[k]} ${f>0?(pl?"suit":"suits"):(pl?"don't suit":"doesn't suit")} it`:(sh>0?(k==="aggressive"?"as the underdog tonight":"as the better "+sideWord()+" tonight"):(k==="aggressive"?"as the better "+sideWord()+" tonight":"as the underdog tonight")) }
 function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P=C.p, R=x=>Math.max(1,Math.min(99,Math.round(x*100))), d=k=>R(P[k])-R(P.balanced), my=S.myTeam;
   const best=["safe","aggressive"].reduce((a,b)=>d(b)>d(a)?b:a,"safe"), why=k=>planWhy(C,k);
   const sg=v=>(v>0?"+":v<0?"&minus;":"")+Math.abs(v), keptS=kept?"Kept from your last game. ":"";
@@ -3504,7 +3510,10 @@ function simAhead(){
 let simSheet=false;
 /* what you take charge of: a program (college), a team, a club */
 const ORG_WORD=(typeof LEAGUE!=="undefined"&&LEAGUE.text&&LEAGUE.text.unit)||"program";
-const SIM_STOPS=[["big","A big game is next (a rival, a top side"+(typeof LEAGUE!=="undefined"&&LEAGUE.cup?", a cup tie)":")")],["slide","We lose three in a row"],
+/* review round (playtest: pro basketball's said "a top side, a cup tie"): soccer's words in soccer only; the NBA Cup by name */
+const SIM_BIG=typeof LEAGUE==="undefined"?"A big game is next":sideWord()==="side"?"A big game is next (a rival, a top side"+(LEAGUE.cup?", a cup tie)":")")
+  :"A big game is next (a rival, a top team"+(LEAGUE.cup&&LEAGUE.cup.name?", an "+LEAGUE.cup.name+" knockout game)":")");
+const SIM_STOPS=[["big",SIM_BIG],["slide","We lose three in a row"],
   ["hurt","One of our players gets hurt"],["decide","Something needs a decision"]];
 /* off until you tick them (Ian: sim ahead should just sim). Saves that never touched them had them
    all on by default; they start off too. */
@@ -3804,7 +3813,7 @@ function render0(){
     const wbox=typeof boxHTML==="function"?boxHTML(watch.g,watch.i>=watch.script.length,watch.step):"";
     // round 81: how much of it to watch, as on the live screen (Highlights, Every chance: every moment the game had)
     const depth=typeof hlCan==="function"&&hlCan()&&watch.i<watch.script.length?`<div class="liveplan" style="max-width:760px;margin:8px auto 0;padding:0 16px"><div class="fnote" style="margin:6px 0 4px">Watch</div>
-      <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
+      <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all",hlAllLabel()],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
     // round 110 (Ian: "Once watching a replay of another game it is not easy to just exit out"): Exit, always there (and Esc)
     const wexit=`<button class="wexit" id="wexit" aria-label="Exit the replay">&times; Exit replay</button>`;
     el("app").innerHTML=wexit+watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
@@ -4182,7 +4191,7 @@ function firstJobs(){
   const r=Math.random();
   return [
     {k:"fav",  t:at(0.02+0.04*r), l:"The favourite", d:"Expected to win. The pressure starts on day one."},
-    {k:"cont", t:at(0.18+0.12*r), l:"The contender", d:"A good side with a real chance. The best first job."},
+    {k:"cont", t:at(0.18+0.12*r), l:"The contender", d:"A good "+sideWord()+" with a real chance. The best first job."},
     {k:"build",t:at(0.55+0.15*r), l:"The rebuild",   d:"Patience, and a hero if you pull it off."}
   ];
 }
@@ -4385,13 +4394,13 @@ function helpPanel(){
     <div class="helpcard"><div class="cdesc">The crowd when you score, the whistle, a fanfare when you win.
       Phones also buzz for your goals. The &#9834; button in the top bar switches it too.</div></div>
     ${typeof HL_SPORT!=="undefined"?`<div class="grouphead">Highlights</div>
-    <div class="setrow">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full","Full match"]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
+    <div class="setrow">${[["goals",hlGoalsLabel()],["key","Key moments"],["all",hlAllLabel()]].concat(typeof HL_SPORT!=="undefined"&&HL_SPORT.ambient?[["full",hlFullLabel()]]:[]).concat([["off","Off"]]).map(([v,l])=>`<button class="setbtn" data-hl="${v}"
       aria-pressed="${((S&&S.highlights)||"key")===v}">${l}</button>`).join("")}</div>
     <div class="note">In a game you watch, the moments play out on a pitch above the run of play. Tap the pitch to skip one.</div>`:""}
     <div class="grouphead">Live win chance</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-livewp="${v}"
       aria-pressed="${(!S||S.liveWP!==false)===v}">${l}</button>`).join("")}</div>
-    <div class="note">The bar above the score in a game you watch. It reads this game's odds, from replays of games like it: in these leagues the better side wins more often than in real life, so early leads can read high.</div>
+    <div class="note">The bar above the score in a game you watch. It reads this game's odds, from replays of games like it: in these leagues the better ${sideWord()} wins more often than in real life, so early leads can read high.</div>
     <div class="grouphead">Music</div>
     <div class="setrow">${[[true,"On"],[false,"Off"]].map(([v,l])=>`<button class="setbtn" data-music="${v}"
       aria-pressed="${musicOn()===v}">${l}</button>`).join("")}</div>

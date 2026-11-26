@@ -45,3 +45,18 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
   64 nickel and dime backs with lines, no pick without a tackle, the box score reads "Tight ends and backs". Buffalo's
   season (seed 5): WR3 39 catches 429 yards 4 TD over 17 games (was 4 games, 15 catches), backup CB 17 games 33
   tackles 2 INT (was 2 games, 0 tackles, 2 INT); the tight-end-and-back row 3-10 catches a game (was 4-14).
+
+## Each sport's own words: Highlights modes, the sim-ahead stop, "side" (six games)
+- What: the live screen's and Settings' Highlights buttons name each sport's own modes (HL_SPORT.allLabel/fullLabel):
+  basketball "Every big basket", football "Every big play", baseball "Every big hit", hockey "Goals and saves", and
+  "Full game" for all four; soccer keeps "Every chance" and "Full match". The sim-ahead stop reads "A big game is next
+  (a rival, a top team, an NBA Cup knockout game)" in pro basketball and "(a rival, a top team)" elsewhere; soccer keeps
+  "a top side, a cup tie". "A good side" (first job), "a side rated far above yours", "a side that started in the
+  bottom half" (achievements), "as the better side tonight" (plan reasons) and the Settings note's "the better side"
+  use "team" outside soccer (sideWord()).
+- Why: playtest: soccer's words on the other sports' screens. The "all" modes show the big moments, not every
+  possession, so they are named for what they show (Ian, round 99: "Full match is not showing the full match").
+- Games: all six non-soccer games; soccer unchanged.
+- Tested: `node test/polish.js soccer`: the live screen, Settings, the sim sheet, the first jobs and the achievements in
+  cfb, nfl, ncaab, nba, nhl, mlb carry none of "Every chance", "Full match", "top side", "good side", "cup tie", "better
+  side", and say "Full game"; soccer keeps its words. MATCH.
