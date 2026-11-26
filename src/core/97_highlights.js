@@ -159,12 +159,19 @@ function hlDraw(c,t){
    share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
    goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
    HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
+/* round 111 (Ian: "At slow full match the match should basically take as long as it would take to watch the match in
+   real time - for example, 90 minutes for a soccer game"; "Normal should feel like typical viewing pace"): a sport that
+   plays at real speeds (evPB.rt) runs the play between moments as a share of real time: Slow 1, Normal 1/2, Fast 1/4,
+   Very fast 1/10 (soccer measured 19 wall seconds a game minute on Slow, 14 on Normal). The moments keep their length. */
+const FULL_RT={slow:1,normal:0.5,fast:0.25,rapid:0.1};
+function fullRT(){ return FULL_RT[(typeof S!=="undefined"&&S&&S.watchSpeed)||"normal"]||0.5 }
+function hlEvAmb(d){ const E=HL_SPORT.evPB, sp=typeof speedMult==="function"?speedMult():1; return E.rt?E.span(d)*60000*fullRT():E.ms(d)/Math.pow(Math.max(0.25,sp),0.75) }
 function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,S.mode||"all")||[] }catch(e){}
   const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
   clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
   clips.sort((a,b)=>a.f-b.f);
   for(let i=1;i<clips.length;i++)if(clips[i].f<clips[i-1].f+0.04)clips[i].f=Math.min(0.985,clips[i-1].f+0.04);   // round 103: two in one minute, a moment apart (no play squeezed to nothing between them)
-  const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
+  const amb=hlEvAmb(d), seg=[]; let pf=0, at=0;
   clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
   const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
   return d._ev={seg:seg,tot:at,clips:clips} }
