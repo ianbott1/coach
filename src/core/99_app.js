@@ -574,7 +574,10 @@ function noteChoice(k,was,now){
    without the card being seen): a plan kept from an earlier game, not chosen for this one, is asked about on the first
    tap of Play or Sim game ("Keep Take risks?"); the second plays it. Balanced, a plan picked today, a shared seat or a
    game with no card aren't asked. */
-function planCarried(){ try{ if(isHotSeat()||!SEA||!PLANS[plan]||plan==="balanced"||S.off)return false; const g=SEA.phase==="week"?cardGame(S.myTeam):null; if(SEA.phase==="week"&&!g)return false;
+function planCarried(){ try{ if(isHotSeat()||!SEA||!PLANS[plan]||plan==="balanced"||S.off)return false;
+  // only before a game you play: not on "Enter the offseason" (the season is done) or "Sim to your next game, or the
+  // end" (a postseason round without you: the coordinator, after an eliminated pro basketball team's last game)
+  if(SEA.phase==="done"||spectating())return false; const g=SEA.phase==="week"?cardGame(S.myTeam):null; if(SEA.phase==="week"&&!g)return false;
   const st=g?g.week:SEA.step; return !(S.planStep!=null&&S.planStep>=st)&&S.planOk!==SEA.year+":"+st }catch(e){ return false } }
 function planConfirm(b,go){ if(!b||!planCarried())return go();
   const g=SEA.phase==="week"?cardGame(S.myTeam):null, st=g?g.week:SEA.step;
