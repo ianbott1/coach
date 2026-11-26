@@ -109,7 +109,10 @@ first-round seed line and the 1 seeds' titles and Final Fours within history (48
 
 **Not yet.** One window a year (no spring window in football, no graduate transfers: seniors graduate). Players are
 not tampered with in season, and the portal has no "do not contact" tag. Your offers are one per player; the computer's
-do not escalate. Starting quarterbacks who are transfers are still under the real share.
+do not escalate. Starting quarterbacks who are transfers are still under the real share. A transfer keeps his name, so
+with this many moving, a roster can hold two men with one first name (123 such repeats across football's 132 two-deeps
+after one winter, 90 in basketball's 365 after two; football draws first names from a list of 60). Everyone a summer
+names still gets a free one (`test/polish.js`).
 
 ## 3. The draft is declared at the window
 
@@ -149,3 +152,15 @@ preview was the market in every winter).
 
 **Not yet.** No conversation at the window itself (a promise of the starting job, say). Weekly recruiting decisions
 (board, visits, offers; item 3 of the brief) were not started: the existing recruiting board stands as it was.
+
+## The rest of the suite, on the final build
+
+MATCH: `test/saves.js`, `test/migrate.js` (2,253 checks), `test/reload.js` for both games (18 of 18 each),
+`test/storage.js` (both), `test/engine-replay.js` with OLD=/home/claude/dist-e25 for both games, `test/bb-march.js`,
+`test/polish.js` (after the two checks above read the market), `test/morale.js`, `test/people.js`, `test/goals.js`,
+`test/bb-screens.js`, `test/plans.js`. Goldens re-recorded for both games (fast, full, hot seat), each matching before.
+
+`test/recruiting.js` fails one check in football: "a sensible board" reads -0.6 a spot on its two seeds (the base build
++0.2). On three more seeds the same strategy reads +0.75 here and +0.04 on the base build, so the check sits at the
+base build's own mean; the market moves the season's dice, not the board.
+
