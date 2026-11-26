@@ -60,7 +60,7 @@ function leagueCode(seed,team){ const i=NAMES.indexOf(team); if(i<0)return "";
 function shFromB32(s){ let n=0; for(const c of s){ const v=SH_ALPHA.indexOf(c); if(v<0)return NaN; n=n*32+v } return n }
 /* {seed, team, eng} or {why} */
 function readLeagueCode(text){
-  const parts=shNorm(text).split("-").filter(Boolean);
+  const raw=String(text||"").toUpperCase().replace(/\s+/g,"").split("-").filter(Boolean), parts=raw.map((x,i)=>i?shNorm(x):x);
   if(parts.length!==5)return {why:"A league code has five parts, like "+shLeagueId()+"-3H7K2-04-"+ENGINE_NOW+"-QX7M."};
   const [g,s,t,e,c]=parts;
   if(g!==shLeagueId()){ const other={CFB:"College Football Coach",NFL:"Pro Football Coach",NCAAB:"College Basketball Coach",NBA:"Pro Basketball Coach",NHL:"Pro Hockey Coach",EPL:"Soccer Coach",MLB:"Pro Baseball Coach"}[g];
@@ -141,15 +141,34 @@ function chOpen(){ const C=S&&S.challenge; return !!(C&&!isHotSeat()&&SEA&&!(S.h
 const CH_INPUTS=["plans","calls","planMid","promos","fires","chLog","talks","featured","deploy","xiLog","xiFm"];
 function chMake(){
   const C=S.challenge; if(!C||SEA.phase!=="done")return null;
-  const my=S.myTeam, pre=SEA.year+":", inp={};
-  CH_INPUTS.forEach(k=>{ const v=S[k]; if(v===undefined||v===null)return;
-    if((k==="calls"||k==="planMid")&&typeof v==="object"){ const o={}; Object.keys(v).forEach(x=>{ if(x.indexOf(pre)===0&&v[x]&&v[x].length)o[x]=v[x] }); inp[k]=o }
-    else inp[k]=v });
+  const my=S.myTeam, inp=chPackInputs(S,SEA.year);
   const lv={}; Object.keys(S.played||{}).forEach(k=>{ const L=(S.played[k]||[]).filter(p=>p.team===my).map(p=>[p.mine,p.theirs,p.cup?1:0]); if(L.length)lv[k]=L });
   const R=chResult(my);
-  const P={v:1,g:LEAGUE.id,id:C.id,e:ENGINE_NOW,n:S.career.name,st:S.steps,in:inp,lv:lv,r:R};
+  const P={v:1,g:LEAGUE.id,id:C.id,e:ENGINE_NOW,n:S.career.name,y:SEA.year,st:S.steps,in:inp,lv:lv,r:R};
   const body=shPack(JSON.stringify(P));
   return `CC1.${LEAGUE.id}.${C.id}.${body}.${shSum(body+"|"+C.id+"|"+LEAGUE.id,8)}`;
+}
+/* the choices, short: the season's calls as numbers into a list of the answers given, and only the plans that weren't
+   the balanced one (a plan not kept is balanced: core 99 planFor). A baseball season played live: 3.8k -> under 2k. */
+function chPackInputs(X,year){
+  const pre=year+":", inp={};
+  CH_INPUTS.forEach(k=>{ const v=X[k]; if(v===undefined||v===null)return;
+    if(k==="calls"){ const D=[], K=[]; Object.keys(v).filter(x=>x.indexOf(pre)===0&&v[x]&&v[x].length).sort((a,b)=>parseFloat(a.slice(pre.length))-parseFloat(b.slice(pre.length))||(a<b?-1:1))
+        .forEach(x=>{ K.push([x.slice(pre.length)].concat(v[x].map(a=>{ let i=D.indexOf(a); if(i<0){ i=D.length; D.push(a) } return i }))) });
+      inp.calls={d:D,k:K}; return }
+    if(k==="planMid"){ const o={}; Object.keys(v).forEach(x=>{ if(x.indexOf(pre)===0&&v[x]&&v[x].length)o[x.slice(pre.length)]=v[x] }); inp.planMid=o; return }
+    if(k==="plans"){ const o={}; Object.keys(v).forEach(x=>{ const b=String(x).split("#")[0], base=v[b]||"balanced";
+        if(x.indexOf("#")>=0?v[x]!==base:v[x]!=="balanced")o[x]=v[x] }); inp.plans=o; return }
+    inp[k]=v });
+  return JSON.parse(JSON.stringify(inp));
+}
+function chUnpackInputs(inp,year){
+  const out={}, pre=year+":"; inp=JSON.parse(JSON.stringify(inp||{}));
+  Object.keys(inp).forEach(k=>{ if(CH_INPUTS.indexOf(k)<0)return; const v=inp[k];
+    if(k==="calls"&&v&&Array.isArray(v.k)){ const o={}; v.k.forEach(r=>{ if(Array.isArray(r)&&r.length)o[pre+r[0]]=r.slice(1).map(i=>v.d[i]) }); out.calls=o; return }
+    if(k==="planMid"&&v){ const o={}; Object.keys(v).forEach(x=>{ o[pre+x]=v[x] }); out.planMid=o; return }
+    out[k]=v });
+  return out;
 }
 /* the season played again, your live games too, from the code's choices: {ok, why, name, team, R, met, spec, tgt} */
 function chCheck(code){
@@ -164,7 +183,7 @@ function chCheck(code){
   const tgt=out.tgt=chTarget(spec);
   return shSandbox(()=>{
     freshCareer(spec.team,spec.seed,P.n||"");
-    CH_INPUTS.forEach(k=>{ if(P.in[k]!==undefined)S[k]=JSON.parse(JSON.stringify(P.in[k])) });
+    Object.assign(S,chUnpackInputs(P.in,P.y||SEA.year));
     S.played={}; S.steps=Math.max(0,Math.min(2000,P.st|0));
     SHARE_RUN={claims:P.lv||{},done:0,bad:null};
     try{ rebuild() }catch(e){ out.why="That season doesn't replay: "+String(e&&e.message||e); return out }
@@ -231,7 +250,7 @@ function reviewOf(h){
     const mine=G.filter(g=>g&&g.hp!==undefined&&(g.home===my||g.away===my)), seen=new Set(), byK={};
     mine.forEach(g=>{ if(seen.has(g))return; seen.add(g); (momentsOf(g,my)||[]).forEach(x=>{ (byK[x.k]=byK[x.k]||[]).push({x:x,g:g}) }) });
     MOMENT_ORDER.forEach(k=>{ const L=byK[k]; if(!L||!L.length||R.moments.length>=4)return; const f=L[0];
-      R.moments.push(`${f.x.h}${L.length>1?` (${L.length} this season)`:""}: ${shPlain(f.x.l)}`) });
+      R.moments.push(`${f.x.h}${L.length>1?` (${L.length} this season)`:""}. ${shPlain(f.x.l)}`) });
     // the longest winning run, and the biggest win
     let run=0, best=0; mine.filter(g=>!g.cup).forEach(g=>{ if(g.winner===my){ run++; best=Math.max(best,run) } else run=0 });
     if(best>=3)R.moments.push(`${best} wins in a row.`);
