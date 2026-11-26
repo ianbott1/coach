@@ -163,7 +163,8 @@ for(const [f,team] of [['hockey-coach-pro.html','Vegas'],['football-coach.html',
 /* 16. payroll on every team's card, in season (pro games) */
 for(const [f] of GAMES.filter(g=>/pro|soccer/.test(g[0]))){ const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(GAMES.find(g=>g[0]===f)[1],5,'T');
   const t=A.NAMES.find(x=>x!==A.S.myTeam); play(A,2); const c=strip(A.teamCard(t));
-  ok(/Payroll [$£][\d.]+M of [$£][\d.]+M/.test(c),`${f}: ${t}'s card shows no payroll in season ("${c.slice(0,60)}")`); }
+  ok(/Payroll [$£][\d.]+M (of [$£][\d.]+M|&middot; (under the cap|over the cap|in the tax|over the first apron|over the second apron))/.test(c),   // review round: the NBA card names where the payroll sits on the real sheet
+    `${f}: ${t}'s card shows no payroll in season ("${c.slice(0,60)}")`); }
 /* 17. milestones count your seasons at this club, not the club's */
 { const A=load({settable:SET,file:D('football-coach-pro.html'),expose:EXP}); A.newDynasty('Denver',5,'T');
   const H=[{year:2026,team:'Dallas',teams:{Denver:[15,2,1],Dallas:[9,8,12]}}];      // a great Denver year you weren't there for
