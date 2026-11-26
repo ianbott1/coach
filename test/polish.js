@@ -35,5 +35,49 @@ check('carried plan asked only before your own game (all seven)',()=>{
   }
 });
 
+// Playtest: a college center (Guidry) averaged 3.8 points and 0.0 rebounds over 30 games; a pro backup center (Anwar
+// Dabney) 3.8, 0.0, 0.0. Every man who plays has a whole line: a big who played ten games has rebounds, and a backup's
+// games are the games he played.
+check('basketball backups have whole lines (college and pro)',()=>{
+  for(const lg of ['ncaab','nba']){
+    const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0;
+    while(api.SEA.phase==='week'&&n++<400)ev('simAdvance()');
+    const zero=[], bigs=[];
+    for(const t of api.ev('NAMES')){ (api.SEA.roster[t]||[]).forEach((p,i)=>{ const s=p&&p.st2; if(!s||!(s.g>=10))return;
+      if(!(s.reb>0))zero.push(`${t} ${p.n} (slot ${i}) ${s.g} games, ${(s.pts/s.g).toFixed(1)} ppg, 0 rebounds`);
+      if(i===9)bigs.push(s.reb/s.g) }) }
+    const avg=bigs.reduce((a,b)=>a+b,0)/Math.max(1,bigs.length);
+    ok(!zero.length&&avg>=1.5,`${lg}: no one with 10+ games is without a rebound${zero.length?' ('+zero.length+': '+zero.slice(0,2).join('; ')+')':''}; backup centers ${avg.toFixed(1)} rpg`);
+  }
+});
+
+// Playtest (pro football): backups' lines were only what the log named them for (a corner with interceptions and no
+// tackle, a receiver whose every catch was a touchdown) and every box score had an "Other receivers" row. The third and
+// fourth receivers and the nickel and dime backs play every game they're healthy.
+check('football backups have whole lines; no "Other receivers" row (pro)',()=>{
+  const api=load('nfl'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0;
+  while(api.SEA.phase==='week'&&n++<400)ev('simAdvance()');
+  const bad=[]; let rec=0, td=0, dbs=0;
+  for(const t of ev('NAMES')){ const R=api.SEA.roster[t]||[]; [12,13].forEach(i=>{ const s=R[i]&&R[i].st2; if(s&&s.g){ rec+=s.rec||0; td+=s.ctd||0 } });
+    [18,19].forEach(i=>{ const s=R[i]&&R[i].st2; if(!s||!s.g)return; dbs++; if((s.ints||0)>0&&!(s.tkl>0))bad.push(`${t} ${R[i].n}: ${s.ints} INT, no tackle`) }) }
+  const g=[].concat(...api.SEA.weeks.map(w=>w.games))[0]; const step=api.SEA.weeks.findIndex(w=>w.games.includes(g));
+  const box=ev('sportBoxPlayers')(g,ev('boxLines')(g,g.week!=null?g.week:step,true)).replace(/<[^>]+>/g,' ');
+  ok(!bad.length&&rec>3*td&&dbs>=50&&!/Other receivers/.test(box)&&/Tight ends and backs/.test(box),`backup receivers ${rec} catches for ${td} touchdowns; ${dbs} nickel and dime backs with lines${bad.length?'; '+bad.slice(0,2).join('; '):''}; box: ${/Other receivers/.test(box)?'Other receivers':'tight ends and backs'}`);
+});
+
+// Playtest: soccer's words in other sports: the live Highlights buttons "Every chance" and "Full match" (basketball,
+// hockey, football, baseball), the sim-ahead stop "a top side, a cup tie" (pro basketball), "A good side".
+check('no soccer wording outside soccer (six games)',()=>{
+  const W=/Every chance|Full match|top side|good side|cup tie|a side rated|a side that started|better side/;
+  for(const lg of ['cfb','nfl','ncaab','nba','nhl','mlb']){
+    const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let n=0;
+    while(!api.live&&n++<30)api.doAdvance();
+    const live=(global.__nodes.app||{}).innerHTML||'';
+    const txt=[live,ev('helpPanel()'),ev('simSheetHTML()'),JSON.stringify(ev('firstJobs()')),JSON.stringify(ev('ACH'))].join(' ').replace(/<[^>]+>/g,' ');
+    const m=txt.match(W); ok(!!api.live&&!m&&/Full game/.test(txt),`${lg}: ${m?'says "'+m[0]+'": ...'+txt.slice(Math.max(0,m.index-60),m.index+40).replace(/\s+/g,' ')+'...':'its own words (Full game, '+ev('hlAllLabel()')+')'}`);
+  }
+  const api=load('epl'), ev=api.ev; ok(ev('hlAllLabel()')==='Every chance'&&ev('hlFullLabel()')==='Full match'&&/top side, a cup tie/.test(ev('SIM_BIG')),'soccer keeps Every chance, Full match, a top side, a cup tie');
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }
