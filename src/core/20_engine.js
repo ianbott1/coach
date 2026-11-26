@@ -584,9 +584,9 @@ function offseasonCoaching(u,rng,rec,elo,users){
     // engine 27 (league life): the real leagues' rate of change (LEAGUE.lore.coach, sources in leagues/<id>/89_lore.js
     // and CHANGELOG-review/league-life.md). A club that fired its coach in season (core 93_lore loreMid) changes now;
     // the rest by the old rule (keep: how often a hot seat ends in a firing) and a smaller chance below it (x, from
-    // heat h), by hash so no other dice move
+    // heat h; the top flight only where LEAGUE.lore.top says), by hash so no other dice move
     const LC=eng27()&&LEAGUE.lore&&LEAGUE.lore.coach;
-    if(LC){ if(mid27[t]||(change&&hash01("fire|"+(u.seed||0)+"|"+t+"|"+u.year)<LC.keep)||(!change&&LC.x>0&&heat>LC.h&&u.coach[t].t>=1
+    if(LC){ if(mid27[t]||(change&&hash01("fire|"+(u.seed||0)+"|"+t+"|"+u.year)<LC.keep)||(!change&&LC.x>0&&heat>LC.h&&u.coach[t].t>=1&&loreTop(t)
         &&hash01("fire2|"+(u.seed||0)+"|"+t+"|"+u.year)<LC.x*Math.min(1,(heat-LC.h)/2))){fired.push(t);u.bad[t]=0}
       return }
     if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}

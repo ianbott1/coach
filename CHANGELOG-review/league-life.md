@@ -25,7 +25,7 @@ the full run 16.
   season here (his rate over the seasons since his debut age, at 0.7, never more than half the real career record),
   so the milestones (`careerOf`, core 93_people) and the career records count them. The Premier League also keeps
   each man's Premier League tallies (`p.lc`): the game's careers count every division and cup.
-- Tested: test/league-life.js; records fallen (player marks, season and career) RESULTS_RECORDS.
+- Tested: test/league-life.js; records fallen (player marks, season and career) per decade (16 computer seasons a game, test/league-life.js): NFL 0, NBA 0.6, NHL 3.1, MLB 0, Premier League 5.6 (the sim's own outliers: one run had a 65-goal Premier League season), FBS 0.6, Division I 0. The real books move about this slowly: the pro season marks have mostly stood for decades.
   Sources: NFL https://www.pro-football-reference.com/ (Manning 5,477 and 55 in 2013, Dickerson 2,105, Calvin Johnson
   1,964, Strahan 22.5, Lane 14; Brady 89,214 and 649, Emmitt Smith 18,355, Rice 22,895, Bruce Smith 200, Krause 81);
   NBA LeBron James 43,440 at the end of 2025-26 https://www.olympics.com/ioc/news/lebron-james-points-tracker-nba-all-time-top-scorer ;
@@ -46,7 +46,7 @@ the full run 16.
   the number of a long-serving great at his retirement (not in soccer). Farewells for the best careers to end.
 - Why: the design review's "five things a season happen that the player didn't cause" and stories players retell.
 - Games: all seven.
-- Tested: RESULTS_HOF.
+- Tested: classes a year over 16 seasons (the first ones are small: the waiting list starts empty in 2026): Pro Football 1-5 (mostly 3), Naismith 1-4, Hockey 1-4, baseball 0-2, Premier League 0-4 (about 2), College Football 3-8, college basketball up to 5 (rate checked in the test's bands; the real halls: Pro Football 3-5 modern players, Hockey up to 4 players, baseball about 2 by the writers, Premier League 3, 3 and 2 in 2023-25).
   Sources: https://profootballhof.com/hall-of-famers/selection-process-faq , https://hhof.com/induction/electionprocedures.html ,
   https://www.thescore.com/news/1449560 , https://baseball-reference.com/about/hof_voting.shtml ,
   https://en.wikipedia.org/wiki/Premier_League_Hall_of_Fame , https://www.thescore.com/ncaaf/news/3455549 ,
@@ -88,9 +88,15 @@ the full run 16.
 - Why: the carousel turned over NFL 5.5, NBA 6.0, NHL 5.0, MLB 4.7, Premier League 4.0, FBS 23.3 and Division I
   basketball 71.3 clubs a season (engine 26, 6 seasons), and nobody was ever fired during a season.
 - Games: all seven.
-- Tested: RESULTS_COACH.
+- Tested: coaching changes a season, engine 26 (6 seasons) -> engine 27 (16 seasons, in-season firings in brackets), against the real rate: NFL 5.5 -> 6.8 (1.8), real about 7; NBA 6.0 -> 6.9 (0.9), real about 7-8; NHL 5.0 -> 7.9 (1.7), real about 9-11 (our 7.9 is still short); MLB 4.7 -> 6.3 (1.0), real 4-9; Premier League 4.0 -> 9.1 (6.3), real record 10 sackings a season, 14 departures in 2022-23; FBS 23.3 -> 27.5 (2.8), real 30-31; Division I basketball 71.3 -> 55.0, real about 51. Things the player didn't cause, a season: 7.7 to 17.9 by game (the measure: firings, hirings, retirements of note, records, Hall of Fame classes, awards, rivalry meetings, droughts ended).
   Sources: in test/league-life.js's header (SI, Hoops Rumors, inkl, CBS, Boston.com, Daily Faceoff, ESPN, National
   World, The Analyst, Deseret News, CBS, ESPN).
+- In England only the Premier League gets the faster carousel (in-season sackings and the chance below the hot seat);
+  the Football League keeps the old rule, so ninety-odd clubs don't change managers twice as often.
+- Long careers: test/longrun.js's "scoring a game, late / early" band (0.95-1.05) for the Premier League read 0.959 on
+  the engine 26 build itself over 4 careers of 10 seasons, and 0.949 here; a first-season dip at 0.45 for new
+  managers and no dip at all both read 0.946-0.949, so the drift is the game's own and not the carousel's, and the
+  --short run's one or two careers miss the band by noise either way.
 - Not yet: the Coaches tab still shows the fired coach until the summer (the interim is named in the news only).
 
 ## Rivalries, droughts and dynasties
@@ -115,10 +121,10 @@ the full run 16.
   The board's targets and grades are unchanged.
 - Games: all seven.
 - Tested: test/league-life.js checks the rule on made-up histories; test/firing.js now checks every firing against the
-  owner's count (RESULTS_FIRING); test/goals.js MATCH.
+  owner's count (MATCH, NFL, 3 careers: 32 offseasons, 3 firings); test/goals.js MATCH.
 - Not yet: the owner never changes (no sale), and has no budget of his own outside the NBA's.
 
 ## Save size
 - The league's memory (`U.lore`) holds only what the book shows: overrides of the real records, the last 60 records
   fallen, 40 champions, 30 awards nights, 200 Hall of Fame members, 60 on the waiting list, 60 rivalries, two summers'
-  news. RESULTS_BYTES.
+  news. After 16 seasons it was 14-23 KB a game in the save (the test fails it at 40 KB).

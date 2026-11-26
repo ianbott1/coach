@@ -140,7 +140,7 @@ function loreMid(){
     for(let w=0;w<cp&&w<SEA.weeks.length;w++)((SEA.weeks[w]&&SEA.weeks[w].games)||[]).forEach(g=>{ if(g.cup)return;
       [g.home,g.away].forEach(t=>{ if(!rec[t])rec[t]=[0,0,0] });
       if(g.winner&&g.loser){ rec[g.winner][0]++; rec[g.loser][1]++ } else { rec[g.home][2]++; rec[g.away][2]++ } });
-    NAMES.forEach(t=>{ const r=rec[t], c=U.coach[t]; if(!r||!c||c.you||hu.has(t)||gone.has(t))return;
+    NAMES.forEach(t=>{ const r=rec[t], c=U.coach[t]; if(!r||!c||c.you||hu.has(t)||gone.has(t)||!loreTop(t))return;   // the top flight only (the lower divisions keep the old rule)
       const n=r[0]+r[1]+r[2]; if(n<3)return;
       const wp=LEAGUE.draws?(3*r[0]+r[2])/(3*n):(r[0]+0.5*r[2])/n, exp=0.25+0.5*pct[t], miss=exp-wp;
       const p=a*Math.max(0,Math.min(3,(miss-0.05)/0.15))*((c.t||0)<1?0.4:1);
