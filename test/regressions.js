@@ -82,16 +82,24 @@ for(const [f,team] of GAMES){ const A=load({settable:SET,file:D(f),expose:EXP});
 /* 7. the salary cap binds (Nov 2026): hard caps are never exceeded after an
    offseason, and a typical payroll sits near the cap, not a quarter of it */
 for(const [f,cap,hard] of [['football-coach-pro.html',110,true],['hockey-coach-pro.html',104,true],['basketball-coach-pro.html',165,false]]){
-  const A=load({settable:SET,file:D(f),expose:EXP}); A.newDynasty(A.NAMES[2],9,'T'); const meds=[];
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['FO_CAP','FO_DEPTH','foNew','NBA$'])}); A.newDynasty(A.NAMES[2],9,'T'); const meds=[];
+  // review round (engine 25): pro football's real $301.2M cap counts twenty tracked players plus one depth line
+  // (FO_CAP less FO_DEPTH), and pro basketball's real 2026-27 sheet allows payrolls past the tax line up to the
+  // second apron, with a typical club at or a little over the cap (Spotrac's 2025-26 payrolls: median ~$187M on a
+  // $154.6M cap). A career on the old scale keeps the old figures.
+  const nfl2=/football/.test(f)&&A.foNew&&A.foNew(A.U), nba2=/basketball/.test(f)&&A.NBA$&&A.U&&A.U.foV;
   for(let y=0;y<3;y++){ const E=A.SEA; let g=0; while(E.phase!=='done'&&g++<900)E.advance(); off(A);
+    const c=nfl2||(/football/.test(f)&&A.foNew&&A.foNew(A.U))?A.FO_CAP-A.FO_DEPTH:(/basketball/.test(f)&&A.NBA$&&A.U.foV?A.NBA$.cap:cap);
+    const top=/basketball/.test(f)&&A.NBA$&&A.U.foV?A.NBA$.ap2:200;
     const pay=A.NAMES.map(t=>A.U.roster[t].reduce((s,x)=>s+(x&&x.k?x.k.sal:0),0)).sort((a,b)=>a-b);
-    meds.push(pay[pay.length>>1]/cap);
-    if(hard)ok(pay[pay.length-1]<=cap+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} over the ${cap} hard cap`);
-    else ok(pay[pay.length-1]<=200.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} past the tax line`) }
+    meds.push(pay[pay.length>>1]/c);
+    if(hard)ok(pay[pay.length-1]<=c+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} over the ${c} hard cap`);
+    else ok(pay[pay.length-1]<=top+0.05,`${f}: a payroll of ${pay[pay.length-1].toFixed(1)} past ${top}`) }
   // hockey's curve bends (Nov 2026, Ian's call): cheaper middles leave a typical payroll near 60% of the
-  // cap, the best-built teams still at it; the others stay ~70-85%
-  const lo=/hockey/.test(f)?0.5:0.6, want=/hockey/.test(f)?"~55-70%":"~70-85%";
-  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=lo&&m<=0.95,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ${want})`);
+  // cap, the best-built teams still at it; the others stay ~70-85%; the real NBA sheet sits ~90-125%
+  const nbaNew=/basketball/.test(f)&&A.NBA$&&A.U.foV;
+  const lo=/hockey/.test(f)?0.5:nbaNew?0.85:0.6, hi=nbaNew?1.25:0.95, want=/hockey/.test(f)?"~55-70%":nbaNew?"~90-125%":"~70-85%";
+  const m=meds.reduce((a,b)=>a+b)/meds.length; ok(m>=lo&&m<=hi,`${f}: typical payroll ${Math.round(100*m)}% of the cap (want ${want})`);
   console.log(`  ${f}: typical payroll ${Math.round(100*m)}% of the cap`); }
 
 /* 8. a build stamp on every game */
