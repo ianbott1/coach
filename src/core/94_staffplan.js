@@ -60,6 +60,14 @@ function staffPlanReset(){
 }
 /* college: the staff's plan is the even split and a balanced class */
 function collegePlanHTML(P){
+  if(typeof pxOn==="function"&&pxOn()){   // engine 26: the roster economy (core 92_market)
+    const RF=LEAGUE.offseason.recruitFocus, rf=RF[P.recruit]?P.recruit:"balanced", bd=(P.rboard||[]).length, you=` <span class="planyou">your change</span>`;
+    const t=pxTeam(), st=pxStaffKeep(U,t,SEA.rec), changed=rf!=="balanced"||bd||(P.offers||[]).length||Object.keys(P.keep||{}).some(k=>k in st&&!!P.keep[k]!==!!st[k]);
+    return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
+    <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
+    ${pxPlanRow(P,you)}
+    <div class="planrow"><b>Recruiting</b> ${esc(RF[rf]?RF[rf].l:"Balanced")}${rf!=="balanced"?you:RF[rf]?": "+esc(RF[rf].d):""}${bd?` &middot; your board of ${bd}`:""}</div></div>`;
+  }
   const RF=LEAGUE.offseason.recruitFocus, bk=LEAGUE.offseason.budget.buckets, B=P.budget||{};
   // the staff's split is a quarter each, rounded (10 points: 3-2-2-3), so compare with that exactly, not
   // with "all equal" (it said "your change" before anything was touched: Instinct, Grokbot)

@@ -3461,6 +3461,41 @@ mechanic). Milestones per sport and level are in SPORT.milestones (college:
 milestonesCollege) and reach the weekly news. Pro careers count from the
 dynasty's first season (generated players have no earlier history).
 
+## The roster economy (core/92_market.js, engine 26)
+
+College football and college basketball (LEAGUE.market switches it on; the other
+five games include the file and never call it). It replaces the offseason
+budget's four buckets and, in college basketball, the old portal (runPortal).
+
+- Money: pxBudget(u,t,rec) by conference tier and program Elo, raised by a good
+  season. `two` is the part the screen's players cost (football 45%: the other
+  85 of 105; basketball 90%). pxValue(pl): what the open market pays a player,
+  by rating, position and room to grow.
+- The window (pxMarket, run in LEAGUE.offseason.run before developRoster):
+  0. the draft: LEAGUE.market.pro(pl) (each game's early-entry rule, on the
+     rating he'll reach) says who declares (pxPro, hashed); he leaves with the
+     seniors (rep.pro, pushed into the league's leavers), so developRoster
+     skips its own early-entry roll on engine 26.
+  1. asks: each other non-senior asks his value; the staff (and every computer
+     program) pays the most important first, up to keepShare of the money; a
+     person's keep map overrides. Whether he enters is a hash against a push
+     (buried, new head coach, a star who'd start a level up, a losing team,
+     morale and trust from the people layer, unpaid).
+  2. the market, best first: every program with a need and the money bids;
+     people bid only on their offers. He signs where pxBidBase plus his own
+     hashed part is best, or walks away below `reserve`.
+  3. fills: an empty slot is the next man up from the rest of the roster.
+- Determinism: every decision is a hash (pxH) of the player, program and year,
+  so pxPreview (dry: copies, the season's morale banked as bankCareers does)
+  is the market the commit runs. A job move gives both programs a new head
+  coach in the preview, as at the commit.
+- Engine: pxOn() needs ENGINE_V>=26. The offseason runs on the finished
+  season's engine, so an engine-25 season's winter is the old one.
+- Reports: S.lastMarket (tests), history league.market (pxHistory: the counts
+  and the coached teams' part), the banner (pxBannerHTML).
+- Tests: test/cfb-portal.js (the league against real figures, the preview, an
+  engine-25 season's winter), test/bb-portal.js.
+
 ## The people (core/93_morale.js, engine 25)
 
 A living human layer under the numbers, the same in all seven games (small

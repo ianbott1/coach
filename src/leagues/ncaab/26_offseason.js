@@ -104,7 +104,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff,board){
       if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
       // NBA teams draft ceilings: what he is, and more what he could be
       const ready=0.45*pl.r+0.55*Math.max(pl.r,pl.pot);
-      if(ready>=77 && rng.r() < Math.min(0.95,((ready-75)/8)*(pl.c===1?1.4:1))*keepOdds){
+      if(!pxOn() && ready>=77 && rng.r() < Math.min(0.95,((ready-75)/8)*(pl.c===1?1.4:1))*keepOdds){   // engine 26: decided at the window (pxPro)
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
         leaving.push({n:pl.n,p:pl.p,r:pl.r,c:pl.c-1,pot:pl.pot,early:true,featured:wasFeatured,
                       starter:i<POS.length, car:pl.car||null, from:pl.from||null,
@@ -313,7 +313,8 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   const chFor = t=>U_CH[t]||null;
   const leavers={};
   choices=choices||{};
-  const entrants=portalEntrants(u);                 // decided as the season ended
+  const market=pxOn()?pxMarket(u,rec,U_CH,false):null;   // engine 26: the spring window, every program's money (core 92_market)
+  const entrants=market?[]:portalEntrants(u);       // decided as the season ended
   const risers=[],fallers=[],churn={};
   const ut=choices.userTeam;
 
@@ -338,7 +339,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const focus=(ch&&ch.recruit)?ch.recruit:"balanced";
     let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev:0;
     let bud=null;
-    if(ch&&ch.budget){
+    if(ch&&ch.budget&&!market){
       bud=applyBudget(u,t,ch.budget);
       devMod+=bud.devBonus;
       u.program[t]+=bud.facility*0.20;      // facilities lift the program itself
@@ -349,6 +350,11 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
                            {oc:ocq*0.030, dc:dcq*0.030},
                            ch&&ch.board&&ch.board.length?ch.board.map(x=>Object.assign({},x)):null);
     leavers[t]=churn[t].leaving;
+    // underclassmen who declared at the window, and seniors a transfer passed: the draft takes them with the rest
+    if(market&&market.pro[t])market.pro[t].forEach(x=>leavers[t].push({n:x.pl.n,p:x.pl.p,r:x.r,c:x.pl.c||0,pot:x.pl.pot,early:true,
+      featured:x.featured,starter:x.k<POS.length,car:x.pl.car||null,from:x.pl.from||null,peak:Math.max(x.pl.peak||0,x.r),idx:x.k%POS.length}));
+    if(market&&market.grad[t])market.grad[t].forEach(pl=>leavers[t].push({n:pl.n,p:pl.p,r:pl.r,starter:false,
+      car:pl.car||null,from:pl.from||null,peak:pl.peak||pl.r,idx:pl.i%POS.length}));
     u.trueBase[t]=rosterElo(u.roster[t])
                  +(c.t<=1?ROOKIE_DIP:0)
                  +rng.gauss(0,ROSTER_NOISE);
@@ -361,7 +367,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   /* The transfer portal: players move between programs. */
   const portalReport={}, preElo={};
   NAMES.forEach(t=>preElo[t]=rosterElo(u.roster[t]));
-  const touched=runPortal(u,rng,entrants,U_CH,portalReport);
+  const touched=market?new Set():runPortal(u,rng,entrants,U_CH,portalReport);
   // strength moves by exactly what the portal changed (the rest, noise included, stays)
   touched.forEach(t=>{u.trueBase[t]+=rosterElo(u.roster[t])-preElo[t]});
 
@@ -380,7 +386,7 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     const q=eloToRating(u.program[t])
            +c.q*0.055 +(c.rec||0)*0.55
            +(focus.r||0)*0.45 +(focus.pot||0)*0.12
-           +((ch2&&ch2.budget)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
+           +((ch2&&ch2.budget&&!market)?applyBudgetRead(ch2.budget).recruitBonus*0.6:0)
            +((ch2&&u.pipeline)?Math.min(4.5,u.pipeline*1.5):0)
            +rng.gauss(0,2.6);
     const signed=6+Math.round(rng.range(0,3));
@@ -403,9 +409,11 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   u.year++;
   const realigned=[];                          // conferences stay as they are
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
+  // for tests: the whole window, kept off the save (it holds every program's window: a few hundred KB)
+  if(market&&typeof S!=="undefined"&&S)Object.defineProperty(S,"lastMarket",{value:market,writable:true,configurable:true,enumerable:false});
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
-          draft:draftResult, portal:portalReport.portal};
+          draft:draftResult, portal:portalReport.portal, market:market};
 }
 
 LEAGUE.offseason={
@@ -415,14 +423,44 @@ LEAGUE.offseason={
   budget:{buckets:BUCKETS, pool:budgetPool},
   /* the league's offseason choices, as the offseason screen starts them */
   open(u,t,wins){
+    if(pxOn())return {pool:0, picks:{recruit:"balanced", keep:{}, offers:[]}};   // engine 26: the market's choices
     const pool=budgetPool(u,t,wins);
     return {pool:pool, picks:{recruit:"balanced", portal:[],
       budget:{recruit:Math.ceil(pool/4),develop:Math.floor(pool/4),
               facility:Math.floor(pool/4),retention:pool-Math.ceil(pool/4)-2*Math.floor(pool/4)}}};
   },
   /* ...and as run() reads them */
-  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget, portal:P.portal||[]} },
+  choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget, portal:P.portal||[], keep:P.keep||{}, offers:P.offers||[]} },
   portalPreview:portalEntrants                  // who is likely to enter, for the screen
+};
+
+/* the roster economy (core 92_market, engine 26): men's basketball's part of the House settlement's cap, and the window.
+   Sources: the cap is $21.3M in 2026-27 (https://insidetheloudhouse.com/syracuse-will-pay-its-athletes-the-maximum-amount-allowed-21-3-million-next-season),
+   about 15% of it to men's basketball at most schools (the common 75/15/5/5 split:
+   https://africa.espn.com/college-sports/story/_/id/45469494/ncaa-settlement-done-divide-spoils); with the collectives,
+   eleven programs are spending $20M or more on their 2026-27 rosters, where only Kentucky and Louisville did in 2025-26
+   (CBS Sports via Bleacher Report, Oct 2026: https://bleacherreport.com/articles/25517245-duke-unc-kentucky-headline-tier-1-schools-spending-20m-cbb-rosters-new-cbs-report-says);
+   2,033 men's players had entered the portal by April 10, 2025, about 35% of D-I rosters, after 2,088 in 2024
+   (https://frontofficesports.com/article/more-than-2000-mens-basketball-players-have-entered-transfer-portal/); the 2026
+   window ran 15 days, April 7-21, and 1,500 entered on its first day
+   (https://bleacherreport.com/articles/25415606-college-basketball-transfer-portal-sees-1500-mens-player-entries-1st-day-window) */
+LEAGUE.market={
+  sport:"men's basketball", share:0.15,
+  p4:["ACC","Big East","Big Ten","Big 12","SEC"],
+  // a high-major: the cap's basketball share ($3.2M) and a collective that grows with the program, past $20M at the top;
+  // a mid-major a few hundred thousand to a couple of million
+  p4Base:3, p4Top:19, p4lo:1780, p4span:300, g6Base:0.2, g6Top:2.3, g6lo:1350, g6span:300,
+  twoDeep:0.9,                       // the ten are most of a fifteen-man roster's money
+  // what the open market pays a year: a star $3-5M, a high-major starter several hundred thousand, a mid-major starter
+  // tens of thousands
+  v0:1.5, r0:82, k:8, floor:0.01, pos:{},
+  // the pull up a level: a mid-major star who'd start at a high-major, or a high-major star below the contenders
+  upRef:1780, upTop:2000, upAbove:6,
+  base:0.30, rosterLimit:15, window:"15 days in April", maxIn:4, depth:"top ten", when:"spring", draft:"NBA draft",
+  // the early-entry rule developRoster used (NBA teams draft ceilings), on the rating he'd reach this summer: decided
+  // with the window, so a player paid to stay isn't then lost to the draft
+  pro(pl){ const c=pl.c||0, rE=Math.min(pl.pot||pl.r,pl.r+[6.2,4.0,2.2][c]), ready=0.45*rE+0.55*Math.max(rE,pl.pot||rE);
+    return ready>=77?{p:Math.min(0.95,((ready-75)/8)*(c===0?1.4:1)),r:Math.round(rE)}:null }
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the
@@ -481,6 +519,8 @@ LEAGUE.goals={
 
 /* ---- the history book: what only college football records ---- */
 LEAGUE.historyExtras=function(sea,off,my){
+  const x=historyExtras0(sea,off,my); if(off.market)x.market=pxHistory(off.market,my); return x };   // engine 26's window, when it ran
+function historyExtras0(sea,off,my){
   const bowlOf={}; sea.bowls.forEach(g=>{
     bowlOf[g.winner]=["W",g.title]; bowlOf[g.loser]=["L",g.title]});
   return {id:"ncaab", bowls:bowlOf,

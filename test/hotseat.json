@@ -1,5 +1,5 @@
 {
- "fp": "b2cfe8aa3af5a4e8",
+ "fp": "272caca2a88715c4",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -415,6 +415,11 @@
    "fp": "b2cfe8aa3af5a4e8",
    "from": "376046d08aa668d7",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "272caca2a88715c4",
+   "from": "b2cfe8aa3af5a4e8",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
   }
  ],
  "out": [
@@ -428,7 +433,7 @@
       "result": "Eliminated in the quarterfinals",
       "grade": "A+"
      },
-     "book": "f46b3b7dd0bd9ebd"
+     "book": "9afa8306eda7d6ec"
     },
     {
      "team": "Rice",
@@ -437,7 +442,7 @@
       "result": "Lost the Hawaii Bowl",
       "grade": "A-"
      },
-     "book": "2116c4fafeab8711"
+     "book": "1da3e8f18107d7f6"
     }
    ]
   },
@@ -447,20 +452,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "14-2",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "7-6",
+      "result": "Lost the Alamo Bowl",
+      "grade": "B"
      },
-     "book": "01c81be432f862a1"
+     "book": "74b98ef98740e022"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
-      "result": "No bowl game",
-      "grade": "B"
+      "rec": "7-6",
+      "result": "Won the Bahamas Bowl",
+      "grade": "A+"
      },
-     "book": "d4416e8070ca4325"
+     "book": "0c127742e662cb72"
     }
    ]
   },
@@ -470,20 +475,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-5",
-      "result": "Eliminated in the quarterfinals",
+      "rec": "8-5",
+      "result": "Won the Texas Bowl",
       "grade": "A-"
      },
-     "book": "e36539cf1adc893c"
+     "book": "92644e39b44d1877"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "5-7",
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "70d4f7da9e3480eb"
+     "book": "6471ba6f4853830b"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "0524ef359d58ce8e",
+ "fp": "a99742c5d24942c1",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -370,6 +370,11 @@
    "fp": "0524ef359d58ce8e",
    "from": "c02d5ae543b0c6c2",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "a99742c5d24942c1",
+   "from": "0524ef359d58ce8e",
+   "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
   }
  ],
  "out": [
@@ -383,7 +388,7 @@
       "result": "Lost the national championship",
       "grade": "A+"
      },
-     "book": "c941601933884a5c"
+     "book": "38aa36fdda87f37d"
     },
     {
      "team": "North Carolina",
@@ -392,7 +397,7 @@
       "result": "NATIONAL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "33cc62b197dad152"
+     "book": "26c03b9f6edb0560"
     }
    ]
   },
@@ -402,20 +407,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "25-9",
+      "rec": "28-7",
       "result": "Lost in the Second Round",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "503a98d3557706b1"
+     "book": "c57c785052dae1ed"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "26-8",
-      "result": "Lost in the Second Round",
-      "grade": "B+"
+      "rec": "19-14",
+      "result": "Lost in the First Round",
+      "grade": "C+"
      },
-     "book": "ef8318c931f8653f"
+     "book": "3242592fd9df5cbc"
     }
    ]
   },
@@ -425,20 +430,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-5",
-      "result": "Lost in the Final Four",
-      "grade": "A+"
+      "rec": "26-9",
+      "result": "Lost in the Sweet 16",
+      "grade": "B"
      },
-     "book": "0d259afb50fa57a1"
+     "book": "225e87cddc5d3285"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "29-6",
-      "result": "Lost in the Sweet 16",
-      "grade": "B+"
+      "rec": "28-7",
+      "result": "Lost in the First Round",
+      "grade": "B"
      },
-     "book": "def25a2dda834e6f"
+     "book": "1a4255e535b01bd1"
     }
    ]
   }

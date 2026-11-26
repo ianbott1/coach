@@ -183,7 +183,9 @@ check('asking about a player says what stands in the way (pro hockey; pro basket
 check('the portal describes next season\'s depth chart (college basketball)',()=>{
   const api=load('ncaab'), ev=api.ev; let named=0; const bad=[];
   for(const team of ['Duke','Gonzaga','Dayton']){ api.newDynasty(team,7,'T'); let n=0; while(api.SEA.phase!=='done'&&n++<600)ev('simAdvance()');
-    api.openOffseason(); const R=api.U.roster[api.S.myTeam]||[]; const leave=new Set(ev('LEAGUE.offseason.portalPreview(U)').filter(e=>e.from===api.S.myTeam).map(e=>e.n));
+    api.openOffseason(); const R=api.U.roster[api.S.myTeam]||[]; // engine 26: who leaves is the market's (core 92_market), before it the old portal's
+    const leave=new Set(ev('pxOn()')?ev('(pxPreview(S.myTeam,S.off.picks).out[S.myTeam]||[]).concat((pxPreview(S.myTeam,S.off.picks).pro[S.myTeam]||[]).map(x=>({n:x.pl.n})))').map(e=>e.n)
+      :ev('LEAGUE.offseason.portalPreview(U)').filter(e=>e.from===api.S.myTeam).map(e=>e.n));
     const sr=new Set(R.filter(p=>p&&p.c>=3).map(p=>p.n)); const h=api.view('team').replace(/<[^>]+>/g,' ').replace(/&#39;|&apos;/g,"'");
     const re=/(?:start over|back up) ([A-Z][^,;·&]*?)(?=[,;·&]|$)/g; let m;
     while((m=re.exec(h))){ const nm=m[1].trim(); if(nm==='nobody')continue; named++; if(sr.has(nm)||leave.has(nm))bad.push(`${team}: "${m[0]}" (${sr.has(nm)?'a graduating senior':'leaving'})`) } }
@@ -207,12 +209,14 @@ check('a hired assistant keeps the name he was hired under (college basketball)'
 
 // Playtest (college basketball): one roster held four Kel'els, two Spearmans and two Guidrys. A new career's rosters and
 // each summer's unmet newcomers take a first name and a surname nobody else on the roster has (returners, transfers
-// and recruits you signed keep theirs, so a repeat can still come, rarely).
+// and recruits you signed keep theirs, so a repeat can still come, rarely). Engine 26: a quarter of each two-deep can
+// move in one window (core 92_market), and a transfer keeps his name, so the count is of the men a summer names (a
+// transfer's own repeats are real rosters' too: 60 first names in football's list).
 check('names on a college roster don\'t repeat (college basketball and football)',()=>{
   for(const [lg,yrs] of [['ncaab',2],['cfb',1]]){
     const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T');
     const count=()=>{ let rep=0, teams=0; const three=[];
-      for(const t of ev('NAMES')){ const R=(api.U.roster[t]||[]).filter(p=>p&&p.n); teams++; const c={};
+      for(const t of ev('NAMES')){ const R=(api.U.roster[t]||[]).filter(p=>p&&p.n&&p.xfY==null); teams++; const c={};
         R.forEach(p=>{ const sp=p.n.indexOf(' '); ['f'+p.n.slice(0,sp),'l'+p.n.slice(sp+1)].forEach(k=>c[k]=(c[k]||0)+1) });
         Object.entries(c).forEach(([k,v])=>{ if(v>1)rep+=v-1; if(v>2)three.push(t+' '+k.slice(1)+' x'+v) }) }
       return {rep,teams,three} };
