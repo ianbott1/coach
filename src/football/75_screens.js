@@ -46,11 +46,13 @@ function driveScript(g,drives,rosters){
   // Until it's credited, the same rule the season uses (_creditV4, teamLines): a hurt man's backup plays his slot.
   const liveBy=!rosters&&typeof SEA!=="undefined"&&SEA&&SEA.talent&&typeof BK==="function"&&!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4);
   const byFor=d=>{ if(d.by||!liveBy)return d.by; const o={};
+    const v26=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26;
     const side=(tm,R,keys,bks,pre)=>{ if(!R)return; const hurt=new Set(SEA.talent.active(tm).map(x=>x.idx)), act=new Set(POS.map((P,i)=>hurt.has(i)?R[BK(i)]:R[i]).filter(Boolean));
-      keys.forEach(i=>{ const p=hurt.has(i)?R[BK(i)]:R[i]; if(p)o[pre+i]=p.n }); bks.forEach(i=>{ const p=R[i]; if(p&&!act.has(p))o[pre+i]=p.n }) };
-    side(d.home?g.home:g.away,d.home?RH:RA,[0,1,2,3],[BK(2),BK(3)],"");
+      keys.forEach(i=>{ const p=hurt.has(i)?R[BK(i)]:R[i]; if(p)o[pre+i]=p.n }); bks.forEach(i=>{ const p=R[i]; if(p&&!act.has(p)&&!(v26&&hurt.has(i)))o[pre+i]=p.n }) };
+    side(d.home?g.home:g.away,d.home?RH:RA,[0,1,2,3],v26?[BK(1),BK(2),BK(3)]:[BK(2),BK(3)],"");
     side(d.home?g.away:g.home,d.home?RA:RH,[7,8,9],[BK(8),BK(9)],"d");
     return o };
+  const v26=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26;
   return drives.map((d0,di)=>{
     const d=d0.by||!liveBy?d0:Object.assign({},d0,{by:byFor(d0)});
     const off=d.home?RH:RA, def=d.home?RA:RH;
@@ -68,14 +70,15 @@ function driveScript(g,drives,rosters){
       const lq=v14?fbLean(pl(0),"arm"):1, lr=v14?fbLean(pl(1),["spd","str"]):1, pp=0.56*lq/(0.56*lq+0.44*lr);
       if(rng.r()<pp){ const u=rng.r(), v4=!(typeof ENGINE_V!=="undefined"&&ENGINE_V<4);
         let ri; if(!v14)ri=!v4?(u<0.62?2:3):u<0.42?2:u<0.68?3:u<0.86?BK(2):BK(3);
-        else { const I=[2,3,BK(2),BK(3)], W=[0.42,0.26,0.18,0.14].map((w,j)=>w*fbLean(pl(I[j]),["hnd","spd"])), T=W.reduce((a,b)=>a+b,0); let x=u*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } ri=I[j] }
+        else { const I=[2,3,BK(2),BK(3)], W=(v26?[0.31,0.24,0.24,0.21]:[0.42,0.26,0.18,0.14]).map((w,j)=>w*fbLean(pl(I[j]),["hnd","spd"])*(v26&&I[j]>=POS.length&&d.by&&!d.by[I[j]]?0:1)), T=W.reduce((a,b)=>a+b,0); let x=u*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } ri=I[j] }
         who={k:"pass",i:ri,y:y}; text=`${nm(0)} ${y}-yd TD pass to ${nm(ri)}` }   // round 74: the backups catch some (a tight end, the slot): one receiver caught 30 in a season
-      else if(rng.r()<0.8){ who={k:"run",i:1,y:y}; text=`${nm(1)} ${y}-yd TD run` }
-      else { const yq=Math.round(rng.range(1,12)); who={k:"run",i:0}; text=`${nm(0)} ${v19&&d.start!=null&&d.start<100?Math.max(1,Math.min(yq,100-d.start)):yq}-yd TD run` }
+      else if(rng.r()<0.8){ const ri=v26&&d.by&&d.by[BK(1)]&&(((d.n||0)*0.7548776662+(di%7)*0.5698402910)%1)<0.3?BK(1):1;   // engine 26: the second back gets some (no draw)
+        who={k:"run",i:ri,y:y}; text=`${nm(ri)} ${y}-yd TD run` }
+      else { const yq=Math.round(rng.range(1,12)), yy=v19&&d.start!=null&&d.start<100?Math.max(1,Math.min(yq,100-d.start)):yq; who=v26?{k:"run",i:0,y:yy}:{k:"run",i:0}; text=`${nm(0)} ${yy}-yd TD run` }
     } else if(d.kind==="FG"){ const r=Math.round(rng.range(19,52)); text=`${kickerName(d.home?g.home:g.away)} ${d.stall?fgDistance(d.stall):r}-yd field goal`; }   // the kick's own length (it was made up: 72 on one screen, 63 on another)
     else if(d.kind==="INT"){ let di=typeof ENGINE_V!=="undefined"&&ENGINE_V<4?8:FB_PICKER[(d.n||0)%FB_PICKER.length];
-      if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=14){ const I=[8,9,18,19], W=[2,3,2,1].map((w,j)=>w*fbLean(pOf(def,d,I[j],true),"cov")), T=W.reduce((a,b)=>a+b,0); let x=(((d.n||0)*0.6180339887)%1)*T, j=0; while(j<3&&x>=W[j]){ x-=W[j]; j++ } di=I[j] }   // round 91: Coverage, by the drive's number (no draw)
-      who={k:"int",i:di}; text=`intercepted by ${dn(di)}`; }   // round 74: a corner or a safety (it was always the corner)
+      if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=14){ const I=v26?[8,9,18,19,7]:[8,9,18,19], W=(v26?[2.2,2.0,1.4,0.9,1.1]:[2,3,2,1]).map((w,j)=>w*fbLean(pOf(def,d,I[j],true),"cov")*(v26&&I[j]>=POS.length&&d.by&&!d.by["d"+I[j]]?0:1)), T=W.reduce((a,b)=>a+b,0); let x=(((d.n||0)*0.6180339887)%1)*T, j=0; while(j<I.length-1&&x>=W[j]){ x-=W[j]; j++ } di=I[j] }   // round 91: Coverage, by the drive's number (no draw)
+      who={k:"int",i:di}; text=`intercepted by ${dn(di)}`; }   // engine 26: the linebacker too (a pick in five or so is a linebacker's)   // round 74: a corner or a safety (it was always the corner)
     else if(d.kind==="FUM"){ text=`fumble, recovered by ${dn(7)}`; }
     else if(d.kind==="MISS"){ const r=Math.round(rng.range(38,56)); text=`${kickerName(d.home?g.home:g.away)}'s ${d.stall?fgDistance(d.stall):r}-yd attempt is no good`; }
     else { text=rng.pick(OUTTXT[d.kind]||["punt"]); }
