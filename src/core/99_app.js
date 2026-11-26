@@ -154,6 +154,14 @@ function presentAsk(r,floorCall){
 }
 /* round 101: the full match plays back what the engine logged (HL_SPORT.playback gives its length on screen). A stretch
    whose start was already shown (a call came inside it) plays on from where it stopped (live.pbSeen). */
+/* round 111: a speed change inside a stretch takes hold at once. A stretch now runs minutes on Slow; the old length ran on
+   to its end. The stretch keeps its place: the same point of the same clip, or the same share of the play. */
+function pbRescale(){ const P=live&&live.pb; if(!P||live.done||!P.d||typeof HL_SPORT==="undefined")return;
+  const el=P.frozen!=null?P.frozen:Date.now()-P.at, d=P.d; let el2, ms2;
+  if(HL_SPORT.evPB&&d._ev&&typeof hlEvPlan==="function"){ const o=d._ev, i0=o.seg.findIndex(q=>el<q.at+q.ms), i=i0<0?o.seg.length-1:i0, q=o.seg[i], t=q.ms?Math.max(0,Math.min(1,(el-q.at)/q.ms)):1;
+    delete d._ev; const n=hlEvPlan(live,d), q2=n.seg[i]||n.seg[n.seg.length-1]; el2=q2.at+t*q2.ms; ms2=n.tot }
+  else { const m=HL_SPORT.playback(live,d,P.from,P.to); if(!m)return; el2=el/Math.max(1,P.ms)*m; ms2=m }
+  P.ms=ms2; if(P.frozen!=null)P.frozen=el2; else { P.at=Date.now()-el2; if(live.timer&&!live.paused){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.max(0,ms2-el2)) } } }
 function pbOn(){ return typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan() }
 function pbFrom(d){ const S0=live.pbSeen; return S0&&S0.seg===d.seg?S0.n:0 }
 function pbScoreAt(d,i,h,a){ const q=i>0&&d.pl&&d.pl[i-1]; return q&&q.h!=null?[q.h,q.a]:[h,a] }
@@ -3791,7 +3799,7 @@ function render0(){
       document.querySelectorAll("[data-pbp]").forEach(x=>onPress(x,()=>{ S.pbpOpen=!S.pbpOpen; save(); render() }));
       document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
-        S.watchSpeed=x.dataset.speed;save();render()}));
+        S.watchSpeed=x.dataset.speed;pbRescale();save();render()}));
     }
     return;
   }
@@ -4483,7 +4491,7 @@ window.addEventListener("keydown",e=>{
     if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();live.paused=true;liveTick();return}
     if(e.key==="Enter"){e.preventDefault();skipLive();return}
     if(["1","2","3","4"].indexOf(e.key)>=0){e.preventDefault();
-      S.watchSpeed=SPEEDS[+e.key-1][0];save();render();return}
+      S.watchSpeed=SPEEDS[+e.key-1][0];pbRescale();save();render();return}
     return;
   }
   if(watch){
