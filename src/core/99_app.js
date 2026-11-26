@@ -322,15 +322,19 @@ function pressSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0||live.ask)retur
 function liveActsOn(){ return !!(live&&!live.done&&!live.h2h&&live.eng&&typeof live.eng.actsFor==="function") }
 function liveActPend(id){ const side=live.userIsHome?"home":"away"; return (live.pm||[]).some(x=>x[1]===side&&x[2]==="act:"+id&&!(live.eng.pmOn&&live.eng.pmOn.has(x))) }
 function pressActMidGame(id){ if(!liveActsOn()||live.ask||liveActPend(id))return; const p="act:"+id;
+  { const side=live.userIsHome?"home":"away", A=live.eng.actsFor(side).find(a=>a.id===id); if(!A||A.on||(A.left!=null&&!(A.left>0)))return }
   if(planArmed(p)&&Date.now()-PLAN_ARM.at>=250){ PLAN_ARM=null; setActMidGame(id); return } if(planArmed(p))return;
   PLAN_ARM={p:p,at:Date.now(),ck:live.ckey}; render();
   setTimeout(()=>{ if(PLAN_ARM&&PLAN_ARM.p===p&&Date.now()-PLAN_ARM.at>=PLAN_ARM_MS){ PLAN_ARM=null; if(live&&!live.done&&!live.ask)render() } },PLAN_ARM_MS+50) }
 function setActMidGame(id){ if(!liveActsOn())return; const side=live.userIsHome?"home":"away", n=live.drives.length, A=live.eng.actsFor(side).find(a=>a.id===id);
-  if(!A||!(A.left>0)||liveActPend(id))return;
+  if(!A||(A.left!=null&&!(A.left>0))||A.on||liveActPend(id))return;
   live.pm.push([n,side,"act:"+id]); S.planMid=S.planMid||{}; S.planMid[live.ckey]=live.pm.map(x=>x.slice()); save(); render() }
 function liveActsHTML(){ if(!liveActsOn())return ""; const side=live.userIsHome?"home":"away", A=live.eng.actsFor(side); if(!A.length)return "";
-  return `<div class="wspeed" style="margin-top:6px">${A.map(a=>{ const pend=liveActPend(a.id), arm=planArmed("act:"+a.id);
-    return `<button class="spbtn${arm?" armed":""}" id="ma-${a.id}" data-midact="${a.id}"${a.left>0&&!pend?"":" disabled"}>${pend?"Called: at the next break":(arm?"Tap again: ":"")+esc(a.l)+` (${a.left} left)`}</button>` }).join("")}</div>` }
+  // grouped by a.grp (a line above the group's buttons); a.on: the one in force; a.left: how many are left
+  const G=[]; A.forEach(a=>{ const g=G.find(x=>x.k===(a.grp||"")); if(g)g.a.push(a); else G.push({k:a.grp||"",a:[a]}) });
+  const pendAny=id=>liveActPend(id)||(/:/.test(id)&&A.some(b=>b.id!==id&&b.grp&&b.grp===(A.find(c=>c.id===id)||{}).grp&&liveActPend(b.id)));
+  return G.map(g=>`${g.k?`<div class="fnote" style="margin:6px 0 4px">${esc(g.k)}</div>`:""}<div class="wspeed" style="margin-top:6px">${g.a.map(a=>{ const pend=liveActPend(a.id), arm=planArmed("act:"+a.id), off=(a.left!=null&&!(a.left>0))||pend||a.on||pendAny(a.id);
+    return `<button class="spbtn${arm?" armed":""}" id="ma-${a.id.replace(/[^a-z0-9]/gi,"-")}" data-midact="${esc(a.id)}"${a.on!=null?` aria-pressed="${!!a.on}"`:""}${off&&!a.on?" disabled":""}>${pend?esc(a.pend||"Called: at the next break"):(arm?"Tap again: ":"")+esc(a.l)+(a.left!=null?` (${a.left} left)`:"")}</button>` }).join("")}</div>`).join("") }
 function setSubMidGame(u){ if(!liveSubsOn()||liveSubsLeft()<=0)return; const side=live.userIsHome?"home":"away", n=live.drives.length;
   if((live.pm||[]).some(x=>x[0]===n&&x[1]===side&&x[2]==="sub:"+u))return;
   live.pm.push([n,side,"sub:"+u]);   // made as the next stretch starts (the engine's pm wrapper), so never twice

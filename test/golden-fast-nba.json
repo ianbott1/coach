@@ -1,5 +1,5 @@
 {
- "fp": "e010a2d1f878c2c2",
+ "fp": "fb01ac59873d2445",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -140,6 +140,11 @@
    "fp": "e010a2d1f878c2c2",
    "from": "b67133ff4419ea04",
    "note": "round 111 engine 25: basketball timeouts (the run call, your own timeout) change the user's live games; computer games unchanged"
+  },
+  {
+   "fp": "fb01ac59873d2445",
+   "from": "e010a2d1f878c2c2",
+   "note": "round 111 step 2: the rotation buttons on the live bar (screens only; results unchanged)"
   }
  ],
  "result": {
@@ -154,7 +159,7 @@
     "heis": "941d037e6ea538dd",
     "history": "2d8e4bb4dd224a2a",
     "universe": "5e1643a65617a72b",
-    "screens": "f4d06e59b2189f87"
+    "screens": "45dd796ddc06310c"
    }
   ]
  }

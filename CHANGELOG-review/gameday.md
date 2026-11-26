@@ -30,3 +30,29 @@
   only after a run against you mid-period with a timeout left; assistant = "timeout, keep" 300/300; own timeout asks
   200/200; timeout vs save +0.53 / +0.39 points of margin). node test/bb-gameday-ui.js MATCH (8 live games each, the
   button, the call screen, TIMEOUT in the run of play, rebuilt games give back their score).
+
+## 2. Basketball rotation and fatigue; foul trouble that knows your rotation (engine 25)
+- What changed: a rotation control on the live bar: Tight rotation (the bench plays 12% of the minutes), Usual (20%,
+  as before), Go deep (28%), from the next stretch, any time. A tighter rotation puts more of your starters on the floor
+  each stretch (worth your starters' gap over your bench, by position weight, in rating points times R_SLOPE); the
+  minutes come back as tired legs in the last two stretches and overtime, by how much tighter you played before each,
+  less for a side with Stamina. The bar shows your starters' legs (fresh, fine, tiring, tired) from the same sum the
+  engine plays. A star in a tight rotation is on the floor more and picks up fouls faster (deep, slower); the
+  foul-trouble card says so. The engine reads each side's gap and Stamina from the roster (gameCtx rot; a hurt
+  starter's minutes go to his backup, a hurt backup's to a walk-on).
+- Why: no minutes control existed; a coach's most constant decision (how far down the bench to go, whether to ride the
+  starters) wasn't in the game, and Stamina only showed in the last ten minutes.
+- Honest size (a design choice, not a measured real figure): a roster with the league's usual gap (college 14.3, pro
+  12.0 rating points, measured over every team) and Stamina gains nothing either way. Measured on the same dice
+  (test/bb-gameday.js, 1,500 games a cell, even sides): college, gap 18.3 tight vs deep +0.83 points of margin; gap
+  10.3 deep vs tight +0.17; Stamina +1 sd tight +0.75 over deep, -1 sd deep +0.38. Pro: gap 16 tight +0.80, gap 8 deep
+  +1.14; Stamina +1 sd tight +0.93, -1 sd deep +0.86. The usual roster: within 0.1 points either way.
+- Foul trouble: the call already existed for your star (round 44: once a half, at foulOut-3 and foulOut-2: college 2
+  and 3, pro 3 and 4; asked when it gains 4 points on your assistant, who sits him). Kept as is; not widened to every
+  starter (a non-star starter off the floor measured as worth nothing either way, ARCHITECTURE "Measured and dropped").
+- Computer games: unchanged (the computer plays the usual rotation; the fast goldens' results are identical, screens
+  changed by the new buttons).
+- Games: college and pro basketball. Core: liveActsHTML groups a sport's buttons, shows the one in force.
+- How tested: node test/bb-gameday.js 1500 (all pass, incl. "the usual roster gains nothing" and "a thin bench wants it
+  tight, a deep one deep"); node test/bb-gameday-ui.js MATCH (rotation buttons, the change said in the run of play,
+  legs); golden --fast both basketballs: screens only, re-recorded.

@@ -58,7 +58,18 @@ const BB = Object.assign({}, BB_COLLEGE,
    assistant call one on any run they face while they have one, so the computer's own games play as before. */
 const BB_GD_V=25;   // the engine version these arrive with (core 20 ENGINE_NOW)
 function bbGdV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=BB_GD_V }
-const BB_GD=Object.assign({timeouts:BB.quarters?7:4, runPts:8, momentum:0.012, noTO:0.85}, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bbgd)||{});
+const BB_GD=Object.assign({timeouts:BB.quarters?7:4, runPts:8, momentum:0.012, noTO:0.85,
+  // the rotation (round 111, step 2): the bench's share of the minutes, tight 0.12, as usual 0.20 (BENCH), deep 0.28.
+  // Each stretch a tighter rotation has more of your starters on the floor (worth the starters' gap over the bench, by
+  // the minutes moved: rating points x R_SLOPE); the minutes come back as tired legs in the last two stretches (and
+  // overtime), by how much tighter you played before each, less for a side with Stamina. Set so a side with the
+  // league's usual gap and Stamina gets nothing either way (a design choice, not a measured real figure): a thin
+  // bench and fit starters want it tight, a deep bench or a tired-legged five want it deep. gMean: the league's mean
+  // gap, starters over bench, by position weight (measured, scratch gaps.js: college 14.3 sd 3.8, pros 12.0 sd 3.3);
+  // staK: a point of Stamina lean cuts the tiredness by this share (one league sd, 0.25 college and 0.13 pros, about 30%)
+  rot:{tight:0.12, normal:0.20, deep:0.28}, gMean:BB.quarters?12.0:14.3, staK:BB.quarters?2.3:1.2},
+  (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.bbgd)||{});
+const ROT_L={tight:"Tight rotation",normal:"Usual rotation",deep:"Go deep"};
 /* engine 11 (round 88): what a point of team shape (gameCtx sh, a lean in rating points weighed by position and minutes)
    moves. c: each term's rate change per point, set so a point of any attribute is worth the same margin (measured on
    common dice: scratch r88/marg.js); a: how loud shapes are (one league sd of team Shooting moves the three-point rate
@@ -190,7 +201,7 @@ const CLOSE_FLOOR=3;   // round 50: within this many points late, the crunch-tim
 function foulCall(half,X,T,seg){
   return {k:"fouls",h:`Your star has ${X.f} fouls`,b:half===1?"Sit him until the half, or ride it out?":"Sit him until the last ten minutes, or leave him in?",
     opts:[["sit",half===1?"Sit him until the half":"Sit him until crunch time"],["play","Leave him in"],ASSIST],
-    f:X.f, out:BB.foulOut, called:T.fouls, avg:Math.round(BB.teamFouls*2*seg/SEGS), pearl:T.lastSeg};
+    f:X.f, out:BB.foulOut, called:T.fouls, avg:Math.round(BB.teamFouls*2*seg/SEGS), pearl:T.lastSeg, rot:T.rot};
 }
 function halfCall(lead){
   return lead<0
@@ -284,7 +295,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null, answer:null,
     ot:0, done:false, last:null, crew:crew, S:{home:side0(),away:side0()}, fouls:{home:0,away:0}, lastSeg:{home:0,away:0}};
   // round 111 (engine 25): timeouts left, and who carries a run into the next stretch
-  const GD=bbGdV(); if(GD){ st.TO={home:BB_GD.timeouts,away:BB_GD.timeouts}; st.mo={home:0,away:0} }
+  const GD=bbGdV(); if(GD){ st.TO={home:BB_GD.timeouts,away:BB_GD.timeouts}; st.mo={home:0,away:0};
+    // the rotation: the bench's share now, and the extra minutes your starters have played (in stretches of tight)
+    st.rot={home:"normal",away:"normal"}; st.xm={home:0,away:0};
+    st.rg={home:(ctx.rot&&ctx.rot.home)||{g:BB_GD.gMean,sta:0},away:(ctx.rot&&ctx.rot.away)||{g:BB_GD.gMean,sta:0}} }
+  // a side's edge from its rotation this stretch, in Elo: the starters' extra minutes now, less tired legs late
+  const rotElo=(sd,s)=>{ if(!GD)return 0; const b=BB_GD.rot[st.rot[sd]]||0.2, G=st.rg[sd], d=0.2-b;
+    const RS=typeof R_SLOPE!=="undefined"?R_SLOPE:24.3; let e=d?RS*d*G.g:0;
+    if(s>=SEGS-2&&st.xm[sd]){ const F=8*RS*0.08*BB_GD.gMean/(1+7/6);   // the late cost that nets a usual side's tight game to nothing
+      e-=F*st.xm[sd]*Math.max(0,1-BB_GD.staK*(G.sta||0)) }
+    return e };
   const other=sd=>sd==="home"?"away":"home";
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   // a side's offense: a person's from the gameplan, the computer's by chance
@@ -367,7 +387,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const onH=starOn(H,s), onA=starOn(A,s);
     const cl=s>=SEGS-2?BB.starClutch:1, so=BB.starOwn*cl, sd=BB.starDef*cl;
     const rH=st.rest&&st.rest.home?BB.benchPull*0.5:0, rA=st.rest&&st.rest.away?BB.benchPull*0.5:0;   // a rested side's bench, for the last few minutes
-    const moE=GD&&s<SEGS?BB_GD.momentum*(st.mo.home-st.mo.away):0;   // round 111: a run carried in (none for a side that stopped it)
+    let moE=GD&&s<SEGS?BB_GD.momentum*(st.mo.home-st.mo.away):0;   // round 111: a run carried in (none for a side that stopped it)
+    const gbR=Math.min(s,SEGS-1)>=5&&Math.abs(st.h-st.a)>=BB.garbage;   // a decided game: the benches are in whatever the rotation
+    if(GD&&!gbR&&(st.rot.home!=="normal"||st.rot.away!=="normal"||st.xm.home||st.xm.away))moE+=(rotElo("home",s)-rotElo("away",s))*BB.gapPerPoss/2;
     const ehH=g.eH-(onH?0:so)+(onA?0:sd)-rH+rA+moE, ehA=-g.eH-(onA?0:so)+(onH?0:sd)-rA+rH-moE;
     const modH=styleMod(H.off,A.def,A.prepd), modA=styleMod(A.off,H.def,H.prepd);
     if(SH){ shAdd(modH,"home",s); shAdd(modA,"away",s) }   // engine 11: each side's shape against the other's
@@ -377,6 +399,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     const L0h=Object.assign({},st.lines.h), L0a=Object.assign({},st.lines.a);
     const ev=(st.pendEv||[]).splice(0), t0=s;
     const pStar=BB.starFouls/Math.max(40,poss)*crew;
+    // round 111: a star in a tight rotation is on the floor more, and fouls more; deep, less (the same draws)
+    const rotF=sd=>GD&&st.rot[sd]!=="normal"?(1-BB_GD.rot[st.rot[sd]])/0.8:1, pStarH=pStar*rotF("home"), pStarA=pStar*rotF("away");
+    if(GD&&s<SEGS)["home","away"].forEach(sd=>{ if(st.rot[sd]!=="normal")st.xm[sd]+=(0.2-BB_GD.rot[st.rot[sd]])/0.08/6 });   // after this stretch's edge is set
     // round 101: the full match's possession log (live games only): what each possession did, read off the box-score
     // lines before and after it (no draws, so no game moves): [side 0 home / 1 away, turnovers, free throws tried, made,
     // threes tried, made, twos tried, made, offensive boards, late foul (1)]
@@ -389,8 +414,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       // the stars' fouls: on defense, while on the floor
       // a star who fouls out mid-stretch is gone at once (Muse: an "8th foul" in a six-foul league); the
       // dice are drawn as before, so nothing else in the game moves
-      if(s<SEGS){ if(onH&&rng.r()<pStar){ const u=rng.int(100); if(!H.out){ H.f++; ev.push({side:"home",k:"foul",f:H.f,u:u}); if(H.f>=BB.foulOut){H.out=true; H.outEv={side:"home",k:"out"}; ev.push(H.outEv)} } }
-        if(onA&&rng.r()<pStar){ const u=rng.int(100); if(!A.out){ A.f++; ev.push({side:"away",k:"foul",f:A.f,u:u}); if(A.f>=BB.foulOut){A.out=true; A.outEv={side:"away",k:"out"}; ev.push(A.outEv)} } } }
+      if(s<SEGS){ if(onH&&rng.r()<pStarH){ const u=rng.int(100); if(!H.out){ H.f++; ev.push({side:"home",k:"foul",f:H.f,u:u}); if(H.f>=BB.foulOut){H.out=true; H.outEv={side:"home",k:"out"}; ev.push(H.outEv)} } }
+        if(onA&&rng.r()<pStarA){ const u=rng.int(100); if(!A.out){ A.f++; ev.push({side:"away",k:"foul",f:A.f,u:u}); if(A.f>=BB.foulOut){A.out=true; A.outEv={side:"away",k:"out"}; ev.push(A.outEv)} } } }
     }
     [["home",H],["away",A]].forEach(([sd,X])=>{ if(X.outEv&&X.outEv.u===undefined){ X.outEv.u=rng.int(100); delete X.outEv }   // drawn where it always was
       else if(!X.out&&X.f>=BB.foulOut){X.out=true; ev.push({side:sd,k:"out",u:rng.int(100)})} });
@@ -521,7 +546,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
         if(h===1)X.asked1=true; else X.asked2=true;
         // yours is a call again (round 44: Muse, "foul trouble is scenery in a game drowning in foul data"): sit him, as
         // the computer and your assistant do, or ride it out on how tight tonight's referees are
-        if(BB_FOULQ&&humans[sd]){ queueCall(sd,Object.assign(foulCall(h,X,{fouls:st.fouls[sd],lastSeg:st.lastSeg[sd]},s),{half:h})); return }
+        if(BB_FOULQ&&humans[sd]){ queueCall(sd,Object.assign(foulCall(h,X,{fouls:st.fouls[sd],lastSeg:st.lastSeg[sd],rot:GD?st.rot[sd]:undefined},s),{half:h})); return }
         sitStar(X,h); st.pendEv=(st.pendEv||[]).concat([{side:sd,k:"sit",f:X.f,u:rng.int(100)}]) });
       if(st.queue.length)return st.next() }
     // the reads: end of the first quarter (two segments), and the half
@@ -549,8 +574,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   st.reply=function(v){ st.answer=v; st.waiting=null };
   // round 111: the live game's own buttons (core: setLivePlan "act:<id>", made as a stretch starts). A timeout of yours:
   // the other side's run stops, and the floor is yours for a minute (myTimeoutCall)
-  st.actsFor=function(side){ return GD&&humans[side]&&!st.done?[{id:"to",l:"Call a timeout",left:st.TO[side]}]:[] };
-  st.act=function(side,id){ if(!GD||!humans[side]||st.done||id!=="to"||!useTO(side,true))return false; const o=other(side);
+  st.actsFor=function(side){ if(!GD||!humans[side]||st.done)return [];
+    const lg=st.legs(side), legs=lg>=95?"fresh":lg>=85?"fine":lg>=75?"tiring":"tired";
+    return [{id:"to",l:"Call a timeout",left:st.TO[side],pend:"Called: at the next break"}].concat(Object.keys(BB_GD.rot).map(k=>({id:"rot:"+k,l:ROT_L[k],on:st.rot[side]===k,
+      grp:`Rotation (your starters' legs: ${legs})`,pend:"From the next stretch"}))) };
+  // your starters' legs, out of 100: what the late stretches will cost or give back (the same sum the engine plays)
+  st.legs=function(side){ if(!GD)return 100; const G=st.rg[side]; return Math.min(100,Math.round(100-20*st.xm[side]*Math.max(0,1-BB_GD.staK*(G.sta||0)))) };
+  st.act=function(side,id){ if(!GD||!humans[side]||st.done)return false;
+    if(id.indexOf("rot:")===0){ const k=id.slice(4); if(!BB_GD.rot[k]||st.rot[side]===k)return false; st.rot[side]=k;
+      st.pendEv=(st.pendEv||[]).concat([{side:side,k:"rot",rot:k,u:(st.seg*41+st.h)%100}]); return true }
+    if(id!=="to"||!useTO(side,true))return false; const o=other(side);
     st.queue.push({side:side,dp:myTimeoutCall(st.TO[side],st.S[side].def,st.S[o].tell,st.S[o].lastCue,st.seg)}); return true };
   return st;
 }
@@ -564,7 +597,14 @@ const sportStyleAttrs={threes:"Shooting",paint:"Finishing and Rebounding",pnr:"P
 function sportStyleScores(R){ const T=bbShapeOf(R,null); return {threes:T.sht, paint:T.fin+T.reb, pnr:T.ply} }
 function clubClose(t,year){ return STYLE_KEYS[strHash(t+"|close|"+year)%STYLE_KEYS.length] }   // what they go to in a close finish
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, close:{home:clubClose(h,year),away:clubClose(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
-  sh:bbV11()?{home:bbShapeT(h),away:bbShapeT(a)}:undefined} }
+  sh:bbV11()?{home:bbShapeT(h),away:bbShapeT(a)}:undefined, rot:bbGdV()?{home:bbRotT(h),away:bbRotT(a)}:undefined} }
+/* round 111: what the rotation works with: the starters' gap over the bench (rating points, by position weight; a hurt
+   man's place taken as his minutes are: backup up, walk-on in) and the team's Stamina lean */
+function bbRotOf(R,H,sta){ if(!R)return {g:BB_GD.gMean,sta:0}; let g=0;
+  POS.forEach((P,i)=>{ const st=H&&H.has(i)?R[BK(i)]:R[i], bk=H&&(H.has(i)||H.has(BK(i)))?null:R[BK(i)];
+    if(st)g+=P.w*(st.r-(bk?bk.r:st.r-P.drop)) });
+  return {g:Math.round(g*100)/100, sta:sta||0} }
+function bbRotT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return bbRotOf(SEA.roster[t],H,bbShapeT(t).sta) }catch(e){ return {g:BB_GD.gMean,sta:0} } }
 /* round 88, engine 11: the team's shape on the floor. Each man's lean (an attribute against his own rating) counts by
    how much his position uses it (his group's weight) and by his minutes (a position's share, starters 80%, the bench
    20%; a hurt starter's minutes go to his backup, a hurt backup's to a walk-on, who brings no lean). A man's leans

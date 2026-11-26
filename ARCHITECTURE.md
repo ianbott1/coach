@@ -482,6 +482,11 @@ Round 111 (branch rv/gameday): game day as coaching (engine 25, BB_GD_V in baske
   "act:to", engine st.act/actsFor) calls one at the next break and asks what you change (k "tomine"). A down-two last
   possession with no timeout left is a scramble (BB_GD.noTO 0.85 of the make rate). The computer and the assistant
   call one on every run they face while they have one, so computer games are those of engine 24 (test/bb-gameday.js).
+- Basketball rotation (BB_GD.rot: the bench's share, tight 0.12, usual 0.20, deep 0.28; live bar buttons act:rot:*).
+  Each stretch, R_SLOPE x (0.20 - share) x the starters' gap over the bench (gameCtx rot, bbRotOf) in Elo; the extra
+  minutes (st.xm, in six-stretch units of tight) cost F x xm x (1 - staK x Stamina) in the last two stretches and
+  overtime, F set so the league's mean gap (gMean) nets to nothing. The star's foul rate follows his minutes. The
+  computer plays the usual rotation: no change to its games. st.legs: what the bar shows, from the same sum.
 
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not

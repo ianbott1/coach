@@ -31,6 +31,7 @@ function bbEventText(g,e,d){
   if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }
   if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
   if(e.k==="to")return {team:tm,tag:"TIMEOUT",text:`${e.mine?"Timeout":"Timeout to stop the run"}${e.left!=null?` (${e.left} left)`:""}`};
+  if(e.k==="rot")return {team:tm,tag:"BENCH",text:e.rot==="tight"?"Tighten the rotation: the starters play heavy minutes":e.rot==="deep"?"Go deep into the bench: fresh legs, more minutes for the second unit":"Back to the usual rotation"};
   if(e.k==="cue")return {team:tm,tag:"",text:pickOf(BB_CUE[e.cue],u).replace("{t}",tm),cue:true};
   return {team:tm,tag:"",text:""};
 }
@@ -115,6 +116,7 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
       <div class="evr"><span class="evk">Fouls called on your team</span><span class="evv">${dp.called}</span></div>
       <div class="evr"><span class="evk">An ordinary crew, by now</span><span class="evv">about ${dp.avg}</span></div>
       <div class="evr"><span class="evk">Your star</span><span class="evv">${dp.f} of ${dp.out}</span></div>
+      ${dp.rot&&dp.rot!=="normal"?`<div class="evr"><span class="evk">Your rotation</span><span class="evv">${dp.rot==="tight"?"tight: he's out there more":"deep: he's out there less"}</span></div>`:""}
       <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div>
       <div class="evn">${foulRule()}</div></div>` }
   // round 111: a timeout: how many you have, what one does, and (when the defense is this call's) what they're running

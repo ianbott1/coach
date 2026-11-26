@@ -11,7 +11,7 @@ const rngSrc=core.slice(core.indexOf('function mulberry32'),core.indexOf('\n}\n'
 const eng=fs.readFileSync('src/basketball/50_game.js','utf8');
 const nbaSrc=fs.readFileSync('src/leagues/nba/05_league.js','utf8');
 const nbaBB=new Function('return {'+nbaSrc.slice(nbaSrc.indexOf('bb:{pace'),nbaSrc.indexOf('}',nbaSrc.indexOf('bb:{pace'))+1)+'}')().bb;
-function load(pro){ return new Function('LEAGUE',rngSrc+eng+'\nreturn {RNG,makeLiveGame,BB,BB_GD,SEGS,setV(v){ENGINE_V=v}};')(pro?{id:'nba',tuning:{bb:nbaBB}}:{id:'ncaab',tuning:{}}) }
+function load(pro){ return new Function('LEAGUE',rngSrc+eng+'\nreturn {RNG,makeLiveGame,BB,BB_GD:Object.assign(BB_GD,{quarters:BB.quarters}),SEGS,setV(v){ENGINE_V=v}};')(pro?{id:'nba',tuning:{bb:nbaBB}}:{id:'ncaab',tuning:{}}) }
 const N=+(process.argv[2]||3000);
 let fails=0; const check=(ok,msg)=>{ console.log((ok?'  ok   ':'  FAIL ')+msg); if(!ok)fails++ };
 function run(G,seed,gap,humans,answer,actAt){
@@ -61,5 +61,19 @@ for(const pro of [false,true]){
     n++; wSave+=x.h>x.a?1:0; wTO+=y.h>y.a?1:0; ptsS+=x.h-x.a; ptsT+=y.h-y.a }
   console.log(`  ${n} games with a run against you: timeout won ${(100*wTO/n).toFixed(1)}%, saved ${(100*wSave/n).toFixed(1)}%; margin ${(ptsT/n).toFixed(2)} against ${(ptsS/n).toFixed(2)}`);
   check(n>0&&(ptsT-ptsS)/n>-0.2&&(ptsT-ptsS)/n<2,'a timeout on a run is worth a little, not a lot (under two points)');
+  // 5. the rotation: what tight and deep are worth against the usual, by the starters' gap over the bench and Stamina
+  { const R=G.BB_GD, M=Math.min(N,3000), cell=(g,sta,rot)=>{ let w=0,m=0;
+      for(let s=1;s<=M;s++){ const e=G.makeLiveGame(new G.RNG(s),1500,1500,'balanced','balanced',{home:true,away:false},false,{rot:{home:{g,sta},away:{g:R.gMean,sta:0}}});
+        if(rot!=='normal')e.act('home','rot:'+rot); let gg=0,r; while(gg++<400){ r=e.next(); if(r.done)break; if(r.ask)e.reply(r.ask.opts[r.ask.opts.length-1][0]) }
+        w+=r.h>r.a?1:r.h===r.a?0.5:0; m+=r.h-r.a } return [w/M,m/M] };
+    const rows=[[R.gMean,0],[R.gMean+4,0],[R.gMean-4,0],[R.gMean,R.quarters?0.13:0.25],[R.gMean,R.quarters?-0.13:-0.25]];
+    const base={}; let flat=true, thin=0, deep=0;
+    rows.forEach(([g,sta])=>{ const n=cell(g,sta,'normal'), t=cell(g,sta,'tight'), d=cell(g,sta,'deep');
+      console.log(`  rotation, gap ${g.toFixed(1)} Stamina ${sta>=0?'+':''}${sta}: tight ${(100*(t[0]-n[0])).toFixed(1)} pts of wins (${(t[1]-n[1]).toFixed(2)} margin), deep ${(100*(d[0]-n[0])).toFixed(1)} (${(d[1]-n[1]).toFixed(2)})`);
+      if(g===R.gMean&&sta===0&&(Math.abs(t[1]-n[1])>0.35||Math.abs(d[1]-n[1])>0.35))flat=false;
+      if(g>R.gMean&&sta===0)thin=t[1]-d[1]; if(g<R.gMean&&sta===0)deep=d[1]-t[1] });
+    check(flat,'the usual roster gains nothing either way from its rotation (within 0.35 points)');
+    check(thin>0&&deep>0,'a thin bench wants it tight, a deep one wants it deep');
+  }
 }
 console.log(fails?`\n${fails} FAILED`:'\nall passed'); process.exit(fails?1:0);
