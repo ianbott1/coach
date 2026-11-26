@@ -62,7 +62,7 @@ function staffPlanReset(){
 function collegePlanHTML(P){
   if(typeof pxOn==="function"&&pxOn()){   // engine 26: the roster economy (core 92_market)
     const RF=LEAGUE.offseason.recruitFocus, rf=RF[P.recruit]?P.recruit:"balanced", bd=(P.rboard||[]).length, you=` <span class="planyou">your change</span>`;
-    const t=pxTeam(), st=pxStaffKeep(U,t,SEA.rec), changed=rf!=="balanced"||bd||(P.offers||[]).length||Object.keys(P.keep||{}).some(k=>k in st&&!!P.keep[k]!==!!st[k]);
+    const t=pxTeam(), st=pxStaffKeep(pxU(),t,SEA.rec), changed=rf!=="balanced"||bd||(P.offers||[]).length||Object.keys(P.keep||{}).some(k=>k in st&&!!P.keep[k]!==!!st[k]);
     return `<div class="plancard"><div class="bkick">${changed?"Your plan":"Your staff's plan"}</div>
     <div class="planlead">${changed?"The staff's plan, with your changes marked.":"Everything below is already set to this. Change what you like, or nothing at all, and carry on."}</div>
     ${pxPlanRow(P,you)}
