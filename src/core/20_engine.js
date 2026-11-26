@@ -581,6 +581,16 @@ function offseasonCoaching(u,rng,rec,elo,users){
     if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}
   });
 
+  // engine 26, college: a long-serving coach retires (no coach ever did: a 68-rated coach at the top program kept it for
+  // twenty seasons, and UCLA won 6 of 20 titles in one career). From his tenth season, 5% a year and 2.5 more each year
+  // after (about sixteen seasons for one who is never fired); drawn from a hash, so no other dice move
+  const retired=[];
+  if(eng26()&&(LEAGUE.id==="cfb"||LEAGUE.id==="ncaab"))NAMES.forEach(t=>{
+    const c=u.coach[t]; if(!c||c.you||isUser(t)||fired.indexOf(t)>=0||!(c.t>=10))return;
+    if(hash01("cret|"+(u.seed||0)+"|"+t+"|"+u.year)<Math.min(0.35,0.05+0.025*(c.t-10))){
+      retired.push({team:t,name:c.n,q:c.q,t:c.t});
+      u.coach[t]=newCoach(rng,u.program[t]); u.coach[t].since=u.year+1;
+      hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+c.n+", who retired"}) } });
   const openings=fired.slice().sort((a,b)=>u.program[b]-u.program[a]);
   openings.forEach(job=>{
     if(isUser(job))return;                        // a person's job: they're told, then it's filled
@@ -650,7 +660,7 @@ function offseasonCoaching(u,rng,rec,elo,users){
   });
 
   NAMES.forEach(t=>distinctStaff(u,t));
-  return {fired:fired,hires:hires,poached:poached,openJobs:openJobs,coordMoves:coordMoves,
+  return {fired:fired,hires:hires,poached:poached,retired:retired,openJobs:openJobs,coordMoves:coordMoves,
           userOpenBy:userOpenBy,staffOpenBy:staffOpenBy,candidatesBy:candidatesBy,
           userOpen:!!userOpenBy[userTeam],candidates:candidatesBy[userTeam]||null,
           staffOpen:staffOpenBy[userTeam]||{oc:false,dc:false}};

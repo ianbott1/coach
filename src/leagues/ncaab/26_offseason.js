@@ -431,7 +431,10 @@ LEAGUE.offseason={
   },
   /* ...and as run() reads them */
   choices(P){ return {board:rbChoices(S.myTeam,P), recruit:P.recruit, budget:P.budget, portal:P.portal||[]} },
-  portalPreview:portalEntrants                  // who is likely to enter, for the screen
+  portalPreview:portalEntrants,                 // who is likely to enter, for the screen
+  /* a new career on engine 26: the programs' standing starts at their 64-team-era level too (the rosters, coaches and
+     this season's strength are as drawn; UCLA's program starts 58 Elo lower, Kentucky's 29). No dice. */
+  init(u){ if((u.engV||0)>=26)NAMES.forEach(t=>{ const d=(ANCHOR26_OF[t]||0)-(ANCHOR_OF[t]||0); if(d){ u.program[t]+=d; u.perceived[t]+=d } }) }
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the

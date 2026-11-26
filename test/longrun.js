@@ -175,7 +175,9 @@ runAll().then(()=>{
       check(lg,'scoring a game, late / early',Lt(r=>r.score)/E(r=>r.score),0.95,1.05,'drift');
       check(lg,'largest league-mean lean (late)',Lt(r=>r.lean),0,SHORT?0.6:0.3,'a fresh league ~0.1-0.2');
       check(lg,'wins sd, late / early',Lt(r=>r.winsSd)/E(r=>r.winsSd),0.8,1.2,'drift');
-      if(C[0][0].pay)check(lg,'median payroll, late / early',Lt(r=>r.pay.med)/E(r=>r.pay.med),0.8,1.2,'drift');
+      // payroll against seasons 4-6: the opening contracts were signed in seasons past, some over the market and some under,
+      // and the market settles them in three summers (soccer's median wage bill 28 to 31 by season 5, then flat)
+      const mid=C.flatMap(c=>c.slice(3,6)); if(C[0][0].pay&&mid.length)check(lg,'median payroll, late / seasons 4-6',Lt(r=>r.pay.med)/mean(mid.map(r=>r.pay.med)),0.8,1.2,'drift');
     }
     // 3. the real league, late in a career
     const LT=f=>Lt(f), MXL=f=>MX(late,f);
