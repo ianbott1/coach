@@ -1,5 +1,5 @@
 {
- "fp": "55b61b4531d1e1c8",
+ "fp": "7db5d2fc482e864c",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -160,6 +160,11 @@
    "fp": "55b61b4531d1e1c8",
    "from": "55b61b4531d1e1c8",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "7db5d2fc482e864c",
+   "from": "55b61b4531d1e1c8",
+   "note": "review polish: screens only (each sport's own words, the welcome note once a career, the box score's bench rows, a staff tooltip, the bracket's next round)"
   }
  ],
  "result": {
@@ -174,7 +179,7 @@
     "heis": "cb6ffd0cc49ff6af",
     "history": "fa786d72b291d325",
     "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "screens": "25e6d275f2f79455"
    }
   ]
  }

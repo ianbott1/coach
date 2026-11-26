@@ -1,5 +1,5 @@
 {
- "fp": "f214c1e9bd9f5025",
+ "fp": "777b3f98f9c9bef5",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -150,21 +150,26 @@
    "fp": "f214c1e9bd9f5025",
    "from": "f214c1e9bd9f5025",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "777b3f98f9c9bef5",
+   "from": "f214c1e9bd9f5025",
+   "note": "review polish: 'Pin them deep' no longer offered inside the opponent's 35, so a punt the engine rolled there isn't asked and later calls fall differently (games move); backups' lines (awards, career totals); screens"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "03d9a62996f32a50",
-    "post": "9a97ef2d7b9b4bc5",
-    "champion": "New Orleans",
-    "rec": "9e0100c131c9cc8f",
-    "poll": "44f7189f05bd9377",
-    "heis": "ac04dcfdb5834804",
-    "history": "509f74bb6a73f72b",
-    "universe": "54ca01c1f69b2ea2",
-    "screens": "32c7ee79450888b4"
+    "games": "22969c744b3a381c",
+    "post": "eb52db1a475214bd",
+    "champion": "Kansas City",
+    "rec": "de719eca3a75a5eb",
+    "poll": "33e8eee5759afbb4",
+    "heis": "d32304320ee1e5d2",
+    "history": "de5cd21b9d2f5e23",
+    "universe": "898a26d6757d9053",
+    "screens": "8754ca9cae55420f"
    }
   ]
  }

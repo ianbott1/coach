@@ -1,5 +1,5 @@
 {
- "fp": "b67133ff4419ea04",
+ "fp": "7620368203bb60cc",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -135,6 +135,11 @@
    "fp": "b67133ff4419ea04",
    "from": "b67133ff4419ea04",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "7620368203bb60cc",
+   "from": "b67133ff4419ea04",
+   "note": "review polish: games and records as before; the bench's share of each game's lines goes to the backups who played, so awards, the history's award lines and career totals move; screens"
   }
  ],
  "result": {
@@ -146,10 +151,10 @@
     "champion": "Boston",
     "rec": "aa929acbb3d41009",
     "poll": "f7d6b103e4e40c76",
-    "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "heis": "45932fc2ef8bb291",
+    "history": "3adfbbbbb37c926b",
+    "universe": "64be3bfd0f1f9de1",
+    "screens": "e2cf699c034194bd"
    }
   ]
  }

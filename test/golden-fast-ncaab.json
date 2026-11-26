@@ -1,5 +1,5 @@
 {
- "fp": "c81a35489f0479ac",
+ "fp": "9b6d08440bae0773",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -130,21 +130,26 @@
    "fp": "c81a35489f0479ac",
    "from": "c81a35489f0479ac",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "9b6d08440bae0773",
+   "from": "c81a35489f0479ac",
+   "note": "review polish: a new career's rosters take distinct first names and surnames (attributes are read from a name's hash, so games move); backups' lines; screens"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
-    "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "games": "3470889a8b78e327",
+    "post": "800b25c390990d30",
+    "champion": "UCLA",
+    "rec": "afb9aa6bdd19391e",
+    "poll": "b3e5cce37e83745c",
+    "heis": "e71bd8752e1c0202",
+    "history": "aa4898e6d92802a3",
+    "universe": "cd076877f7f3728a",
+    "screens": "cd49e652a02c6b94"
    }
   ]
  }
