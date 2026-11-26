@@ -20,6 +20,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [fb-tactics.md](fb-tactics.md) | Round 3 (engine 27): football's game day, a weekly game plan (run-pass mix, tempo, coverage, pressure, a key) that depends on both rosters, fourth downs and two-point tries at real rates in every game, half-time, timeouts and challenges, the NFL's interceptions leader; `test/fb-tactics.js` | College football, pro football |
 | [share.md](share.md) | Round 3 (engine 27): reach and replay. A league code that starts the same league and club on any device, a weekly challenge with a result code a friend's game checks by replaying the season, backup files with a version and a checksum, the season in review as text or a picture; nothing moves a result, so nothing is gated; `test/share.js` | All seven |
 | [mlb-fo.md](mlb-fo.md) | Round 3 (engine 27): baseball's front office: the 26 and the 40, a farm at three levels, service time, arbitration with super twos, the $244M competitive balance tax, owners' limits by market, the $23.15M qualifying offer and its picks, a market where players choose, injured-list call-ups; `test/mlb-fo.js` | Pro baseball |
+| [league-life.md](league-life.md) | Round 3 (engine 27): a league with a memory: the real record book falling on a date, Halls of Fame by each sport's rule, retired numbers, awards night with finalists and votes, the coaching carousel in season and after at real rates, rivalries, droughts, farewells, owners with patience; `test/league-life.js` | All seven |
 
 ## Rules kept
 
