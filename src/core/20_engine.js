@@ -15,7 +15,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||25);   // 25: the review round: game day as coaching (basketball timeouts and runs: BB_GD_V), results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit), the people; 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||26);   // 26: long-career integrity (ratings held to the opening league, ceilings, aging by position, the summer's own dice); 25: the review round: game day as coaching (basketball timeouts and runs: BB_GD_V), results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit), the people; 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -148,6 +148,62 @@ function talentScale(){const T=LEAGUE.tuning&&LEAGUE.tuning.talentSteps; return 
 /* engine 25: how much a rating gap counts in a league's games (tuning.gap25; unset, 1): the spread of a league's results
    without re-rating every club (and with the same ratings, the shown chances' curve: wpK25) */
 function gapScale25(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=25&&LEAGUE.tuning&&LEAGUE.tuning.gap25?LEAGUE.tuning.gap25:1 }
+
+/* ============ engine 26: long careers (review round 2, test/longrun.js) ============ */
+/* A league in its twentieth season should look like the real league, as it does in its first. Measured on engine 25:
+   ratings passed the 0-99 scale (104 in hockey, 100 in baseball), the NBA's best player rose 75 to 89, hockey's goals a
+   game 6.2 to 8.4, baseball hit .400 in a third of late seasons. Causes: a breakout raised a man's potential with no
+   ceiling, so leaps compounded; development spread gains by age so the league's shape leaned (hockey: toward Skating);
+   every offseason ran on one random tape (core 99_app commitOffseason). Players peaked at 25. The fix, for summers
+   that close a season played on engine 26 (a season begun on 25 keeps its own summer):
+   - a ceiling for each man, drawn once from his name (no dice): his scouted potential plus what it hides; a
+     breakout reveals it and can't pass it, and nothing passes 99 (ceil26, develop26)
+   - an aging curve that rises to 25, holds 26-28, eases at 29 and falls faster from 31, by position in each league
+     (quarterbacks, goalies, keepers and pitchers later: each league's AGE26) (ageBase26)
+   - each summer the league's ratings are re-centred on its own opening mean and spread (REF26: the starters of ten
+     fresh universes), with each man rounded by his own hash so a small shift moves the league, not nobody
+     (recentre26); the attributes' average lean likewise (attrRecentre26, core 93_attrs)
+   - the summer's dice are the career's own (core 99_app offseasonRng). */
+function eng26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=26 }
+/* the mean summer change before the cap at potential, by effective age (age less the position's shift) */
+function ageBase26(a){ return a<=21?3.0:a<=22?2.6:a<=23?2.1:a<=24?1.6:a<=25?1.2:a<=26?1.0:a<=27?0.8:a<=28?0.6:a<=29?0.1
+  :a<=30?-0.6:a<=31?-1.4:a<=32?-2.4:a<=33?-3.4:a<=34?-4.4:-5.6 }
+const CEIL26_SD=4;   // how much a scouted potential hides: |N(0,4)|, mean +3.2, one man in fourteen 7 or more
+function ceil26(u,p){
+  if(p.cl==null){ const R=new RNG((strHash("ceil|"+((u&&u.seed)||0)+"|"+p.n+"|"+String(p.p).replace(/\d+$/,""))>>>0)||1);
+    p.cl=Math.min(99,Math.max(p.pot||p.r,Math.round((p.pot||p.r)+Math.abs(R.gauss(0,CEIL26_SD))))) }
+  return Math.min(99,p.cl) }
+/* one man's summer (the pro leagues): mu his mean change, a his effective age. o.leap the breakout odds (young men),
+   o.floor the lowest rating, o.step the most one summer can add (soccer) */
+function develop26(u,p,a,mu,rng,o){
+  let g=rng.gauss(mu,2.0);
+  if(o.leap&&a<=25&&rng.r()<o.leap){
+    const L=rng.range(4,9), cl=ceil26(u,p), room=cl-Math.round(p.r+g);
+    if(room>=2){ const leap=Math.min(L,room); p.pot=Math.max(p.pot,Math.min(cl,Math.round(p.r+g+leap+2))); g+=leap; p.leap=u.year } }
+  // gains stop at his ceiling, not at the scouts' potential: a man in his prime has good summers and bad ones (capped at
+  // the potential, a 28-year-old at it could only lose, and the league peaked at 25)
+  const step=o.step?Math.min(g,o.step):g;
+  p.r=Math.round(Math.max(o.floor||35,Math.min(g>0?Math.max(p.pot,ceil26(u,p)):99,p.r+step)));
+  if(a>=29)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
+  p.pot=Math.min(99,Math.max(p.pot,p.r)) }
+/* the starters' mean and spread as a career opens (ten fresh universes each, Nov 2026); college leagues hold their
+   level through their programs (recruits are drawn from program strength) and aren't re-centred */
+const REF26={nfl:{m:66.7,s:5.85}, nba:{m:59.6,s:6.16}, nhl:{m:59.6,s:5.97}, epl:{m:49.2,s:13.0}, mlb:{m:59.2,s:5.57}};
+function hash01(x){ return (strHash(x)%100003)/100003 }
+function recentre26(u){
+  const ref=REF26[LEAGUE.id]; if(!ref||!u||!u.roster)return null;
+  const st=[]; NAMES.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p.r) }));
+  if(st.length<10)return null;
+  const m=st.reduce((s,x)=>s+x,0)/st.length, s=Math.sqrt(st.reduce((q,x)=>q+(x-m)*(x-m),0)/st.length); if(!(s>0))return null;
+  // the level is held both ways; the spread only from above: never wider than it opened (a narrower league is the
+  // market's doing: weak clubs fill their gaps in free agency, and stretching it back would move every man each summer)
+  const k=Math.min(1,ref.s/s), map=(v,h)=>Math.floor(ref.m+(v-m)*k+h), lo=LEAGUE.id==="epl"?20:35;
+  NAMES.forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(!p||p.r==null)return;
+    const h=hash01("rc|"+p.n+"|"+u.year);
+    p.r=Math.max(lo,Math.min(99,map(p.r,h)));
+    if(p.pot!=null)p.pot=Math.min(99,Math.max(p.r,map(p.pot,h)));
+    if(p.cl!=null)p.cl=Math.min(99,Math.max(p.pot!=null?p.pot:p.r,map(p.cl,h))) }));
+  return {m:Math.round(m*100)/100,s:Math.round(s*100)/100} }
 
 class Talent{
   constructor(rng,base,roster){

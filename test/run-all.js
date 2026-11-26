@@ -45,6 +45,11 @@ add('draft labels hold their bands (pro)',['draft-labels.js','16'],{long:true});
 // pro hockey
 add('playoffs (nhl)',['nhl-playoffs.js','3']); add('clinch marks (nhl)',['nhl-clinch.js','4']);
 add('screens (nhl)',['nhl-screens.js']); add('NHL history (nhl)',['nhl-history.js','2','60'],{long:true});
+// review round 2 (integrity): long careers. In short (6 seasons a game, two at a time, ~2 minutes): nothing past 99, no
+// drift in the first seasons; in full (20 seasons, two careers a game, ~25 minutes on 4 cores): the late league against
+// the early one and the real one, aging by age, franchises independent across careers
+add('long careers hold the league\'s shape, in short (all seven)',['longrun.js','--short'],{fast:true,timeout:900000});
+add('long careers: season 20 looks like the real league (all seven)',['longrun.js'],{long:true,timeout:5400000});
 // English football
 add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']); add('strength predicts the table (epl)',['epl-predict.js']); add('decisions (epl)',['sc-decisions.js']); add('FA Cup (epl)',['epl-cup.js','6']); add('transfer window (epl)',['transfers.js']); add('reads (nhl)',['hk-reads.js']); add('reads (ncaab)',['bb-reads.js','college']); add('reads (nba)',['bb-reads.js','pro']); add('reads (cfb)',['fb-reads.js','college','8000']); add('reads (nfl)',['fb-reads.js','pro','8000']);
 add('players\' stats pages and leaders (all seven)',['stats.js'],{timeout:1800000});

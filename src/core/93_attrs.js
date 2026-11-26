@@ -57,7 +57,25 @@ function attrSync(u,focus,summer){
   Object.keys(u.roster).forEach(t=>{ const R=u.roster[t]; if(!Array.isArray(R))return; const F=(focus&&focus[t])||{};
     R.forEach(p=>{ if(!p||p.r==null)return; const g=attrGrp(p), K=attrKeys(g); if(!K.length)return;
       if(!Array.isArray(p.at)||p.at.length!==K.length){ p.at=attrGen(u,p); p.ar=p.r; return }
-      if(p.ar!==p.r)attrDevelop(p,F[g]); else if(summer)p.ap=p.at.slice() }) }) }   // a summer with no change: no arrows
+      if(p.ar!==p.r)attrDevelop(p,F[g]); else if(summer)p.ap=p.at.slice() }) });   // a summer with no change: no arrows
+  if(summer&&typeof eng26==="function"&&eng26())attrRecentre26(u) }
+/* engine 26 (review round 2): the league's shape holds. Gains go to the young, and the young take them in physical
+   attributes (ATTR_AGE), so over sixteen summers hockey's league-mean lean went Skating +0.38, Defence -0.39 and goals a
+   game 6.2 to 7.9 (computer clubs pick the plan their rosters suit). Each summer the average lean of each attribute,
+   in each group, goes back to where a fresh league has it (the generation's lean, ATTRS.lean); a man keeps how he
+   leans against the others. Rounded by his own hash (a shift of 0.03 a summer moves the league, not nobody), and his
+   attributes still sum to his rating (attrFix). No dice. */
+function attrRecentre26(u){
+  const by={};
+  Object.keys(u.roster).forEach(t=>{ const R=u.roster[t]; if(!Array.isArray(R))return;
+    R.forEach(p=>{ if(!p||p.r==null||!Array.isArray(p.at))return; const g=attrGrp(p), K=attrKeys(g); if(!K.length||p.at.length!==K.length)return;
+      (by[g]=by[g]||[]).push(p) }) });
+  Object.keys(by).forEach(g=>{
+    const K=attrKeys(g), W=ATTRS.w[g], M=(ATTRS.lean&&ATTRS.lean[g])||{}, P=by[g]; if(P.length<8)return;
+    const mw=K.reduce((s,k)=>s+W[k]*(M[k]||0),0), sh=K.map((k,j)=>P.reduce((s,p)=>s+p.at[j]-p.r,0)/P.length-((M[k]||0)-mw));
+    if(sh.every(x=>Math.abs(x)<0.02))return;
+    P.forEach(p=>{ const v=p.at.map((x,j)=>Math.max(1,Math.floor(x-sh[j]+hash01("lean|"+p.n+"|"+K[j]+"|"+u.year))));
+      p.at=attrFix(v,W,K,p.r); p.ar=p.r }) }) }
 /* a player's attributes as {key: value on the rating scale}: his own, or (a prospect, a free agent not yet
    synced) the shape he will arrive with */
 function attrOf(p){ if(!attrOn()||!p)return null; const g=attrGrp(p), K=attrKeys(g); if(!K.length)return null;
