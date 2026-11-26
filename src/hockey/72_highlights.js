@@ -491,5 +491,12 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays, in its words: the period and the game minute
   const headClock=c=>c?(c.so?"Shootout":c.m!=null?(c.m<20?"1st":c.m<40?"2nd":c.m<60?"3rd":"OT")+" \u00b7 "+c.m+"'":null):null;
-  return {feedClips:true, frameDbg:()=>frame.dbg||null, drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
+  /* round 111: live player stats from the log, as far as the screen has shown: goals and shots */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
+    const one=(d,fl)=>{ if(!d||typeof d.seg!=="number"||d.so)return; let E=null; try{ E=hlEvPlan(L,d) }catch(e){ return } (E.clips||[]).forEach(c=>{ if(c.f>=fl||!c.who||!c.tm||c.kind==="red"||c.so)return; const key=c.tm+"|"+c.who, r=rows[key]=rows[key]||{tm:c.tm,nm:sur(c.who),g:0,s:0}; r.s++; if(c.kind==="goal")r.g++ }) };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,9));
+    const P=L.pb; if(P&&P.d&&!L.done)one(P.d,hlEvCurF(P.d));
+    return lsOut(rows,(a,b)=>b.g-a.g||b.s-a.s,r=>`${r.g?(r.g>1?r.g+" goals, ":"goal, "):""}${r.s} shot${r.s>1?"s":""}`) }
+  return {liveStats, feedClips:true, frameDbg:()=>frame.dbg||null, drawPos:()=>hpDraw.pos||null, drawDbg:()=>hpDraw.dbg||null, reveal:0.86, ambient:true, fullMs:10000, aspect:0.5, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&typeof d.seg==="number"&&d.seg<SEGS?hpDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), hpPlan, hpCounts, hpTally, hpTallyHTML, hkShort, hkOffender};
 })();

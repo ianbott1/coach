@@ -671,5 +671,12 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's minute
   const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, frameDbg:()=>frame.dbg||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
+  /* round 111: live player stats from the log, as far as the screen has shown: goals and shots */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
+    const one=(d,fl)=>{ if(!d||typeof d.seg!=="number"||d.so)return; let E=null; try{ E=hlEvPlan(L,d) }catch(e){ return } (E.clips||[]).forEach(c=>{ if(c.f>=fl||!c.who||!c.tm||c.kind==="red"||c.so)return; const key=c.tm+"|"+c.who, r=rows[key]=rows[key]||{tm:c.tm,nm:sur(c.who),g:0,s:0}; r.s++; if(c.kind==="goal")r.g++ }) };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,9));
+    const P=L.pb; if(P&&P.d&&!L.done)one(P.d,hlEvCurF(P.d));
+    return lsOut(rows,(a,b)=>b.g-a.g||b.s-a.s,r=>`${r.g?(r.g>1?r.g+" goals, ":"goal, "):""}${r.s} shot${r.s>1?"s":""}`) }
+  return {liveStats, reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, frameDbg:()=>frame.dbg||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
 })();

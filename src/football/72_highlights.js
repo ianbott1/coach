@@ -377,7 +377,7 @@ const HL_SPORT=(function(){
     off.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const num=k===j&&pl.alt?c.rb2n:c.offN?c.offN[k]:null; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",num!=null?{num}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
-    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} · ${c.tm} · ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):null,null); fbFeed(c,i,u>=done) }
+    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} · ${c.tm} · ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):null,null); fbFeed(c,i,u>=done); c._shownI=u>=done?i+1:i }
   // round 111 (Ian: a play by play in every sport, synced): each snap once it's over, by name; a kick or the drive's end once shown
   function fbFeedEnd(c,end){ if(!end||typeof hlFeedTick!=="function")return; hlFeedTick(()=>[{k:"fe|"+c.tm+"|"+c.q+"|"+c.kind+"|"+c.los,m:c.ot?"OT":"Q"+c.q,team:c.tm,text:end,big:c.kind==="td"||c.kind==="fg"?"score":null}]) }
   function fbFeed(c,i,dn){ if(typeof hlFeedTick!=="function")return; hlFeedTick(()=>c.plays.slice(0,dn?i+1:i).map((pl,j)=>({k:"f|"+c.tm+"|"+c.q+"|"+c.start+"|"+j+"|"+c.plays.length,m:c.ot?"OT":"Q"+c.q,team:c.tm,text:playText(c,pl),big:pl.g>=20?"big":null}))) }
@@ -454,7 +454,18 @@ const HL_SPORT=(function(){
   // the header's clock and drive set in place while the drive plays (a render would show the drive chart's result early)
   const headLive=(e,k)=>{ e.innerHTML='<span class="live"></span>'+esc(k)+(typeof fbVenueTag==="function"?fbVenueTag():"") };
   const footText=c=>c&&c.kind==="drive"&&c.start!=null&&c.tm?`${c.tm} ball \u00b7 started ${fbYd(c.start)}`:null;
-  return {drivePos:()=>driveFrame.pos||null, replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
+  /* round 111: live player stats from the drives as far as the screen has shown: passing, rushing, receiving */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  const FB_LS=new WeakMap();
+  function liveStats(L){ const rows={}, add=(tm,nm,k,v)=>{ if(!nm||/#/.test(nm))return; const key=tm+"|"+nm, r=rows[key]=rows[key]||{tm,nm,cmp:0,att:0,py:0,car:0,ry:0,rec:0,cy:0}; r[k]+=v };
+    const one=(c,upto)=>{ const qb=c.onm&&c.onm[0]; c.plays.slice(0,upto).forEach(pl=>{ const g0=pl.g||0;
+      if(pl.t==="pass"){ add(c.tm,qb,"cmp",1); add(c.tm,qb,"att",1); add(c.tm,qb,"py",g0); const w=who(c,pl); add(c.tm,w,"rec",1); add(c.tm,w,"cy",g0) } else if(pl.t==="inc")add(c.tm,qb,"att",1);
+      else if(pl.t==="run"){ const w=who(c,pl); add(c.tm,w,"car",1); add(c.tm,w,"ry",g0) } else if(pl.t==="scr"){ add(c.tm,qb,"car",1); add(c.tm,qb,"ry",g0) } }) };
+    const dc=d=>{ if(FB_LS.has(d))return FB_LS.get(d); let c=null; try{ c=(clips(L,d,"full")||[]).find(x=>x.kind==="drive")||null }catch(e){} FB_LS.set(d,c); return c };   // kept off the drive (it is saved with the game)
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>{ const c=dc(d); if(c)one(c,c.plays.length) });
+    const cur=typeof HL!=="undefined"&&HL.cur; if(cur&&cur.kind==="drive"&&!L.done&&cur._shownI!=null&&(typeof liveShown!=="function"||liveShown().indexOf(cur.d)<0))one(cur,cur._shownI);
+    return lsOut(rows,(a,b)=>(b.py+b.ry+b.cy)-(a.py+a.ry+a.cy),r=>[r.att?`${r.cmp}/${r.att}, ${r.py} yds passing`:"",r.car?`${r.car} car, ${r.ry} yds`:"",r.rec?`${r.rec} rec, ${r.cy} yds`:""].filter(Boolean).join("; ")) }
+  return {liveStats, drivePos:()=>driveFrame.pos||null, replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
            clips, pitch, idle, frame, headClock, footText, headLive, goalsLabel:"Late touchdowns",
            namesOf:(L,d)=>d&&Array.isArray(d._pb)?d._pb:null, playText, leadUp, playsFor:(L,d)=>{ const out=clips0(L,d,"full"); const c=mkDrive(L,d,out); return c?{plays:c.plays,start:c.start,end:c.end,left:c.left,forced:c.forced,conv:c.conv,rec:c.rec,next:out.map(o=>({kind:o.kind,los:o.los,togo:o.togo,len:o.len}))}:null }};
 })();

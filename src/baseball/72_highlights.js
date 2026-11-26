@@ -414,5 +414,14 @@ const HL_SPORT=(function(){
 
   // round 72: the header says the inning a clip shows ("After the 1st" stayed up through the 2nd's home run)
   const headClock=c=>c&&c.inn&&c.half?`${c.half} of the ${ordw(c.inn)}`:null;
-  return {drawPos:()=>pbDraw.pos||null, reveal:0.72, collapseIdle:true, ambient:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, playback, goalsLabel:"Big home runs", bsPitches, bsCount};
+  /* round 111: live player stats from the log, as far as the screen has shown: each batter's hits and at-bats, homers, runs batted in, walks */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const g=L.g, rows={};
+    const add=q=>{ if(!q||q.t!=="pa")return; const tm=q.s===0?g.home:g.away, key=tm+"|"+q.nm, r=rows[key]=rows[key]||{tm,nm:sur(q.nm),ab:0,h:0,hr:0,rbi:0,bb:0,k:0}, o=q.o;
+      if(o==="bb"||o==="hbp")r.bb++; else if(!q.sf)r.ab++; if(o==="s1"||o==="s2"||o==="s3"||o==="hr")r.h++; if(o==="hr")r.hr++; if(o==="k")r.k++; r.rbi+=q.runs||0 };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>(d.pl||[]).forEach(add));
+    const P=L.pb; if(P&&P.d&&!L.done&&Array.isArray(P.d.pl)){ const d=P.d, it=pbItems(d,P.from||0,P.to), el=P.frozen!=null?P.frozen:Date.now()-P.at, T=Math.min(1,el/Math.max(1,P.ms))*it.tot;
+      d.pl.forEach((q,i)=>{ if(i<(P.from||0))add(q) }); it.P.forEach(C=>{ if(C.G&&C.at+C.tc+C.G.tEnd<=T)add(C.q) }) }
+    return lsOut(rows,(a,b)=>b.h-a.h||b.rbi-a.rbi||b.bb-a.bb,r=>r.ab+r.bb?`${r.h} for ${r.ab}${r.hr?", "+(r.hr>1?r.hr+" HR":"HR"):""}${r.rbi?", "+r.rbi+" RBI":""}${r.bb?", "+r.bb+" BB":""}${r.k?", "+r.k+" K":""}`:"") }
+  return {liveStats, drawPos:()=>pbDraw.pos||null, reveal:0.72, collapseIdle:true, ambient:true, aspect:0.62, clips, pitch, idle, frame, sound, headClock, playback, goalsLabel:"Big home runs", bsPitches, bsCount};
 })();

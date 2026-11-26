@@ -334,5 +334,16 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {drawPos:()=>pbDraw.pos||null, pbSpan:spanOf, pbPlan, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  /* round 111: live player stats from the log, as far as the screen has shown: points, boards, steals, threes */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const g=L.g, rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
+    const add=(tm,sl,k,v)=>{ if(sl==null||sl<0)return; const key=tm+"|"+sl, R=(SEA.roster&&SEA.roster[tm])||[]; (rows[key]=rows[key]||{tm,nm:sur(R[sl]&&R[sl].n),pts:0,reb:0,stl:0,tpm:0})[k]+=v };
+    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+      plan.P.forEach(q=>{ if(Tl!=null&&q.at+q.w>Tl)return; const A=q.side, tA=A?g.away:g.home, tD=A?g.home:g.away, fa=five[A], fd=five[1-A];
+        q.acts.forEach(a=>{ if(a.t==="make"){ add(tA,fa[a.who],"pts",a.pts+(a.and1&&a.ftm?1:0)); if(a.three)add(tA,fa[a.who],"tpm",1) } else if(a.t==="ft")add(tA,fa[a.who],"pts",a.m);
+          else if(a.t==="miss"){ if(a.reb==="off")add(tA,fa[a.rb],"reb",1); else add(tD,fd[a.rb],"reb",1) } else if(a.t==="to")add(tD,fd[a.st],"stl",1) }) }) };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,null));
+    const P=L.pb; if(P&&P.d&&!L.done&&Array.isArray(P.d.pl)){ const el=P.frozen!=null?P.frozen:Date.now()-P.at; one(P.d,Math.min(1,el/Math.max(1,P.ms))*pbPlan(P.d).tot) }
+    return lsOut(rows,(a,b)=>b.pts-a.pts||b.reb-a.reb,r=>r.pts||r.reb||r.stl?`${r.pts} pts, ${r.reb} reb${r.stl?", "+r.stl+" stl":""}${r.tpm?", "+r.tpm+" 3PM":""}`:"") }
+  return {liveStats, drawPos:()=>pbDraw.pos||null, pbSpan:spanOf, pbPlan, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();

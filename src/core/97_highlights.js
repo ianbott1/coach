@@ -378,6 +378,7 @@ function hlInks(home,away){
    second. Kept with the game on screen (live.feed). */
 let hlFeedT=0;
 function hlFeedTick(get){
+  if(typeof live!=="undefined"&&live&&Date.now()-hlStatT>1000){ hlStatT=Date.now(); try{ const el=document.getElementById("lstats"); if(el){ const h=hlStatRows(); if(h!==el.innerHTML)el.innerHTML=h } }catch(e){} }
   if(typeof live==="undefined"||!live||Date.now()-hlFeedT<250)return; hlFeedT=Date.now();
   let lines=[]; try{ lines=get()||[] }catch(e){ return }
   const F=live.feed=live.feed||[], seen=live.feedK=live.feedK||{}; let added=false;
@@ -387,6 +388,17 @@ const PBP_SHOW=9;
 function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
   if(!F.length)return `<div class="pbpe">The play by play follows the action.</div>`;
   return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}${typeof x.m==="number"?"'":""}</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+/* ---- round 111: live player stats (Ian: "live player stats") ----
+   The game's own men, counted from the engine's log up to the point the screen has shown (HL_SPORT.liveStats: per
+   side, its men's lines, best first); patched in place with the play by play, about once a second. */
+let hlStatT=0;
+function hlEvCurF(d){ try{ const P=live.pb; if(!P||P.d!==d)return 1; const E=hlEvPlan(live,d), el=P.frozen!=null?P.frozen:Date.now()-P.at; let i=E.seg.findIndex(q=>el<q.at+q.ms+(q.k==="clip"?250:0)); if(i<0)return 1; const q=E.seg[i];
+  return q.k==="clip"?q.f-0.0001:q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)) }catch(e){ return 1 } }
+function hlStatRows(){ if(typeof live==="undefined"||!live||typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return "";
+  let T=null; try{ T=HL_SPORT.liveStats(live) }catch(e){ return "" } if(!T)return "";
+  const g=live.g, my=typeof S!=="undefined"?S.myTeam:null, n=typeof S!=="undefined"&&S.pbpOpen?8:4;
+  return [g.away,g.home].map(tm=>{ const R=(T[tm]||[]).slice(0,n); return `<div class="lsteam ${tm===my?"mine":""}"><b>${esc(tm)}</b>${R.length?R.map(r=>`<span class="lsrow"><i>${esc(r.nm)}</i> ${esc(r.line)}</span>`).join(""):`<span class="lsrow">&mdash;</span>`}</div>` }).join("") }
+function hlStatHTML(){ if(typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return ""; return `<div class="grouphead">Player stats, so far</div><div class="lstats" id="lstats">${hlStatRows()}</div>` }
 function hlFeedHTML(){ if(typeof live==="undefined"||!live||!((typeof pbOn==="function"&&pbOn())||(typeof hlMode==="function"&&hlMode()==="full"&&typeof hlCan==="function"&&hlCan())))return "";   // round 111: every sport's full match (football's drives aren't a playback)
   // round 108: the pitch tells it; the feed is one line, the latest, unless you open it (Ian: "I'm not sure how necessary the text is")
-  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }
+  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>${hlStatHTML()}` }
