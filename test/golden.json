@@ -1,5 +1,5 @@
 {
- "fp": "e16166e4f2373c43",
+ "fp": "848a4ef5899815d3",
  "log": [
   {
    "fp": "bc56ed5d4e53a6d0",
@@ -654,6 +654,11 @@
    "fp": "e16166e4f2373c43",
    "from": "e16166e4f2373c43",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "848a4ef5899815d3",
+   "from": "e16166e4f2373c43",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
@@ -666,9 +671,9 @@
     "rec": "fdad2e3cad9aef25",
     "poll": "b598e68e8e87dfc2",
     "heis": "c15cc548db28d6ea",
-    "history": "103a796d2863e60b",
-    "universe": "1b20d91c1b4f9bc1",
-    "screens": "97bd0fa8c835b056"
+    "history": "9e903d98eb902de8",
+    "universe": "a4e1f13d97a9e16d",
+    "screens": "5988debb89caaf76"
    },
    {
     "year": 2027,
@@ -678,9 +683,9 @@
     "rec": "9c2125b9eaeff04f",
     "poll": "f91f24608bdb3ab7",
     "heis": "b4ffa259dc110758",
-    "history": "30df8c6a5ac63bbf",
-    "universe": "4701deea175ac80f",
-    "screens": "9f48990fb177b1f8"
+    "history": "7282f156ad312786",
+    "universe": "b4075dd6352cac81",
+    "screens": "3c9ad65d0cd5372c"
    },
    {
     "year": 2028,
@@ -690,21 +695,21 @@
     "rec": "2a9f2347ad3ac48b",
     "poll": "e98b397192cd8375",
     "heis": "0ecf830bfdd27cc0",
-    "history": "4b9bc405bf369f59",
-    "universe": "c32d86c468e4811f",
-    "screens": "9157bb1dbd5591b4"
+    "history": "d3ec68875caf202b",
+    "universe": "4643445fc14c5c4e",
+    "screens": "040a618b08de21e1"
    },
    {
     "year": 2029,
-    "games": "d235a664e188953f",
-    "post": "5d136b0214159b6c",
-    "champion": "Georgia",
-    "rec": "c6bf009516e0592d",
-    "poll": "00dd6d3b78a6c846",
+    "games": "8d501ce1659a654b",
+    "post": "db1b33114a54dea5",
+    "champion": "Texas Tech",
+    "rec": "a871c81243cc7e5e",
+    "poll": "529fdfd4ca281fe5",
     "heis": "fe3d6add077d3b3a",
-    "history": "de8d929d1f3b8644",
-    "universe": "8981d7132350e9c7",
-    "screens": "b4a92056ca3345ab"
+    "history": "3cc8d210ddfa4f89",
+    "universe": "8f9aa5a86b923471",
+    "screens": "8e16f4122957f2c7"
    }
   ],
   "Rice#2024": [
@@ -717,8 +722,8 @@
     "poll": "e8df93a47f14aab5",
     "heis": "b89539bc2c4bcbb7",
     "history": "fc979bb915dccb48",
-    "universe": "10380d9dc9c99622",
-    "screens": "82ebbabc3632380b"
+    "universe": "32b520d517412d3b",
+    "screens": "256c661647e0ec14"
    },
    {
     "year": 2027,
@@ -729,8 +734,8 @@
     "poll": "ff328881f5a89df3",
     "heis": "36ad73b9d62626c0",
     "history": "009bc31800100414",
-    "universe": "929be6f8a70e2aff",
-    "screens": "ae76631fe370b126"
+    "universe": "ab770ee5d6035244",
+    "screens": "16cf13d173da099a"
    },
    {
     "year": 2028,
@@ -740,9 +745,9 @@
     "rec": "9da5be403610b99c",
     "poll": "3b51ce396b7df806",
     "heis": "17c5af403a8337ba",
-    "history": "4edf71f14797fbda",
-    "universe": "a2bc01741f8ae07f",
-    "screens": "a1cd7bf2f0ad939d"
+    "history": "8407a2a2688b551a",
+    "universe": "417344eee44e1760",
+    "screens": "f6e28d04b944ee8d"
    },
    {
     "year": 2029,
@@ -752,9 +757,9 @@
     "rec": "b12f6850dbe45c80",
     "poll": "1c7821e3c4644b1a",
     "heis": "b3be9cd4b4705edb",
-    "history": "fde71f70effd7d1a",
-    "universe": "4ba67dbbdfb33453",
-    "screens": "be241b79f7351b7f"
+    "history": "3fe1f1ccab5c680d",
+    "universe": "061dd4693601e128",
+    "screens": "ba65eb85cef34d6a"
    }
   ],
   "Oregon#777": [
@@ -766,9 +771,9 @@
     "rec": "a20d75dd882ac36f",
     "poll": "9a7a339f16319c39",
     "heis": "aaf603a2b017fcb9",
-    "history": "f70a72a9432aa85d",
-    "universe": "28c5b9260b2b9abf",
-    "screens": "7c58ce49bf647f72"
+    "history": "cff5a178eb014559",
+    "universe": "72051d8d62115eff",
+    "screens": "b8e6dd117b1f16fe"
    },
    {
     "year": 2027,
@@ -778,21 +783,21 @@
     "rec": "d0954265af045960",
     "poll": "80cae25378b4c9c2",
     "heis": "a40126271010c989",
-    "history": "7593cd2a0a921770",
-    "universe": "e4803f776b2c1738",
-    "screens": "cd7ea2a87ed37cce"
+    "history": "c76645a746458379",
+    "universe": "ca4f8dbc416a2d1e",
+    "screens": "f5e2a0313a6e9a4c"
    },
    {
     "year": 2028,
-    "games": "25e08f9c4d3d61c3",
-    "post": "525cac5e4ef660a1",
-    "champion": "Notre Dame",
-    "rec": "04fd6ca1aeab5c3c",
-    "poll": "c9c1e779c21c080d",
-    "heis": "ca42131ae5a8e697",
-    "history": "7cea5946a0f6c571",
-    "universe": "de358700907a6eac",
-    "screens": "bec6bc66ce17791b"
+    "games": "bf4b581d08fdb948",
+    "post": "ffc250ca5859448e",
+    "champion": "Ohio State",
+    "rec": "6250c2c3e4d59453",
+    "poll": "ddeb3e148d3eacba",
+    "heis": "8f77bcfe375dbb79",
+    "history": "95dea30b716ce569",
+    "universe": "424e5e46d3a89a06",
+    "screens": "4ac4e7d8b07b25d6"
    }
   ],
   "Kent State#31337": [
@@ -804,33 +809,33 @@
     "rec": "6c16650748c70fbf",
     "poll": "c360086425af6120",
     "heis": "7e6ab209b6e3cd69",
-    "history": "5cc17e4324c8dc52",
-    "universe": "353e61e701bbc266",
-    "screens": "49e7ab4931e08d34"
+    "history": "b03f104d40cb3959",
+    "universe": "ab8eaf90ed4fa985",
+    "screens": "b67e6018de147839"
    },
    {
     "year": 2027,
-    "games": "bb1d257cf7cef279",
+    "games": "731c4f4530a5e970",
     "post": "af9c75112cbf2755",
     "champion": "Indiana",
     "rec": "c164590d569435af",
     "poll": "ace7e3e1ff36179d",
     "heis": "1623f5028a1836a6",
-    "history": "a6f7e7a44f13b990",
-    "universe": "4884cb56c26cf29c",
-    "screens": "978eace41487b5f3"
+    "history": "5e6fb49d48f2b9e8",
+    "universe": "d3e2119f0c674d21",
+    "screens": "1f589af545e5c3ed"
    },
    {
     "year": 2028,
-    "games": "0014ddd7b3049bc3",
-    "post": "4daab9155841519f",
-    "champion": "Georgia Tech",
-    "rec": "f610996741f6202b",
-    "poll": "81b6a35275c5170a",
+    "games": "57a1138ff87574cf",
+    "post": "6515fce9cec3c64f",
+    "champion": "Ohio State",
+    "rec": "86dfa27c01a71d85",
+    "poll": "1770797e14f4ed57",
     "heis": "a50d1a5323e697ab",
-    "history": "2ed3ee225d93d2ea",
-    "universe": "d3cd8de55789b3f5",
-    "screens": "90a7ebd36187107e"
+    "history": "1eb1ef5bc7d40045",
+    "universe": "b1f69d267f327a00",
+    "screens": "c09b2e3c6be22638"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "c81a35489f0479ac",
+ "fp": "38b0dfe0105f6afe",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -130,21 +130,26 @@
    "fp": "c81a35489f0479ac",
    "from": "c81a35489f0479ac",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "38b0dfe0105f6afe",
+   "from": "c81a35489f0479ac",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
-    "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "games": "116cef259cfd35eb",
+    "post": "78a22abc827b00c8",
+    "champion": "Duke",
+    "rec": "8f27494c4db2e9e9",
+    "poll": "77fcec3033ebb4ba",
+    "heis": "e049850b0c480ee4",
+    "history": "2a3ac4e56072df6f",
+    "universe": "6914ace05a281452",
+    "screens": "9ab2d584a6e676d1"
    }
   ]
  }

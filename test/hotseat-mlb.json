@@ -1,5 +1,5 @@
 {
- "fp": "80594fd4d73af457",
+ "fp": "70282015ae24bd2a",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -165,6 +165,11 @@
    "fp": "80594fd4d73af457",
    "from": "a8057d553642d8e4",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "70282015ae24bd2a",
+   "from": "80594fd4d73af457",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [
@@ -174,20 +179,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "84-78",
-      "result": "Missed the postseason",
-      "grade": "C"
+      "rec": "71-91",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "b9c781ba258fe510"
+     "book": "efd19fa643239594"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "71-91",
+      "rec": "72-90",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "B-"
      },
-     "book": "22f8cae8e412ab31"
+     "book": "3488e9587a7b41d0"
     }
    ]
   },
@@ -197,20 +202,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "70-92",
+      "rec": "74-88",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C+"
      },
-     "book": "bf94aba46f35f5a6"
+     "book": "4eb82f9fe0347bc4"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "73-89",
+      "rec": "69-93",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "614670e3f6b417a3"
+     "book": "63ba6d0c88141e72"
     }
    ]
   }

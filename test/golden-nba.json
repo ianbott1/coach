@@ -1,5 +1,5 @@
 {
- "fp": "b0d4fc8493ebefae",
+ "fp": "84ab555c41432d3c",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -590,6 +590,11 @@
    "fp": "b0d4fc8493ebefae",
    "from": "b0d4fc8493ebefae",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "84ab555c41432d3c",
+   "from": "b0d4fc8493ebefae",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
@@ -602,21 +607,21 @@
     "rec": "aa929acbb3d41009",
     "poll": "f7d6b103e4e40c76",
     "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "history": "3e045d585f2cb174",
+    "universe": "596fb0d925db18e6",
+    "screens": "4184be592ce253be"
    },
    {
     "year": 2027,
-    "games": "899826989fbd818c",
-    "post": "8780356bb1bf5799",
-    "champion": "Sacramento",
-    "rec": "4e57bfc4bc60432a",
-    "poll": "ce81856e9e87c2d1",
-    "heis": "02ebadf6932b7f6a",
-    "history": "01efbe25cfd940ee",
-    "universe": "bb81ea2771bbbf45",
-    "screens": "593c82311b570ecc"
+    "games": "c80dc56e746f9ed4",
+    "post": "f803a7b3e522835b",
+    "champion": "LA Lakers",
+    "rec": "c6417c42cf1c7e27",
+    "poll": "ec99047264e0b7d3",
+    "heis": "1cb25054173cf1a0",
+    "history": "1b64b756f650494a",
+    "universe": "c9de444b3248faf2",
+    "screens": "749d46b4ac46a8da"
    }
   ],
   "Detroit#777": [
@@ -628,21 +633,21 @@
     "rec": "a57c9276f2b2f4b1",
     "poll": "6a2e8da5986046a7",
     "heis": "635d996bb8c406fc",
-    "history": "e96eb46ec64147d8",
-    "universe": "a6287fc5e42e1707",
-    "screens": "888e82025ec3196a"
+    "history": "363107f37e8b6380",
+    "universe": "d219038292ce75dc",
+    "screens": "0ce3bf87e8b03259"
    },
    {
     "year": 2027,
-    "games": "79af3b7241d7dfc7",
-    "post": "2a4afd9e8e820781",
+    "games": "e2eb227d1b3b5b96",
+    "post": "6b1fe73ecd3fa043",
     "champion": "Houston",
-    "rec": "a5064622f237ee7d",
-    "poll": "0b46b8960550d70e",
-    "heis": "746e3a3070225b55",
-    "history": "0eaf33ad660bf773",
-    "universe": "2a51ad4ab26ac914",
-    "screens": "0a726c25a6ad77b4"
+    "rec": "76958b9e9253fd45",
+    "poll": "689f15ef3e18c88b",
+    "heis": "b3c59528f1c5a2e8",
+    "history": "d6cc6cfdbc768d9f",
+    "universe": "e632ceb486b90734",
+    "screens": "c790b41f881ea913"
    }
   ],
   "schedules#60": [

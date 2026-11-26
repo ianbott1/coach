@@ -1,5 +1,5 @@
 {
- "fp": "3d45da509d39d7b9",
+ "fp": "29bb3bc41c4af710",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -145,6 +145,11 @@
    "fp": "3d45da509d39d7b9",
    "from": "3d45da509d39d7b9",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "29bb3bc41c4af710",
+   "from": "3d45da509d39d7b9",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
@@ -158,7 +163,7 @@
     "poll": "1654660bd2888ced",
     "heis": "065f6e734e9dbdc7",
     "history": "8526fe2171a3e13d",
-    "universe": "d44bd69fe2f99477",
+    "universe": "3928bd0a9695ce5e",
     "screens": "7228f63e8e312633"
    }
   ]

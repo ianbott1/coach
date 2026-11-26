@@ -1,5 +1,5 @@
 {
- "fp": "b47ce354d7c745ac",
+ "fp": "be8f41b4d531c5b2",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -150,21 +150,26 @@
    "fp": "b47ce354d7c745ac",
    "from": "b47ce354d7c745ac",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "be8f41b4d531c5b2",
+   "from": "b47ce354d7c745ac",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "3d5153dfcd8c114e",
-    "post": "ea40287c68cafad9",
-    "champion": "San Diego",
-    "rec": "7d949ee2c854cfb8",
-    "poll": "6b40d8b4cdc9d8de",
-    "heis": "7d5b897b0d9b6c32",
-    "history": "da15fbfd7101bc37",
-    "universe": "56c8183973a51f1f",
-    "screens": "1612d5c806ff6c05"
+    "games": "d1eecee4385cb645",
+    "post": "eb042c4b66ff290d",
+    "champion": "Philadelphia",
+    "rec": "7e74ba61094dbd2c",
+    "poll": "ac32482921311103",
+    "heis": "0ad48cbc66ec09bf",
+    "history": "3c7ef677447895f0",
+    "universe": "c86af44af2d032b6",
+    "screens": "7a089af8bc144c7b"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "32a8fcd0b28207d3",
+ "fp": "376046d08aa668d7",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -405,6 +405,11 @@
    "fp": "32a8fcd0b28207d3",
    "from": "32a8fcd0b28207d3",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "376046d08aa668d7",
+   "from": "32a8fcd0b28207d3",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [
@@ -418,7 +423,7 @@
       "result": "No bowl game",
       "grade": "F"
      },
-     "book": "28ccf88599b03aa7"
+     "book": "dacfa403b179659a"
     },
     {
      "team": "Rice",
@@ -439,18 +444,18 @@
      "last": {
       "rec": "7-6",
       "result": "Won the Gasparilla Bowl",
-      "grade": "C-"
+      "grade": "A-"
      },
-     "book": "90fe9e98ccc9d7e2"
+     "book": "70fbbe1451f928a5"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "6-7",
       "result": "Lost the Hawaii Bowl",
-      "grade": "A-"
+      "grade": "A"
      },
-     "book": "1f9fbf522418a70c"
+     "book": "8957f2387b0e6e85"
     }
    ]
   },
@@ -460,20 +465,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Holiday Bowl",
-      "grade": "C+"
+      "rec": "10-4",
+      "result": "Won the ReliaQuest Bowl",
+      "grade": "A"
      },
-     "book": "8370994afe185c85"
+     "book": "2c796624621a0a23"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the New Mexico Bowl",
-      "grade": "A"
+      "rec": "8-5",
+      "result": "Lost the First Responder Bowl",
+      "grade": "A+"
      },
-     "book": "08ab6b33b6ffb4dd"
+     "book": "9ed3c032a20252b1"
     }
    ]
   }

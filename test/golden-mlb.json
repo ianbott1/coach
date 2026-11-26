@@ -1,5 +1,5 @@
 {
- "fp": "1ebdddcc4e20204a",
+ "fp": "107e59a9edb3549e",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -275,59 +275,64 @@
    "fp": "1ebdddcc4e20204a",
    "from": "1ebdddcc4e20204a",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "107e59a9edb3549e",
+   "from": "1ebdddcc4e20204a",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "3d5153dfcd8c114e",
-    "post": "ea40287c68cafad9",
-    "champion": "San Diego",
-    "rec": "7d949ee2c854cfb8",
-    "poll": "6b40d8b4cdc9d8de",
-    "heis": "7d5b897b0d9b6c32",
-    "history": "da15fbfd7101bc37",
-    "universe": "56c8183973a51f1f",
-    "screens": "1612d5c806ff6c05"
+    "games": "d1eecee4385cb645",
+    "post": "eb042c4b66ff290d",
+    "champion": "Philadelphia",
+    "rec": "7e74ba61094dbd2c",
+    "poll": "ac32482921311103",
+    "heis": "0ad48cbc66ec09bf",
+    "history": "3c7ef677447895f0",
+    "universe": "c86af44af2d032b6",
+    "screens": "7a089af8bc144c7b"
    },
    {
     "year": 2027,
-    "games": "65a1a5d715c40c67",
-    "post": "bad36f6d60532f8a",
-    "champion": "Houston",
-    "rec": "c4e613880ca2a9ed",
-    "poll": "bee24a447b87d565",
-    "heis": "773ec581dad87a9c",
-    "history": "6acd7d078226bbb4",
-    "universe": "0e503d756a19b330",
-    "screens": "49217556b3802e33"
+    "games": "14fee16458ac5bef",
+    "post": "5c2d056c76ff0615",
+    "champion": "Boston",
+    "rec": "758b4b7e180d56f4",
+    "poll": "2b5deda84aee3e2e",
+    "heis": "f9ce21162bed72fa",
+    "history": "7e4fb897307c1596",
+    "universe": "13089469a6ef9d4c",
+    "screens": "2d0d9bf35b69380f"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "abe739d49baf153f",
-    "post": "8aaf7e8aa772ad4d",
-    "champion": "LA Dodgers",
-    "rec": "fb7cecfa7faad8b4",
-    "poll": "8b06c4145b3597e1",
-    "heis": "c538f6ec29f1dea8",
-    "history": "2776d71e098b91d8",
-    "universe": "c04512530a010990",
-    "screens": "d8c11aef312cc5ae"
+    "games": "292943b831e8a98a",
+    "post": "07ee8d8312211657",
+    "champion": "Philadelphia",
+    "rec": "99d96ab39cae0688",
+    "poll": "6acb432a05995d5f",
+    "heis": "7aa1aab9bbb2e734",
+    "history": "e7ba8e892e6aa1ed",
+    "universe": "e2ad6418baad3f19",
+    "screens": "cbcd5b061a28cbc0"
    },
    {
     "year": 2027,
-    "games": "88a0371b52e58170",
-    "post": "db2fe55acf519f7a",
+    "games": "40b48466e32c39a5",
+    "post": "e8a6de41a9e61775",
     "champion": "NY Mets",
-    "rec": "253cfe6202274537",
-    "poll": "d5ad3a32919dca35",
-    "heis": "eac2183831bc1117",
-    "history": "53e39dd404565cdb",
-    "universe": "49e8d24da1631d6f",
-    "screens": "c9701884af330e6e"
+    "rec": "b23dc25a8ed6e537",
+    "poll": "3124bc263e01bf90",
+    "heis": "ee1daa53d9139dcd",
+    "history": "69dc47ccb17e5064",
+    "universe": "229b11c287a954c6",
+    "screens": "18d5c1bc0101c64b"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "f214c1e9bd9f5025",
+ "fp": "a6996d1652198b01",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -150,21 +150,26 @@
    "fp": "f214c1e9bd9f5025",
    "from": "f214c1e9bd9f5025",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "a6996d1652198b01",
+   "from": "f214c1e9bd9f5025",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "03d9a62996f32a50",
-    "post": "9a97ef2d7b9b4bc5",
-    "champion": "New Orleans",
-    "rec": "9e0100c131c9cc8f",
-    "poll": "44f7189f05bd9377",
-    "heis": "ac04dcfdb5834804",
-    "history": "509f74bb6a73f72b",
-    "universe": "54ca01c1f69b2ea2",
-    "screens": "32c7ee79450888b4"
+    "games": "122cdbfef82d1864",
+    "post": "750699b41d9eaa46",
+    "champion": "Baltimore",
+    "rec": "c0a6a7ff3c4bbc06",
+    "poll": "b1a238087ced7691",
+    "heis": "b4c4050620af5465",
+    "history": "0a5f6b774ddbb39d",
+    "universe": "80c33ef518bf17ae",
+    "screens": "690e688b495ff173"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "d9c452b4879407ca",
+ "fp": "42e172741a178e58",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -350,6 +350,11 @@
    "fp": "d9c452b4879407ca",
    "from": "d9c452b4879407ca",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "42e172741a178e58",
+   "from": "d9c452b4879407ca",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [
@@ -370,9 +375,9 @@
      "last": {
       "rec": "40-42",
       "result": "Lost in the first round",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "4e5bf18ae892a5ce"
+     "book": "c3a11a6d8c0d6f13"
     }
    ]
   },
@@ -384,18 +389,18 @@
      "last": {
       "rec": "29-53",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "D"
      },
-     "book": "c4be8b5dd12f81bf"
+     "book": "f5630a43039d41b0"
     },
     {
      "team": "New York",
      "last": {
       "rec": "36-46",
       "result": "Lost in the first round",
-      "grade": "C-"
+      "grade": "B-"
      },
-     "book": "5a69c15acc87110d"
+     "book": "bca15d6cf00ece93"
     }
    ]
   },
@@ -405,20 +410,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
-      "grade": "C"
+      "rec": "39-43",
+      "result": "Lost in the play-in",
+      "grade": "B"
      },
-     "book": "05225029811faefa"
+     "book": "730df95e46c6d739"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "45-37",
-      "result": "Lost in the conference semifinals",
-      "grade": "B-"
+      "rec": "39-43",
+      "result": "Lost in the play-in",
+      "grade": "C"
      },
-     "book": "43e7f8eab4c175a3"
+     "book": "13a708032c3568e5"
     }
    ]
   }

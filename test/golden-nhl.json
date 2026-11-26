@@ -1,5 +1,5 @@
 {
- "fp": "5b5b8ddc7dd608c4",
+ "fp": "7672ae756d06c1e5",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -630,59 +630,64 @@
    "fp": "5b5b8ddc7dd608c4",
    "from": "5b5b8ddc7dd608c4",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "7672ae756d06c1e5",
+   "from": "5b5b8ddc7dd608c4",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b375b5824914dfb",
-    "post": "2ce5cd62c82d3d44",
-    "champion": "Columbus",
-    "rec": "55f305fef7c7b9eb",
-    "poll": "3930f4d04e8ea79e",
-    "heis": "cb6ffd0cc49ff6af",
-    "history": "fa786d72b291d325",
-    "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "games": "55024c33414eb4c6",
+    "post": "5d9dff1b1b8da8b7",
+    "champion": "NY Rangers",
+    "rec": "e32b69a14f009de3",
+    "poll": "26c05f3b664b5d4a",
+    "heis": "e5d2f25a0c7f7c97",
+    "history": "029bdc1e4ed2bbe5",
+    "universe": "660215f17f1c613b",
+    "screens": "850afbafa2bc6c08"
    },
    {
     "year": 2027,
-    "games": "bf7968c9bf562981",
-    "post": "f3f35c7404a434b2",
-    "champion": "Toronto",
-    "rec": "f051de7537522d58",
-    "poll": "9e1437b4306e21ad",
-    "heis": "5ed6f299aaee8f70",
-    "history": "7f2db36e6a75c3ca",
-    "universe": "87bd4428c7b36740",
-    "screens": "5857e2088a822e0d"
+    "games": "cfe2c8c04b8ce935",
+    "post": "b996eabfb69f1dff",
+    "champion": "Minnesota",
+    "rec": "eaea608dbe7c6521",
+    "poll": "9e49638db02560dd",
+    "heis": "4f0231289ad4b8ba",
+    "history": "7b10152cc335ef19",
+    "universe": "ef0ee8c8be633a0b",
+    "screens": "82a1893c64b0773c"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "bd891d8c005cd02b",
-    "post": "7d7b2c34aec1e7f4",
-    "champion": "Colorado",
-    "rec": "dc3fd307d0d0ec0e",
-    "poll": "103fbed1ccbe4635",
-    "heis": "5ee332f850b9731e",
-    "history": "c2ef3c8c856d0962",
-    "universe": "15fee3f90c993552",
-    "screens": "a1a3587d0b86e07a"
+    "games": "1f3d6adb08545ab7",
+    "post": "738061b3bce34fb8",
+    "champion": "Minnesota",
+    "rec": "c084594c4e48e7fc",
+    "poll": "21fa0d399286c28c",
+    "heis": "da2162997b2e897a",
+    "history": "947a425dab9839af",
+    "universe": "956b0ec706b9e951",
+    "screens": "82b6337ce5eba610"
    },
    {
     "year": 2027,
-    "games": "8c46407e8062acf3",
-    "post": "b36f644e102bcb07",
-    "champion": "Montreal",
-    "rec": "ec0a5b5717cfeda6",
-    "poll": "6473ff5c85c28291",
-    "heis": "bb56911fa58c1c5b",
-    "history": "90d9fb97e15f5a7e",
-    "universe": "7f42d9d51d1e1edc",
-    "screens": "ba0114893bd9103b"
+    "games": "06a8f97cc3577eec",
+    "post": "736431fa6ea44f17",
+    "champion": "New Jersey",
+    "rec": "c9b15a9799a9270e",
+    "poll": "292af08199502070",
+    "heis": "9f92b422f28cd454",
+    "history": "27670737c78614c1",
+    "universe": "1e0b52079c707baf",
+    "screens": "991191cb17f250dd"
    }
   ],
   "schedules#60": [

@@ -350,6 +350,11 @@
    "fp": "50d8c2fb77ebe5fb",
    "from": "dc7ac367366af5f0",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "50d8c2fb77ebe5fb",
+   "from": "50d8c2fb77ebe5fb",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [

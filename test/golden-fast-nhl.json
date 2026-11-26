@@ -1,5 +1,5 @@
 {
- "fp": "55b61b4531d1e1c8",
+ "fp": "a29454475cb0f6ec",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -160,21 +160,26 @@
    "fp": "55b61b4531d1e1c8",
    "from": "55b61b4531d1e1c8",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "a29454475cb0f6ec",
+   "from": "55b61b4531d1e1c8",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b375b5824914dfb",
-    "post": "2ce5cd62c82d3d44",
-    "champion": "Columbus",
-    "rec": "55f305fef7c7b9eb",
-    "poll": "3930f4d04e8ea79e",
-    "heis": "cb6ffd0cc49ff6af",
-    "history": "fa786d72b291d325",
-    "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "games": "55024c33414eb4c6",
+    "post": "5d9dff1b1b8da8b7",
+    "champion": "NY Rangers",
+    "rec": "e32b69a14f009de3",
+    "poll": "26c05f3b664b5d4a",
+    "heis": "e5d2f25a0c7f7c97",
+    "history": "029bdc1e4ed2bbe5",
+    "universe": "660215f17f1c613b",
+    "screens": "850afbafa2bc6c08"
    }
   ]
  }

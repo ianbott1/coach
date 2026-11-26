@@ -1,5 +1,5 @@
 {
- "fp": "028fe72b3eea2f64",
+ "fp": "989ca06abe52351a",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -430,6 +430,11 @@
    "fp": "028fe72b3eea2f64",
    "from": "028fe72b3eea2f64",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "989ca06abe52351a",
+   "from": "028fe72b3eea2f64",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [
@@ -439,20 +444,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "13-4",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A+"
+      "rec": "10-7",
+      "result": "Lost in the divisional round",
+      "grade": "B+"
      },
-     "book": "6dcb459521b5e6da"
+     "book": "a30d7842df216531"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "5-12",
+      "rec": "7-10",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "B+"
      },
-     "book": "978455b071bbff5c"
+     "book": "90c735d1e2767216"
     }
    ]
   },
@@ -462,20 +467,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the wild card round",
-      "grade": "B-"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "2c6c8983a2460872"
+     "book": "8c8b4209eeff55f4"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "SUPER BOWL CHAMPIONS",
-      "grade": "A"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "B"
      },
-     "book": "610ff42ec4b92d1e"
+     "book": "5354ca69ada24c31"
     }
    ]
   },
@@ -485,20 +490,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "6-11",
+      "rec": "8-9",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "6abd08de089791d1"
+     "book": "47f23f5fa921db84"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
+      "rec": "9-8",
       "result": "Lost the conference championship",
-      "grade": "A+"
+      "grade": "A-"
      },
-     "book": "05e9cbbb1d05db03"
+     "book": "0c68f4ef46973804"
     }
    ]
   }
