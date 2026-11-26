@@ -683,7 +683,7 @@ function replayCarousel(){
   else{ if(!(S.off&&S.off.year===yr))return; users=S.off.act&&S.off.act.users }
   if(!users){
     if(isHotSeat()){ users={}; S.coaches.forEach((c,i)=>{ const cur=i===(S.turn||0), t=cur?my:c.myTeam, H=(cur?S.history:c.history)||[];
-      users[t]=missedTwiceFor(t,H,(cur?S.expNow:c.expNow)||LEAGUE.goals.expectations(U.program[t])) }) }
+      users[t]=missedTwiceFor(t,H,(cur?S.expNow:c.expNow)||expectations(t)) }) }
     else users={[my]:missedTwice(my,S.expNow||expectations())};
   }
   const rng=new RNG((S.seasonSeed^(U.year*7919))>>>0);
@@ -1188,7 +1188,7 @@ function openOffseason(){
       S.coaches.forEach((c,i)=>{
         const cur=i===(S.turn||0);
         const t=cur?S.myTeam:c.myTeam, H=(cur?S.history:c.history)||[];
-        const e=(cur?S.expNow:c.expNow)||LEAGUE.goals.expectations(U.program[t]);
+        const e=(cur?S.expNow:c.expNow)||expectations(t);
         users[t]=missedTwiceFor(t,H,e);
       });
       S.carousel={year:SEA.year,act:offseasonCoaching(U,rng,SEA.rec,SEA.elo,users),users:users};
@@ -1371,7 +1371,7 @@ function endSeason(rng,choices,act,seasonTeam){
     const e=c.history.find(x=>x.year===SEA.year&&!x.teams); if(!e)return;
     const t=e.team, before=c.history.filter(x=>x!==e);
     Object.assign(e,{program:Math.round(U.program[t]),
-      exp:(c.expNow||LEAGUE.goals.expectations(U.program[t])).t,
+      exp:(c.expNow||expectations(t)).t,
       miles:milestones(SEA.rec[t][0],SEA.rec[t][1],e.result,rk[t],t,before),
       teams:teamRows, top10:SEA.poll.order().slice(0,10),
       groupChamps:confChamps, seeds:cfpOf, post:post, pnote:pnote,
@@ -1397,7 +1397,7 @@ function endSeason(rng,choices,act,seasonTeam){
     // a new season: every coach's expectations for the team they now coach,
     // no plans carried over from last year, and coach 1 goes first
     stashCoach();
-    S.coaches.forEach(c=>{c.expNow=LEAGUE.goals.expectations(U.program[c.myTeam]); c.plans={}; c.promos={}; c.fires={}});
+    S.coaches.forEach(c=>{c.expNow=expectations(c.myTeam); c.plans={}; c.promos={}; c.fires={}});
     loadCoach(0);
   }
   flash={type:"offseason"}; view="team"; save(); render();
@@ -1832,7 +1832,7 @@ function ownMark(me){
    sport: pro football's favourites showed 70% and won 84%, hockey's showed
    70% and won 63%, and the plan buttons never moved the number (Grokbot,
    Instinct). */
-function wpScale(pl){ const K=(ENGINE_V>=14&&LEAGUE.tuning.wpK14)||LEAGUE.tuning.wpK; return K?(K[pl]||K.balanced):400 }   // round 91: football's engine 14 has its own curve
+function wpScale(pl){ const K=(ENGINE_V>=25&&LEAGUE.tuning.wpK25)||(ENGINE_V>=14&&LEAGUE.tuning.wpK14)||LEAGUE.tuning.wpK;   /* engine 25: a refit where the shown chance ran ahead of the games (test/realism.js) */ return K?(K[pl]||K.balanced):400 }   // round 91: football's engine 14 has its own curve
 /* The chance before a game is the engine's own, from the strengths the game will be played with: your lineup
    (a backup started), injuries, featuring, ice time, staff. It was worked out from the league's running ratings, so
    starting a backup 24 points worse moved nothing on screen while the game charged it in full (pro basketball 57%
@@ -2633,9 +2633,25 @@ function seasonLogHTML(my){
   return `<div class="grouphead">${SEA.year} schedule</div>`+scheduleHTML(my);
 }
 
-function expectations(){
-  const my=S.myTeam, p=U?U.program[my]:1500;
-  return LEAGUE.goals.expectations(p);
+/* The board's target (review round, engine 25): what a club of this strength should win, read off the season it is
+   about to play: the sum of the chances the game shows for each of its regular-season games, at the start. It was the
+   program's standing alone (U.program), which drifts far from the roster in the pros: over 40 assistant-simmed NBA
+   seasons the target missed the wins by sd 12.1 (a 7-75 Orlando was told to win a series, a 54-28 New Orleans to
+   rebuild); against this number the wins miss by sd ~7, which is the season's own luck and injuries (test/realism.js). */
+function expectedWins(t){
+  if(typeof SEA==="undefined"||!SEA||!SEA.sched)return null; const W=LEAGUE.weeks; let x=0, n=0;
+  SEA.sched.forEach(g=>{ if(g.week>=W||g.cup||(g.home!==t&&g.away!==t))return; const opp=g.home===t?g.away:g.home;
+    // the chance before any plan (the card's): a roster's own strength. Measured over 30 assistant-simmed NBA seasons the
+    // assistant's plans add about 1.8 wins to it (se 1.3); counted with the assistant's plan in, the shown edge came out
+    // 2.3 wins over what the games gave, so the target is set before the plan, and a good plan beats it
+    let q; try{ q=planFree(()=>winProb(t,opp,g.home===t,!!g.neutral)) }catch(e){ return }
+    if(isFinite(q)){ x+=q; n++ } });
+  return n?x:null;
+}
+function expectations(t){
+  const my=t||S.myTeam, p=U?U.program[my]:1500;
+  const xw=ENGINE_V>=25&&LEAGUE.goals.byWins?expectedWins(my):null;
+  return xw!=null?LEAGUE.goals.expectations(p,xw):LEAGUE.goals.expectations(p);
 }
 
 function seasonGrade(wins,losses,result,exp){ return LEAGUE.goals.grade(wins,losses,result,exp) }

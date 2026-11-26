@@ -311,7 +311,15 @@ LEAGUE.offseason={
    result line from seasonResult. */
 LEAGUE.goals={
   /* what the job demands, by program strength */
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=10.5)return {w:w,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
+      if(xw>=8.5)return {w:w,l:`${w} wins and a New Year's bowl. Contend in the conference.`,t:"CONTEND"};
+      if(xw>=7.5)return {w:w,l:`${w} wins and a decent bowl. Beat someone you shouldn't.`,t:"PUSH FORWARD"};
+      if(xw>=5.5)return {w:w,l:`Get to a bowl game. ${w} wins keeps everyone happy.`,t:"BOWL ELIGIBLE"};
+      return {w:w,l:`Show progress. ${w} wins would be real movement here.`,t:"BUILD SOMETHING"} }
     if(p>=1860)return {w:11,l:"A playoff berth. Anything less is a disappointment.",t:"PLAYOFF OR BUST"};
     if(p>=1700)return {w:9,l:"Nine wins and a New Year's bowl. Contend in the conference.",t:"CONTEND"};
     if(p>=1540)return {w:8,l:"Eight wins and a decent bowl. Beat someone you shouldn't.",t:"PUSH FORWARD"};

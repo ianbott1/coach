@@ -480,7 +480,15 @@ LEAGUE.goals={
   /* what the job demands, by franchise strength: wins over 162 games (round 53, measured: a club wins about
      81 + 0.157 a point of strength above 1507, so each line sits at its band's expected wins), and a par for
      the postseason (how far the job expects you to go) */
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=90)return {w:w,par:1.8,l:"Built to win now. Anything short of the championship series is a disappointment.",t:"CONTEND"};
+      if(xw>=86)return {w:w,par:1.1,l:"Make the postseason and win a series.",t:"WIN A SERIES"};
+      if(xw>=80)return {w:w,par:0,l:"Stay in the wild-card race into September. A postseason berth would be a good year.",t:"WILD-CARD RACE"};
+      if(xw>=73)return {w:w,par:0,l:`Develop the young players and show progress. ${w+4} wins would be a statement.`,t:"REBUILD"};
+      return {w:w,par:0,l:`The bottom of the league. ${w+5} wins would be real movement.`,t:"START OVER"} }
     if(p>=1555)return {w:89,par:1.8,l:"Built to win now. Anything short of the championship series is a disappointment.",t:"CONTEND"};
     if(p>=1530)return {w:86,par:1.1,l:"Make the postseason and win a series.",t:"WIN A SERIES"};
     if(p>=1490)return {w:81,par:0,l:"Stay in the wild-card race into September. A postseason berth would be a good year.",t:"WILD-CARD RACE"};

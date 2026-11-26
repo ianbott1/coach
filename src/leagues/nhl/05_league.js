@@ -53,7 +53,8 @@ const LEAGUE={
     /* the race compares each player with his position; this is the voters' premium on top */
     premium:{C:1.06,LW:1.02,RW:1.02,D:0.93,D2:0.9,G:0.97}},
   tuning:{century:500, unbeaten:0.72, /* round 60: achievements (unbeaten: ~0.6% of team-seasons) */ wpK:{safe:635,balanced:655,aggressive:685},   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
-    hfa:20, gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12,
+    get hfa(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=25?+((typeof process!=="undefined"&&process.env&&process.env.HFA25)||55):20 },   // engine 25: home ice (ESPN 2024-25: home sides won 56.3% with overtime; it played 51.9%, now ~55%)
+    gapScale:1, pFloor:1250, pCeil:1800, talentSteps:12,
     /* how much an edge is worth on the ice (the engine's are calibrated on
        their own; the league's spread is set against NHL history) */
     hk:{shotEdge:+((typeof process!=="undefined"&&process.env&&process.env.NHL_E)||0.0005),

@@ -15,7 +15,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||24);   // 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||25);   // 25: review round, results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit); 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -137,7 +137,17 @@ function iscale(r){return 0.70+0.45*Math.max(0,Math.min(1,(r-1150)/900))}
    game dates) sets tuning.talentSteps: rates are scaled so a whole season
    varies as much as one of that many steps, and injuries last as many games.
    Unset, nothing changes. */
+/* engine 25 (review round): a league's injuries (tuning.inj25 {hz, mul, cap}): how often a starter goes down (a share of
+   the old rate), what it costs (his drop to the backup, times a draw from mul; it was 1.05-2.1 everywhere) and the most
+   one injury can cost in rating points. College basketball's thin benches let one injury cost up to ~460 points (a
+   starter in the 80s over a backup in the 30s): a tester saw one injury move a game's chance from 49% to 82%. Unset,
+   the old rates. Same draws either way. */
+function injTune25(){ const T=typeof ENGINE_V!=="undefined"&&ENGINE_V>=25&&LEAGUE.tuning&&LEAGUE.tuning.inj25;
+  return {hz:T&&T.hz||1, mul:T&&T.mul||[1.05,2.1], cap:T&&T.cap||1e9} }
 function talentScale(){const T=LEAGUE.tuning&&LEAGUE.tuning.talentSteps; return T?T/LEAGUE.weeks:1}
+/* engine 25: how much a rating gap counts in a league's games (tuning.gap25; unset, 1): the spread of a league's results
+   without re-rating every club (and with the same ratings, the shown chances' curve: wpK25) */
+function gapScale25(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=25&&LEAGUE.tuning&&LEAGUE.tuning.gap25?LEAGUE.tuning.gap25:1 }
 
 class Talent{
   constructor(rng,base,roster){
@@ -164,7 +174,8 @@ class Talent{
       // starters rested in a decided game: the minutes they sat can't hurt them (REST_HZ; the same dice, so a rest
       // only ever removes an injury, never adds one elsewhere)
       const rest=(typeof SEA!=="undefined"&&SEA&&SEA.talent===this&&SEA.restAt&&SEA.restAt[t]===w-1)?REST_HZ:1;
-      if(r.r()<INJ_HAZARD*K*rest*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
+      const IJ=injTune25();
+      if(r.r()<INJ_HAZARD*K*rest*IJ.hz*(typeof deployHazard==="function"?deployHazard(t):1)){   // hockey: riding your top players gets more of them hurt
         if(this.roster){
           // pick a starter, weighted toward the positions that take hits
           const idx=pickInjuredPos(r);
@@ -172,7 +183,7 @@ class Talent{
           if(!this.inj[t].some(e=>e.idx===idx)){
             const sev=r.r();
             const wk=Math.max(1,Math.round((sev<0.12?14:r.pick([1,2,2,3,4,5,6]))/K));
-            const m=injuryCost(this.roster[t],idx)*r.range(1.05,2.1);
+            const m=Math.max(-IJ.cap,injuryCost(this.roster[t],idx)*r.range(IJ.mul[0],IJ.mul[1]));
             this.inj[t].push({m:m,w:wk,k:pl.p,idx:idx,who:pl.n,rating:pl.r});
             this.log[t].push({wk:w,kind:"injury",what:pl.p,who:pl.n,
                               mag:Math.round(m),weeks:wk});

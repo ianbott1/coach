@@ -475,7 +475,15 @@ LEAGUE.offseason={
 LEAGUE.goals={
   /* what the job demands, by franchise strength: wins over 84 games, and a
      par for the playoffs (how far the job expects you to go) */
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=49)return {w:w,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};
+      if(xw>=45)return {w:w,par:1.3,l:"Make the playoffs and win a round.",t:"WIN A ROUND"};
+      if(xw>=40)return {w:w,par:0.4,l:"Get into the playoffs, a wild card if that's what it takes.",t:"MAKE THE PLAYOFFS"};
+      if(xw>=34)return {w:w,par:0,l:`Draft well and show progress. ${w+2} wins would be a statement.`,t:"REBUILD"};
+      return {w:w,par:0,l:`The bottom of the league. ${w+2} wins would be real movement.`,t:"START OVER"} }
     if(p>=1600)return {w:50,par:2.2,l:"Built to win now. A conference final is the floor.",t:"CONTEND"};
     if(p>=1540)return {w:45,par:1.3,l:"Make the playoffs and win a round.",t:"WIN A ROUND"};
     if(p>=1480)return {w:41,par:0.4,l:"Get into the playoffs, a wild card if that's what it takes.",t:"MAKE THE PLAYOFFS"};
