@@ -1926,7 +1926,8 @@ function injuredLine(opp,atHome,neutral){
    or its top chances overstate: shown 98%+ won 94.7% (round 39) */
 function wpSoft(g){ const s=LEAGUE.tuning.softWp; if(!s)return g; const a=Math.abs(g); return a<=s[0]?g:Math.sign(g)*(s[0]+(a-s[0])*s[1]) }
 function winProb(me,opp,atHome,neutral){
-  return 1/(1+Math.pow(10,-wpSoft(gameEdge(me,opp,atHome,neutral))/wpScale("balanced")));
+  let g=gameEdge(me,opp,atHome,neutral); if(typeof sportWpEdge==="function")g=sportWpEdge(g,atHome,neutral);   // round 112: a game's own reading of the edge (baseball, engine 26)
+  return 1/(1+Math.pow(10,-wpSoft(g)/wpScale("balanced")));
 }
 /* what your own choices add in your games, the same edge the games use: a
    featured starter who's healthy, and hockey's ice time (Muse: featuring

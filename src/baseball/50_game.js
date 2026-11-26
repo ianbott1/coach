@@ -90,10 +90,18 @@ const BS={
 /* engine 26 (stats): walks 0.080 -> bb (a walk in about 9.5% of plate appearances, where the majors walked 8.2-8.6% in
    2023-25), a starter's day-to-day form 0.12 -> form, and x a small edge to the hitters that keeps the runs where they
    were: about one game in five had a shutout, where the majors had one in 13% of games in 2024 (321 in 2,429). Most
-   of the scoreless games came from the starter's form and the plan read; the read is the game's own and stays. */
-const BS26R={bb:+((typeof process!=="undefined"&&process.env&&process.env.BS26_BB)||0.066), form:+((typeof process!=="undefined"&&process.env&&process.env.BS26_F)||0.02),
-  x:+((typeof process!=="undefined"&&process.env&&process.env.BS26_X)||0.035)};
+   of the scoreless games came from the starter's form and the plan read; the read is the game's own and stays.
+   Round 112 follow-up, on the merged build with the dugout: bb 0.062 (8.4% of at-bats and walks), x 0.050 (4.4 runs a
+   side over a career, 4.48 in a first season; MLB 2024 4.39, shutouts 13.6%), and g, the clubs' strength gap on the
+   day, half of engine 25's: with a starter's form all but gone the day was less random and the spread of wins went
+   from about 13.5 to 14.9 a season (MLB 2024 sd 12.3; now 12.2). */
+const BS26R={bb:+((typeof process!=="undefined"&&process.env&&process.env.BS26_BB)||0.062), form:+((typeof process!=="undefined"&&process.env&&process.env.BS26_F)||0.02),
+  x:+((typeof process!=="undefined"&&process.env&&process.env.BS26_X)||0.050), g:+((typeof process!=="undefined"&&process.env&&process.env.BS26_G)||0.5)};
 // bsV26: defined with the dugout below (BS_V26, the same engine 26)
+/* the chance shown before a game (core winProb), on engine 26: the clubs' gap counts wp of itself, the home edge whole,
+   as the games now play it (g above, and a starter's form all but gone); fitted on test/realism.js mlb */
+const BS26_WP=+((typeof process!=="undefined"&&process.env&&process.env.BS26_WP)||0.72);
+function sportWpEdge(g,atHome,neutral){ if(!bsV26())return g; const h=neutral?0:(atHome?1:-1)*((LEAGUE.tuning&&LEAGUE.tuning.hfa)||0); return (g-h)*BS26_WP+h }
 const APPROACH={
   pull:   {l:"Pull hitters, sitting on the fastball", counter:"away"},
   patient:{l:"Patient: working counts, taking walks", counter:"zone"},
@@ -217,16 +225,16 @@ const BS26_ENV=(k,d)=>{ const v=typeof process!=="undefined"&&process.env&&proce
 const BS26={
   // the platoon gap (advantage less disadvantage) in the engine's log-odds, by the batter's hand; pL: the share of
   // plate appearances against a left-hander
-  platL:BS26_ENV("BS26_PL",0.068), platR:BS26_ENV("BS26_PR",0.028), pL:0.30,
+  platL:BS26_ENV("BS26_PL",0.054), platR:BS26_ENV("BS26_PR",0.028), pL:0.30,
   // the starter: times through the order (each time from the second), tiring past p0 pitches (by his Stamina), and sp0
   // to hold the league's starters where they were
-  tto:BS26_ENV("BS26_TTO",0.021), p0:BS26_ENV("BS26_P0",80), fat:BS26_ENV("BS26_FAT",0.004), sp0:BS26_ENV("BS26_SP0",-0.002),
+  tto:BS26_ENV("BS26_TTO",0.017), p0:BS26_ENV("BS26_P0",80), fat:BS26_ENV("BS26_FAT",0.004), sp0:BS26_ENV("BS26_SP0",-0.002),
   pPA:BS26_ENV("BS26_PPA",4.12),   // his limit in pitches, from his stamina in batters (set so starters average 86 pitches, AL 2024)
   // a reliever: rp0 at the league's usual reliever rating (BS6_RP), rq a point of rating
-  rp0:BS26_ENV("BS26_RP0",-0.05), rq:BS26_ENV("BS26_RQ",0.008),
+  rp0:BS26_ENV("BS26_RP0",-0.033), rq:BS26_ENV("BS26_RQ",0.008),
   b2b:0.02, b3:0.08, heavy:25, heavyPen:0.04,   // pitched yesterday; the third day running; a heavy day yesterday (25+ pitches)
   xPt:BS26_ENV("BS26_XPT",0.012),   // a rating point of hitting, in the platoon's log-odds (for choosing a pinch hitter)
-  phMin:3, ibbGap:6,
+  phMin:3, ibbGap:6, pace:BS26_ENV("BS26_PACE",0.5), paceK:BS26_ENV("BS26_PACEK",120),
   rest:BS26_ENV("BS26_REST",7), restC:BS26_ENV("BS26_RESTC",17), platMin:BS26_ENV("BS26_PLATMIN",2)   // the lineup card (bsLineup26)
 };
 const BS26_ROLE={cl:"closer",su:"set-up",su2:"set-up",lefty:"lefty specialist",mid:"middle relief",lr:"long relief",mop:"long relief"};
@@ -244,7 +252,7 @@ function bsPlat(b,t){ if(b==="S")return 0; const pL=BS26.pL;
 /* the six arms beyond the roster's three: a second set-up man, the lefty specialist, three middle relievers (one of them
    the arm a club shuttles up and down from its farm team) and the mop-up man. Their names and ratings come from the club and the years (a hash: an arm stays three seasons or so), the
    ratings about the league's usual reliever (BS6_RP), so they add nothing to any club on average */
-const BS26_CORPS=[["su2","R",3],["lefty","L",-1],["mid","R",0],["mid","L",-2],["mop","R",-5],["mid","R",-3]];
+const BS26_CORPS=[["su2","R",3],["lefty","L",1],["mid","R",0],["mid","L",0],["mop","R",-5],["mid","R",-3]];
 function bsCorps(t,year,taken){ const out=[], seen=new Set(taken||[]);
   BS26_CORPS.forEach(([role,th,off],k)=>{ const r=mulberry32(strHash("corps|"+t+"|"+k+"|"+Math.floor((year+k)/3))>>>0); let n=null;
     for(let j=0;j<8&&(!n||seen.has(n));j++){ const f=PNAMES_F[Math.floor(r()*PNAMES_F.length)], l=PNAMES_L[Math.floor(r()*PNAMES_L.length)]; n=f+" "+(typeof wideLast==="function"?wideLast(f,l,PNAMES_L):l) }
@@ -272,7 +280,9 @@ function bsPen26(t,step){ try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!
     if(clOk){ add(R[cl],"cl"); if(suOk)add(R[su],"su") } else if(suOk)add(R[su],"cl");   // a hurt closer's set-up man closes
     if(R[lr]&&!H.has(lr))add(R[lr],"lr");
     bsCorps(t,SEA.year,R.filter(Boolean).map(p=>p.n)).forEach(c=>out.push(c));
-    return out.map(c=>{ const [py,p2]=bsRestOf(SEA,t,c.n,step); return [c.n,c.r,c.th==="L"?1:0,c.role,py,p2] }) }catch(e){ return null } }
+    // (and on a busy pace: more than half his club's games so far, where MLB's busiest relievers pitch about 80 of 162)
+    const U=bsUse(SEA), Sg=U&&U.s&&U.s[t]||{}, gp=((SEA.rec&&SEA.rec[t])||[0,0]).slice(0,2).reduce((a,b)=>a+(b||0),0);
+    return out.map(c=>{ const [py,p2]=bsRestOf(SEA,t,c.n,step), g=Sg[c.n]?Sg[c.n].g:0; return [c.n,c.r,c.th==="L"?1:0,c.role,py,p2,g>=12&&g>BS26.pace*gp?1:0] }) }catch(e){ return null } }
 /* the bench today: the four best healthy backups not in the lineup (the backup catcher stays put) */
 function bsBench26(t,lu){ try{ const R=SEA.roster[t], H=hurtSet(t), inLu=new Set(lu||[]), B=[], C=BS_HIT[0];
     BS_HIT.forEach(i=>[i,BK(i)].forEach(j=>{ const p=R[j]; if(!p||H.has(j)||inLu.has(p.n))return; if(i===C&&!(j===C&&!inLu.has(R[BK(C)]&&R[BK(C)].n)))return; B.push(p) }));
@@ -307,7 +317,7 @@ function bsPenRank(pen,used,sit,lefties){ const ord=BS26_ORDER[sit]||BS26_ORDER.
   // in the low-leverage innings a man who pitched yesterday waits behind the next role (a long season: MLB's busiest
   // relievers make 75-80 appearances)
   const lo=sit==="early"||sit==="blow"||sit==="other", K=[], N=[];
-  for(const c of pen){ if(used[c.n])continue; const x={c:c,k:o.indexOf(c.role)*100-c.r+(lo&&c.py>0?150:0)}; if(bsPenOk(c))K.push(x); else { x.f=bsPenFat(c); N.push(x) } }
+  for(const c of pen){ if(used[c.n])continue; const x={c:c,k:o.indexOf(c.role)*100-c.r+(lo&&c.py>0?150:0)+(c.hv&&sit!=="save"&&sit!=="tie"?BS26.paceK:0)}; if(bsPenOk(c))K.push(x); else { x.f=bsPenFat(c); N.push(x) } }
   K.sort((a,b)=>a.k-b.k); N.sort((a,b)=>a.f-b.f||a.k-b.k);
   return K.concat(N).map(x=>x.c) }
 function bsPenWords(c){ return `${BS26_ROLE[c.role]||"relief"}, ${c.th==="L"?"left":"right"}-handed${c.py>0&&c.p2>0?", third day running":c.py>=BS26.heavy?`, ${c.py} pitches yesterday`:c.py>0?", pitched yesterday":""}` }
@@ -324,6 +334,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   // engine 25 (review round): the gap counts LEAGUE.tuning.gap25 of itself (core gapScale25): clubs were spread wider than
   // MLB's (wins sd 14.6-15.2, the best record 111 on average; MLB ~13 and ~104) and favourites won 59% where 57% was shown
   const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1)*gapScale25();
+  // engine 26: the clubs' strength gap counts for g of itself on the day (BS26R), the home edge in it whole
+  const gapSc=(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1)*gapScale25(), hfaE=(LEAGUE.tuning&&LEAGUE.tuning.hfa||0)*gapSc,
+    gap26=bsV26()?(gap-hfaE)*BS26R.g+hfaE:gap;
   const other=s=>s==="home"?"away":"home";
   const SPc=(ctx.sp)||{};
   const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,bsV26()?BS26R.form:BS.form), bf:0, ra:0,
@@ -336,7 +349,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   st.S.home.app=pickApp("home"); st.S.away.app=pickApp("away");
   // engine 26: the named bullpen, its rest, and the starter's pitch count (no draws: everything below is read off the game)
   if(bsV26()&&ctx.pen26)["home","away"].forEach(sd=>{ const X=st.S[sd], L=ctx.pen26[sd]; if(!L)return;
-    X.v26=true; X.pen26=L.map(a=>({n:a[0],r:a[1],th:a[2]?"L":"R",role:a[3],py:a[4]||0,p2:a[5]||0})); X.used={}; X.cur=null; X.bfAll=0; X.holdTo=0; X.want=false;
+    X.v26=true; X.pen26=L.map(a=>({n:a[0],r:a[1],th:a[2]?"L":"R",role:a[3],py:a[4]||0,p2:a[5]||0,hv:a[6]||0})); X.used={}; X.cur=null; X.bfAll=0; X.holdTo=0; X.want=false;
     X.th={}; X.pen26.forEach(c=>{ X.th[c.n]=c.th }); if(X.sp.n)X.th[X.sp.n]=bsThrows(X.sp.n);
     X.sp.np=0; X.sp.stamP=Math.round(X.sp.stam*BS26.pPA) });
   // who comes in late, and the intentional walk, are asked only where a choice gains on your assistant (core 94's gate,
@@ -370,7 +383,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   let paNm=null;   // engine 26: the batter, for the platoon
   const thOf=(fs,n)=>{ const X=st.S[fs]; return X.th&&X.th[n]||bsThrows(n) };
   function pa(bat,fs,extra,hx){
-    const e=(bat==="home"?gap:-gap)*BS.edge*100/100, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
+    const e=(bat==="home"?gap26:-gap26)*BS.edge, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
     const x=e-pe+re+(extra||0)+(st.S[fs].v26?bsPlat(bsBats(paNm),thOf(fs,pNow)):0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0)+(bsV26()?BS26R.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:(bsV26()?BS26R.bb:BS.bb)*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 17 (round 94): the plan your lineup suits, through its own outcomes (one-sided: twice the gap's log-odds a point)
