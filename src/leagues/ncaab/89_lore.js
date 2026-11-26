@@ -16,9 +16,9 @@ LEAGUE.lore={yOff:1, boss:"athletic director", college:1,
     "Ohio State":1960,"San Francisco":1956,"La Salle":1954,"Holy Cross":1947,"Oklahoma State":1946,Utah:1944,Stanford:1942,
     Wisconsin:1941,Oregon:1939},
   titleWord:"national title",
-  hof:{name:"National Collegiate Basketball Hall of Fame", wait:10, min:2, max:5, v:3, aa:1},
+  hof:{name:"National Collegiate Basketball Hall of Fame", wait:10, min:2, max:5, v:3.5},
   awards:[
     {id:"poy",name:"Player of the Year",mvp:1,n:4},
     {id:"coy",name:"Coach of the Year",coach:1,n:4}],
-  coach:{keep:0.62, x:0.0, h:9, mid:[], ret:0}
+  coach:{keep:0.55, x:0.0, h:9, mid:[], ret:0}
 };

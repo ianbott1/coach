@@ -14,7 +14,7 @@ LEAGUE.lore={yOff:0, debut:24, boss:"owner", reg:true, sides:1,
     Milwaukee:0,Minnesota:1991,"NY Mets":1986,"NY Yankees":2009,Sacramento:1989,Philadelphia:2008,Pittsburgh:1979,
     "San Diego":0,"San Francisco":2014,Seattle:0,"St. Louis":2011,"Tampa Bay":0,Texas:2023,Toronto:1993,Washington:2019},
   titleWord:"World Series",
-  hof:{name:"Baseball Hall of Fame", wait:5, min:0, max:4, v:9, retire:1, pct:75, years:10},
+  hof:{name:"Baseball Hall of Fame", wait:5, min:0, max:4, v:7.5, retire:1, pct:75, years:10},
   awards:[
     {id:"mvp",name:"Most Valuable Player",mvp:1,side:1,pitW:0.6,n:3,vote:[30,[14,9,8,7,6,5,4,3,2,1]]},
     {id:"cy",name:"Cy Young Award",pos:["SP","SP2","SP3","CL"],side:1,n:3,vote:[30,[7,4,3,2,1]]},

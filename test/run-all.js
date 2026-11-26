@@ -55,6 +55,10 @@ add('long careers: season 20 looks like the real league (all seven)',['longrun.j
 add('rules (epl)',['epl-rules.js','4']); add('screens (epl)',['epl-screens.js']); add('strength predicts the table (epl)',['epl-predict.js']); add('decisions (epl)',['sc-decisions.js']); add('FA Cup (epl)',['epl-cup.js','6']); add('transfer window (epl)',['transfers.js']); add('reads (nhl)',['hk-reads.js']); add('reads (ncaab)',['bb-reads.js','college']); add('reads (nba)',['bb-reads.js','pro']); add('reads (cfb)',['fb-reads.js','college','8000']); add('reads (nfl)',['fb-reads.js','pro','8000']);
 add('players\' stats pages and leaders (all seven)',['stats.js'],{timeout:1800000});
 add('box scores, leaders and awards against the real leagues (all seven)',['boxscores.js'],{fast:true});   // round 2 (stats): ~55s; the award split test/calibrate.js only printed
+// review round 3 (league life, engine 27): the league around you. In short (5 seasons a game, ~3 minutes on 4 cores): the
+// carousel's rate, awards night, five things a season, the screens; in full (16 seasons): Hall of Fame classes and records
+add('the league around you: the carousel, records, awards, owners, in short (all seven)',['league-life.js','--short'],{timeout:900000});
+add('the league around you: Hall of Fame classes and records over 16 seasons (all seven)',['league-life.js'],{long:true,timeout:5400000});
 add('highlights keep the suspense (browser)',['hl-suspense.js'],{timeout:400000});
 add('saves survive the browser closing the database (all seven)',['idb-close.js']);
 add('a backup downloads from inside a career and from the title screen, and reads back (all seven, laptop and phone, browser)',['backup-reach.js'],{fast:true,timeout:900000});

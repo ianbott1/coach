@@ -14,7 +14,7 @@ LEAGUE.lore={yOff:1, debut:19, boss:"chairman", reg:true, lc:1, top:t=>CONF[t]==
     "Blackburn Rovers":1995,"Derby County":1975,"Sheffield Wednesday":1930,"Sheffield United":1898,Portsmouth:1950,
     "Preston North End":1890,"Huddersfield Town":1926,"West Bromwich Albion":1920},
   titleWord:"league title",
-  hof:{name:"Premier League Hall of Fame", wait:1, min:0, max:4, v:9},
+  hof:{name:"Premier League Hall of Fame", wait:1, min:0, max:4, v:7},
   awards:[
     {id:"pots",name:"Player of the Season",mvp:1,n:8},
     {id:"ypots",name:"Young Player of the Season",young:23,n:8},
@@ -22,5 +22,5 @@ LEAGUE.lore={yOff:1, debut:19, boss:"chairman", reg:true, lc:1, top:t=>CONF[t]==
     {id:"glove",name:"Golden Glove",lead:"cs",pos:["GK"]},
     {id:"play",name:"Playmaker of the Season",lead:"ast"},
     {id:"mots",name:"Manager of the Season",coach:1}],
-  coach:{keep:0.95, x:0.30, h:1.0, mid:[[0.2,0.2],[0.4,0.25],[0.6,0.22],[0.8,0.12]], ret:0.01}
+  coach:{keep:0.95, x:0.25, h:1.0, mid:[[0.15,0.25],[0.3,0.3],[0.45,0.3],[0.6,0.28],[0.75,0.2]], ret:0.01}
 };

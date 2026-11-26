@@ -14,7 +14,7 @@ LEAGUE.lore={yOff:1, debut:20, boss:"owner", reg:true,
     "New Orleans":0,"New York":2026,"Oklahoma City":2025,Orlando:0,Philadelphia:1983,Phoenix:0,Portland:1977,Sacramento:1951,
     "San Antonio":2014,Toronto:2019,Utah:0,Washington:1978},
   titleWord:"championship",
-  hof:{name:"Naismith Memorial Basketball Hall of Fame", wait:3, min:1, max:4, v:9, retire:1},
+  hof:{name:"Naismith Memorial Basketball Hall of Fame", wait:3, min:1, max:4, v:7, retire:1},
   awards:[
     {id:"mvp",name:"Most Valuable Player",mvp:1,n:3,vote:[100,[10,7,5,3,1]]},
     {id:"dpoy",name:"Defensive Player of the Year",val:s=>(s.stl||0)*3+(s.blk||0)*3+(s.reb||0)*0.5,n:3,vote:[100,[5,3,1]]},

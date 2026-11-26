@@ -13,7 +13,7 @@ LEAGUE.lore={yOff:1, debut:20, boss:"owner", reg:true,
     "NY Islanders":1983,"NY Rangers":1994,Ottawa:0,Philadelphia:1975,Pittsburgh:2017,"San Jose":0,Seattle:0,"St. Louis":2019,
     "Tampa Bay":2021,Toronto:1967,Utah:0,Vancouver:0,Vegas:2023,Washington:2018,Winnipeg:0},
   titleWord:"Stanley Cup",
-  hof:{name:"Hockey Hall of Fame", wait:3, min:0, max:4, v:9, retire:1},
+  hof:{name:"Hockey Hall of Fame", wait:3, min:0, max:4, v:6.5, retire:1},
   awards:[
     {id:"hart",name:"Hart Trophy",mvp:1,n:3,vote:[194,[10,7,5,3,1]]},
     {id:"norris",name:"Norris Trophy",pos:["D","D2"],n:3,vote:[194,[10,7,5,3,1]]},

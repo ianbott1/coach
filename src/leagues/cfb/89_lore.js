@@ -15,7 +15,7 @@ LEAGUE.lore={yOff:0, boss:"athletic director", college:1,
     Colorado:1990,"Georgia Tech":1990,"Notre Dame":1988,"Penn State":1986,BYU:1984,Pittsburgh:1976,"Michigan State":1966,
     Arkansas:1964,Minnesota:1960,"Ole Miss":1960,Syracuse:1959,Iowa:1958,Maryland:1953,Army:1945,"Texas A&M":1939,TCU:1938,SMU:1935},
   titleWord:"national title",
-  hof:{name:"College Football Hall of Fame", wait:10, min:6, max:16, v:3, aa:1},
+  hof:{name:"College Football Hall of Fame", wait:10, min:8, max:16, v:1.6, aa:1},
   awards:[
     {id:"heis",name:"Heisman Trophy",mvp:1,n:4,vote:[928,[3,2,1]]},
     {id:"coy",name:"Coach of the Year",coach:1,n:3}],
