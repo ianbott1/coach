@@ -416,6 +416,8 @@ function setLivePlan(e,side,plan){
   if(!e||!plan)return;
   // round 108: a change on the bench, "sub:<unit>" (soccer: 0 the back, 1 midfield, 2 up front); it leaves the plan alone
   if(typeof plan==="string"&&plan.indexOf("sub:")===0){ if(typeof e.subNow==="function")e.subNow(side,+plan.slice(4)); return }
+  // round 111: a sport's own live button, "act:<id>" (basketball: a timeout); it leaves the plan alone
+  if(typeof plan==="string"&&plan.indexOf("act:")===0){ if(typeof e.act==="function")e.act(side,plan.slice(4)); return }
   if(e.mode&&typeof e.mode==="object")e.mode[side]=plan;
   // engine 22: the latest word wins. A change after the late call (soccer, hockey) was kept in the mode the late
   // answer had already overruled, so from 65' on it did nothing (measured: Park the bus when level, 0.37 against 0.39)

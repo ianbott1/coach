@@ -30,6 +30,7 @@ function bbEventText(g,e,d){
   if(e.k==="foul"){ const n=bbStar(tm); return {team:tm,tag:e.f>=BB.foulOut-2?"FOULS":"",text:`${n} picks up his ${ordw(e.f)} foul`} }
   if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }
   if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
+  if(e.k==="to")return {team:tm,tag:"TIMEOUT",text:`${e.mine?"Timeout":"Timeout to stop the run"}${e.left!=null?` (${e.left} left)`:""}`};
   if(e.k==="cue")return {team:tm,tag:"",text:pickOf(BB_CUE[e.cue],u).replace("{t}",tm),cue:true};
   return {team:tm,tag:"",text:""};
 }
@@ -116,6 +117,11 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
       <div class="evr"><span class="evk">Your star</span><span class="evv">${dp.f} of ${dp.out}</span></div>
       <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div>
       <div class="evn">${foulRule()}</div></div>` }
+  // round 111: a timeout: how many you have, what one does, and (when the defense is this call's) what they're running
+  if(dp.k==="timeout"||dp.k==="tomine"){
+    return `<div class="evid"><div class="evh">Your timeouts</div>
+      <div class="evr"><span class="evk">${dp.k==="tomine"?"Left after this one":"Left"}</span><span class="evv">${dp.left} of ${BB_GD.timeouts}</span></div>
+      <div class="evn">${timeoutNote()}</div></div>`+(d&&d.T&&(dp.k==="tomine"||dp.withDef)?evidenceHTML(g,my,d,{k:"read"}):"") }
   if(dp.k!=="read"||!d||!d.T)return "";
   const opp=g.home===my?"away":"home", T=d.T[opp], n=Math.max(1,T.n), f=Math.max(1,T.fga);
   const share=Math.round(100*T.tpa/f), scr=(T.pnr/n*2).toFixed(1), paint=(T.paint/n*2).toFixed(1);
@@ -132,6 +138,8 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
     ${firstReadTip()}<div class="evn">League average: ${AV.three}% of shots from three, ${AV.paint} points in the paint, ${AV.pnr} pick-and-rolls ${BB.quarters?"a quarter":"every ten minutes"}. A small sample: a stretch of hot or cold shooting can fool you.</div></div>`;
 }
 
+/* round 111: what a timeout does, said plainly (the rule, not the answer) */
+function timeoutNote(){ return `A run is mostly hot shooting, and most of it fades on its own; a timeout takes away the little that carries into the next stretch, and it's your chance to change the defense. ${BB.quarters?"The end of a quarter stops a run by itself.":"Half-time stops a run by itself."} Keep one for the last possession and you can draw up the final shot; with none left it's a scramble the length of the floor.` }
 /* ---- the run of play ---- */
 function playsHTML(drives,my,g,limit){
   let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
@@ -167,7 +175,7 @@ function liveCallView(){
   const mine=live.ask.mine, theirs=live.ask.theirs, last=live.drives[live.drives.length-1]||null;
   const whose=!live.h2h?"Your call"
     :esc((my===S.myTeam?S.career.name:S.coaches[live.h2h.coach].career.name)+"'s call · "+my);
-  const desc=o=>(dp.k==="read"||dp.k==="prep"||dp.k==="close")&&DEFENSES[o]?DEFENSES[o].d:"";
+  const desc=o=>{ const k=String(o).replace(/^to:/,""); return (dp.k==="read"||dp.k==="prep"||dp.k==="close"||dp.k==="timeout"||dp.k==="tomine")&&DEFENSES[k]?DEFENSES[k].d:"" };
   return `<div class="watchwrap">
     ${liveScoreboard()}
     <div class="callbox">
