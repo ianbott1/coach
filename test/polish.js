@@ -178,5 +178,17 @@ check('asking about a player says what stands in the way (pro basketball)',()=>{
   ok(no>=10&&said===no,`${said} of ${no} "nobody would get him" answers say why (${ex.join(' | ')})`);
 });
 
+// Playtest (college basketball, the offseason): the portal card said a transfer "would back up Bergeron", a graduating
+// senior. The depth chart a transfer would join is next season's: no senior, nobody leaving through the portal.
+check('the portal describes next season\'s depth chart (college basketball)',()=>{
+  const api=load('ncaab'), ev=api.ev; let named=0; const bad=[];
+  for(const team of ['Duke','Gonzaga','Dayton']){ api.newDynasty(team,7,'T'); let n=0; while(api.SEA.phase!=='done'&&n++<600)ev('simAdvance()');
+    api.openOffseason(); const R=api.U.roster[api.S.myTeam]||[]; const leave=new Set(ev('LEAGUE.offseason.portalPreview(U)').filter(e=>e.from===api.S.myTeam).map(e=>e.n));
+    const sr=new Set(R.filter(p=>p&&p.c>=3).map(p=>p.n)); const h=api.view('team').replace(/<[^>]+>/g,' ').replace(/&#39;|&apos;/g,"'");
+    const re=/(?:start over|back up) ([A-Z][^,;·&]*?)(?=[,;·&]|$)/g; let m;
+    while((m=re.exec(h))){ const nm=m[1].trim(); if(nm==='nobody')continue; named++; if(sr.has(nm)||leave.has(nm))bad.push(`${team}: "${m[0]}" (${sr.has(nm)?'a graduating senior':'leaving'})`) } }
+  ok(named>5&&!bad.length,`${named} portal cards name the man a transfer would start over or back up, none of them leaving${bad.length?'; '+[...new Set(bad)].slice(0,3).join('; '):''}`);
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

@@ -137,3 +137,12 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Why: playtest (pro basketball): asking OKC about Luka Arrington (SF 73) said only "Nobody of yours at his position
   would get him."
 - Tested: `node test/polish.js "stands in the way"`: 19 of 19 such answers over eight clubs' rosters say why. MATCH.
+
+## The transfer portal describes next season's depth chart (college basketball)
+- What: "he'd start over X" / "he'd back up X" reads the players at that position who will be there next season: the
+  graduating seniors and your own players likely to leave through the portal are left out, and the rest are ranked by
+  rating (98_offseason_views.js).
+- Why: playtest: the portal card said a transfer "would back up Bergeron", a graduating senior.
+- Tested: `node test/polish.js "portal describes"` (Duke, Gonzaga, Dayton after a season): before, Gonzaga's cards
+  named two graduating seniors ("back up Devonte Coleridge", "start over Keenan Dearborn"); after, 22 cards name a man,
+  none leaving. MATCH.
