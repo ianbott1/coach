@@ -41,6 +41,8 @@ function moodOf(pl,i,team){
   const R=SEA.roster[team], P=POS[i%POS.length].p, backup=i>=POS.length;
   const st=backup?R[i-POS.length]:null, f=formOf(pl,P), ly=lastYear(pl), run=streakOf(team);
   if(backup&&st&&pl.r>=st.r-2)return {t:"wants to start",tone:"no"};
+  // round 111: his morale, where the season keeps one (core 93_morale): the extremes are news, the middle reads as before
+  if(SEA.ppl&&pl.mo!=null&&(pl.mo<38||pl.mo>=82))return {t:moWord(pl.mo),tone:moTone(pl.mo)};
   if(f==="hot")return {t:"flying",tone:"ok"};
   if(ly==="contract"&&run.n>=RUN(3)&&!run.won)return {t:"weighing his future",tone:"no"};
   if(!backup&&run.n>=RUN(3)&&!run.won)return {t:"frustrated",tone:"no"};
@@ -143,6 +145,7 @@ function playerView(){
   const line=(lab,st,you)=>({you:you,c:[lab,String(st.g||0)].concat(cols.map(c=>esc(c[1](st))))});
   let h=back+`<div class="dateline"><h2>${no!=null?"#"+no+" ":""}${esc(p.n)}</h2><span>${esc(F.team)}</span></div>
     <div class="fnote" style="margin-bottom:10px">${esc(pos)}${p.c!=null&&typeof classTag==="function"&&classTag(p.c)?" &middot; "+esc(classTag(p.c)):""} &middot; rating ${p.r}${p.pot>p.r?", ceiling "+p.pot:""}${p.k&&p.k.yrs?` &middot; ${p.k.yrs} year${p.k.yrs===1?"":"s"} left${p.k.sal?" at $"+(Math.round(p.k.sal*10)/10)+"M":""}`:""}${F.i>=POS.length?" &middot; backup":""}</div>`;
+  if(typeof personHTML==="function")h+=personHTML(p,F.team);   // round 111: his character and morale
   if(typeof attrGridHTML==="function")h+=attrGridHTML(p);   // round 87: his attributes
   // this season, and per game where a sport counts that way
   const st=p.st2||blankStats(pos);

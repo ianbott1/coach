@@ -631,6 +631,7 @@ function rebuild(){
   delete U.schedLock;
   SEA.userTeam=S.myTeam;
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
+  SEA.talkLog=S.talks||null;   // round 111: your answers to the people's questions, replayed where they were given (core 93_morale)
   // a save from before Nov 2026 past its first season can't tell this season's promotions and firings from last
   // season's: they're dropped (a lost one is redone in a tap; a stale one fired a coordinator for a whole season)
   if(S.choiceYear!==SEA.year){ if(S.choiceYear!==undefined||(S.history&&S.history.length)){ S.promos={}; S.fires={} } S.choiceYear=SEA.year }
@@ -658,6 +659,8 @@ function rebuild(){
   // chart went back (measured: ten promotions before week 1, none there after a reload)
   { const i=SEA.step; if(!SEA.half)coachMoves().forEach(([tm,P,F])=>{ if(P&&P[i])P[i].forEach(k=>swapDepth(SEA,k,tm)); if(F&&F[i])F[i].forEach(sd=>SEA.fireCoordinator(tm,sd)) }) }
   SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;   // and now, what's chosen now
+  // round 111: a question already answered on the day still to play (the loop answers each when its step is played)
+  if(SEA.ppl&&SEA.ppl.pend&&!SEA.ppl.pend.done){ const T=SEA.ppl.pend, a=S.talks&&S.talks[T.y+":"+T.id]; if(a)applyTalk(SEA,T,a) }
   SEA.plan=plan;
   replayCarousel();
   auditTrophies();
@@ -1340,6 +1343,7 @@ function endSeason(rng,choices,act,seasonTeam){
   LEAGUE.rivals.record(U,SEA);
   if(typeof tdCarry==="function")tdCarry(U);   // round 83: the season's trades into next season's rosters, before the careers are banked
   SEA.bankCareers(U);
+  SEA.bankPeople(U);   // round 111
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
     S.calls=keep;
@@ -1390,7 +1394,7 @@ function endSeason(rng,choices,act,seasonTeam){
   attrSync(U,trainFocus(),true);                              // round 87: the summer's change, spread across each player's attributes
   // a promotion or a firing belongs to its season: kept by step, last season's were replayed into this one on every
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
-  S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null; S.promos={}; S.fires={}; S.choiceYear=U.year;
+  S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null; S.promos={}; S.fires={}; S.choiceYear=U.year; delete S.talks;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
   S.steps=0; rebuild(); S.expNow=expectations(); skipOffDaysNow();   // round 110: the opening day off too
   if(isHotSeat()){
@@ -2114,7 +2118,7 @@ function rosterView(){
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
     const feat=S.featured===i;
-    const tag=p=>`${typeof attrRole==="function"&&attrRole(p)?`<span class="roletag" style="color:var(--vote)">${esc(attrRole(p))}</span> &middot; `:""}${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}`;
+    const tag=p=>`${typeof attrRole==="function"&&attrRole(p)?`<span class="roletag" style="color:var(--vote)">${esc(attrRole(p))}</span> &middot; `:""}${classTag(p.c)}${p.pot>p.r?" &middot; ceiling "+p.pot:" &middot; at ceiling"}${SEA.ppl&&p.mo!=null?` &middot; <span class="motag ${moTone(p.mo)}">${moWord(p.mo)}</span>`:""}`;   // round 111: his morale
     return `<div class="depth ${inj?'out':''}">
       <div class="dpos">${esc(P.p)}</div>
       <div class="dbody">
@@ -2196,7 +2200,7 @@ function teamCardHTML(my,rk,co){
       ${LEAGUE.position?`<div>${GO("group",`<b>${SEA.pts(my)}</b><span>Points</span>`,"The table")}</div>`
         :`<div>${GO("group",`<b>${(()=>{const r=liveConf(my);return LEAGUE.tracksOT&&!LEAGUE.draws?r[0]+"-"+(r[1]-r[2])+"-"+r[2]:r[0]+"-"+r[1]})()}</b><span>${LEAGUE.text.group}</span>`,"The standings")}</div>`}
       <div title="${/Power/.test(LEAGUE.text.rank)?"The power ranking: how strong each team is playing now, not only its record":""}">${GO("rank",`<b>${reveal==="half"?"&mdash;":standTag(my,rk)}</b><span>${LEAGUE.text.rank}</span>`)}</div>
-    </div>${co?`<div class="coachbar">
+    </div>${typeof roomLineHTML==="function"?roomLineHTML(my):""}${co?`<div class="coachbar">
       <div class="cleft"><div class="cname">${GO("coach",esc(co.n),"Your coaching record")}${co.you?' <span class="youtag">YOU</span>':""}</div>
         <div class="cmeta">Head coach &middot; ${coachYear(co)<=1?"first season":"year "+coachYear(co)}
         &middot; coaching ${coachGrade(co.q)}</div></div>
@@ -2478,8 +2482,9 @@ function attentionHTML(my){
       b:`${st[my].n} &mdash; ${coordGrade(st[my].q)}. ${st[my].q<=-25?"One of the weakest at the job in the league.":`You're ${recStr(my)}, and he isn't good enough to be spared it.`}
         An interim would be replacement level; you'd hire properly in the offseason.`});
   });
-  if(!out.length)return "";
-  return `<div class="grouphead">Needs a decision</div>`+
+  const tk=typeof talkHTML==="function"?talkHTML(my):"";   // round 111: one of your players, or the press (core 93_morale)
+  if(!out.length)return tk?`<div class="grouphead">Needs a decision</div>`+tk:"";
+  return `<div class="grouphead">Needs a decision</div>`+tk+
     out.slice(0,3).map(x=>`<div class="attn">
       <div class="attnmain"><div class="fname">${esc(x.h)}</div>
       <div class="cdesc">${x.b}</div></div>
@@ -2824,6 +2829,7 @@ function weekNews(W){
       b:`${hz[0].line||""}${hz[1]?" \u00b7 "+hz[1].n+" ("+hz[1].t+") is closest.":""}`});
   }
   if(typeof milestoneNews==="function")milestoneNews(my).forEach(x=>items.push(x));
+  if(typeof peopleNews==="function")peopleNews(my).forEach(x=>items.push(x));   // round 111: your dressing room
   items.sort((x,y)=>(y.p||0)-(x.p||0));
   return items;
 }
@@ -4033,6 +4039,7 @@ function render0(){
   if(typeof bindTrades==="function")bindTrades();
   document.querySelectorAll("[data-role]").forEach(b=>b.onclick=(ev)=>{ ev.stopPropagation(); const i=+b.dataset.role;
     if(ROLE_SEL===null){ ROLE_SEL=i; render() } else if(ROLE_SEL===i){ ROLE_SEL=null; render() } else { const a=ROLE_SEL; ROLE_SEL=null; swapRoles(a,i) } });
+  document.querySelectorAll("[data-talk]").forEach(b=>b.onclick=()=>{ if(typeof answerTalk==="function")answerTalk(b.dataset.talk) });   // round 111
   document.querySelectorAll("[data-promo]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); promote(+b.dataset.promo);});
   document.querySelectorAll("[data-train]").forEach(b=>b.onclick=()=>{ const [g,k]=b.dataset.train.split("|"); attrTrainSet(g,k); save(); render() });   // round 87: training focus

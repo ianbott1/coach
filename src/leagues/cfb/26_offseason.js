@@ -83,7 +83,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff,board){
       const base=[6.2,4.0,2.2][pl.c];
       const feat=(featured!==undefined&&featured!==null&&featured===i)?3.8:0;
       const side=(i%POS.length)<5 ? (staff?staff.oc:0) : (staff?staff.dc:0);
-      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0),3.0);
+      let g=rng.gauss(base+coach.q*0.035+devMod+(pl.up||0)+feat+(side||0)+(typeof moraleDev==="function"?moraleDev(pl):0),3.0);   // round 111: a happy, professional player grows a touch faster
       pl.r=Math.round(Math.max(30,Math.min(pl.pot,pl.r+g)));
       pl.peak=Math.max(pl.peak||0,pl.r);
       pl.c++;
