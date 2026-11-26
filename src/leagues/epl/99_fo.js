@@ -6,14 +6,15 @@
 /* ---- the club's books: a card (the summer's window, the January window, the club page) ---- */
 const pct27=x=>Math.round(x*100)+"%";
 function finCard27(u,t,d,opts){
-  opts=opts||{}; d=d||CONF[t]; const R=opts.R||u.roster[t]||[], r=rev27(u,t,d,opts.pos); if(!r)return "";
-  const sales=opts.sales!=null?opts.sales:0, sq=sq27(u,t,d), cost=cost27(R,sq), ratio=cost/Math.max(1,r.tot+sales), am=amort27(R);
+  opts=opts||{}; d=d||CONF[t]; const R=opts.R||u.roster[t]||[], r=rev27(u,t,d,opts.pos,opts.next); if(!r)return "";
+  const rc=opts.next&&down27(u,t)?M27.relWage:1;   // follow-up: going down, the relegation clauses cut the wages as the drop is made
+  const sales=opts.sales!=null?opts.sales:0, sq=sq27(u,t,d), am=amort27(R), cost=rc===1?cost27(R,sq):Math.round(sq*(payroll(R)*rc+am)*10)/10, ratio=cost/Math.max(1,r.tot+sales);
   const line=ratio>M27.red?"over the red line: points off on 1 March":ratio>M27.green?"over the 85% line: a levy, no points":"inside the rule";
   const parts=[["Television (equal share)",d==="PL"?r.tv:null],["Merit, "+(opts.pos?ordinal(opts.pos):"by where you're expected to finish"),d==="PL"?r.merit:null],["Facility fees",d==="PL"?r.fac:null],
     ["Television and solidarity",d==="CH"?r.tv:null],["Parachute payment",r.chute||null],["Matchday, commercial and the rest",r.own]].filter(x=>x[1]!=null);
   return `<div class="card" style="padding:10px 12px;margin:8px 0"><div class="olab">${esc(opts.title||"The books")}</div>
     <div style="margin:4px 0">Revenue ${money(r.tot)} a year: ${parts.map(([l,v])=>`${esc(l)} ${money(v)}`).join(" &middot; ")}.</div>
-    <div style="margin:4px 0">Squad costs ${money(cost)}: the squad's wages (the twelve here are ${money(payroll(R))} of them)${am?`, and ${money(sq*am)} of transfer fees written off this year`:", no transfer fees to write off"}.</div>
+    <div style="margin:4px 0">Squad costs ${money(cost)}: the squad's wages (the twelve here are ${money(payroll(R)*rc)} of them${rc<1?", after the relegation clauses":""})${am?`, and ${money(sq*am)} of transfer fees written off this year`:", no transfer fees to write off"}.</div>
     <div style="margin:4px 0"><b>Squad cost ratio ${pct27(ratio)}</b>${sales?` (revenue plus ${money(sales)} profit on sales)`:""}: ${esc(line)}. The board's own line is ${pct27(M27.board[d])}.</div>
     <div class="fnote">The ${esc(LEAGUE.conf.names[d])}'s rule: squad costs up to 85% of revenue; over it a levy, and over 115% on 1 March six points off and one more for every &pound;6.5M over.</div></div>` }
 
@@ -23,11 +24,11 @@ function tNeg27(k){ const P=T27(); P.neg=P.neg||{}; return P.neg[k]=P.neg[k]||{}
 function tWindowHTML27(P){
   const my=S.myTeam, H=nflHumans(), d=tNextConf(my), pay=nflPlannedPay();
   const offers=tOffers(U,my,H), sales=P.sales||[], salesNow=sales.reduce((a,o)=>a+(o.fee>=T27_INST?o.fee-2*Math.round(o.fee*0.3*10)/10:o.fee),0);
-  const kitty=(P.kitty!=null?P.kitty:(kitty27(U,my,d)||0))+salesNow;
+  const kitty=(P.kitty!=null?P.kitty:(kitty27(U,my,d,true)||0))+salesNow;
   const mkt=tMarket(U,my,H), byKey={}; mkt.forEach(x=>byKey[x.key]=x);
   const bids=(P.bids||[]).filter(k=>byKey[k]), BT=P.bidTerms||{};
   let h="";
-  if(ledgerDiv(d))h+=finCard27(U,my,d,{title:`The books for ${SEA.year+1}-${String(SEA.year+2).slice(2)}`});
+  if(ledgerDiv(d))h+=finCard27(U,my,d,{title:`The books for ${SEA.year+1}-${String(SEA.year+2).slice(2)}`,next:true});
   const owe=owed27(U,my,U.year), due=due27(U,my,U.year), levy=(U.levy&&U.levy[my])||0, carry=(U.kitty&&U.kitty[my])||0;
   h+=`<div class="budgetleft done">Money for fees ${money(kitty)} &middot; wage room ${money(Math.max(0,LEAGUE.budgetOf(U,my)-pay))} a year</div>
     <div class="note">${ledgerDiv(d)?`The board gives you ${pct27(M27.kit[d])} of revenue for fees${d==="PL"&&CONF[my]!=="PL"?", half as much again in a promoted club's first summer":""}`:"The money for fees comes from the wage bill and earnings"}${carry?`, plus ${money(carry)} saved from last summer`:""}${owe?`, less ${money(owe)} of instalments due on earlier deals`:""}${due?`, plus ${money(due)} due to you from earlier sales`:""}${levy?`, less a ${money(levy)} levy for last season's squad costs`:""}${salesNow?`, plus ${money(salesNow)} from sales now`:""}. A fee of ${money(T27_INST)} or more can go in instalments: 40% now, the rest over the next two summers.</div>`;

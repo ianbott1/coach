@@ -532,7 +532,7 @@ LEAGUE.offseason={
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
     if(fo27()&&typeof SEA!=="undefined"&&SEA&&SEA.phase==="done")close27(u,SEA);   // engine 27: the season's books, before the kitty is read
-    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null, bids:[], sales:[], kitty:(fo27()&&kitty27(u,t,tNextConf(t))!=null)?kitty27(u,t,tNextConf(t)):tKitty(u,t,payroll(R))}};
+    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null, bids:[], sales:[], kitty:(fo27()&&kitty27(u,t,tNextConf(t),true)!=null)?kitty27(u,t,tNextConf(t),true):tKitty(u,t,payroll(R))}};
   },
   choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null, bids:P.bids||[], bidTerms:P.bidTerms||{}, sales:P.sales||[], kitty:P.kitty, loans:P.loans||[], loansIn:P.loansIn||[]}},
   faStyles:{contend:{l:"Spend to contend",d:"Free transfers: the best available, whatever their age. Uses nearly all the wage budget."},

@@ -49,14 +49,22 @@ function expPos27(u,t,d){ const T=NAMES.filter(x=>(u.conf&&u.conf[x]||CONF[x])==
 function stZ27(u,t,d){ const O=M27.own[d]; if(!O)return 0; return Math.max(-0.25,Math.min(1.15,((u.program[t]||1500)-O[2])/(O[3]-O[2]))) }
 /* the parachute this coming season: by seasons since the drop */
 function chute27(u,t){ const P=u.para&&u.para[t]; if(!P)return 0; const k=P.k||0; if(k>2||(k===2&&!P.long))return 0; return Math.round(M27.eq*M27.chute[k]*10)/10 }
-/* a season's revenue, in parts (null below the Championship) */
-function rev27(u,t,d,pos){
+/* next season's parachute, read in the summer before the drop and rise are made (follow-up, soccer-spread): your
+   summer window opens before nflRun moves anyone, so chute27 there read last season's clock and a club just
+   relegated got none. This reads the moves already decided (tNextConf) and the clock as nflRun will turn it. */
+function pend27(u){ return typeof SEA!=="undefined"&&!!SEA&&SEA.phase==="done"&&!!SEA.po&&!!SEA.po.PL&&!(u.moved&&u.moved.year===SEA.year) }
+function chuteNext27(u,t){ if(!pend27(u)||typeof tNextConf!=="function")return chute27(u,t); const nd=tNextConf(t);
+  if(nd==="PL")return 0; if(CONF[t]==="PL")return Math.round(M27.eq*M27.chute[0]*10)/10;   // going down: the first year's
+  const P=u.para&&u.para[t]; if(!P)return 0; const k=(P.k||0)+1; if(k>2||(k===2&&!P.long))return 0; return Math.round(M27.eq*M27.chute[k]*10)/10 }
+const down27=(u,t)=>pend27(u)&&CONF[t]==="PL"&&typeof tNextConf==="function"&&tNextConf(t)!=="PL";
+/* a season's revenue, in parts (null below the Championship); next: next season's, read before the summer's moves */
+function rev27(u,t,d,pos,next){
   d=d||CONF[t]; if(!ledgerDiv(d))return null;
   const z=stZ27(u,t,d), O=M27.own[d], own=Math.round(O[0]*Math.exp(O[1]*z)*10)/10;
   if(d==="PL"){ const p=pos||expPos27(u,t,d), zf=Math.max(0,Math.min(1,z));
     const tv=M27.eq, merit=Math.round(M27.merit*(21-Math.min(20,p))*10)/10, fac=Math.round((M27.fac[0]+(M27.fac[1]-M27.fac[0])*zf)*10)/10;
     return {tv:tv, merit:merit, fac:fac, own:own, chute:0, tot:Math.round((tv+merit+fac+own)*10)/10} }
-  const tv=M27.ch, ch=chute27(u,t);
+  const tv=M27.ch, ch=next?chuteNext27(u,t):chute27(u,t);
   return {tv:tv, merit:0, fac:0, own:own, chute:ch, tot:Math.round((tv+own+ch)*10)/10} }
 /* the amortisation the twelve carry: each fee spread over its contract, five years at most */
 const amort27=R=>R.reduce((s,p)=>s+(p&&p.am&&(p.amY||0)>0?p.am:0),0);
@@ -79,7 +87,7 @@ function budget27(u,t,d){ d=d||CONF[t]; const r=rev27(u,t,d); if(!r)return null;
 const prom27=(u,t)=>CONF[t]!=="PL"||!!(u.moved&&u.moved.year===u.year&&u.moved.moves&&u.moved.moves[t]==="PL");
 /* the summer's money for fees: a share of revenue (a promoted club's board finds more, to stay up), less instalments
    still owed and any levy, plus what's due from sales made by instalments and half of last summer's leftover */
-function kitty27(u,t,d){ d=d||CONF[t]; const r=rev27(u,t,d); if(!r)return null;
+function kitty27(u,t,d,next){ d=d||CONF[t]; const r=rev27(u,t,d,null,next); if(!r)return null;
   const prom=d==="PL"&&prom27(u,t);
   const owe=owed27(u,t,u.year), due=due27(u,t,u.year), levy=(u.levy&&u.levy[t])||0;   // instalments made last summer fall due now
   return Math.max(0,Math.round((r.tot*M27.kit[d]*(prom?1.5:1)-owe+due-levy+((u.kitty&&u.kitty[t])||0))*10)/10) }
@@ -161,6 +169,16 @@ const mustSell27=(u,t)=>ledgerDiv(CONF[t])&&payroll(u.roster[t])>keep27(u,t)+0.0
 const AMB27=6, AMB27_PROM=4;   // in the top flight a man more than 6 above a buying club's level (eloToRating of its stature) won't
                                  // go there; a promoted club's money talks, four more (the Championship's owners pay over the odds
                                  // for a promotion push: its wages were 93% of revenue, so it isn't held)
+/* round 3 (soccer-spread): a top-flight club buys in its own division, abroad, or from a club just relegated (whose men
+   go on top-flight wages, with clauses that free them); not from the rest of the Championship and League One. Buying
+   there, the poorer top-flight clubs and the promoted ones filled their sides with the Championship's best men for
+   small fees, the bottom of the top flight rose about 8 points in six summers (Hull's starters 53, then the bottom
+   club's 63), the level re-centred each summer (core 20_engine, recentre26) took that rise back off everyone, the stars
+   included, and the starters' spread narrowed 10.4 to 7.9 (four careers: 7.7-8.6), the 99th percentile 92 to 87-89. With
+   the rule, 8.4-9.2 and 88-89 (test/longrun.js --short: the 99th percentile -0.3 late against early, from -3.3). The
+   Premier League's buys from the Football League are a small part of its spending, much of it from relegated clubs
+   (Deloitte, cited at the top of this file: the Championship's whole summer was £240M) */
+const downNow27=(u,t)=>!!(u.para&&u.para[t]&&u.para[t].y===u.year);
 const M27_BUYS=[3,2,1];   // a summer's fee signings for the twelve, at most, by tier: a Championship club's market is smaller (its clubs spent
                           // £240M gross in summer 2025 to the top flight's £3.0bn: Deloitte, cited at the top of this file)
 function market27(u,rep,pool,leave,prog,humans,rng){
@@ -175,6 +193,7 @@ function market27(u,rep,pool,leave,prog,humans,rng){
     order.forEach(B=>{
       const R=u.roster[B], dB=CONF[B], cap=budgetOf(u,B), top=dB==="PL"?eloToRating(u.program[B]||1500)+AMB27+(prom27(u,B)?AMB27_PROM:0):99; let best=null;
       NAMES.forEach(Sl=>{ const S2=u.roster[Sl]; if(Sl===B||H.has(Sl)||!S2)return; const dt=tierOf(Sl)-tierOf(B); if(dt<0||dt>2)return;
+        if(dt>0&&tierOf(B)===1&&!downNow27(u,Sl))return;                 // the top flight buys from a club just relegated, not the rest below (above)
         if(!tWilling(u,B,Sl,prog).ok)return;
         S2.forEach((p,j)=>{ if(!p||p.keep||!p.k||p.loan||(p.age-age26(p))>31)return;
           if(p.r>top)return;                                               // a man well above the club's level wants a bigger stage

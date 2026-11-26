@@ -122,16 +122,18 @@ ok(A.tdState().open&&A.LEAGUE.trade.tab()==='Transfers','January: the window is 
   ok(fin[my]&&fin[my].sales>=((sold&&sold.fee)||0)-0.1-0.0,'the sale counts in the rule\'s revenue (profit on sales)'); }
   const W=txt(A.tWindowHTML(A.S.off.picks));
   ok(['The books','Squad cost ratio','Money for fees','Bids for your players','Deals agreed','The market','Loans'].every(k=>W.indexOf(k)>=0),'the summer screen renders: the books, money for fees, bids, deals, the market, loans');
-  // next season's division: the club may have gone down (round 3, soccer-spread: then the books are the Championship's;
-  // the summer window comes before the drop is made, so its books don't show the parachute yet: see soccer-spread.md)
+  // next season's division: the club may have gone down (round 3, soccer-spread: then the books are the Championship's,
+  // with the first parachute payment and the relegation clauses, though the window opens before the drop is made)
   const down=/Relegated/.test(A.SEA.seasonResult(my)||'');
-  ok(!down?/Television \(equal share\) £96\.9M/.test(W)&&/Merit, by where you're expected to finish/.test(W):/Television and solidarity £11(\.0)?M/.test(W)&&!/equal share/.test(W),
-    !down?'next season\'s books: the equal share, merit by where the club is expected to finish':`next season's books, relegated (${A.SEA.seasonResult(my)}): the Championship's money`);
+  ok(!down?/Television \(equal share\) £96\.9M/.test(W)&&/Merit, by where you're expected to finish/.test(W):/Television and solidarity £11(\.0)?M/.test(W)&&/Parachute payment £53\.3M/.test(W)&&/after the relegation clauses/.test(W)&&!/equal share/.test(W),
+    !down?'next season\'s books: the equal share, merit by where the club is expected to finish':`next season's books, relegated (${A.SEA.seasonResult(my)}): the Championship's money, the first parachute (£53.3M), wages cut by the relegation clauses`);
+  if(down){ const k1=A.kitty27(A.U,my,'CH',true), k0=A.kitty27(A.U,my,'CH');
+    ok(k1>0&&Math.abs(k1-k0-Math.min(k1,53.3*A.M27.kit.CH))<0.15,`the summer's money for fees counts the parachute: £${f1(k1)}M (£${f1(k0)}M without; 20% of £53.3M is £10.7M)`) }
 
 if(!process.env.FO_QUICK){
 /* 4. the long run: two careers, five seasons, the league's money against the real one */
 console.log('Five seasons, two careers');
-const S={rev:[],ratioPL:[],ratioCH:[],gross:[],rich:[],net:[],chShare:[],prom:[],plAvg:[],ded:[],jan:[],loans:[],loanUp:0,loanAll:0,big:[]};
+const S={rev:[],ratioPL:[],ratioCH:[],gross:[],rich:[],net:[],chShare:[],prom:[],plAvg:[],ded:[],jan:[],loans:[],loanUp:0,loanAll:0,big:[],below:0,belowBad:0};
 for(const [team,seed] of [['Brentford',11],['Arsenal',7]]){
   const C=load({file,expose:X}); C.newDynasty(team,seed,'T');
   for(let y=0;y<5;y++){
@@ -149,6 +151,7 @@ for(const [team,seed] of [['Brentford',11],['Arsenal',7]]){
     S.gross.push(gross*C.SQ27); S.rich.push(sum(rich.map(t=>by[t]||0))/Math.max(1,gross)); S.big.push(sum(BIG.map(t=>by[t]||0))/Math.max(1,gross));
     S.net.push((gross-sum(M.filter(x=>x.dFrom==='PL').map(x=>x.fee)))/Math.max(1,gross));
     S.chShare.push(sum(M.filter(x=>x.dTo==='CH').map(x=>x.fee))/Math.max(1,gross));
+    pl.filter(x=>x.from&&x.dFrom!=='PL').forEach(x=>{ S.below++; if(!(C.U.para&&C.U.para[x.from]&&C.U.para[x.from].y===C.U.year-1))S.belowBad++ });
     const prom=nowPL.filter(t=>C.U.moved&&C.U.moved.moves&&C.U.moved.moves[t]==='PL'&&C.S.myTeam!==t); prom.forEach(t=>S.prom.push(by[t]||0)); S.plAvg.push(gross/20);
     ((rep&&rep.loans)||[]).filter(l=>l.to&&l.from).forEach(l=>{ S.loanAll++; if(C.LEAGUE&&C.CONF[l.to]!==C.CONF[l.from])S.loanUp++ });
   }
@@ -164,6 +167,7 @@ ok(mean(S.chShare)>=0.04&&mean(S.chShare)<=0.16,`the Championship spends ${Math.
 ok(S.prom.length&&mean(S.prom)>=0.5*mean(S.plAvg),`promoted clubs spend to stay up: £${f1(mean(S.prom))}M each against the top flight's £${f1(mean(S.plAvg))}M (real 2025: £98M-£162M against £150M)`);
 ok(mean(S.ded)<=2,`points deductions: ${sum(S.ded)} in ${S.ded.length} seasons (Premier League and Championship)`);
 ok(mean(S.jan)>=200&&mean(S.jan)<=700,`January £${Math.round(mean(S.jan))}M in squad terms (real £372M-£400M)`);
+ok(S.belowBad===0,`the top flight buys from below only from clubs just relegated: ${S.below} such buys, ${S.belowBad} from elsewhere (round 3, soccer-spread)`);
 ok(S.loanAll>0&&S.loanUp/S.loanAll>=0.9,`loans: ${S.loanAll}, ${S.loanUp} of them down the pyramid`);
 }
 ok(A.LOAN_DEV.start>A.LOAN_DEV.bench&&A.LOAN_DEV.bench>0,'a loan\'s minutes count toward a young man\'s growth (more as a starter)');

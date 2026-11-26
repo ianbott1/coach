@@ -95,6 +95,44 @@ times the goals of games between clubs within 15 points.
   money for fees too.
 - Games: soccer. Files: `28_money.js`, `test/soccer-fo.js`.
 
+## Follow-up (engine 27)
+### The parachute in the summer's books
+- What: a relegated club's summer window (`tWindowHTML27`, the summer screen's money for fees in `LEAGUE.offseason.open`)
+  now reads next season's money with the drop already decided: `rev27`/`kitty27` take `next`, and while the season is
+  done but the moves aren't made (`pend27`), `chuteNext27` reads the club's next division (`tNextConf`) and the
+  parachute clock a summer on: a club going down gets the first payment (£53.3M, 55% of the £96.9M equal share), one
+  in its second or third year the next, one going up none. The books also show the twelve's wages after the
+  relegation clauses (60%), as they'll be paid.
+- Why: the window is drawn before `nflRun` makes the drop, so the books and the money for fees left the parachute out
+  (section 4's Not yet).
+- Measured: soccer-fo's relegated Brentford: "Parachute payment £53.3M", money for fees £32.3M (£21.6M without: 20%
+  of £53.3M added).
+- Tested: `test/soccer-fo.js` (new: the parachute and the wages after the clauses in next season's books; the money
+  for fees counts it).
+- Files: `28_money.js`, `99_fo.js`, `26_offseason.js`, `test/soccer-fo.js`.
+
+### The top flight's spread (section 2's Not yet)
+- What: the computer's market (`market27`) no longer lets a top-flight club buy from the Championship or League One,
+  except from a club relegated this summer (`downNow27`): its men are on top-flight wages, with clauses that free
+  them. Buys in the division and abroad are as before.
+- Why: not the stars spreading among the rich. In one career's summers the moves of 84+ men went to the biggest clubs (ranks 1-3)
+  under engine 27 too. The narrowing was from below: the poorer and promoted top-flight clubs bought the Championship's
+  best men for small fees and the bottom of the top flight rose about 8 points in six summers (bottom club's starters
+  53 to 63). The summer's re-centre (core 20_engine `recentre26`) holds the division's mean, so it took the rise back
+  off everyone, the stars included: the mean came out of each engine-27 summer about 73 against the opening 70.8
+  (engine 26: 70-72), and stars of 25-29 lost 2-3 points a summer. Tried, four careers each (starters' sd and 99th
+  percentile after six seasons; opening 10.4 and 92): as it was 7.7-8.6, 87-89; no computer market 8.2-8.7; big clubs
+  buying to their keep line 7.9-8.3; promoted clubs without the extra money 8.5-9.1; one buy from below a summer
+  8.6-8.7; buys from below only of men 23 and under 8.2-9.3; top flight buys in the top flight only 9.5-10.0, 89-92;
+  from below only from clubs just relegated 8.4-9.2, 88-89 (chosen: the Premier League does buy relegated clubs' men).
+- Measured: `test/longrun.js epl --short` all bands in (the starters' 99th percentile -0.3 late against early, from
+  -3.3; spread 9.6 to 9.3). soccer-fo: 98 buys from below in ten summers, all from clubs just relegated; net spend 44%
+  of gross, the six richest 49%, the Championship 10%, promoted clubs £22.8M each. soccer-spread: champions 91.1
+  points (was 87.3; real 89.7), bottom 24.2, 2.89 goals a game, 25.1% draws.
+- Not yet: the spread still narrows a little over a long career (8.4-9.2 at six seasons against engine 26's 9.5); the
+  rest is the re-centre holding a mean that the market lifts. Not run: `longrun --careers 4 --seasons 12`.
+- Files: `28_money.js`, `test/soccer-fo.js`.
+
 ## Sources (read November 2026)
 - Premier League results 2010-11 to 2024-25: https://github.com/openfootball/football.json
 - The Championship's goals a game, 2024-25: futbol24.com's season statistics, as src/soccer/55_squad.js cites.
