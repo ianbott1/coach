@@ -30,7 +30,7 @@ const people=api=>{ const E=api.SEA, P=E.ppl; if(!P)return null;
   const k=A.wpScale('balanced')*4/Math.LN10, bound=(A.MO_WP()+A.FAN_WP())*k+1e-9;
   const step=()=>{ A.doAdvance(); let g=0; while(A.live&&!A.live.done&&g++<4000){ A.live.ask?A.answerLive(A.live.ask.dp.opts[A.live.ask.dp.opts.length-1][0]):A.liveTick() } };
   const reload=async(when)=>{ const B=mk()(file); await B.loadSave(JSON.stringify(A.S)); const a=people(A), b=people(B); reloads++;
-    const d=Object.keys(a||{}).filter(x=>h(a[x])!==h(b&&b[x])); ok(!d.length,`${LG} ${when}: a reload differs in ${d.join(', ')}`) };
+    const d=Object.keys(a||{}).filter(x=>h(a[x])!==h(b&&b[x])); ok(!d.length,`${LG} ${when}: a reload differs in ${d.join(', ')}`+(d.indexOf('pend')>=0?` (${JSON.stringify(a.pend)} here, ${JSON.stringify(b&&b.pend)} reloaded, at step ${A.SEA.step}, ${A.SEA.phase})`:'')) };
   for(let yr=0;yr<2;yr++){
     let g=0, half=false;
     const carried=yr===1?A.SEA.roster[A.S.myTeam].filter(p=>p&&p.moC!=null).length:0;
@@ -43,7 +43,7 @@ const people=api=>{ const E=api.SEA, P=E.ppl; if(!P)return null;
         const html=A.talkHTML(A.S.myTeam); ok(/data-talk=/.test(html)&&/Needs a decision|attn talk/.test(html),`${LG}: an open question isn't on the team page`);
         if(n%4===3){ assist++;   // left to the assistant: nobody's morale moves for it (his answer, as the step opens)
           const before=h(E.roster[A.S.myTeam].map(p=>p&&[p.mo,p.tr])), fb=P.fan[A.S.myTeam], cb=P.chem[A.S.myTeam];
-          A.applyTalk(E,T,A.TALK_DEF()[T.k]);
+          const said0=P.said; A.applyTalk(E,T,A.TALK_DEF()[T.k]); T.done=null; P.said=said0;   // measured, then left for the game to settle as it would
           ok(h(E.roster[A.S.myTeam].map(p=>p&&[p.mo,p.tr]))===before&&P.fan[A.S.myTeam]===fb&&P.chem[A.S.myTeam]===cb,`${LG}: your assistant's answer to ${T.k} moved someone`);
           step(); n++; continue }
         const o=A.talkOpts(T), a=o[(n>>2)%o.length][0]; n++; mine++;

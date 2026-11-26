@@ -97,6 +97,7 @@ function moraleDev(p){
 function pplNote(sea,r){
   if(!sea.ppl||!r||!r.home)return;
   const sh=r.shift||0, ew=r.winner?(sea.elo[r.winner]-sh):0, el=r.loser?(sea.elo[r.loser]+sh):0;
+  peopleMet(sea,r);
   sea.ppl.q.push({h:r.home,a:r.away,w:r.winner||null,d:!!r.draw,m:r.margin||0,cup:!!r.cup,po:sea.phase!=="week",up:!!(r.winner&&ew<el-60)});
   // two stars meeting: your best player against theirs, game by game (a rivalry between players)
   const my=sea.userTeam; if(!my||(r.home!==my&&r.away!==my))return;
@@ -187,7 +188,7 @@ function talkNext(sea,games,phase){
   const streak=run.n===RN(3)||run.n===RN(6);
   const press=g.w&&(g.po||streak&&!g.cup||riv&&talkGate(sea,"pressr",opp,25)||g.up&&talkGate(sea,"pressu",opp,20));
   const doPress=()=>mk("press",{won:won,lost:lost,opp:opp,po:!!g.po,up:!!g.up,run:streak?run.n:0,riv:riv,m:g.m});
-  if(press&&!reg){ doPress(); return }
+  if(press&&!reg){ if((P.ppress||0)<2){ P.ppress=(P.ppress||0)+1; doPress() } return }   // two in a play-off run at most
   if(!reg)return;
   const hurt=new Set(sea.talent.active(my).map(e=>e.idx)), live=R.map((p,i)=>({p:p,i:i})).filter(x=>x.p&&!hurt.has(x.i));
   // a trade request (college: thinking about the portal): miserable, and not the kind to stay out of loyalty
@@ -207,7 +208,8 @@ function talkNext(sea,games,phase){
   if(lost&&run.n>=RN(3)&&P.chem[my]<58&&once("rift","")){ const S1=R.filter(Boolean).sort((a,b)=>(b.r+traitsOf(b).am)-(a.r+traitsOf(a).am))[0];
     const S2=R.filter(p=>p&&p!==S1).sort((a,b)=>traitsOf(a).te-traitsOf(b).te)[0];
     if(S1&&S2){ mk("rift",{n:S1.n,n2:S2.n}); return } }
-  if(press){ doPress(); return }
+  // the press in the season: a few, so the room is heard (2 in the NFL, 3 in the NBA and the NHL, 5 in baseball)
+  if(press&&(P.press||0)<Math.max(2,Math.round(P.G/30))){ P.press=(P.press||0)+1; doPress(); return }
   // contract talk: a leading player in his last year, happy enough to want to stay
   if(!pplCollege()){ const top=R.slice(0,POS.length).filter(Boolean).sort((a,b)=>b.r-a.r).slice(0,3);
     const ct=top.filter(p=>p.k&&p.k.yrs<=1&&p.mo>=55&&traitsOf(p).am>=11&&once("contract",p.n))[0];
@@ -337,8 +339,18 @@ const TALK_STAFF={
     rift:"Whether a meeting helps depends, I suspect, on who's in the room to lead it.",contract:"A professional will wait. Others, in my experience, hear 'no'.",
     mentor:"Some veterans enjoy it. Others would rather mind their own game.",captain:"An armband changes a man, sometimes. Not always for the better."}
 };
+/* the same three leanings from a realistic staff room (S.staffReal): plain words, still never the answer */
+const TALK_STAFF_REAL={
+  bears:{role:"Give him more of it. Players like that want the weight.",press:"Be bold. Tell them what we're going to do.",trade:"Nobody walks out on this group. I'd tell him that.",bench:"Make him earn it back. That's how it works here.",
+    minutes:"I'd start him and see what he's got.",rift:"Back your best player. The room follows him.",contract:"Let him sweat a little. Then pay him.",mentor:"Throw him in. He'll learn faster playing.",captain:"Give it to him now. Make it a statement."},
+  pearl:{role:"He wants to help. I'd hear him out.",press:"The players worked hard for that. I'd give them the credit.",trade:"He might just need someone to listen to him.",bench:"He deserves to hear the reason from you.",
+    minutes:"He's been patient. I'd give him something to hold on to.",rift:"Get them in one room and talk it through.",contract:"Tell him we want him. Talks in the summer.",mentor:"A good veteran beside him would help.",captain:"The room already looks to him. I'd make it official."},
+  capy:{role:"Some players are better for being asked to share. Some resent it.",press:"I'd say as little as possible.",trade:"I'd want to know the player before promising anything.",bench:"Depends on the man. Some take a challenge, some take offence.",
+    minutes:"A promise is only as good as the date it's kept by.",rift:"A meeting helps if there's someone in the room to lead it.",contract:"A professional will wait. Others hear no.",
+    mentor:"Some veterans like it. Others would rather mind their own game.",captain:"An armband changes some players. Not always for the better."}
+};
 function talkStaff(T){
-  const order=["capy","pearl","bears"], who=order[strHash(T.y+"|"+T.id+"|"+T.k)%3], line=TALK_STAFF[who]&&TALK_STAFF[who][T.k];
+  const order=["capy","pearl","bears"], who=order[strHash(T.y+"|"+T.id+"|"+T.k)%3], line=(staffReal()?TALK_STAFF_REAL:TALK_STAFF)[who]&&(staffReal()?TALK_STAFF_REAL:TALK_STAFF)[who][T.k];
   if(!line||typeof STAFF==="undefined"||!STAFF[who])return "";
   return `<div class="say tight"><span class="facewrap ${who}">${staffFaceOf(who)}</span><div class="saybody"><span class="sayname">${esc(staffNameOf(who))}</span><span class="saytext">${esc(staffLineOf(who,line))}</span></div></div>` }
 /* the card in "Needs a decision": the question, or how your answer landed */
@@ -387,10 +399,9 @@ const STAFF_ROLES={
 };
 function staffReal(){ try{ if(S&&S.staffReal!=null)return !!S.staffReal }catch(e){} return !pplCollege() }
 function staffPerson(who){
-  const team=(typeof S!=="undefined"&&S&&S.myTeam)||"", h=strHash("staff|"+who+"|"+team);
+  const sp=(typeof SPORT!=="undefined"&&SPORT.id)||"football", team=(typeof S!=="undefined"&&S&&S.myTeam)||"", h=strHash("staff|"+who+"|"+team+"|"+sp);
   const F=["Mike","Dave","Chris","Brian","Kevin","Paula","Tom","Matt","Dana","Ryan","Marcus","Andre","Luis","Sean","Pat","Greg","Jen","Wes","Nate","Erin","Rob","Tess","Gary","Lena"];
   const L=["Kessler","Reyes","Abbott","Doyle","Whitfield","Okafor","Brennan","Castillo","Lindqvist","Marsh","Pruitt","Haddad","Sutton","Varga","Delaney","Moreau","Tanaka","Ruiz","Fenwick","Osei"];
-  const sp=(typeof SPORT!=="undefined"&&SPORT.id)||"football";
   return {n:F[h%F.length]+" "+L[(h>>>8)%L.length],role:(STAFF_ROLES[sp]||STAFF_ROLES.football)[who]||"Assistant"} }
 function staffNameOf(who){ if(!staffReal())return STAFF[who]?STAFF[who].name:who; const x=staffPerson(who); return x.n+", "+x.role.toLowerCase() }
 function staffFaceOf(who){
@@ -408,3 +419,80 @@ function staffLineOf(who,line){
     .replace(/ (Woof!|\(Tail going\. Very hard\.\)|Can we go outside after\?|Also, is it dinner\? It smells like dinner\.|I'm going to spin in a circle about this\.|Ball\. BALL\. Sorry — the actual ball\. Carry on\.)$/,"");
   if(STAFF_WHIMSY.test(t)){ const L=STAFF_PLAIN[who]||STAFF_PLAIN.capy; t=L[strHash(line)%L.length] }
   return t }
+
+/* ---- storylines that outlast a season (round 111) ----
+   Kept in the save, per coach (S.saga), written as each season is banked and read back in the next:
+     duels  your best player against each opponent's, meeting by meeting, whoever they now play for
+     caps   your captains: when named, and whether he came up through your club
+     chase  a veteran star chasing his first title with you, and the night he gets it
+     gone   who left you, and how he felt about it: a bitter departure, and the night he comes back to face you
+   Lines go into the season's history entry (entry.people) and the team page's season story. Nothing here moves a game. */
+const SAGA_DUELS=40;
+function sagaOf(){ return S.saga=S.saga||{duels:{},caps:{},chase:{},gone:{}} }
+function homegrown(p,team){ const H=p&&p.hist||[]; return H.length>=2&&H.every(x=>x.t===team) }
+/* this season's stories, before the summer moves anyone: the entry gets its lines */
+function peopleBank(entry,team){
+  if(!SEA||!SEA.ppl||!S.myTeam)return;
+  const G=sagaOf(), my=team||S.myTeam, P=SEA.ppl, R=SEA.roster[my]||[], yr=SEA.year, out=[];
+  // the duels: merged into the career's book; this season's best told
+  let best=null;
+  Object.keys(P.duel).forEach(k=>{ const d=P.duel[k], B=G.duels[k]=G.duels[k]||{a:d.a,b:d.b,pa:d.pa,pb:d.pb,g:0,w:0,l:0,xa:0,xb:0,y0:yr};
+    B.g+=d.g; B.w+=d.w; B.l+=d.l; B.xa+=d.xa; B.xb+=d.xb; B.tb=d.tb; B.y1=yr;
+    if(d.g>=2&&B.g>=3&&(!best||B.g>best.g))best=B });
+  const keep=Object.keys(G.duels).sort((a,b)=>G.duels[b].g-G.duels[a].g).slice(0,SAGA_DUELS), D2={}; keep.forEach(k=>D2[k]=G.duels[k]); G.duels=D2;
+  if(best)out.push(`${best.a} and ${best.b}: ${best.w}-${best.l} in their meetings${best.y0<yr?` since ${best.y0}`:""}`);
+  // the captain
+  const cap=P.cap[my], C=cap&&R.find(p=>p&&p.n===cap);
+  if(C){ const c=G.caps[cap]=G.caps[cap]||{y0:yr,home:homegrown(C,my)||(pplCollege()&&(C.hist||[]).every(x=>x.t===my))}; c.y1=yr;
+    out.push(c.y0===yr?`${cap} named captain${c.home?", one of your own":""}`:`${cap} captain for ${yr-c.y0+1} seasons${c.home?", one of your own":""}`) }
+  // the chase: your best veteran without a title with you
+  const won=SEA.champion===my;
+  let still=null;
+  Object.keys(G.chase).forEach(n=>{ const x=G.chase[n]; if(x.won)return; const p=R.find(q=>q&&q.n===n);
+    if(won&&p){ x.won=yr; out.push(`${n} finally has his title${x.since<yr?`, ${yr-x.since+1} seasons into the chase`:""}`) }
+    else if(p&&x.since<yr&&(!still||p.r>still.p.r))still={n:n,p:p,x:x} });
+  if(still)out.push(`${still.n} still chasing a title, ${yr-still.x.since+1} seasons on${pplCollege()?"":` (${ageOf(still.p)})`}`);
+  const vet=R.slice(0,POS.length).filter(p=>p&&isVet(p)).sort((a,b)=>b.r-a.r)[0];
+  if(vet&&!won&&vet.r>=R.slice(0,POS.length).filter(Boolean).reduce((m,p)=>Math.max(m,p.r),0)-2&&!G.chase[vet.n]){ G.chase[vet.n]={since:yr,age:ageOf(vet)}; out.push(`${vet.n}, ${pplCollege()?"in his last year":ageOf(vet)}, still chasing a title`) }
+  // a man who left you badly, back to face you
+  (P.met||[]).forEach(m=>out.push(m));
+  // the stands at the end of it
+  const f=P.fan[my]; if(f>=80||f<30)out.push(f>=80?"The crowd ended the season buzzing":"The crowd ended the season angry");
+  if(out.length)entry.people=out.slice(0,5) }
+/* after the summer: who left, and how */
+function peopleDepart(before,entry,team){
+  if(!SEA||!SEA.ppl||!S.myTeam||!before)return;
+  const G=sagaOf(), my=team||S.myTeam, now=new Set((U.roster[my]||[]).filter(Boolean).map(p=>p.n)), out=[];
+  const top=before.filter(Boolean).sort((a,b)=>b.r-a.r).slice(0,5).map(p=>p.n);
+  before.forEach(p=>{ if(!p||now.has(p.n))return; const live=findLive(p.n), mo=live&&live.mo!=null?live.mo:60, tr=live&&live.tr||0;
+    const bitter=mo<40||tr<0; if(!bitter&&top.indexOf(p.n)<0)return;
+    G.gone[p.n]={from:my,y:SEA.year,bitter:bitter,r:p.r};
+    if(bitter&&!pplCollege())out.push(`${p.n} left on bad terms`) });
+  const K=Object.keys(G.gone); if(K.length>30)K.sort((a,b)=>G.gone[a].y-G.gone[b].y).slice(0,K.length-30).forEach(k=>delete G.gone[k]);
+  if(out.length&&entry)entry.people=(entry.people||[]).concat(out) }
+function findLive(n){ for(const t of NAMES){ const p=(SEA.roster[t]||[]).find(q=>q&&q.n===n); if(p)return p } return null }
+/* the next game's card: two stars meeting again; a man back to face the club he left */
+function peopleNextLine(opp){
+  if(!SEA||!SEA.ppl||!S.saga)return "";
+  const G=S.saga, my=S.myTeam, a=starOf(SEA,my), b=starOf(SEA,opp), out=[];
+  if(a&&b){ const d=G.duels[a.n+"|"+b.n], c=SEA.ppl.duel[a.n+"|"+b.n], g=(d?d.g:0)+(c?c.g:0), w=(d?d.w:0)+(c?c.w:0), l=(d?d.l:0)+(c?c.l:0);
+    if(g>=3)out.push(`${esc(a.n)} against ${esc(b.n)} again: ${w}-${l} in their meetings`) }
+  (SEA.roster[opp]||[]).forEach(p=>{ const x=p&&G.gone[p.n]; if(x&&x.from===my)out.push(`${esc(p.n)} faces the club he left${x.bitter?", and he hasn't forgotten how it ended":""}`) });
+  return out.length?`<div class="nrec pplnext">${out.slice(0,2).join(" &middot; ")}</div>`:"" }
+/* after a game against a man who left you: kept for the season's story (the season's own, rebuilt by replay) */
+function peopleMet(sea,r){
+  if(!sea.ppl||!S||!S.saga||!S.saga.gone)return;
+  const my=sea.userTeam; if(!my||(r.home!==my&&r.away!==my))return; const opp=r.home===my?r.away:r.home;
+  (sea.roster[opp]||[]).forEach(p=>{ const x=p&&S.saga.gone[p.n]; if(!x||x.from!==my||!x.bitter)return; const k=p.n+"|"+opp;
+    sea.ppl.metK=sea.ppl.metK||{}; if(sea.ppl.metK[k])return; sea.ppl.metK[k]=1;
+    (sea.ppl.met=sea.ppl.met||[]).push(`${p.n} came back with ${opp}${r.winner===opp?" and beat you":r.winner===my?", and lost":""}`) }) }
+/* the history book's line for a season */
+function peopleRowLine(L){ return L&&L.length?`<div class="ystory">${L.map(esc).join(" &middot; ")}</div>`:"" }
+/* the team page at the season's end: the room's season in a few lines */
+function peopleSeasonHTML(){
+  if(!SEA||!SEA.ppl||SEA.phase!=="done")return "";
+  const e={}; const keep=S.saga?JSON.stringify(S.saga):null;
+  try{ peopleBank(e) }finally{ if(keep)S.saga=JSON.parse(keep); else delete S.saga }   // a look, not the banking
+  const P=SEA.ppl, my=S.myTeam, n=Object.keys(P.asked).filter(k=>!/^promised\|/.test(k)).length;
+  const L=(e.people||[]).slice(); if(n)L.push(`${n} conversation${n===1?"":"s"} with your players and the press`);
+  return L.length?`<div class="grouphead">The dressing room's season</div><div class="note">${L.map(esc).join(". ")}.</div>`:"" }

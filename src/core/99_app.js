@@ -29,7 +29,7 @@ function lateFloorDue(L,any){
    same world. Only one is "active" at a time: their state is swapped onto S so
    the rest of the game needs no changes at all. */
 const COACH_FIELDS=["myTeam","keepStaff","career","plans","calls","promos","fires","featured","featuredLast","callLedger","deploy","chLog",
-                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer","train"];   // round 87: training focus   // round 41: the season story
+                    "history","expNow","readTally","film","lifeCalls","storyYr","rivals","callCareer","train","saga"];   // round 111: the people's stories   // round 87: training focus   // round 41: the season story
 
 function coachCount(){ return (S.coaches&&S.coaches.length)||1 }
 function isHotSeat(){ return coachCount()>1 }
@@ -1353,7 +1353,10 @@ function endSeason(rng,choices,act,seasonTeam){
   // and realignment move teams, and the season belongs to the group it was played in
   const entry=seasonEntry(my);
   if(typeof bankStory==="function")bankStory(entry);   // its comeback and collapse; the head-to-head with each coach (round 41)
+  if(typeof peopleBank==="function"&&!isHotSeat())peopleBank(entry,my);   // round 111: the room's stories (core 93_morale)
+  const before=!isHotSeat()&&U.roster&&U.roster[my]?U.roster[my].filter(Boolean).map(p=>({n:p.n,r:p.r})):null;
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
+  if(typeof peopleDepart==="function"&&before)peopleDepart(before,entry,my);   // round 111: who left, and how
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
   const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my],my);
@@ -2175,8 +2178,8 @@ function myTeamView(){
   if(teamTab==="roster")return h+rosterView();
   if(teamTab==="trades"&&LEAGUE.trade&&SEA.roster)return h+tradesView();
   if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
-    (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my))}
-  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+starsHTML(my);
+    (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+(typeof peopleSeasonHTML==="function"?peopleSeasonHTML():"")+starsHTML(my))}
+  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+(typeof peopleSeasonHTML==="function"?peopleSeasonHTML():"")+starsHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -2313,7 +2316,7 @@ function guideNote(key,text){
 }
 const GUIDE_CALL={
   prep:"Before the game: their last few games, by how they played. Pick the answer to what they did most, or wait and see. After the game you'll see whether you were right.",
-  read:"The panel is how they're playing tonight. A number marked &#9650; or &#9660; is well away from the league average: that's the tell. Your staff disagree on purpose: Pearl says what she just saw, the Bears always want the bold thing, the capybara the safe one. The numbers are your best guide.",
+  get read(){ return "The panel is how they're playing tonight. A number marked &#9650; or &#9660; is well away from the league average: that's the tell. Your staff disagree on purpose: "+(typeof staffReal==="function"&&staffReal()?"one says what they just saw, one always wants the bold thing, one the safe one.":"Pearl says what she just saw, the Bears always want the bold thing, the capybara the safe one.")+" The numbers are your best guide." },
   third:"Ten minutes left: some teams change their system for the third. The right-hand column counts only what's happened since the second intermission.",
   close:"Crunch time: they'll go to their closing play or stay with what's worked tonight. The report of their close finishes is beside what they've run tonight.",
   flank:"Where your attacks got through in the first half. A full-back having a hard day shows up here, but a small gap can be luck.",
@@ -2491,9 +2494,9 @@ function attentionHTML(my){
       ${x.k==="depth"?`<button class="attnbtn" data-promo="${x.i}">Start him</button>`
         :`<div class="attnbtns"><button class="attnbtn flag" data-fire="${x.side}">Make a change</button><button class="attnbtn" data-keepstaff="${x.side}" title="Keep him for the rest of the season: this card won't ask again">Keep him</button></div>`}
     </div>${(()=>{const s=staffAside(x.k,(SEA.step||0)+(x.i||0));
-      return s?`<div class="say tight"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`:""})()}`).join("");
+      return s?`<div class="say tight"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`:""})()}`).join("");
 }
 
 /* round 99 (Muse played seasons begun before round 88: the plan moved nothing and the grids said the engine didn't read
@@ -2562,6 +2565,7 @@ function nextUpHTML(my,rk){
         ${ser.games[0]?` &middot; last year ${ser.games[0].w===my?"you won":esc(ser.games[0].w)+" won"} ${ser.games[0].s}`:""}
       </div>`:(H=>H?`<div class="series"><b>${H.w}-${LEAGUE.draws?H.d+"-":""}${H.l}${!LEAGUE.draws&&H.d?"-"+H.d:""}</b> against them in your games${H.s?` &middot; last time ${H.won===1?"you won":H.won===0?"they won":"a draw"}, ${H.s}${H.y!==SEA.year?" ("+H.y+")":""}`:""}</div>`:"")(h2hWith(opp))}${typeof rivalLine==="function"?rivalLine(opp):""}${typeof filmLine==="function"?filmLine(opp):""}
       ${oddsHTML(my,opp,ng.home===my,ng.neutral,wp)}
+      ${typeof peopleNextLine==="function"?peopleNextLine(opp):""}
       ${typeof sportNextExtra==="function"?sportNextExtra(ng,my,ngStep):""}
       ${cupNight?`<div class="stake"><span class="stag">${esc(LEAGUE.cup.tag||"CUP")}</span><span class="sline">${LEAGUE.cup.stake(my,opp,ng)} ${esc(LEAGUE.cup.rule||"")}</span></div>
         <button class="rewatch seedraw" data-cupview="1">${LEAGUE.cup.groups?"See the Cup":"See the draw"}</button>`
@@ -3298,7 +3302,7 @@ function yourSeasonsHTML(noCards){
   return `<div class="grouphead">Your seasons</div>`+H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<div class="yrow ${h.honours&&h.honours.title?'gold':''}">
     <span class="yr">${h.year}</span>${h.grade?`<span class="ygrade">${esc(h.grade)}</span>`:""}
     <div class="ymain"><div class="yrec">${esc(h.team||"")} &middot; ${esc(h.rec||"")}</div>
-    <div class="yres">${esc(h.result||"")}</div>${typeof storyRowLine==="function"?storyRowLine(h.story):""}</div>
+    <div class="yres">${esc(h.result||"")}</div>${typeof storyRowLine==="function"?storyRowLine(h.story):""}${typeof peopleRowLine==="function"?peopleRowLine(h.people):""}</div>
     ${h.coach&&!h.now&&!noCards?`<button class="ycard" data-card="${i}" title="Season card">&#8599;</button>`:""}</div>`).join("");
 }
 function firedHistoryHTML(){
@@ -3840,6 +3844,7 @@ function render0(){
     document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{
       S.watchMode=b.dataset.watch; save(); render();});
     document.querySelectorAll("[data-advice]").forEach(b=>b.onclick=()=>{ S.advice=b.dataset.advice; save(); render() });
+    document.querySelectorAll("[data-staffreal]").forEach(b=>b.onclick=()=>{ S.staffReal=b.dataset.staffreal==="real"; save(); render() });
     const bk=el("backupbtn"); if(bk)bk.onclick=()=>{ save(); downloadBackup() };
     const rf2=el("restorefile2"); if(rf2)rf2.onchange=async()=>{ const f=rf2.files&&rf2.files[0]; if(!f)return;
       if(!confirm("Replace the career you're playing with this backup?"))return;
@@ -4408,8 +4413,14 @@ function helpPanel(){
     <div class="grouphead">Staff advice on reads</div>
     <div class="setrow">${[["hints","Hints only"],["full","Full"]].map(([k,l])=>`<button class="setbtn" data-advice="${k}"
       aria-pressed="${(S.advice==="full"?"full":"hints")===k}">${l}</button>`).join("")}</div>
-    <div class="helpcard"><div class="cdesc">Hints only (the default): Pearl points at the number to watch and leaves the answer to you.
-      Full: she tells you what she sees and what to do.</div></div>
+    <div class="helpcard"><div class="cdesc">Hints only (the default): ${typeof staffNameOf==="function"?esc(staffNameOf("pearl")):"Pearl"} points at the number to watch and leaves the answer to you.
+      Full: you hear what they see and what to do about it.</div></div>
+    ${typeof staffReal==="function"?`<div class="grouphead">Staff room</div>
+    <div class="setrow">${[["real","Realistic"],["cast","Characters"]].map(([k,l])=>`<button class="setbtn" data-staffreal="${k}"
+      aria-pressed="${(staffReal()?"real":"cast")===k}">${l}</button>`).join("")}</div>
+    <div class="helpcard"><div class="cdesc">Realistic: a working staff with names and jobs, who say it straight
+      (the default in the pro leagues). Characters: Pearl, the Bears and the rest of the cast (the default in college).
+      Only the voices change; the advice is the same.</div></div>`:""}
     <div class="grouphead">Playback speed</div>
     <div class="setrow">${SPEEDS.map(s=>`<button class="setbtn" data-speed="${s[0]}"
       aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>

@@ -103,6 +103,7 @@ const PEARL_AFTER=[` Woof!`,` (Tail going. Very hard.)`,` Can we go outside afte
   ` Ball. BALL. Sorry, the actual ball. Carry on.`];
 function pearlSay(line, seed){
   const n=Math.abs(seed|0);
+  if(typeof staffReal==="function"&&staffReal())return line;   // a realistic staff room: no dog, no asides
   if(n%6!==1)return line;
   return (n%12===1)
     ? PEARL_BEFORE[Math.floor(n/6)%PEARL_BEFORE.length]+line
@@ -110,7 +111,7 @@ function pearlSay(line, seed){
 }
 function bearYell(kind, seed){
   const n=Math.abs(seed|0);
-  if(n%4===2){ const d=BEAR_YELL.distracted; return d[Math.floor(n/4)%d.length] }
+  if(n%4===2&&!(typeof staffReal==="function"&&staffReal())){ const d=BEAR_YELL.distracted; return d[Math.floor(n/4)%d.length] }
   const pool=BEAR_YELL[kind]||BEAR_YELL.push;
   return pool[n%pool.length]||"We have a feeling about this one. A big feeling.";   // never a blank line
 }
