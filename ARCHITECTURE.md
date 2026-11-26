@@ -525,6 +525,11 @@ Round 111: watching (no engine change: engine 24, the sims' files untouched; Ian
   switch). Football's drive chart is now kept hidden whenever the full match is up, the one way it could show under it.
 - Not done, round 112: hockey's rink crowding one end, baseball's controls under the bar on a phone, Skip to next call
   that skips, soccer assists and passes in the live stats.
+- Full suite on the release build (three legs at the 2 h cap): 173 of 175. fit.js measured the window-sized field at the
+  page top, before the game scrolls to it; it now measures once a stretch plays (42 of 42; the field's bottom sits under
+  the bar for a moment before the first stretch). sc-subs-taps.js's run-up timed out at the new pace (it tapped a
+  stretch early; the change was made once, on the next stretch); the run-up now skips playback, and it passes.
+  draft-labels.js (pro football's "likely gone", 50% of 30) fails identically on the published a39cf41.
 
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
