@@ -100,7 +100,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .planbtn[aria-pressed="true"]{border-color:var(--sodium);color:var(--sodium);
  background:rgba(244,166,58,.1)}
 .planbtn:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
-.pland{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.4}
+.pland{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.4}.plandesc{min-height:4.2em}
 .hero.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.13),transparent)}
 .hero.loss{border-color:var(--flag);background:linear-gradient(180deg,rgba(228,91,78,.11),transparent)}
 .hlabel{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
@@ -939,7 +939,7 @@ canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 .readx{color:var(--muted);white-space:nowrap}
 .readlab{color:var(--muted);font-weight:600}
 .read{display:flex;gap:8px;font-size:12.5px;line-height:1.4;margin:4px 0;color:var(--bone)}
-.read span{flex:none;font-weight:700}.read.ok span{color:var(--turf)}.read.no span{color:var(--flag)}.read.na span{color:var(--muted)}
+.read span{flex:none;font-weight:700}.read.ok span{color:var(--turf)}.read.no span{color:var(--flag)}.read.na span{color:var(--muted)}.read.fair span{color:var(--gold,#e0b04a)}.scout .scouthead{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:11px;color:var(--muted);margin-bottom:4px}.scoutrow{display:flex;flex-direction:column;margin:3px 0}.scoutrow span{color:var(--ink,inherit);opacity:.9}.scoutasst{margin:6px 0 4px}.gpage{display:flex;flex-direction:column;gap:12px}.gphead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px;border:1px solid var(--line,#333);border-radius:8px}.gpteam{display:flex;align-items:center;gap:10px;font-size:15px}.gpteam:last-child{justify-content:flex-end}.gpteam b{font-size:34px;font-family:var(--mono,monospace)}.gpmeta{text-align:center;font-size:12px;letter-spacing:.08em;color:var(--muted)}.gpline{border-collapse:collapse;font-family:var(--mono,monospace);font-size:13px;width:100%;max-width:520px}.gpline th,.gpline td{padding:4px 8px;text-align:center;border-bottom:1px solid var(--line,#333)}.gpline .gpt{text-align:left}.gpline .gptot{font-weight:700}.gpwin{border:1px solid var(--line,#333);border-radius:8px;padding:8px 10px}.gpwinsvg{width:100%;height:150px;display:block}.gpwinsvg .gpmid{stroke:var(--muted);stroke-dasharray:4 4;opacity:.5}.gpwinsvg .gpline1{fill:none;stroke:var(--gold,#e0b04a);stroke-width:2.5}.gpwinlab{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);letter-spacing:.04em}.gplink{background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-decoration:underline dotted;padding:0}.gpbox{margin-top:4px}.wexit{position:fixed;top:10px;right:12px;z-index:50;background:var(--card,#1a1d27);color:inherit;border:1px solid var(--line,#444);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
 .readtally{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:6px;text-transform:uppercase}
 .objs{margin:0 16px 8px}
 .obj{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px solid rgba(42,49,69,.55);font-size:14px}
@@ -1036,7 +1036,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="1324dde";
+<script>const BUILD_ID="833389e";
 /* ============ league: English football ============ */
 /* The Premier League (20 clubs, 38 games) and the Championship (24 clubs, 46
    games), with promotion and relegation between them: three down, two up
@@ -1555,7 +1555,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||23);   // 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||24);   // 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -3069,6 +3069,7 @@ function scFitOf(F,T){ if(!F)return 0; let v=0; SC_SHK.forEach(k=>v+=(F[k]||0)*T
 /* round 94 (engine 17): one spread of fit (11-17 Elo across the pyramid: scratch r94 fitsd.js) to 8 points on soccer's
    W/D/L model (123 Elo: soccer's draws flatten win chance), held to 15 points (226); played through the plan's channel: taking the game to them makes more
    chances, sitting deep makes more on the break */
+const SC24_PLAY=+((typeof process!=="undefined"&&process.env&&process.env.SC24_PLAY)||1.18);   // round 110: see ampE
 const SC17_ENV=k=>SC12_ENV(k)&&+SC12_ENV(k);
 const SC17={m:SC17_ENV("SC17_M")||8.8, cap:SC17_ENV("SC17_CAP")||226, gs:SC17_ENV("SC17_GS")||1.2, ga:SC17_ENV("SC17_GA")||1.2, g:SC17_ENV("SC17_G")||0.95};   // g: the league's goals held (2.81 a game on 17 before, 2.66 on 16)   // g: the league's chances back to 2.7 goals (more clubs sit deep on 17)
 function sportPlanFit(t,pl){ return scV12()?planAmp(scFitOf(SC12_FIT[pl],scShapeT(t)),SC17):0 }
@@ -3207,10 +3208,11 @@ function readFlags(dp){ const T=dp&&dp.tell; if(!T)return []; const n=Math.max(1
   if(T.to/n>=1.15||T.pos>=56)f.push("press"); if(T.cr/n>=1.05)f.push("wing"); if(T.lb/n>=1.3)f.push("direct"); if(T.pos<=42)f.push("block");
   return f }
 function bestRead(T){ const s=readScore(T); return APPROACH_KEYS.reduce((a,k)=>s[k]>s[a]?k:a,APPROACH_KEYS[0]) }
-function readCall(stage,T,hint,cur,early){
+// round 110: mine === false: the setup is his assistant's (Grokbot: "Keep your setup" named one he never picked)
+function readCall(stage,T,hint,cur,early,mine){
   // "keep your setup" first when you have one: re-picking it from the list was the only way, and a
   // mis-tap changed it (Instinct). "Leave it to your assistant" hands the read back, which is different.
-  const opts=(cur&&COUNTERS[cur]?[["keep","Keep your setup: "+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
+  const opts=(cur&&COUNTERS[cur]?[["keep",(mine===false?"Keep the setup your assistant chose: ":"Keep your setup: ")+COUNTERS[cur].l]]:[]).concat(Object.keys(COUNTERS).filter(c=>c!==cur).map(c=>[c,COUNTERS[c].l])).concat([["normal","Leave it to your assistant"]]);
   return {k:"read",stage:stage,h:early?early:stage===1?"Twenty-five minutes in":"Ten minutes into the second half",
     q:stage===1?"How are they playing it? Pick the answer.":"Anything changed? Adjust, or leave it.",
     opts:opts, tell:{to:T.to,cr:T.cr,lb:T.lb,pos:Math.round(50+T.pos/Math.max(1,T.n)),n:T.n},
@@ -3275,7 +3277,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const ampE=(sd,pl)=>{ if(!SH||!planAmpV()||!pl||pl==="balanced"||!SC12_FIT[pl])return 0; const M=ampMemo[sd]; if(M[pl]!==undefined)return M[pl];
     const f=scFitOf((humans[sd]?SC12_FIT:SC12_FITC)[pl],SH[sd]);
     // engine 23 (round 109): a person's plan against tonight's opponent's roster (planVs), played on the same channel
-    if(humans[sd]&&planVsV())return M[pl]=planVsTot(planAmp(f,SC17),planAmp(scFitOf(SC12_FIT[pl],SH[other(sd)]),SC17),SC17.cap)-f;
+    // engine 24 (round 110): the opponent's part at double weight played 0.85 of what the card's chance said (scratch r110
+    // vs2-soccer-coach.txt, 4 clubs x 3,000 games on common dice): played up by SC24_PLAY on that part alone
+    if(humans[sd]&&planVsV()){ const a=planAmp(f,SC17), t=planVsTot(a,planAmp(scFitOf(SC12_FIT[pl],SH[other(sd)]),SC17),SC17.cap); return M[pl]=a-f+(ENGINE_V>=24?SC24_PLAY:1)*(t-a) }
     return M[pl]=planAmp(f,SC17)-f };
   const ampF=sd=>{ if(!SH||!planAmpV())return 1; let f=SC17.g; const o=other(sd); if(st.mode[sd]==="safe")f*=1+SC17.gs*ampE(sd,"safe")*SC12.c.pas/R_SLOPE;
     if(st.mode[sd]==="aggressive")f*=1+SC17.ga*ampE(sd,"aggressive")*SC12.c.pac/R_SLOPE; return Math.max(0.3,f) };   // sitting deep: the extra is the counter, chances on the break (cutting theirs drew 32% of games)
@@ -3305,7 +3309,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     return L||st.mode[side] };
   /* the computer's reads and changes */
   // it reads the other side right about half the time, and otherwise leaves it
-  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ctr=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false} };
+  const readIt=(side,p)=>{ if(rng.r()<p){st.S[side].ctr=APPROACH[st.S[other(side)].app].counter; st.S[side].prepd=false; st.S[side].ctrMine=false} };
   const cpuRead=(side,p)=>{ if(!humans[side])readIt(side,p) };
   const assistantRead=(side,stage)=>readIt(side,stage===2?0.3:0.45);
   // the flank: spotted about four times in ten
@@ -3413,7 +3417,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   st.log=[];            // the person's reads, and what was true (for the result screen)
   const apply=(side,dp,v)=>{
     const X=st.S[side];
-    if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true;
+    if(dp.k==="prep"){ if(COUNTERS[v]){ const t=st.S[other(side)].app; X.ctr=v; X.prepd=true; X.ctrMine=true;
       st.log.push({side:side,h:dp.h,k:"prep",pick:v,truth:t,right:COUNTERS[v].beats===t,split:(()=>{const a=Object.values(dp.report).sort((x,y)=>y-x);return a[0]===a[1]?a.filter(x=>x>0).join("-"):false})()}); { const L=st.log[st.log.length-1]; if(L.split)L.unclear=true } { const L=st.log[st.log.length-1], ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]); if(!L.split&&COUNTERS[v]&&COUNTERS[v].beats===ks[0]){ L.followed=true; L.fav=ks[0] } }   /* round 71: set up for what the report said most */   // a split report is a coin flip: not graded either way (Grokbot: 3-3 graded "right")
       } else if(v!==undefined&&dp.report){ const t=st.S[other(side)].app, ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);
         // waiting is a decision too, graded on whether the report's favourite was right (Muse, round 39: no trace on the card)
@@ -3424,7 +3428,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(dp.k==="flank"&&(v==="left"||v==="right")){ const t=st.S[other(side)].weak, F=dp.flank||[0,0], near=Math.abs(F[0]-F[1])<=Math.max(1,0.12*(F[0]+F[1]));
       st.log.push({side:side,h:dp.h,k:"flank",pick:v,truth:t,right:v===t,unclear:near}) }
     if(dp.k==="flank"){ if(v==="left"||v==="right")X.aim=v; else aimIt(side); return }
-    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v } else { const was=X.ctr; assistantRead(side,dp.stage); st.autoDid=X.ctr!==was&&COUNTERS[X.ctr]?"read them himself and switched to "+COUNTERS[X.ctr].l.split(":")[0].toLowerCase():"read them himself and left the setup as it was" } return }
+    if(dp.k==="read"){ if(v&&COUNTERS[v]){ if(v!==X.ctr)X.prepd=false; X.ctr=v; X.ctrMine=true } else { const was=X.ctr; assistantRead(side,dp.stage); st.autoDid=X.ctr!==was&&COUNTERS[X.ctr]?"read them himself and switched to "+COUNTERS[X.ctr].l.split(":")[0].toLowerCase():"read them himself and left the setup as it was" } return }
     if(dp.k==="subs"){
       if(v==="wait"){ st.waitSub=st.waitSub||{}; st.waitSub[side]=true; return }
       if(v==="normal"){ assistantSub(side); if(dp.stage===2)assistantSub(side); st.autoDid="changed the most tired unit"; return }
@@ -3463,7 +3467,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
         if(humans[sd]){ const f=flankCall(st.S[sd].fl,st.S[sd].flLast); queueCall(sd,hc&&humans[sd]?f:mem(sd,f)) } else aimIt(sd) });   // she says it once
       if(st.queue.length)return st.next()}
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
-      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
+      { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr,undefined,st.S[sd].ctrMine); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     // round 108: once you've made a change yourself the bench is yours (your assistant made both at 60' and 70' regardless)
     const benchMine=sd=>ENGINE_V>=22&&humans[sd]&&st.bench&&st.bench[sd];
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
@@ -3729,7 +3733,7 @@ const INTERIM_Q=-18;     // replacement-level assistant
 const FEATURE_EDGE=12;   // Elo
 const PLANS={
   safe:      {sd:0.85, edge:0, l:"Take the game to them", d:"Press high and keep the ball. Over ninety minutes the better side wins \u2014 best when that's you."},
-  balanced:  {sd:1.0,  edge:0, l:"Balanced",              d:""},
+  balanced:  {sd:1.0,  edge:0, l:"Balanced",              d:"Play your own game: no tilt toward pressing or sitting deep. The plan for when neither side's shape gives you an edge."},
   aggressive:{sd:1.2,  edge:0, l:"Sit deep and counter",  d:"Two banks of four, hit them on the break. Fewer chances, more luck \u2014 best when you're outgunned."}
 };
 /* round 108 (engine 22): instructions in a live game beyond the three plans, from the next five minutes: the computer's
@@ -6243,7 +6247,20 @@ function attrTrainSet(gname,k){ const G=ATTRS.train[gname]; if(!G)return; S.trai
    measured per sport: the Elo on the balanced curve that a plan is worth at a gap, with no lean). gap: this side's edge.
    human: the fit on a person's path (the plan also picks a person's system), for your assistant's pick. */
 const PLAN_PICK_MIN=12;
+/* round 110 (engine 24): your assistant's pick is a read, as good as your staff (Ian: the player shouldn't be told the
+   best plan). Each plan's worth tonight, as the engine has it, plus his error: a spread from 9 Elo for the best staff
+   (assistants rated 62) to 40 for the worst (-52), drawn from the game (club, season, step), so a reload asks the same.
+   The card says what he'd pick; Sim ahead plays it. */
+function staffReadQ(t){ try{ const o=U&&U.oc&&U.oc[t], d=U&&U.dc&&U.dc[t]; if(!o&&!d)return 0; return ((o?o.q:0)+(d?d.q:0))/((o?1:0)+(d?1:0)) }catch(e){ return 0 } }
+const ASST_K=+((typeof process!=="undefined"&&process.env&&process.env.ASST_K)||1);
+function staffReadSD(t){ const q=Math.max(-52,Math.min(62,staffReadQ(t))), cap=typeof sportPlanCap==="function"?sportPlanCap():40; return ASST_K*cap*(0.9-0.6*(q+52)/114) }   // as a share of the sport's plan cap: 0.9 of it for the worst staff, 0.3 for the best
+function assistantPlan(t,gap,opp,step){
+  const sd=staffReadSD(t), r=mulberry32(strHash("asst|"+t+"|"+(SEA&&SEA.year)+"|"+(step!=null?step:SEA&&SEA.step)+"|"+(opp||""))>>>0), g=()=>{ let u=0,v=0; while(!u)u=r(); while(!v)v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v) };
+  let best="balanced", bv=g()*sd*0.5;
+  ["safe","aggressive"].forEach(pl=>{ const v=planEdge(t,pl,gap||0,opp)+g()*sd; if(v>bv){ bv=v; best=pl } });
+  return best }
 function cpuPlanOf(t,gap,human,opp){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||typeof sportPlanFit!=="function"||!t)return "balanced";
+  if(human&&opp&&ENGINE_V>=24)return assistantPlan(t,gap,opp);
   let best="balanced", bv=0;
   // round 109: your assistant, on your path, reads tonight's opponent too (planVs: 0 before engine 23 or with no opp)
   ["safe","aggressive"].forEach(pl=>{ const f=(human||typeof sportPlanFitC!=="function"?sportPlanFit(t,pl):sportPlanFitC(t,pl))+(human&&opp?planVs(t,opp,pl):0); if(!(f>=PLAN_PICK_MIN))return;
@@ -6262,15 +6279,20 @@ function planAmp(f,A){ if(!planAmpV()||!A||!f)return f||0; const v=A.m*f; return
    with a quicker side is worth less, with a slower one more. Averaged over the league the opponent's part is the
    league's mean fit, so a person who picks blind gains nothing; the computer's games are untouched (no calibration
    moves). Each sport plays it where it plays the amplified fit (planAmp's extra), so the box score carries it. */
-const PLAN_VS_K=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K)||1);
+const PLAN_VS_K=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K)||0);   // a test's override; 0: the engine's own
+/* round 110 (engine 24): tonight's opponent counts for more against your roster's fit, so the best plan turns with the
+   opponent for every roster (Muse: one plan best against four opponents in pro basketball, baseball and soccer). Applied
+   once, here (the sports' counters had it inside too: the same at 1). */
+const PLAN_VS_K24=+((typeof process!=="undefined"&&process.env&&process.env.PLAN_VS_K24)||2);   // measured (scratch r110 modal-K*.txt, 10 rosters a game): the most one-plan roster at 1 / 2: nfl 97/71%, ncaab 96/79, nhl 94/87, epl 97/82, mlb 83/79
+function planVsK(){ return PLAN_VS_K||(typeof ENGINE_V!=="undefined"&&ENGINE_V>=24?PLAN_VS_K24:1) }
 function planVsV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=23 }
 /* the total a person's plan is worth from rosters, given his amplified fit f and the opponent's fo, held to cap */
-function planVsTot(f,fo,cap){ const v=f-PLAN_VS_K*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
+function planVsTot(f,fo,cap){ const v=f-planVsK()*(fo||0); return cap?Math.max(-cap,Math.min(cap,v)):v }
 /* in the chance: the opponent's part (the total less your own fit), 0 before engine 23 or where a sport has no counter */
 /* basketball and football plan your offence, so there the opponent's part is their defence against it (sportPlanVsC: in
    Elo, a league spread of the defence that answers the plan worth a spread of fit); hockey and soccer play one game
    both ways, so there it is how well their roster suits the same plan */
-function planVsOpp(o,pl){ return typeof sportPlanVsC==="function"?sportPlanVsC(o,pl):-PLAN_VS_K*sportPlanFit(o,pl) }
+function planVsOpp(o,pl){ return typeof sportPlanVsC==="function"?sportPlanVsC(o,pl):-sportPlanFit(o,pl) }
 function planVs(t,o,pl){ if(!planVsV()||!t||!o||!pl||pl==="balanced"||typeof sportPlanFit!=="function"||typeof sportPlanCap!=="function")return 0;
   const f=sportPlanFit(t,pl); return planVsTot(f,-planVsOpp(o,pl),sportPlanCap())-f }
 /* a plan's shift [at even, per Elo of gap], the gap held to +/-300 (a line fitted to the measured points, -225..225) */
@@ -6286,6 +6308,9 @@ function planEdge(t,pl,gap,o){ if(!pl||pl==="balanced")return 0; return (typeof 
 function cardGame(t){ let g=SEA&&SEA.nextGame?SEA.nextGame(t):null;
   if(!g&&SEA&&SEA.phase==="week"&&LEAGUE.skipIdle)g=SEA.sched.filter(x=>x.week>SEA.step&&(x.home===t||x.away===t)).sort((x,y)=>x.week-y.week)[0]||null;
   return g }
+/* round 110: the step of the card's game, for a club in it (baseball named today's starter, not the game's: Instinct, a
+   Probable Starters line and a card naming two different men) */
+function cardStepFor(o){ try{ const g=typeof S!=="undefined"&&S&&S.myTeam?cardGame(S.myTeam):null; return g&&(g.home===o||g.away===o)?g.week:SEA.step }catch(e){ return SEA.step } }
 function planGapNow(t){ try{ const g=cardGame(t); if(!g)return 0; const e=SEA.matchupElo(g,"balanced"), d=e.h-e.a; return g.home===t?d:-d }catch(e){ return 0 } }
 /* the plan rows' words (hockey and soccer; basketball words its own): which plan the roster suits, once the gap is
    worth PLAN_PICK_MIN Elo. lean: what each plan's roster leans to */
@@ -7086,7 +7111,10 @@ function liveWPHTML(onCall){
      9th, 26% while leading 3-2). There, read the call's own score, half an inning into the one under way. */
   if(onCall&&live.ask&&SPORT.id==="baseball"&&live.ask.mine!=null&&live.ask.theirs!=null){ m=live.ask.mine-live.ask.theirs; const N=typeof SEGS!=="undefined"?SEGS:9; tau=Math.max(0.5/N,tau-0.5/N) }   // round 99: never under half an inning: in extras liveTau is 0 and a one-run lead read 99% (Muse)
   if(!live.pre){ const opp=meH?live.g.away:live.g.home;
-    try{ live.pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[winProb(S.myTeam,opp,meH,!!live.g.neutral),0] }catch(e){ return "" } }
+    // round 110: from the plan you kicked off on (the card before the game reads before your plan, so it can't give the
+    // answer away; once it's played, the plan is in the game: engine 24's bigger counters read 10 points low on Balanced)
+    const pk=PLANS[plan]?plan:"balanced";
+    try{ live.pre=LEAGUE.wdl?withPlan(pk,()=>LEAGUE.wdl(S.myTeam,opp,meH,!!live.g.neutral)):[withPlan(pk,()=>winProb(S.myTeam,opp,meH,!!live.g.neutral)),0] }catch(e){ return "" } }
   const poss=d.q!==undefined?(d.home===meH?-1:1):0;   // football: who has the ball next
   const sig=LIVE_SIG[LEAGUE.id]||10, [w,dr,l]=liveChance(m,tau,live.pre,sig,poss), P=x=>Math.max(1,Math.min(99,Math.round(x*100)));
   const early=tau>0.5, pw0=P(live.pre[0]+(LEAGUE.draws?0:live.pre[1]/2)), pre=early?`<span class="lwpre">${LEAGUE.draws?"W "+pw0+"%":pw0+"%"} before the game</span>`:"";
@@ -9776,10 +9804,11 @@ function finishLive(){ liveEndedAt=Date.now();
   // your reads, and whether they were right (sports whose engines keep a log)
   if(live.eng.log){ const side=meHome?"home":"away", R=live.eng.log.filter(x=>x.side===side);
     if(R.length){ played.reads=R.map(x=>{ const y=Object.assign({},x); delete y.side; return y });
-      const T=S.readTally=S.readTally||{n:0,right:0,yr:{}}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0};
+      const T=S.readTally=S.readTally||{n:0,right:0,yr:{},v:110}, Y=T.yr[SEA.year]=T.yr[SEA.year]||{n:0,right:0,fair:0,v:110};
+      if(!T.v)T.v=110;   // round 110: counted under the three outcomes from here
       // reads only: a call is priced in wins against your assistant (the ledger), not right or wrong (Instinct: "11 of 11
       // right (100%)" above a call that cost 6 games in 100). A read the screen couldn't show isn't counted.
-      R.forEach(x=>{ if(!readGraded(x))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++}}) } }   // round 71: not a report left to the assistant
+      R.forEach(x=>{ if(!readGraded(x))return; T.n++; Y.n++; if(x.right){T.right++; Y.right++} else if(readFair(x)){T.fair=(T.fair||0)+1; Y.fair=(Y.fair||0)+1} }) } }   // round 71: not a report left to the assistant
   // soccer: a drawn game, or who won a shoot-out (from your side: mine / theirs)
   if(LEAGUE.draws){played.draw=!!live.eng.draw;
     if(live.eng.pens)played.pens=((live.eng.pens==="home")===(live.g.home===S.myTeam))?"mine":"theirs"}
@@ -9829,6 +9858,7 @@ function resolveWeek(step){
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
+  skipOffDaysNow();
   if(isHotSeat())plan="balanced";               // one coach: your gameplan stays as you set it
   flash={type:wasPost?"post":"week",step:step,cup:wasCup};     // a live playoff game gets its result card too
   // on a phone the result card is on the Team view: a game finished from Scores showed only the bracket (Instinct,
@@ -9920,6 +9950,15 @@ function noteChoice(k,was,now){
     f0:k==="f"?(was===undefined?null:was):(S.featured===undefined?null:S.featured), d0:k==="d"?(was||null):(S.deploy||null)};
   S.chLog.ch.push({s:SEA.step, k:k, v:now===undefined?null:JSON.parse(JSON.stringify(now))});
 }
+/* round 110 (Grokbot: "Plans carry over silently, and PLAY can bypass the plan card": a game started on Work it inside
+   without the card being seen): a plan kept from an earlier game, not chosen for this one, is asked about on the first
+   tap of Play or Sim game ("Keep Take risks?"); the second plays it. Balanced, a plan picked today, a shared seat or a
+   game with no card aren't asked. */
+function planCarried(){ try{ if(isHotSeat()||!SEA||!PLANS[plan]||plan==="balanced"||S.off)return false; const g=SEA.phase==="week"?cardGame(S.myTeam):null; if(SEA.phase==="week"&&!g)return false;
+  const st=g?g.week:SEA.step; return !(S.planStep!=null&&S.planStep>=st)&&S.planOk!==SEA.year+":"+st }catch(e){ return false } }
+function planConfirm(b,go){ if(!b||!planCarried())return go();
+  const g=SEA.phase==="week"?cardGame(S.myTeam):null, st=g?g.week:SEA.step;
+  tapTwice(b,`Keep ${esc(PLANS[plan].l)} from your last game? Tap again`,()=>{ S.planOk=SEA.year+":"+st; go() }) }
 /* a confirm on the page itself: the first tap turns the button into the
    question, the second does it. Browser dialogs (confirm) can be blocked or
    dismissed without a word, and then the button just does nothing (Muse: "Make a
@@ -10193,7 +10232,14 @@ async function moveForeignSaves(){
 /* a read that counts in the tallies: not a split report, not a call, not one left to the assistant, not a followed report,
    not a surprise after following the screen (round 93: one rule for the season's tally, the month's and the repair; the
    month's counted reads the season's didn't, so hockey's months didn't add up to its season) */
-function readGraded(x){ return !(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe&&!x.right)) }
+/* round 110: every read you make counts, in one of three outcomes (Muse: the tally left out reads the text called wrong;
+   Instinct: "Right read: they surprised you" reads as right and wrong at once). Right; fair (you went with the evidence,
+   the report's favourite or what tonight's numbers showed, and the night went the other way); wrong. A read left to
+   your assistant or one the screen couldn't show isn't yours to count. */
+function readFair(x){ return !!x&&!x.right&&!x.unclear&&((x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe)) }
+function readGraded(x){ return !(x.unclear||x.k==="call"||x.waited) }
+/* the rule before round 110, for the tallies kept under it (a duplicate's reads come back out as they went in) */
+function readGradedOld(x){ return !(x.unclear||x.k==="call"||x.waited||(x.k==="prep"&&x.followed)||(x.k==="read"&&x.fe&&!x.right)) }
 function repairPlayed(d){
   if(!d||!d.played)return d;
   const T=d.readTally;
@@ -10201,7 +10247,7 @@ function repairPlayed(d){
     d.played[k]=d.played[k].filter(p=>{ const id=p.team+"|"+p.other+"|"+!!p.cup+"|"+p.mine+"-"+p.theirs;
       if(!seen.has(id)){seen.add(id); return true}
       // a copy: take its reads back out of the tally they inflated
-      if(T)(p.reads||[]).forEach(x=>{ if(!readGraded(x))return; T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
+      if(T)(p.reads||[]).forEach(x=>{ if(!(T.v>=110?readGraded(x):readGradedOld(x)))return; if(T.v>=110&&readFair(x)){ T.fair=Math.max(0,(T.fair||0)-1); const Y0=T.yr&&T.yr[yr]; if(Y0)Y0.fair=Math.max(0,(Y0.fair||0)-1) } T.n--; if(x.right)T.right--; const Y=T.yr&&T.yr[yr]; if(Y){Y.n--; if(x.right)Y.right--} });
       return false }) });
   if(T){ T.n=Math.max(0,T.n); T.right=Math.max(0,Math.min(T.right,T.n)) }
   return d;
@@ -10303,7 +10349,7 @@ function newDynasty(team,seed,coachName,roster){
   attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
-  rebuild(); S.expNow=expectations(); save(); view="team"; render();
+  rebuild(); S.expNow=expectations(); skipOffDaysNow(); save(); view="team"; render();
 }
 
 /* ============ advance ============ */
@@ -10392,6 +10438,20 @@ function skipIdleDays(){
     SEA.advance(); clinchAfter(); S.steps++;
   }
 }
+/* round 110: a league with a game most days plays your days off as soon as your game ends, not on the next Play. The
+   card read the next game's chance on the day off, and Play then played those days (other results, knocks, a goalie's
+   rest) and started the game on other numbers (Muse, hockey: 47/52 read, 53/57 played, a third set on the result card).
+   It stops on a day you can still act on: the last day to trade, or a day a club comes to you with an offer. The same
+   steps in the same order, earlier: a reload replays S.steps as before. */
+function skipOffDaysNow(){
+  if(!LEAGUE.skipIdle||isHotSeat()||!SEA||SEA.phase!=="week")return;
+  let g=0;
+  while(SEA.phase==="week"&&!SEA.nextGame(S.myTeam)&&g++<30){
+    try{ if(typeof tdState==="function"&&tdState().open&&((typeof tdLastOpen==="function"&&SEA.step===tdLastOpen())||(typeof tdIncoming==="function"&&tdIncoming())))break }catch(e){}
+    SEA.userTeam=S.myTeam; SEA.featured=(S.featured===undefined?null:S.featured); SEA.deploy=S.deploy||null;
+    SEA.advance(); clinchAfter(); S.steps++;
+  }
+}
 /* In the postseason, a round with no game of yours is the league's, not
    yours: the button sims on until you play again or it's over (it used to
    say "Play the Super Bowl" to a 5-12 team, and walk an eliminated team
@@ -10474,6 +10534,7 @@ function doAdvance(){
   SEA.forcedList=[]; SEA.forced=null;
   S.steps++;
   skipCupNight();
+  skipOffDaysNow();
   if(isHotSeat())plan="balanced";
   if(isHotSeat()){ stashCoach(); loadCoach(0) }
   LEAGUE.ui.afterAdvance(ph);
@@ -10711,7 +10772,7 @@ function endSeason(rng,choices,act,seasonTeam){
   // reload (a coordinator fired in week 4 last year was fired again, and a whole season went to "Interim staff": Muse)
   S.uStart=snap(U); S.off=null; S.plans={}; S.played={}; S.carousel=null; S.promos={}; S.fires={}; S.choiceYear=U.year;
   S.seasonSeed=(S.seasonSeed*1103515245+12345)>>>0;
-  S.steps=0; rebuild(); S.expNow=expectations();
+  S.steps=0; rebuild(); S.expNow=expectations(); skipOffDaysNow();   // round 110: the opening day off too
   if(isHotSeat()){
     // a new season: every coach's expectations for the team they now coach,
     // no plans carried over from last year, and coach 1 goes first
@@ -10751,6 +10812,49 @@ function gameLine(g,mine,step){
       :side(g.away,g.ap,g.arank,!hw,g.aseed,g.arec)+side(g.home,g.hp,g.hrank,hw,g.hseed,g.hrec)}
     ${chips.length?`<div class="meta">${chips.join("")}</div>`:""}${gameSheetHTML(g,mine,step)}${watchBtnHTML(g,step)}</div></article>`;
 }
+/* round 110 (Ian: "Box scores are still drop down ... a page to see a box score in a more engaging form like the ones I
+   check on ESPN"; "it would be cool to see one of those graphs that shows teams probability of winning over time"): a
+   game's own page, opened from a score in the schedule. The score by period, the win chance over the game (the live
+   chance's own model, liveChance, read after each stretch or drive), both sides' team stats and players, and Watch. A
+   computer game keeps no play-by-play: it's played again from its own dice (replayGame), as Watch does; nothing kept. */
+let gameSel=null;
+function gamePageGame(){ if(!gameSel||!SEA||!SEA.weeks)return null; const W=SEA.weeks[gameSel.w]; if(!W)return null;
+  const g=W.games.find(x=>x.home===gameSel.home&&x.away===gameSel.away&&!!x.cup===!!gameSel.cup); return g?{g,w:gameSel.w}:null }
+const GP_PER={nba:[4,"Q"],ncaab:[2,"H"],nhl:[3,"P"],epl:[2,"H"],mlb:[9,""]};
+function gpLineScore(g){ const D=g.drives||[]; if(!D.length)return "";
+  let cols=[], H=[], A=[];
+  if(D[0].q!==undefined){ cols=["1","2","3","4"]; H=[0,0,0,0]; A=[0,0,0,0]; let ot=0,oth=0,ota=0;
+    D.forEach(d=>{ const q=d.q>=5?4:d.q-1; if(q>=4){ ot=1; if(d.home)oth+=d.pts||0; else ota+=d.pts||0; return } if(d.home)H[q]+=d.pts||0; else A[q]+=d.pts||0 });
+    if(ot){ cols.push("OT"); H.push(oth); A.push(ota) } }
+  else { const P=GP_PER[LEAGUE.id]; if(!P||typeof SEGS==="undefined")return ""; const per=SEGS/P[0]; cols=[...Array(P[0])].map((_,i)=>P[1]+(i+1)); H=cols.map(()=>0); A=cols.map(()=>0);
+    let ph=0, pa=0, ot=false, oh=0, oa=0;
+    D.forEach(d=>{ const sh=d.sh, sa=d.sa; if(sh==null)return; const dh=sh-ph, da=sa-pa; ph=sh; pa=sa;
+      if(d.ot||d.so||(d.seg||0)>=SEGS){ ot=true; oh+=dh; oa+=da; return } const k=Math.min(P[0]-1,Math.floor((d.seg||0)/per)); H[k]+=dh; A[k]+=da });
+    if(ot){ cols.push(LEAGUE.id==="mlb"?"X":"OT"); H.push(oh); A.push(oa) } }
+  const T=v=>v.reduce((a,b)=>a+b,0), row=(t,v,sc)=>`<tr><td class="gpt">${esc(tAb(t))}</td>${v.map(x=>`<td>${x}</td>`).join("")}<td class="gptot">${sc}</td></tr>`;
+  return `<table class="gpline"><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join("")}<th>T</th></tr>${row(g.away,A,g.ap)}${row(g.home,H,g.hp)}</table>` }
+function gpWinChart(g,w){ const D=g.drives||[]; if(!D.length||typeof liveChance!=="function")return "";
+  let pre; try{ pre=LEAGUE.wdl?withPlan("balanced",()=>LEAGUE.wdl(g.home,g.away,true,!!g.neutral)):[withPlan("balanced",()=>winProb(g.home,g.away,true,!!g.neutral)),0] }catch(e){ return "" }
+  const kept=S.planPre&&S.planPre[planPreKey(w,g.cup?1:0)];   // your game: the chance the card showed before it
+  if(kept&&kept.c!=null&&(g.home===S.myTeam||g.away===S.myTeam)){ const c=kept.c/100; pre=[g.home===S.myTeam?c:1-c,0] }
+  const sig=LIVE_SIG[LEAGUE.id]||10, pts=[[0,pre[0]+(pre[1]||0)/2]];
+  D.forEach((d,i)=>{ const sc=liveScore(d); if(sc[0]==null)return; const tau=liveTau(d), poss=d.q!==undefined?(d.home?1:-1):0;
+    const c=i===D.length-1?(g.hp>g.ap?1:g.hp<g.ap?0:0.5):liveChance(sc[0]-sc[1],tau,pre,sig,poss); const p=Array.isArray(c)?c[0]+(c[1]||0)/2:c;
+    pts.push([Math.min(1,1-tau),p]) });
+  const W=600,Hh=150,x=t=>(t*W).toFixed(1),y=p=>((1-p)*Hh).toFixed(1), path=pts.map((q,i)=>(i?"L":"M")+x(q[0])+","+y(q[1])).join(" ");
+  return `<div class="gpwin"><div class="gpwinlab"><span>${esc(g.home)}</span><span>win chance through the game</span></div>
+    <svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" class="gpwinsvg" role="img" aria-label="${esc(g.home)}'s chance to win through the game"><line x1="0" y1="${Hh/2}" x2="${W}" y2="${Hh/2}" class="gpmid"/><path d="${path}" class="gpline1" vector-effect="non-scaling-stroke"/></svg>
+    <div class="gpwinlab"><span>${esc(g.away)}</span><span>start ${Math.round(pts[0][1]*100)}% ${esc(tAb(g.home))}${kept?"":" (about: from the rosters now)"}</span></div></div>` }
+function gamePageView(){ const G=gamePageGame(); if(!G)return `<button class="skip small" data-gameback>&larr; Back</button><p>That game isn't in this season's record.</p>`;
+  const g0=G.g, g=g0.drives?g0:(replayGame(g0,G.w)||g0), when=LEAGUE.dates&&LEAGUE.dates[G.w]||"";
+  const tail=g0.pens?" (pens)":g0.ot?(g0.so?" (SO)":" (OT)"):"";
+  let box=""; try{ box=boxHTML(g,true,G.w).replace('<details class="boxscore" open><summary>Box score</summary>','<div class="boxscore gpbox">').replace(/<\/details>$/,"</div>") }catch(e){}
+  const canWatch=!!(g0.drives||(SEA._rp&&SEA._rp.has([G.w,g0.home,g0.away,g0.cup?1:0].join("|"))));
+  return `<div class="gpage"><button class="skip small" data-gameback>&larr; Back</button>
+    <div class="gphead"><div class="gpteam"><span>${esc(g0.away)}</span><b>${g0.ap}</b></div><div class="gpmeta">FINAL${esc(tail)}<br><span>${esc(when)}${g0.title?" &middot; "+esc(g0.title):""}</span></div><div class="gpteam"><b>${g0.hp}</b><span>${esc(g0.home)}</span></div></div>
+    ${gpLineScore(g)}${gpWinChart(g,G.w)}
+    ${canWatch?`<button class="rewatch" data-gpwatch="1">Watch the game</button>`:""}
+    ${box||`<p class="fnote">No box score was kept for this game.</p>`}</div>` }
 /* round 81: watch any game in the league: a computer game this season is played again from its own dice on the tap
    (replayGame) and shown as a rewatch; nothing is kept */
 function watchBtnHTML(g,step){ if(step===undefined||step===null||g.drives||g.hp===undefined||!SEA||!SEA._rp||!SEA.roster)return "";
@@ -10823,6 +10927,7 @@ function togglePause(){
   S.watchStep=watch.paused; save();
   tickWatch();
 }
+try{ if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&typeof watch!=="undefined"&&watch){ e.preventDefault(); stopWatch(false) } }) }catch(e){}
 function stopWatch(finish){
   if(watch&&watch.timer)clearTimeout(watch.timer);
   if(watch&&(!live||live.done)&&typeof hlSkip==="function"&&HL.cur){ watch.hlWait=false; hlSkip() }
@@ -10962,6 +11067,9 @@ function firstReadTip(){
   if(S.guide===true&&!(S.seen&&S.seen.g_call_read)&&!GUIDE_SEEN.g_call_read)return "";   // the coach's note says it, once
   return `<div class="evtip">First reads: look for the number marked &#9650; or &#9660;, well away from the league average. That's how they're playing. Pick the answer that beats it, then see if you were right after the game.</div>`;
 }
+/* round 110: right, fair and wrong, every read you made (a season counted before round 110 has no fair: said as it was) */
+function tallyWords(Y){ if(!Y||!Y.n)return "none yet"; if(!Y.v&&Y.fair==null)return `${Y.right} of ${Y.n} right (reads graded before this version)`;
+  const f=Y.fair||0, w=Math.max(0,Y.n-Y.right-f); return `${Y.right} right, ${f} fair, ${w} wrong, of ${Y.n} reads you made (your assistant's aren't counted)` }
 /* the season's tally of your reads and calls, kept on the team page all year */
 function tallyHTML(){
   const T=S.readTally, led=typeof ledgerLine==="function"?ledgerLine():"";
@@ -10971,7 +11079,7 @@ function tallyHTML(){
   return `<div class="grouphead">Your calls</div><div class="tallycard">
     <div class="tallybig">${Y&&Y.n?`${Y.right}<span>/${Y.n}</span>`:"&mdash;"}</div>
     <div><div class="fname">${esc(lab)}</div>
-    <div class="fnote">${Y&&Y.n?pct(Y.right,Y.n)+"% this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} in your career (${pct(T.right,T.n)}%) &middot; graded reads only</div>
+    <div class="fnote">${Y&&Y.n?esc(tallyWords(Y))+" this season &middot; ":"None yet this season &middot; "}${T.right} of ${T.n} right in your career</div>
     ${led?`<div class="fnote tallynote"><b>${esc(led)}</b></div>`:""}${readsByMonthHTML()}
     ${typeof TALLY_NOTE!=="undefined"?`<div class="fnote tallynote">${esc(TALLY_NOTE)}</div>`:""}
     ${(()=>{ const sm=simmedThisSeason(); return sm.sim?`<div class="fnote tallynote">Only games you watch count: you watched ${sm.watched} of your ${sm.all} games this season, and simmed ${sm.sim}.</div>`:"" })()}</div></div>`;
@@ -11043,17 +11151,17 @@ function readsHTML(step){
     // round 71 (Muse: "No verdict blames the player for following the shown report"): set up for what the report said most,
     // it's the better bet over a season (measured: +2.6 to +4.5 points a game), right or wrong on the night. Said so, and
     // not counted either way.
-    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"It was right.":"It was wrong this time: a few games can mislead, and following the report is still the better bet.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,un:true,n:1,lb:lb?[lb]:[]}); return }
+    if(x.k==="prep"&&x.followed){ lines.push({t:(pk?`You chose "${pk}", as the report said. `:"")+(x.right?"Right read.":"Fair read: following the report is the better bet over a season, and tonight it was wrong.")+" "+String(readText(x)).replace(/^(Your [^:]*right|You [^:]*wrong[^:]*):\s*they/,"They"),right:x.right,fair:!x.right,un:false,n:1,lb:lb?[lb]:[]}); return }
     // round 93: an in-game read that answered the style tonight's numbers fit best (dp.best, from the same counts the call
     // shows) is never marked wrong (testers: graded wrong for reading the evidence as it stood); said as a surprise, not counted
-    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", ${ENGINE_V>=21?"an answer to what tonight's numbers showed":"the answer to what tonight's numbers fit best"}. `:"")+"Right read: they surprised you. "+readText(x),right:false,un:true,n:1,lb:lb?[lb]:[]}); return }
+    if(x.k==="read"&&x.fe&&!x.right&&!x.unclear){ lines.push({t:(pk?`You chose "${pk}", ${ENGINE_V>=21?"an answer to what tonight's numbers showed":"the answer to what tonight's numbers fit best"}. `:"")+"Fair read: the numbers pointed there, and they surprised you. "+readText(x),right:false,fair:true,un:false,n:1,lb:lb?[lb]:[]}); return }
     lines.push({t:(pk?`You chose "${pk}". `:"")+readText(x),right:x.right,un:!!x.unclear,n:1,lb:lb?[lb]:[]}) });
   // round 72: every graded read wrong in a win says so plainly (Instinct: "both calls graded wrong and the team still won
   // 124-109"); what a wrong read cost isn't measured, so the line claims no more than the result
-  const gr=lines.filter(x=>!x.un), last=P[P.length-1], won=last&&last.mine>last.theirs;
+  const gr=lines.filter(x=>!x.un&&!x.fair), last=P[P.length-1], won=last&&last.mine>last.theirs;
   const anyway=won&&gr.length&&gr.every(x=>!x.right)?`<div class="readnone">${gr.length===1?"That read was":"Those reads were"} wrong, and you won anyway.</div>`:"";
-  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
-    ${anyway}${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${Y.right} of ${Y.n} right, all games so far (graded reads only)</div>`:""}</div>`;
+  return `<div class="reads">${closeLines}${lines.map(x=>`<div class="read ${x.un?'na':x.right?'ok':x.fair?'fair':'no'}"><span>${x.un?"&ndash;":x.right?"&#10003;":x.fair?"~":"&#10007;"}</span><div>${x.lb.length?`<b class="readlab">${esc(x.lb.join(" and "))}:</b> `:""}${esc(x.t)}</div></div>`).join("")}
+    ${anyway}${auLine}${Y&&Y.n>=3?`<div class="readtally">${typeof TALLY_LABEL!=="undefined"?TALLY_LABEL:"Reading the game this season"}: ${tallyWords(Y)}</div>`:""}</div>`;
 }
 /* a cup tie in the same week as the headline game: one line under it */
 function cupLineHTML(g,my){
@@ -11077,8 +11185,12 @@ function pctShown(p){ return Math.max(1,Math.min(99,Math.round(p*100))) }
 const PLAN_OUT=[];   // round 88: the plan you picked, under any withPlan (the chance is the balanced curve plus your plan's fit)
 function withPlan(pl,fn){ const was=plan; PLAN_OUT.push(was); plan=pl; try{ return fn() }finally{ plan=was; PLAN_OUT.pop() } }
 function planPicked(){ return PLAN_OUT.length?PLAN_OUT[0]:plan }
+/* round 110: the chance before your plan, for the card before a game (withPlan keeps the plan you picked in the chance,
+   round 88's rule: the card moved with every plan click, and a player read the best plan off it: Grokbot, Muse). Once a
+   game starts the plan is in it (the live bar). */
+function planFree(fn){ const was=plan; PLAN_OUT.unshift("balanced"); plan="balanced"; try{ return fn() }finally{ plan=was; PLAN_OUT.shift() } }
 function oddsHTML(me,opp,atHome,neutral,wp){
-  if(LEAGUE.wdl){ const [w,d,l]=withPlan("balanced",()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
+  if(LEAGUE.wdl){ const [w,d,l]=planFree(()=>LEAGUE.wdl(me,opp,atHome,neutral)), P=x=>Math.max(x>0?1:0,Math.min(99,Math.round(x*100)));
     return `<div class="odds"><span class="obar wdl"><i style="width:${P(w)}%"></i><b style="width:${P(d)}%"></b></span>
       <span class="opct">W ${P(w)}% &middot; D ${P(d)}% &middot; L ${P(l)}%</span><span class="olab">before the game</span>${ownMark(me)}</div>` }
   return `<div class="odds"><span class="obar"><i style="width:${(wp*100).toFixed(0)}%"></i></span>
@@ -11128,8 +11240,8 @@ function injuredLine(opp,atHome,neutral){
   const g=SEA.nextGame?SEA.nextGame(my):null; if(atHome===null){ atHome=g?g.home===my:true; neutral=g?!!g.neutral:false }
   // on the headline's own basis (the balanced plan): computed under the plan you'd picked, the note read 73% beside a
   // headline of 62% on all six screens of a conference final (Muse, round 21; Instinct, round 16: 24% over 34%)
-  const now=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)), keep=SEA.talent.inj[my];
-  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=withPlan("balanced",()=>winProb(my,opp,atHome,neutral)) }finally{ SEA.talent.inj[my]=keep }
+  const now=planFree(()=>winProb(my,opp,atHome,neutral)), keep=SEA.talent.inj[my];
+  SEA.talent.inj[my]=keep.filter(e=>!(e.w>0&&e.who)); let fit; try{ fit=planFree(()=>winProb(my,opp,atHome,neutral)) }finally{ SEA.talent.inj[my]=keep }
   if(fit-now<0.03)return "";
   const names=hurt.slice().sort((a,b)=>a.m-b.m).slice(0,2).map(e=>esc(e.who)).join(" and ");
   return `<div class="oinj">${pctShown(now)}% without ${names} (injured); about ${pctShown(fit)}% with ${hurt.length>1?"them":"him"}.</div>`;
@@ -11347,10 +11459,12 @@ function teamPanel(){
   // column's pinned Play button sat over it (Instinct: "the sticky PLAY WEEK area covers part of the Needs a decision cards")
   const att=reveal==="half"?"":attentionHTML(my);   // the wide layout had no "Needs a decision" card: Make a change was unreachable on desktop (Instinct)
   h+=att;
-  h+=teamCardHTML(my,rk,co);
-  if(reveal==="half")return h;
-  h+=injuryHTML(inj);
+  if(reveal==="half")return h+teamCardHTML(my,rk,co);
+  // round 110: the next game and its plan card next, above the team card: under it, the pinned Play button sat over the
+  // plan and its scouting (Muse: "covered by the yellow PLAY button"; Grokbot: sticky bars over the reason)
   h+=nextUpHTML(my,rk);
+  h+=teamCardHTML(my,rk,co);
+  h+=injuryHTML(inj);
   return h;
 }
 
@@ -11447,7 +11561,7 @@ function myTeamView(){
    the top bar opens its page: the club's page (its schedule and history), the standings at its group, the ranking, the
    coach's page. Keyboard too (Enter or Space on the focused figure). */
 const GO=(k,inner,title)=>`<span class="golink" role="link" tabindex="0" data-go="${k}"${title?` title="${esc(title)}"`:""}>${inner}</span>`;
-function goTo(k){ const my=S.myTeam; flash=null; playerSel=null;
+function goTo(k){ const my=S.myTeam; flash=null; playerSel=null; gameSel=null;
   if(k==="team"||k==="record"){ openTeam(my); return }
   if(k==="group"){ view="stand"; standTab="table"; if(LEAGUE.conf.order.length>4&&!LEAGUE.groupFilter)stConf=CONF[my] }
   else if(k==="rank"){ view="poll" }
@@ -11604,7 +11718,7 @@ function planPickerHTML(wp){
     <div class="plans">${Object.keys(PLANS).map(k=>
       `<button class="planbtn" data-plan="${k}" aria-pressed="${plan===k}">
         ${esc(PLANS[k].l)}</button>`).join("")}</div>
-    ${PLANS[plan].d?`<div class="pland">${esc(PLANS[plan].d)}</div>`:""}${planFitHTML(wp)}
+    <div class="pland plandesc">${esc(PLANS[plan].d||"")}</div>${planFitHTML(wp)}
   </div>`;
 }
 /* round 72: the gameplan you last chose carries over; when it doesn't suit tonight, a line says so (Instinct: a 34%
@@ -11612,7 +11726,7 @@ function planPickerHTML(wp){
 function planFitHTML(wp){
   if(wp==null||!PLANS.safe||!PLANS.aggressive)return "";
   const kept=S.planNow&&S.planNow===plan;
-  if(planAmpV()&&typeof PLAN_LEAN!=="undefined"){ const r=planReasonHTML(kept&&S.planStep!=null&&S.planStep!==SEA.step); if(r!==null)return r }   // kept: chosen before today's game (a plan picked today isn't "kept")
+  if(planAmpV()&&typeof PLAN_LEAN!=="undefined"){ const r=planScoutHTML(); if(r!==null)return r }   // round 110: the evidence, not the answer
   const rf=typeof sportPlanFitLine==="function"?sportPlanFitLine(S.myTeam,plan):"";   // round 88: what your roster's shape suits, beside the old line
   if(rf)return `<div class="pland planfit">${rf}</div>`+planFitOld(wp,kept);
   return planFitOld(wp,kept) }
@@ -11632,6 +11746,11 @@ function planWhy(C,k){ const my=S.myTeam, f=sportPlanFit(my,k), sh=planEdge(my,k
   // round 109 (engine 23): the biggest part pushing the way the number goes (fit, tonight's opponent, or the gap), so the
   // reason can't contradict the number (a plus explained by "they have the skaters too")
   if(planVsV()){ const t=f+vs+sh, sg=t>=0?1:-1, top=[["vs",vs],["f",f],["sh",sh]].reduce((a,b)=>b[1]*sg>a[1]*sg?b:a);
+    // round 110: in the card's terms, a lean rank (the old words read as absolute: "Washington miss tackles in space" for a
+    // side whose tackling ranks 5th, the lean being low for its level: Muse)
+    if(top[0]==="vs"&&vs&&typeof scoutRanks==="function"&&typeof sportPlanEvidence!=="function"){ try{ const r=scoutRanks().vs[k][C.opp], N=NAMES.length, poss=esc(C.opp)+(/s$/i.test(C.opp)?"'":"'s");
+      return `${poss} answer to it (their ${esc(planVsNoun(k))}) leans ${ordN(r)} of ${N}` }catch(e){} }
+    if(top[0]==="f"&&typeof scoutRanks==="function"){ try{ const r=scoutRanks().fit[k][my], N=NAMES.length; return `your ${esc(planNoun(k))} leans ${ordN(r)} of ${N}` }catch(e){} }
     if(top[0]==="vs"&&vs){ if(typeof sportPlanVsWhy==="function")return sportPlanVsWhy(C.opp,k,vs);
       if(typeof PLAN_VS_WORDS!=="undefined"&&PLAN_VS_WORDS[k])return `${esc(C.opp)} ${PLAN_VS_WORDS[k][vs<0?0:1]}`;
       return vs<0?`${esc(C.opp)} have the ${PLAN_LEAN[k]} to play that game too`:`${esc(C.opp)} don't have the ${PLAN_LEAN[k]} to play that game` }
@@ -11646,6 +11765,34 @@ function planReasonHTML(kept){ const C=planChances(); if(!C)return null; const P
     return `<div class="pland planfit">${t}</div>` }
   if(d(best)>=2)return `<div class="pland planfit">${keptS}<b>${esc(PLANS[best].l)}</b> would add <b>${d(best)}</b>: ${why(best)}.</div>`;
   return kept?`<div class="pland planfit">Kept from your last game. Neither other plan adds anything tonight.</div>`:"" }
+/* round 110 (Ian: "The player shouldn't be told which of these decisions is best"; Instinct: the card made the pick "read
+   the max"): before the game the card shows the evidence, not the answer. For each plan, what your roster leans to and
+   what tonight's opponent has against it, as ranks in the league from the rosters as they are now, the same numbers the
+   engine plays (sportPlanFit; planVsOpp); and your assistant's read (assistantPlan: as good as your staff). Ranks are
+   leans: what a side does most and least for its level, not how good it is (a strong side can lean away from something
+   it still does well: Muse found Oregon's 85-rated secondary "132nd in coverage"). After the game the result card says
+   what each plan was worth (planPre). */
+const PLAN_NOUN={skaters:"skating",passers:"passing",finishers:"finishing",shooters:"shooting"};
+function planNoun(k){ const w=PLAN_LEAN[k]; return PLAN_NOUN[w]||w }
+function planVsNoun(k){ return typeof PLAN_VS_NOUN!=="undefined"&&PLAN_VS_NOUN[k]?PLAN_VS_NOUN[k]:planNoun(k) }
+let SCOUT_RANK={key:null};
+function scoutRanks(){ const key=SEA.year+"|"+SEA.step+"|"+S.steps; if(SCOUT_RANK.key===key)return SCOUT_RANK;
+  const R={key, fit:{}, vs:{}}; ["safe","aggressive"].forEach(k=>{
+    const F=NAMES.map(t=>[t,sportPlanFit(t,k)]), V=NAMES.map(t=>[t,-planVsOpp(t,k)]);
+    const rk=A=>{ const o={}; A.slice().sort((a,b)=>b[1]-a[1]).forEach(([t],i)=>o[t]=i+1); return o };
+    R.fit[k]=rk(F); R.vs[k]=rk(V) }); SCOUT_RANK=R; return R }
+function ordN(n){ const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]) }
+function planScoutHTML(){ if(!PLANS.safe||!PLANS.aggressive)return null; const C=planChances(); if(!C||!C.opp)return null;
+  const my=S.myTeam, o=C.opp, N=NAMES.length, R=scoutRanks(), band=r=>r<=Math.ceil(N/3)?"strong":r>N-Math.ceil(N/3)?"weak":"middling";
+  const poss=n=>esc(n)+(/s$/i.test(n)?"'":"'s"), ev=typeof sportPlanEvidence==="function"?sportPlanEvidence(o):null;
+  const rows=["safe","aggressive"].map(k=>{
+    const yr=R.fit[k][my], orr=R.vs[k][o];
+    const them=ev?"":` &middot; ${poss(o)} answer to it (their ${esc(planVsNoun(k))}) leans ${ordN(orr)} of ${N} (${band(orr)})`;
+    return `<div class="scoutrow"><b>${esc(PLANS[k].l)}</b><span>your ${esc(planNoun(k))} leans ${ordN(yr)} of ${N} (${band(yr)})${them}</span></div>` }).join("")+(ev?`<div class="scoutrow"><b>Their starter</b><span>${ev}</span></div>`:"");
+  const g=cardGame(my), pick=ENGINE_V>=24&&typeof assistantPlan==="function"?assistantPlan(my,C.gap,o,g?g.week:SEA.step):null;
+  const who=(U&&U.oc&&U.oc[my]&&U.oc[my].n)||"Your assistant";
+  const asst=pick?`<div class="scoutasst"><b>${esc(who)}</b>, your assistant: ${pick==="balanced"?"I'd keep it balanced tonight.":`I'd go with ${esc(PLANS[pick].l)}.`} <span class="fnote">(a read, as good as your staff)</span></div>`:"";
+  return `<div class="pland planfit scout"><div class="scouthead">Scouting tonight</div>${rows}${asst}<div class="fnote">Ranks are leans, 1st the most: what a side does most and least for its level, not how good it is. A plan suits a roster that leans to it, and a strong answer from them takes it away. Being the underdog or the favourite matters too (each plan's note says how). After the game you'll see what each plan was worth.</div></div>` }
 /* round 95 (Grokbot's point 3: after the game, what the plan did): the plan you started on, its worth as the card
    showed it before the game, and why: kept with the game when it starts (doAdvance), so the line after the game reads the
    same number as the card did, not one worked out again from a later step's injuries and roster. One night's box score is
@@ -11736,7 +11883,7 @@ function nextUpHTML(my,rk){
       // where it's played, as the game will be (round 48: the headline took every play-off game as neutral while the
       // injury note under it took it as a home game: 62% over "73% without him; about 81% with him", Muse round 21)
       const atH=pn.home===my||pn.home===true, neu=!!pn.neutral||pn.home===undefined;
-      const wp=pn.opp?withPlan("balanced",()=>winProb(my,pn.opp,atH,neu)):null;
+      const wp=pn.opp?planFree(()=>winProb(my,pn.opp,atH,neu)):null;
       h+=`<div class="grouphead">Next up</div>
         <div class="nextcard"><div class="nlabel">${esc(pn.label.toUpperCase())}</div>
         <div class="nopp">${pn.opp?rkTag(rk[pn.opp])+TL(pn.opp):"Opponent TBD"}</div>${pn.opp&&typeof seriesBookHTML==="function"?seriesBookHTML(pn.opp):""}${pn.opp&&typeof filmLine==="function"?filmLine(pn.opp):""}
@@ -11771,7 +11918,7 @@ function nextUpHTML(my,rk){
     const opp=ng.home===my?ng.away:ng.home;
     // the chance before the game is the same whichever plan you pick: clicking the plans and watching it move gave the
     // answer away (Ian). The plans are judged on the result card.
-    const wp=withPlan("balanced",()=>winProb(my,opp,ng.home===my,ng.neutral));
+    const wp=planFree(()=>winProb(my,opp,ng.home===my,ng.neutral));
     const st=stakesFor(ng);
     const riv=LEAGUE.rivals.name(my,opp);
     const ser=riv?LEAGUE.rivals.series(U,my,opp):null;
@@ -11802,7 +11949,7 @@ function nextUpHTML(my,rk){
   // a cup tie this week too (soccer's FA Cup): its own card, midweek
   if(SEA.phase==="week"&&SEA.gamesFor&&LEAGUE.cup){
     SEA.sched.filter(x=>x.week===SEA.step&&x.cup&&x!==ng&&(x.home===my||x.away===my)).forEach(cg=>{
-      const opp=cg.home===my?cg.away:cg.home, wp=winProb(my,opp,cg.home===my,cg.neutral);
+      const opp=cg.home===my?cg.away:cg.home, wp=planFree(()=>winProb(my,opp,cg.home===my,cg.neutral));
       const line=LEAGUE.cup.stake?LEAGUE.cup.stake(my,opp,cg):"";
       h+=`<div class="grouphead">Midweek &mdash; ${esc(LEAGUE.cup.date(SEA.step))}</div>
         <div class="nextcard cupcard">
@@ -11841,7 +11988,7 @@ function scheduleHTML(team,compact){
       rows.push(`<div class="srow"><span class="spos ${won?'wl-w':drew||otl?'wl-o':'wl-l'}">${won?"W":drew?"D":otl?"OTL":"L"}</span>
         <span class="steam">${haWord(g,team)} ${rkTag(g.home===team?g.arank:g.hrank)}${TL(opp)}${
           g.cup?` <em class="rivmark sod">${esc(g.title.replace(/^(FA|NBA) Cup /,"Cup "))}</em>`:riv?` <em class="rivmark">${esc(riv)}</em>`:""}</span>
-        <span class="sconf">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</span></div>`);
+        <button class="sconf gplink" data-gamepage="${w}|${esc(g.home)}|${esc(g.away)}|${g.cup?1:0}" title="Box score">${ms}-${os}${g.pens?" p":g.ot?(g.so?" SO":" OT"):""}</button></div>`);
     }else{
       rows.push(`<div class="srow up"><span class="spos">${LEAGUE.skipIdle?"":label.replace("Wk ","")}</span>
         <span class="steam">${haWord(g,team)} ${rkTag(rk)}${TL(opp)}${ranksMean()||!SEA.rec[opp]?"":` <span class="srec" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:4px">${recStr(opp)}</span>`}${
@@ -13035,10 +13182,13 @@ function render0(){
     // round 81: how much of it to watch, as on the live screen (Highlights, Every chance: every moment the game had)
     const depth=typeof hlCan==="function"&&hlCan()&&watch.i<watch.script.length?`<div class="liveplan" style="max-width:760px;margin:8px auto 0;padding:0 16px"><div class="fnote" style="margin:6px 0 4px">Watch</div>
       <div class="wspeed">${[["goals",hlGoalsLabel()],["key","Key moments"],["all","Every chance"],["off","Text only"]].map(([v,l])=>`<button class="spbtn" data-whl="${v}" aria-pressed="${hlMode()===v}">${l}</button>`).join("")}</div></div>`:"";
-    el("app").innerHTML=watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
+    // round 110 (Ian: "Once watching a replay of another game it is not easy to just exit out"): Exit, always there (and Esc)
+    const wexit=`<button class="wexit" id="wexit" aria-label="Exit the replay">&times; Exit replay</button>`;
+    el("app").innerHTML=wexit+watchView()+depth+(wbox?`<div class="wbox" style="max-width:760px;margin:10px auto 120px;padding:0 16px">${wbox}</div>`:"");
     if(typeof hlMount==="function")hlMount();
     document.querySelectorAll("[data-whl]").forEach(x=>x.onclick=()=>{ S.highlights=x.dataset.whl; save(); if(typeof hlSkip==="function"&&HL.cur)hlSkip(); watch.hl=undefined; watch.hlWait=false; tickWatch() });
     const b=el("wdone"); if(b)b.onclick=()=>stopWatch(false);
+    const wx=el("wexit"); if(wx)wx.onclick=()=>stopWatch(false);
     const pz=el("wpause"); if(pz)pz.onclick=()=>togglePause();
     const st=el("wstep"); if(st)st.onclick=()=>{watch.paused=true;S.watchStep=true;stepWatch()};
     const sk=el("wskip"); if(sk)sk.onclick=()=>stopWatch(true);
@@ -13128,7 +13278,7 @@ function render0(){
     <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
       (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
        flash&&flash.type==="digest"?digestBlock():"")+
-      (playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
+      (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(SEA.weeks&&SEA.weeks.length)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
     </div>
     <div class="actionbar${wide&&!inOff?" hideWide":""}">
@@ -13144,10 +13294,13 @@ function render0(){
               :S.off.move&&S.off.move!==S.myTeam?"Take the "+S.off.move+" job"
               :"Begin "+(SEA.year+1)+" season"):advLabel()+advPlanTag()}</button>
     </div>`;
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;render()});
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{view=t.dataset.v;flash=null;playerSel=null;gameSel=null;render()});
   // round 69: players' pages, the leaders
   document.querySelectorAll("[data-player]").forEach(x=>x.onclick=e=>{ e.stopPropagation(); const k=x.dataset.player.split("|"); openPlayer(k[0],k.slice(1).join("|")) });
   document.querySelectorAll("[data-plback]").forEach(x=>x.onclick=()=>{ playerSel=null; render() });
+  document.querySelectorAll("[data-gamepage]").forEach(x=>x.onclick=(ev)=>{ ev.stopPropagation(); const [w,h,a,c]=x.dataset.gamepage.split("|"); gameSel={w:+w,home:h,away:a,cup:c==="1"}; window.scrollTo({top:0}); render() });
+  document.querySelectorAll("[data-gameback]").forEach(x=>x.onclick=()=>{ gameSel=null; render() });
+  document.querySelectorAll("[data-gpwatch]").forEach(x=>x.onclick=()=>{ const G=gamePageGame(); if(!G)return; const g=G.g.drives?G.g:replayGame(G.g,G.w); if(!g)return; gameSel=null; startWatch(g); if(watch)watch.step=G.w });
   document.querySelectorAll("[data-sttab]").forEach(x=>x.onclick=()=>{ standTab=x.dataset.sttab; render() });
   document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
@@ -13210,7 +13363,7 @@ function render0(){
     doAdvance();
     if(!wide)window.scrollTo({top:0,behavior:"auto"});
   };
-  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; advance() };   // round 100: the side column's Play waits too
+  const a2=el("adv2"); if(a2)a2.onclick=e=>{ if(Date.now()-(liveEndedAt||0)<1200||strayTap(e))return; planConfirm((e&&e.currentTarget)||el("adv2"),advance) };   // round 100: the side column's Play waits too
   ["skip","skip2"].forEach(id=>{ const b=el(id); if(b)b.onclick=e=>{ if(strayTap(e))return; simSheet=true;render()} });
   if(simSheet){
     el("app").insertAdjacentHTML&&el("app").insertAdjacentHTML("beforeend",simSheetHTML());
@@ -13222,8 +13375,8 @@ function render0(){
   // the bar's buttons wait a moment after a game (Grokbot: one tap simmed a week on a phone)
   const settling=()=>Date.now()-(liveEndedAt||0)<1200;   // round 100: 1.2s (Grokbot, baseball: one Skip after a ninth-inning call ended the game and simmed the next; its result card never showed)
   ["simone","simone2"].forEach(id=>{ if(el(id))el(id).onclick=e=>{ if(settling()||strayTap(e))return;
-    if(SEA.phase!=="week"&&view==="team")view="scores";
-    simAdvance(); window.scrollTo({top:0,behavior:"auto"});
+    planConfirm((e&&e.currentTarget)||el(id),()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
+    simAdvance(); window.scrollTo({top:0,behavior:"auto"}) });
   }});
   if(false)el("simone").onclick=()=>{
     if(SEA.phase!=="week"&&view==="team")view="scores";
@@ -13232,9 +13385,9 @@ function render0(){
   el("adv").onclick=e=>{ if(settling()||strayTap(e))return;
     if(S.off&&S.off.dn&&dnOn()){S.off.dn=false;save();render();window.scrollTo({top:0});return}
     if(S.off){commitOffseason();window.scrollTo({top:0});return}
-    if(SEA.phase!=="week"&&view==="team")view="scores";
+    planConfirm((e&&e.currentTarget)||el("adv"),()=>{ if(SEA.phase!=="week"&&view==="team")view="scores";
     doAdvance();
-    window.scrollTo({top:0,behavior:"auto"});
+    window.scrollTo({top:0,behavior:"auto"}) });
   };
   document.querySelectorAll("[data-team]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); openTeam(b.dataset.team);});
