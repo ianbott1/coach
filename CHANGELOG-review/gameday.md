@@ -78,3 +78,26 @@
   the assistant fouls as the computer, 300 of 300 identical; the stretch waits with its score and possession log and
   goes on from it, 100 of 100); node test/bb-gameday-ui.js MATCH; golden --fast: college MATCH, pro screens only (one
   call more in the season's count; results identical), re-recorded.
+
+## 4. Hockey: not built this round (findings for the lead)
+- Pull the goalie: hockey already has the call (src/hockey/50_game.js pullCall, down one in the last stretch: early,
+  3.2 minutes, or normal, 1.6; the computer and your assistant pull at 1.6). Nothing new was added. Two findings:
+  - The engine's extra-attacker rates (pullFor 0.15 goals a minute for, pullAgainst 0.20 against) overstate the six
+    against five for the trailing side compared with the real figures. Asness and Brown measured about 0.07 a minute for
+    and about 0.15 against, and put the best pull at about 5:40 left down one and 11:40 down two, against the 1 to 1.5
+    minutes coaches use (https://www.ushr.com/assets/docs/2018/Pulling-the-Goalie-2018-05-31-19-29-28.pdf).
+    These are global calibration constants, so they're left to the calibration work. Changing them moves every
+    computer game.
+  - Under the engine's rates and under the real ones, "pull earlier" is the right answer down one or two in nearly
+    every case. A wider pull call (when, at what deficit) would be a quiz, which the call rules don't allow. Down
+    two, early against normal already measured as 0.0 points (test/call-weight.js), which is why it isn't asked.
+- Line matching and forecheck choice: not started. The lines module (src/hockey/12_lines.js) sets season-long ice time,
+  and a live matching call needs a per-shift model the engine doesn't have.
+
+## 5. Goldens re-recorded (round 111)
+- Fast goldens: test/golden-fast-nba.json and test/golden-fast-ncaab.json, re-recorded with each step (notes in the
+  files). The computer's results are the same, and the user's live games move with the new calls.
+- Full goldens: test/golden-nba.json and test/golden-ncaab.json, re-recorded once at the end with a --note.
+- Other five games (football pro and college, hockey, soccer, baseball): ENGINE_NOW 24 to 25 changes only the
+  `universe` field (engV) of their goldens. Hockey fast was checked: universe only. Not re-recorded here; the
+  calibration agent also moves to engine 25, so the merge decides one re-record.

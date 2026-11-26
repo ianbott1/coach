@@ -1,5 +1,5 @@
 {
- "fp": "b0d4fc8493ebefae",
+ "fp": "62c387e259f29ead",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -590,59 +590,64 @@
    "fp": "b0d4fc8493ebefae",
    "from": "b0d4fc8493ebefae",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "62c387e259f29ead",
+   "from": "b0d4fc8493ebefae",
+   "note": "round 111 (rv/gameday) engine 25: basketball timeouts and runs, the rotation buttons, the last-minute foul-or-play-it-out call; the computer's own games unchanged, the user's live games move with the new calls (golden answers cycle through every option)"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "466eba38045fb0ae",
-    "post": "51a7b9ee928aa9fa",
-    "champion": "Boston",
-    "rec": "aa929acbb3d41009",
-    "poll": "f7d6b103e4e40c76",
-    "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "games": "60f544b3fac33897",
+    "post": "4e47071c323ff2bd",
+    "champion": "Denver",
+    "rec": "f1ab7932bab8a350",
+    "poll": "e2dc49f8147f89a9",
+    "heis": "941d037e6ea538dd",
+    "history": "2d8e4bb4dd224a2a",
+    "universe": "5e1643a65617a72b",
+    "screens": "9ad9b46914bed22c"
    },
    {
     "year": 2027,
-    "games": "899826989fbd818c",
-    "post": "8780356bb1bf5799",
-    "champion": "Sacramento",
-    "rec": "4e57bfc4bc60432a",
-    "poll": "ce81856e9e87c2d1",
-    "heis": "02ebadf6932b7f6a",
-    "history": "01efbe25cfd940ee",
-    "universe": "bb81ea2771bbbf45",
-    "screens": "593c82311b570ecc"
+    "games": "8410e4b31f4c4c28",
+    "post": "18c9ceda2544e3d1",
+    "champion": "Oklahoma City",
+    "rec": "88485eb11f4df115",
+    "poll": "429119a1251461a8",
+    "heis": "c6112d48f4539f53",
+    "history": "cfc32432fa24deb8",
+    "universe": "c26d006ead913780",
+    "screens": "d97568c52a62da50"
    }
   ],
   "Detroit#777": [
    {
     "year": 2026,
-    "games": "5ae0d55b8fedaf30",
-    "post": "bc0e6de8d734c0ed",
+    "games": "e82759cc7e1cc92e",
+    "post": "5d7734265a5b7055",
     "champion": "New York",
-    "rec": "a57c9276f2b2f4b1",
-    "poll": "6a2e8da5986046a7",
+    "rec": "8d4f9d64f5fd29e2",
+    "poll": "e73b15c76347f069",
     "heis": "635d996bb8c406fc",
-    "history": "e96eb46ec64147d8",
-    "universe": "a6287fc5e42e1707",
-    "screens": "888e82025ec3196a"
+    "history": "fa629d36c5d395b0",
+    "universe": "115527f3b5c34172",
+    "screens": "5f942a34d81613fc"
    },
    {
     "year": 2027,
-    "games": "79af3b7241d7dfc7",
-    "post": "2a4afd9e8e820781",
-    "champion": "Houston",
-    "rec": "a5064622f237ee7d",
-    "poll": "0b46b8960550d70e",
-    "heis": "746e3a3070225b55",
-    "history": "0eaf33ad660bf773",
-    "universe": "2a51ad4ab26ac914",
-    "screens": "0a726c25a6ad77b4"
+    "games": "9f940cc4ab07da23",
+    "post": "79c220628fa463ba",
+    "champion": "Oklahoma City",
+    "rec": "d2b6af661ad8d867",
+    "poll": "27a05083f098af88",
+    "heis": "9e7602868e0c32c5",
+    "history": "bb370512983530cb",
+    "universe": "785927d5c6123cd1",
+    "screens": "776ad932e3030975"
    }
   ],
   "schedules#60": [
