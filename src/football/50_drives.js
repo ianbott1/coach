@@ -547,7 +547,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
   // game's possessions from both offenses' mix and tempo
   if(fb27()&&ctx.gp27&&ctx.gp27.g){ st.gp={home:gpOk(ctx.gp27.g.home),away:gpOk(ctx.gp27.g.away)}; st.u27=ctx.gp27.u||{};
     ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(D){ const o=sd==="home"?"away":"home"; Object.assign(st.gp[o],fb27CpuDef(o==="home"?"h":"a",0,D.sch,st.u27[o],st.u27[sd]),{key:st.gp[o].key}) } });
-    st.total=2*fb27Drives(st.gp.home,st.gp.away,ctx.seed) }
+    st.total=2*fb27Drives(st.gp.home,st.gp.away,ctx.seed); fb27ClockInit(st) }
   st.m27Now=()=>{ if(!st.gp)return null; const k=JSON.stringify(st.gp); if(st._m27k!==k){ st._m27k=k; st.m27={home:fb27Mods(st.gp.home,st.gp.away,st.u27.home,st.u27.away),away:fb27Mods(st.gp.away,st.gp.home,st.u27.away,st.u27.home)} } return st.m27 };
   const smOf=home=>{ const b=smOf0(home), M=st.m27Now&&st.m27Now(); if(!M)return b; const p=M[home?"home":"away"];
     const o=Object.assign({td:0,to:0,brk:0,gain:0,sus:0},b||{}); o.td+=p.td; o.brk+=p.brk; o.gain+=p.gain; o.sus+=p.sus; o.dInt=(o.dInt||0)+p.dInt; o.dFum=(o.dFum||0)+p.dFum; return o };
@@ -563,7 +563,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
                  h:st.h,a:st.a,n:st.i+1,aggr:aggr,note:res.note||null,
                  converted:(res.converted===undefined?null:res.converted),
                  togo:res.togo||null};
-    if(st.total!==DRIVES_PER_TEAM*2)drive.tot=st.total;   // engine 27: the game's possessions follow both plans (the clock reads it)
+    if(st.total!==DRIVES_PER_TEAM*2)drive.tot=st.total;
+    if(res.chal)drive.chal=res.chal;   // engine 27: the game's possessions follow both plans (the clock reads it)
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     // round 101: where a turnover on downs happened and where a fourth down was made, for the full match's plays
     if(res.kind==="DOWNS"&&res.stall!=null)drive.stall=res.stall; if(res.cv)drive.cv=res.cv;
@@ -616,6 +617,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         else if(choice==="sit"){
           if(home)st.aggrH="sit"; else st.aggrA="sit";
           st.endAfter=Math.min(st.total-1,i+3);
+          if(fb27()&&st.tos){ const o=home?"away":"home"; if(!humans[o]&&st.tos[o]>=2){ st.tos[o]-=2; st.endAfter=Math.min(st.total-1,st.endAfter+1) } }   // engine 27: their timeouts stop the clock
         } else { if(home)st.aggrH=st.baseH; else st.aggrA=st.baseA }
         // fall through and play the drive normally
       } else if(stage==="fourth"){
@@ -661,6 +663,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
           const ks=Object.keys(dp.report).sort((a,b)=>dp.report[b]-dp.report[a]);   // other four games had it from round 39)
           st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:D.sch,right:ks[0]!==D.sch,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) }
         // "leave it to your assistant": the plan stays as it is, as for the computer's offense (round 43)
+        // fall through and play the drive
+      } else if(stage==="chal"){
+        st.stage=null; const sm0=smOf(home), sm1=P.tSus?Object.assign({td:0,to:0,brk:0,gain:0},sm0||{},{sus:((sm0&&sm0.sus)||0)+P.tSus}):sm0;
+        st.preRes=choice==="chal"?fb27ChalDo(st,rng,P.ch,P.res,()=>rollDrive(rng,offE,defE,P.start,P.aggr,P.dm,sm1)):P.res;
+        st.log.push({side:P.ch.side,k:"chal",pick:choice==="chal"?"chal":"no",unclear:true});
+        // fall through: the drive goes on from its result
+      } else if(stage==="half27"){
+        st.stage=null; fb27HalfApply(st.gp[side],choice); st.log.push({side:side,k:"half",pick:choice||"normal",unclear:true});
         // fall through and play the drive
       } else if(stage==="rest"){
         st.stage=null;
@@ -717,6 +727,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(!st.stage)st.lateAsked=false;
 
     const start=st.startHold!==undefined?st.startHold:nextStart(rng,st.prev,st.at); st.startHold=undefined;
+    const pre=st.preRes; st.preRes=null;   // engine 27: a drive already played, back from a challenge
 
     // ---- their defense: the half-time change, and your reads (before your drive) ----
     if(!st.stage&&i>=st.total/2){ ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(!D||D.half)return; D.half=true;
@@ -726,23 +737,27 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     // engine 27: the computer's offense at half-time: well behind it throws, well ahead it runs (no draw)
     if(fb27()&&st.gp&&!st.stage&&i>=st.total/2&&!st.half27){ st.half27=true; ["home","away"].forEach(sd=>{ if(humans[sd])return; const d=sd==="home"?st.h-st.a:st.a-st.h;
       if(d<=-11)st.gp[sd].mix="pass"; else if(d>=14)st.gp[sd].mix="run" }) }
-    if(isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
+    if(!pre&&isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
       if(!D.asked.prep&&D.fav){ D.asked.prep=true; dp=fbPrepCall(fbReport(D.fav,(ctx.seed||0)+(side==="home"?2:1))); if(i>0)dp.h="Before your first drive: the scouting report" }   // round 79: they had the ball first ("Before kickoff" came after their score: Ian)
       else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side],q) }
       else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side],q) }
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
+    // engine 27: half-time, your first ball after the break: the game plan for the second half, with the first half's film
+    if(!pre&&fb27()&&isUser&&!st.stage&&st.gp&&q<5&&i>=Math.floor(st.total/2)&&!used.half27){ used.half27=true;
+      const dp=fb27HalfCall(st,side,mine,theirs,possLeft(st.total-i,true));
+      if(dp){ st.stage="half27"; st.pend={q:q}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
     // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----
     // ...and from the third quarter in a rout (Muse, round 39: a 61-17 win asked nothing after the second quarter)
     const RL=mine-theirs, restNow=(q>=4&&RL>=14&&RL<=24)||(q>=3&&RL>=21&&RL<=40);
-    if(isUser&&!st.stage&&restNow&&!(home?st.usedH:st.usedA).rest){
+    if(!pre&&isUser&&!st.stage&&restNow&&!(home?st.usedH:st.usedA).rest){
       (home?st.usedH:st.usedA).rest=true; st.stage="rest"; st.pend={q:q}; st.startHold=start;
       return {ask:{k:"rest",h:`Up ${mine-theirs} in the ${q>=4?"fourth":"third"} quarter`,
         b:`Rest your starters? The backups run the clock out: a lead this size usually holds, though not always, and nobody gets hurt on the sideline. ${possLeft(st.total-i,true)}`,
         opts:[["rest","Rest the starters"],["keep","Keep them in until it's safe"],["normal","Leave it to your assistant"]]},mine:mine,theirs:theirs,q:q,side:side} }
 
     // ---- strategic call before the snap ----
-    if(isUser&&calls()<MAX_CALLS&&!st.stage){
+    if(!pre&&isUser&&calls()<MAX_CALLS&&!st.stage){
       const ctx={q:q,idx:i,total:st.total,startYd:start,used:used,rng:rng,
                  mine:mine,theirs:theirs};
       const dp=decisionPoint(ctx,true);
@@ -762,10 +777,21 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     // their drive against your rested starters: the backups give up more (the price of resting them)
     if(!isUser&&st.rest&&st.rest[home?"away":"home"]){ const D0=typeof dm==="string"?DEF_MODE[dm]:dm, R0=FB_REST_DEF;
       dm={td:(D0?D0.td:0)+R0.td, fg:(D0?D0.fg:0)+R0.fg, to:(D0?D0.to:0)+R0.to} }   // your defense, this drive only; your offense's answer, until you change it
-    const res=rollDrive(rng,offE,defE,start,aggr,dm,smOf(home));
+    // engine 27: timeouts (the last drive of a half without them scores less), then a close call and a challenge
+    const tSus=!pre&&fb27()&&st.tos?fb27Clock(st,rng,i,home,st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total):0;
+    const smD=()=>{ const m=smOf(home); return tSus?Object.assign({td:0,to:0,brk:0,gain:0},m||{},{sus:((m&&m.sus)||0)+tSus}):m };
+    let res=pre||rollDrive(rng,offE,defE,start,aggr,dm,smD());
+    if(!pre){
     if(isUser)tellDrive(side);
     if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");
     if(st.onsideMiss){ st.onsideMiss=false; res.note=(res.note?res.note+"; ":"")+"after recovering the onside kick" }
+    const ch=fb27()&&st.tos?fb27Close(st,rng,home,res):null;
+    if(ch){ const m2=ch.side==="home"?st.h:st.a, t2=ch.side==="home"?st.a:st.h;
+      if(humans[ch.side]&&ch.lv>=1&&callMatters(q,m2-t2)){   // a clear miss in a game in reach is yours; the rest, your assistant's
+        st.stage="chal"; st.pend={q:q,start:start,res:res,aggr:aggr,dm:dm,ch:ch,tSus:tSus}; st.startHold=start;
+        return {ask:fb27ChalCall(st,ch),mine:m2,theirs:t2,q:q,side:ch.side} }
+      if(fb27ChalGo(rng,ch))res=fb27ChalDo(st,rng,ch,res,()=>rollDrive(rng,offE,defE,start,aggr,dm,smD())) }
+    }
 
     // engine 27: a drive that died at fourth down: the coach's choice (yours if asked below, his otherwise)
     const effT27=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;

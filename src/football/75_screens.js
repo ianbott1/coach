@@ -273,6 +273,7 @@ const VERDICT_SLACK=0.03;        // within this of the best answer: a good call 
 const VERDICT_BASE={chase:"normal",protect:"keep",half:"normal",two:"kick",onside:"normal",defend:"normal"};
 // the tally is reads, as in every game; calls are priced in wins in the ledger line (round 37)
 function verdictDefault(dp){ const o=dp.opts.map(x=>x[0]);
+  if(dp.k==="two"&&dp.auto&&o.indexOf(dp.auto)>=0)return dp.auto;   // engine 27: the computer goes for two at its own rate
   if(dp.k==="fourth")return dp.rolled&&o.indexOf(dp.rolled)>=0?dp.rolled:o.indexOf("punt")>=0?"punt":"kick";   // what the computer would have done (round 43)
   return o.indexOf(VERDICT_BASE[dp.k])>=0?VERDICT_BASE[dp.k]:o[o.length-1] }
 function callVerdicts(args,seed,answers,meHome){

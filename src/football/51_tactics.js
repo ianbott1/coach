@@ -26,7 +26,7 @@ function fb27(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=27 }
 const FB27_REAL={nfl:{go:[1.40,1.47], conv:[0.518,0.568], two:0.098, twoOk:0.476, pat:0.96},
                  cfb:{go:[1.80,1.82], conv:[0.54,0.549], two:0.08, twoOk:0.458, pat:0.98}};
 const FB27=Object.assign({
-  nfl:{goK:0.92, twoOk:0.476, pat:0.96, intI:0.056, intK:0.2, fumI:0.045, fumK:0.3, tdK:0.895, fgK:0.71},
+  nfl:{goK:0.92, twoOk:0.476, pat:0.96, intI:0.054, intK:0.2, fumI:0.045, fumK:0.3, tdK:0.88, fgK:0.71},
   cfb:{goK:1.02, twoOk:0.458, pat:0.98, intI:0.06, intK:0.15, fumI:0.05, fumK:0.3, tdK:0.91, fgK:0.78}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
   typeof process!=="undefined"&&process.env&&process.env.FB27?JSON.parse(process.env.FB27):{});
 
@@ -156,8 +156,8 @@ function fb27UnitsT(t,sea){ try{ sea=sea||SEA; const H=sea.talent?new Set(sea.ta
 /* the sizes: Elo a rating point of each matchup term, clamps, and each option's own worth held to nothing at an average
    matchup (GP_C, measured: test/fb-tactics.js --calib). Centres: the league's average tilts (measured on season one). */
 const GP_K=Object.assign({
-  nfl:{km:3.0, sh:14, kman:2.4, kb:2.2, kq:1.6, kk:2.6, cl:14, rel0:-1.8, man0:0.4, bl0:-0.2, rb0:0.0, wr0:0.0, qs0:0.0},
-  cfb:{km:2.6, sh:16, kman:2.0, kb:1.8, kq:1.4, kk:2.2, cl:18, rel0:-0.6, man0:-0.3, bl0:1.0, rb0:0.8, wr0:1.6, qs0:0.0}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
+  nfl:{km:3.0, sh:8, dz:2.5, cm:3, kman:2.4, kb:2.2, kq:1.6, kk:2.6, cl:14, rel0:0.0, man0:0.4, bl0:0.0, rb0:0.0, wr0:0.0, qs0:0.0},
+  cfb:{km:2.6, sh:9, dz:3, cm:3, kman:2.0, kb:1.8, kq:1.4, kk:2.2, cl:18, rel0:4.5, man0:-0.3, bl0:0.5, rb0:0.8, wr0:1.6, qs0:0.0}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
   typeof process!=="undefined"&&process.env&&process.env.GP_K?JSON.parse(process.env.GP_K):{});
 // each option's style on the drive (td, dInt, dFum, brk, sus, gain) and its possessions a team; oppTd: on the other side's drives
 const GP_STYLE={
@@ -166,10 +166,10 @@ const GP_STYLE={
 const GP_DSTYLE={   // a defense's style on the other side's drives
   cov:{c1:{brk:0.014,dInt:-0.004,sus:-0.03}, c3:{sus:0.015}, c2:{brk:-0.010,dInt:0.002,sus:0.035}, c2m:{brk:0.004,dInt:-0.002,sus:-0.02}},
   blitz:{low:{gain:2,brk:-0.012,dInt:-0.002,sus:0.015}, norm:{}, high:{gain:-6,dInt:0.006,dFum:0.004,brk:0.022,td:0.004}}};
-const GP_C=Object.assign({nfl:{"mix.run":-5,"mix.pass":0.2,"tempo.slow":-6.1,"tempo.fast":2.2,"cov.c1":0,"cov.c2":-8.5,"cov.c2m":-11.2,"blitz.low":5.9,"blitz.high":-3.9,"key.rb":-2,"key.wr":-2,"key.qb":-2},
-  cfb:{"mix.run":3.5,"mix.pass":-7.1,"tempo.slow":-0.3,"tempo.fast":-2.8,"cov.c1":2.9,"cov.c2":-14.8,"cov.c2m":-21.3,"blitz.low":8.1,"blitz.high":-11.2,"key.rb":-2,"key.wr":-2,"key.qb":-2}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
+const GP_C=Object.assign({nfl:{"mix.run":-0.7,"mix.pass":0,"tempo.slow":-3.3,"tempo.fast":1.9,"cov.c1":0.4,"cov.c2":-10.4,"cov.c2m":-14.8,"blitz.low":5.7,"blitz.high":-14.7,"key.rb":-2,"key.wr":-2,"key.qb":-2},
+  cfb:{"mix.run":4.7,"mix.pass":-1.6,"tempo.slow":-6.7,"tempo.fast":-4.5,"cov.c1":2.2,"cov.c2":-14.7,"cov.c2m":-20.5,"blitz.low":2.8,"blitz.high":-7.1,"key.rb":-2,"key.wr":-2,"key.qb":-2}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
   typeof process!=="undefined"&&process.env&&process.env.GP_C?JSON.parse(process.env.GP_C):{});
-const gpCl=(v,c)=>Math.max(-c,Math.min(c,v));
+const gpCl=(v,c)=>Math.max(-c,Math.min(c,v)), gpDz=(v,d)=>Math.sign(v)*Math.max(0,Math.abs(v)-d);   // a small edge isn't worth a lean
 const GP_SHELL={c1:-1,c3:-1,c2:1,c2m:1}, GP_MAN={c1:1,c2m:1,c3:0,c2:0}, GP_M={run:-1,bal:0,pass:1}, GP_B={low:-1,norm:0,high:1};
 /* one side's drives: its offense's plan (O, units uO) against the other's defense (D, units uD). Returns the drive's
    changes (td, dInt, dFum, brk, sus, gain) and elo, its edge on every drive. Each Elo term is also kept apart (parts), for
@@ -181,13 +181,14 @@ function fb27Mods(O,D,uO,uD){
   add(GP_STYLE.mix[O.mix]); add(GP_STYLE.tempo[O.tempo]); add(GP_DSTYLE.cov[D.cov]); add(GP_DSTYLE.blitz[D.blitz]);
   if(D.tempo==="fast")x.td+=GP_STYLE.tempo.fast.oppTd; else if(D.tempo==="slow")x.td+=GP_STYLE.tempo.slow.oppTd;   // their tempo tires (or rests) their own defense: here, D's offense
   if(uO&&uD){
-    P.mix=m*K.km*gpCl(((uO.passO-uO.runO)-(uD.cov-uD.front))-K.rel0,K.cl);
+    P.mix=m*K.km*gpCl(gpDz(((uO.passO-uO.runO)-(uD.cov-uD.front))-K.rel0,K.dz),K.cl);
     P.man=GP_MAN[D.cov]?-K.kman*gpCl(uD.cov-uO.rec-K.man0,K.cl):0;
-    P.blitz=b?-b*K.kb*gpCl((uD.rush-uO.prot)-K.bl0,K.cl)+b*K.kq*gpCl(uO.qa,8):0;
+    P.blitz=b?-b*gpDz(K.kb*gpCl((uD.rush-uO.prot)-K.bl0,K.cl)-K.kq*gpCl(uO.qa,8),K.kb*K.dz):0;
     const so=(v,c)=>Math.max(0,v-c);   // a standout: past the rest of his group
     P.key=D.key==="rb"?-K.kk*so(uO.rb-uO.rec,K.rb0)*(1-0.4*m):D.key==="wr"?-K.kk*so(uO.wr-uO.wr2,K.wr0)*(1+0.3*m)*0.8:D.key==="qb"?-K.kk*so(uO.qs,K.qs0)*1.2:0;
   } else { P.mix=0; P.man=0; P.blitz=0; P.key=0 }
   P.shell=-m*sh*K.sh;
+  P.commit=(Math.abs(b)-Math.abs(m))*K.cm;   // a lean the matchup doesn't call for gives the other side something to plan on
   const C=k=>GP_C[k]||0;
   P.cost=C("mix."+O.mix)+C("tempo."+O.tempo)-C("cov."+D.cov)-C("blitz."+D.blitz)-C("key."+D.key);
   const elo=Object.values(P).reduce((a,v)=>a+v,0);
@@ -197,6 +198,72 @@ function fb27Mods(O,D,uO,uD){
 function fb27Drives(gH,gA,seed){ const S=g=>{ g=gpOk(g); return (GP_STYLE.mix[g.mix].poss||0)+(GP_STYLE.tempo[g.tempo].poss||0) };
   const f=S(gH)+S(gA), base=DRIVES_PER_TEAM, fr=((strHash("gp|"+(seed||0))%1000)/1000);
   return Math.max(base-2,Math.min(base+2,base+Math.floor(f+fr))) }
+
+/* half-time (a person's side): the first half's film and a change of plan. Offered only where it changes something. */
+function fb27HalfCall(st,side,mine,theirs,left){ const g=st.gp[side], od=side==="home"?"away":"home", o=st.gp[od];
+  if(Math.abs(mine-theirs)>21)return null;
+  const D=st.drives.filter(d=>d.q<=2), f=h=>{ const x=D.filter(d=>d.home===h), td=x.filter(d=>d.kind==="TD").length, fg=x.filter(d=>d.kind==="FG").length,
+      to=x.filter(d=>d.kind==="INT"||d.kind==="FUM").length;
+    return `${td} touchdown${td===1?"":"s"}, ${fg} field goal${fg===1?"":"s"} and ${to} turnover${to===1?"":"s"} on ${x.length} drives` };
+  const me=side==="home";
+  const seen=[o.cov==="c2"||o.cov==="c2m"?"They've kept two safeties deep.":"They've kept one safety deep and a man in the box.",
+    o.blitz==="high"?"They've blitzed a lot.":o.blitz==="low"?"They've mostly rushed four.":"",
+    o.mix==="pass"?"Their offense has thrown it a lot.":o.mix==="run"?"Their offense has leaned on the run.":""].filter(Boolean).join(" ");
+  const opts=[["normal","Keep the plan"]];
+  if(g.mix!=="pass")opts.push(["pass","Throw it more"]);
+  if(g.mix!=="run")opts.push(["run","Lean on the run"]);
+  if(o.mix==="pass"&&g.cov!=="c2"&&g.cov!=="c2m")opts.push(["deep","Play two deep"]);
+  else if(o.mix==="run"&&(g.cov==="c2"||g.cov==="c2m"))opts.push(["box","Bring a safety down"]);
+  else opts.push(g.blitz==="high"?["four","Rush four"]:["blitz","Blitz more"]);
+  const d=mine-theirs;
+  return {k:"half",h:d<0?`Down ${-d} at the half`:d>0?`Up ${d} at the half`:"Tied at the half",
+    b:`Your offense: ${f(me)}. Theirs: ${f(!me)}. ${seen} Change the plan for the second half? ${left}`,opts:opts.slice(0,4)} }
+function fb27HalfApply(g,c){ if(!g)return;
+  if(c==="pass"||c==="run")g.mix=c; else if(c==="deep")g.cov=g.cov==="c1"?"c2m":"c2"; else if(c==="box")g.cov="c3"; else if(c==="blitz")g.blitz="high"; else if(c==="four")g.blitz="low" }
+
+/* ---- timeouts and challenges ----
+   Three timeouts a half. The offense burns one on about one drive in ten (the play clock, a bad look); the last drive of
+   a half with none left scores less (the clock runs between plays). A coach's challenge needs a timeout: lost, it costs
+   one. NFL: two a game, a third after winning both; college: one, a second after winning it (the replay booth reviews
+   the rest; turnovers and scores are reviewed automatically in both, so challenges are on catches and spots).
+   Real: about 0.25 challenges a team-game in the NFL (51.5 in the first seven weeks over 2021-24, about 60 in 2025),
+   40% overturned in 2024 and 60% in 2025 (https://www.tsn.ca/nfl/article/why-nfl-replay-reviews-are-succeeding-at-unprecedented-rates-n1-46675881/);
+   coaches' career rates 0.28 to 0.52 a game (https://operations.nfl.com/stats-central/stats-articles/how-do-nfl-coaches-use-their-challenges).
+   A close call against a side comes on p of drives (and only where it could turn the drive); the booth's read of it is one of
+   three, and how often a coach throws the flag follows the read. */
+const FB27C=Object.assign({nfl:{p:0.2,ch:2,ov:[0.1,0.35,0.65],go:[0.1,0.5,0.9],burn:0.1},
+  cfb:{p:0.1,ch:1,ov:[0.1,0.35,0.65],go:[0.05,0.35,0.8],burn:0.1}}[typeof LEAGUE!=="undefined"&&LEAGUE.id==="nfl"?"nfl":"cfb"],
+  typeof process!=="undefined"&&process.env&&process.env.FB27C?JSON.parse(process.env.FB27C):{});
+function fb27ClockInit(st){ st.tos={home:3,away:3}; st.chal={home:{left:FB27C.ch,won:0},away:{left:FB27C.ch,won:0}}; st.toHalf=false }
+// before a drive: the half's timeouts, the offense's burned one, and the last drive of a half without them
+function fb27Clock(st,rng,i,home,eff){ if(!st.tos)return 0; const sd=home?"home":"away";
+  if(!st.toHalf&&i>=st.total/2){ st.toHalf=true; st.tos.home=3; st.tos.away=3 }
+  if(st.tos[sd]>0&&rng.r()<FB27C.burn)st.tos[sd]--;
+  const last=i===Math.floor(st.total/2)-1||i===eff-1; if(!last)return 0;
+  return st.tos[sd]>=2?0:st.tos[sd]===1?-0.06:-0.14 }   // sus: the drive's scoring, scaled
+// after a drive: a close call against one side, where it could turn the drive; null most drives
+function fb27Close(st,rng,home,res){ if(!st.chal||rng.r()>=FB27C.p)return null;
+  const o=home?"home":"away", d=home?"away":"home", off=rng.r()<0.5, sd=off?o:d, lv=rng.int(3);
+  if(off&&!(res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS"||res.kind==="FG"))return null;
+  if(!off&&!(res.kind==="TD"||res.kind==="FG"))return null;
+  if(st.chal[sd].left<=0||st.tos[sd]<=0)return null;
+  return {side:sd,off:off,lv:lv} }
+function fb27ChalGo(rng,ch){ return rng.r()<FB27C.go[ch.lv] }
+const FB27_RANK={TD:4,FG:3,MISS:1,PUNT:1,DOWNS:0,INT:-1,FUM:-1};
+// the flag thrown: won, the drive is looked at again (the challenger gets the better of the two); lost, a timeout
+function fb27ChalDo(st,rng,ch,res,reroll){ const C=st.chal[ch.side]; C.left--;
+  const won=rng.r()<FB27C.ov[ch.lv]; let out=res;
+  if(won){ C.won++; if(FB27C.ch===2?C.won===2:C.won===1)C.left++;
+    const r2=reroll(), a=FB27_RANK[res.kind]||0, b=FB27_RANK[r2.kind]||0; if(ch.off?b>a:b<a)out=r2 }
+  else st.tos[ch.side]--;
+  out=Object.assign({},out); out.chal={home:ch.side==="home",won:won,off:ch.off};
+  out.note=(out.note?out.note+"; ":"")+(won?"after a challenge that was upheld":"after a challenge that failed");
+  return out }
+function fb27ChalCall(st,ch){ const read=["Your booth isn't sure the officials got it wrong.","Your booth thinks it could go either way.","Your booth thinks the officials missed it."][ch.lv];
+  return {k:"chal",h:ch.off?"Close call on your drive":"Close call on their drive",
+    b:(ch.off?"A third-down catch was ruled incomplete. ":"Their catch on third down stood on the field. ")+read+
+      ` Lose it and it costs a timeout. You have ${st.tos[ch.side]} timeout${st.tos[ch.side]===1?"":"s"} and ${st.chal[ch.side].left} challenge${st.chal[ch.side].left===1?"":"s"} left.`,
+    opts:[["chal","Throw the flag"],["no","Let it go"]]} }
 
 /* the possessions in a game, for its clock: a live game's engine, or a game's drives (each carries tot when it isn't the league's) */
 function fbTot(L){ if(L&&L.eng&&L.eng.total)return L.eng.total; const ds=L&&(Array.isArray(L)?L:L.drives), d=ds&&ds[0]; return d&&d.tot||DRIVES_PER_TEAM*2 }
@@ -223,7 +290,7 @@ function fb27CpuDef(t,year,sch,uT,uO){ const g=Object.assign({},GP_SCH[sch]||GP_
 function fb27SchOf(fav,seed){ if(!fav)return SCHEME_KEYS[(seed>>>0)%3]; const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1), tot=w.reduce((a,b)=>a+b); let x=((strHash("sch|"+seed)%10000)/10000)*tot, i=0; while(x>w[i]){x-=w[i];i++} return SCHEME_KEYS[i] }
 /* your plan for a game: the latest you set at or before it (S.fbGP[team]: [[year*100+step, plan]]), else your assistant's */
 function fb27Idx(year,step){ return year*100+step }
-function fb27UserPlan(t,idx){ const SV=typeof S!=="undefined"&&S?S:null, L=SV&&SV.fbGP&&SV.fbGP[t]; if(!L)return null; let g=null; L.forEach(x=>{ if(x[0]<=idx)g=x[1] }); return g?gpOk(g):null }
+function fb27UserPlan(t,idx){ const SV=typeof S!=="undefined"&&S?S:null, L=SV&&SV.fbGP&&SV.fbGP[t]; if(!L)return null; let g=null; L.forEach(x=>{ if(x[0]===idx)g=x[1] }); return g?gpOk(g):null }   // a plan is for its game
 function fb27IsUser(t){ try{ return typeof S!=="undefined"&&S&&(S.myTeam===t||(Array.isArray(S.coaches)&&S.coaches.some(c=>c&&c.team===t))) }catch(e){ return false } }
 /* gameCtx's part: both sides' units and plans for the game (computer sides' defenses as drawn for the game) */
 function fb27Ctx(h,a,year,step,fav,seed,sea){ try{ if(!fb27())return undefined; sea=sea||(typeof SEA!=="undefined"?SEA:null); if(!sea||!sea.roster)return undefined;
