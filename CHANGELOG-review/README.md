@@ -22,6 +22,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [mlb-fo.md](mlb-fo.md) | Round 3 (engine 27): baseball's front office: the 26 and the 40, a farm at three levels, service time, arbitration with super twos, the $244M competitive balance tax, owners' limits by market, the $23.15M qualifying offer and its picks, a market where players choose, injured-list call-ups; `test/mlb-fo.js` | Pro baseball |
 | [league-life.md](league-life.md) | Round 3 (engine 27): a league with a memory: the real record book falling on a date, Halls of Fame by each sport's rule, retired numbers, awards night with finalists and votes, the coaching carousel in season and after at real rates, rivalries, droughts, farewells, owners with patience; `test/league-life.js` | All seven |
 | [soccer-fo.md](soccer-fo.md) | Round 3 (engine 27): the money side of English football: revenue by division and parachutes, wage budgets from revenue, the squad cost rule with its points deduction, both windows negotiated (bids, counters, release clauses, instalments), the computer's market (with signings from abroad, so the big clubs stay big over a career), loans, the homegrown quota; `test/soccer-fo.js` | Soccer |
+| [soccer-goals.md](soccer-goals.md) | Round 3 (engine 27): soccer's top scorer. A man's share of his side's goals falls away once he runs ahead of about a goal a game, so no striker scores 65 (seed 1234, the record 36); the Golden Boot 19-33 over 48 seasons, mean 27.9 (real 18-36, 25.9); no result moves. |
 
 ## Rules kept
 
