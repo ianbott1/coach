@@ -28,7 +28,7 @@ for(let s=1;s<=30;s++){
       for(let q=1;q<m.T.length;q++)ok(m.T[q].f>=m.T[q-1].f,`${tag} move ${j}: touches out of order`);
       if(j===0){ if(d.seg%4===0)ok(m.T[0].k==='faceoff'&&m.T[0].x===0.5&&m.T[0].y===0.5,`${tag}: the period doesn't open with a faceoff at centre`); else if(prevLast)ok(Math.abs(m.T[0].x-prevLast.x)<1e-9&&Math.abs(m.T[0].y-prevLast.y)<1e-9,`${tag}: doesn't pick up where the last stretch ended`); return }
       const a=P.moves[j-1], z=a.T[a.T.length-1], b=m.T[0];
-      if(b.k==='faceoff'){ const dots=[[0.5,0.5]].concat([0.19,0.81,0.4,0.6].flatMap(x=>[[x,0.24],[x,0.76]])); ok(dots.some(([x,y])=>Math.abs(b.x-x)<1e-9&&Math.abs(b.y-y)<1e-9),`${tag} move ${j}: faceoff off the dots (${b.x.toFixed(3)},${b.y.toFixed(3)})`) }
+      if(b.k==='faceoff'){ /* round 111: the neutral-zone dots where the rink paints them (0.39, 0.61; the draw was at 0.4, 0.6) */ const dots=[[0.5,0.5]].concat([0.19,0.81,0.39,0.61].flatMap(x=>[[x,0.24],[x,0.76]])); ok(dots.some(([x,y])=>Math.abs(b.x-x)<1e-9&&Math.abs(b.y-y)<1e-9),`${tag} move ${j}: faceoff off the dots (${b.x.toFixed(3)},${b.y.toFixed(3)})`) }
       else if(a.end==='clip')ok(true,'');   // a rebound cleared: from in front of the net
       else ok(Math.abs(b.x-z.x)<1e-9&&Math.abs(b.y-z.y)<1e-9,`${tag} move ${j} (${b.k} after ${a.end}): starts away from where the last ended`) });
     P.moves.filter(m=>m.end==='clip').forEach(m=>{ const cl=m.m.c, z=m.T[m.T.length-1], s0=cl.home?0:1; tot.clips++;

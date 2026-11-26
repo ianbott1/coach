@@ -452,6 +452,8 @@ const HL_SPORT=(function(){
     // round 111: on real time, the shape a moment behind the ball by time (the last second; two seconds read 0.61 m behind on average but 8.3 stutters a man-minute against 5.9), not by a share of the stretch
     const sh=[[],[]]; const dq=rt?[0,1,2,3,4,5,6,7,8,9].map(q=>q*110/msF):SP2()?[0,0.003,0.006,0.009,0.012,0.015,0.018,0.021,0.024,0.027]:[0,0.006,0.012,0.018]; dq.forEach((dt,q)=>{ const w=SP2()?1:4-q, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sh[s][i])sh[s][i]=[0,0,0]; sh[s][i][0]+=p[0]*w; sh[s][i][1]+=p[1]*w; sh[s][i][2]+=w })) });
     let pos=[0,1].map(s=>sh[s].map(o=>[o[0]/o[2],o[1]/o[2]]));
+    // round 111: in real time nobody stands still: each outfield man drifts round his place on the game's clock (about 1 m/s; a frozen frame is still)
+    if(rt){ const gs=(d.seg*5+f*5)*60; pos=pos.map((A,s)=>A.map((q,i)=>i===0?q:[q[0]+Math.sin(gs*0.5+i*2.3+s*1.1)*0.016,q[1]+Math.sin(gs*0.65+i*1.9+s*0.6)*0.026])) }
     // round 108: tired legs are slow to get back into shape: a tired unit's men follow the play from further behind
     if(SP2()&&P.ctx&&P.ctx.E){ const tq=[0,1].map(s=>[0,1,2].map(u=>spTired(P.ctx,s,u)));
       if(tq.some(a=>a.some(v=>v>0.05))){ const sl=[[],[]]; [0.02,0.026,0.032,0.038,0.044,0.05,0.056].forEach((dt,q)=>{ const w=1, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sl[s][i])sl[s][i]=[0,0,0]; sl[s][i][0]+=p[0]*w; sl[s][i][1]+=p[1]*w; sl[s][i][2]+=w })) });
