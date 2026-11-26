@@ -211,3 +211,10 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
   (distinct names on a new career, the punt call). College basketball: games move (distinct names on a new career). The
   60-universe schedule fingerprints are unchanged in every game.
 - `node test/golden.js dist/<game>.html [--fast] --write --note "…"` for each, each ending MATCH; the notes say why.
+
+## Saves and reloads after every fix above
+- `node test/migrate.js` (college football old saves): MATCH 2253 of 2253 checks.
+- `node test/saves.js`: MATCH each game keeps to its own saves.
+- `node test/reload.js dist/football-coach.html`, `dist/basketball-coach.html`, `dist/basketball-coach-pro.html`: MATCH 18
+  of 18 reloads each.
+- `node test/polish.js` (all 15 checks): MATCH, 1m56s.
