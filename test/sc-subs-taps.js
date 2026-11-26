@@ -7,7 +7,7 @@ const DIST=process.argv[2]||path.join(__dirname,'..','dist');
   for(const at of [3,9]){ const p=await (await b.newContext({viewport:{width:1280,height:900}})).newPage(); await p.goto('file://'+path.join(DIST,'soccer-coach.html')); await p.waitForTimeout(300);
     await p.evaluate(()=>{ try{localStorage.setItem('coach-guide-seen','{"__off":1}')}catch(e){} newDynasty('Southampton',7,'T'); S.title=false; S.guide=false; S.highlights='full'; S.watchSpeed='rapid'; render(); for(let k=0;k<3&&!live;k++)doAdvance() });
     // run to the stretch, answering calls, then stop the clock
-    for(let i=0;i<4000;i++){ const st=await p.evaluate((at)=>{ if(!live)return 'none'; if(live.ask&&live.drives.length!==at){ answerLive(live.ask.dp.opts[0][0]); return 'ask' } return live.drives.length>=at?'there':'go' },at); if(st==='there'||st==='none')break; await p.waitForTimeout(50) }
+    for(let i=0;i<4000;i++){ const st=await p.evaluate((at)=>{ if(!live)return 'none'; if(live.ask&&live.drives.length!==at){ answerLive(live.ask.dp.opts[0][0]); return 'ask' } if(live.drives.length>=at)return 'there'; if(live.pb&&!live.ask){ if(live.timer){clearTimeout(live.timer);live.timer=null} live.pb=null; liveTick() } return 'go' },at);   /* round 111: Very fast now plays a soccer stretch in about a minute, so the run-up skips the playback */ if(st==='there'||st==='none')break; await p.waitForTimeout(50) }
     await p.evaluate(()=>{ live.paused=true; clearTimeout(live.timer); live.timer=null; render() }); await p.waitForTimeout(200);
     const ask0=await p.evaluate(()=>!!live.ask);
     if(ask0){ await p.evaluate(()=>{ live.ask=live.ask }) }
