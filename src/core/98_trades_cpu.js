@@ -33,7 +33,7 @@ function cpuDeadline(sea){
   const hurt=(t,i)=>sea.talent.active(t).some(e=>e.idx===i);
   const groups={}; NAMES.forEach(t=>{ const g=LEAGUE.trade.sameDiv?CONF[t]:"all"; (groups[g]=groups[g]||[]).push(t) });
   const out=[], used={}, most=Math.max(1,Math.round(NAMES.length/CT_PER));
-  Object.keys(groups).sort().forEach(g=>{
+  Object.keys(groups).sort().forEach(g=>{ if(LEAGUE.trade.cpuSkip&&LEAGUE.trade.cpuSkip(g))return;   // a division whose January the league runs itself (soccer's top two, engine 27)
     const clubs=groups[g].filter(t=>humans.indexOf(t)<0&&sea.roster[t]).sort((a,b)=>pct(b)-pct(a)||(a<b?-1:1)), n=clubs.length;
     const buyers=clubs.slice(0,Math.round(n*0.3)), sellers=clubs.slice(n-Math.round(n*0.35));
     buyers.forEach(B=>{ if(out.length>=most||used[B])return; let best=null;
@@ -46,7 +46,7 @@ function cpuDeadline(sea){
       if(best){ used[best.B]=used[best.Sl]=1; const x={my:best.B,t:best.Sl,a:best.a,b:best.b,gn:best.gn,qn:best.qn,y:sea.year,d:(LEAGUE.dates||[])[sea.step]||"",cpu:1,step:sea.step};
         if(best.ret)x.ret=best.ret;
         if(tdApply(sea,x))out.push(x) } }) });
-  sea.cpuTr=out }
+  sea.cpuTr=(sea.cpuTr||[]).concat(out) }
 // the deals of the day, for the news (a buyer's new man, his old club)
 function cpuTradesHTML(){ const L=((SEA&&SEA.cpuTr)||[]).filter(x=>!LEAGUE.trade.sameDiv||CONF[x.my]===CONF[S.myTeam]); if(!L.length)return "";   // soccer: your division's
   return `<div class="grouphead">Around the league: deadline deals</div><div class="card" style="padding:6px 12px">`+L.map(x=>{ const g=SEA.roster[x.my].find(p=>p&&p.n===x.qn), q=SEA.roster[x.t].find(p=>p&&p.n===x.gn);

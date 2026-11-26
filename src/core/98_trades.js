@@ -142,6 +142,7 @@ function tdAskTwo(t,b){ if(tdRecent(t)||tdHurt(t,b))return []; return tdPackages
 const tdGo=d=>`${esc(d.t)}|${d.a}|${d.b}`+(d.give2?`|${d.a2}|${d.b2}`:"||")+(d.pk?`|${d.pk}`:"");
 function tdApply(sea,x){
   if(x&&x.nba&&typeof nbaTdApply==="function")return nbaTdApply(sea,x);   // pro basketball's trade machine (leagues/nba 98_fo_trades)
+  if(x&&x.epl27&&typeof eplJanApply==="function")return eplJanApply(sea,x);   // soccer's January window with fees (leagues/epl 99_fo_jan, engine 27)
   const my=x.my||S.myTeam, M=sea.roster[my], T=sea.roster[x.t]; if(!M||!T)return false;
   const find=(R,i,n)=>R[i]&&R[i].n===n?i:R.findIndex(p=>p&&p.n===n);
   const pairs=[[find(M,x.a,x.gn),find(T,x.b,x.qn)]]; if(x.gn2)pairs.push([find(M,x.a2,x.gn2),find(T,x.b2,x.qn2)]);
@@ -171,6 +172,7 @@ function tdCarry(u){
   ((SEA&&SEA.cpuTr)||[]).forEach(x=>(L[x.step]=L[x.step]||[]).push(x));   // and the computer's clubs' (round 85), after yours on deadline day
   Object.keys(L).sort((a,b)=>a-b).forEach(k=>L[k].forEach(x=>{ if(x.y!==undefined&&x.y!==SEA.year)return;
     if(x.nba){ if(typeof nbaTdCarry==="function")nbaTdCarry(u,x); return }   // pro basketball's trade machine
+    if(x.epl27&&typeof eplJanCarry==="function")eplJanCarry(u,x);   // soccer's January fees and loans into the books (then the swap below)
     const my=x.my||S.myTeam, M=u.roster[my], T=u.roster[x.t]; if(!M||!T)return;
     [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
       const a=M.findIndex(p=>p&&p.n===gn), b=T.findIndex(p=>p&&p.n===qn); if(a<0||b<0)return;

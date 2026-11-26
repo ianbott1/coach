@@ -4,6 +4,8 @@
    adds the fee to the kitty, and the buyer gets the player; half of what's
    left carries over. Then what the market looks like from each division.
      node test/transfers.js */
+// engine 26's window (round 3's engine 27 negotiates, sells to the computer's market and checks the money: test/soccer-fo.js)
+process.env.ENGINE_NOW=process.env.ENGINE_NOW||'26';
 const path=require('path');const {load}=require('./harness.js');
 const F=path.join(__dirname,'..','dist','soccer-coach.html');
 let bad=0,checks=0; const ok=(c,msg)=>{checks++; if(!c){bad++; console.log('  FAIL '+msg)}};

@@ -2234,7 +2234,7 @@ function myTeamView(){
   const inj=SEA.talent.active(my);
   let h=wide?"":heroResult();
   const co=U&&U.coach?U.coach[my]:null;
-  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].concat(LEAGUE.trade&&SEA.roster?[["trades","Trades"]]:[]).map(([k,l])=>
+  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].concat(LEAGUE.trade&&SEA.roster?[["trades",(LEAGUE.trade.tab&&LEAGUE.trade.tab())||"Trades"]]:[]).map(([k,l])=>
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(teamTab==="trades"&&LEAGUE.trade&&SEA.roster)return h+tradesView();
