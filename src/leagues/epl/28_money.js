@@ -62,7 +62,12 @@ function rev27(u,t,d,pos){
 const amort27=R=>R.reduce((s,p)=>s+(p&&p.am&&(p.amY||0)>0?p.am:0),0);
 /* squad costs, the whole squad's, and the ratio the rule reads */
 const SQ_TOP=0.25;
-function sq27(u,t,d){ d=d||CONF[t]; return d!=="PL"?SQ27:SQ27*(1-SQ_TOP*Math.max(0,Math.min(1,stZ27(u,t,d)))) }   // the top flight's stars; a Championship bill is flatter
+/* round 3 (soccer-spread): a Championship bill is flatter (few stars, more men on similar money), so the twelve are a
+   smaller share of it than at a top-flight club: SQ_CH times SQ27. Squad costs at SQ27 read 59-61% of revenue
+   (test/soccer-fo.js), against the real league's wages of 93%; at SQ_CH they read about 70%. The board's line is
+   unchanged, so its wage room for the twelve is a sixth smaller (about three quarters of it in use, from two thirds) */
+const SQ_CH=+((typeof process!=="undefined"&&process.env&&process.env.SQ_CH)||1.2);
+function sq27(u,t,d){ d=d||CONF[t]; return d==="CH"?SQ27*SQ_CH:d!=="PL"?SQ27:SQ27*(1-SQ_TOP*Math.max(0,Math.min(1,stZ27(u,t,d)))) }   // the top flight's stars
 function cost27(R,sq){ return Math.round((sq||SQ27)*(payroll(R)+amort27(R))*10)/10 }
 function scr27(u,t,R,d,pos,sales){ const r=rev27(u,t,d,pos); if(!r)return null; const c=cost27(R||u.roster[t],sq27(u,t,d)); return {rev:r, cost:c, sales:sales||0, ratio:c/Math.max(1,r.tot+(sales||0))} }
 /* the board's wage budget for the twelve, engine 27 (the top two divisions): its line on revenue, less the fees the

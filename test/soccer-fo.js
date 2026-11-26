@@ -122,7 +122,11 @@ ok(A.tdState().open&&A.LEAGUE.trade.tab()==='Transfers','January: the window is 
   ok(fin[my]&&fin[my].sales>=((sold&&sold.fee)||0)-0.1-0.0,'the sale counts in the rule\'s revenue (profit on sales)'); }
   const W=txt(A.tWindowHTML(A.S.off.picks));
   ok(['The books','Squad cost ratio','Money for fees','Bids for your players','Deals agreed','The market','Loans'].every(k=>W.indexOf(k)>=0),'the summer screen renders: the books, money for fees, bids, deals, the market, loans');
-  ok(/Television \(equal share\) £96\.9M/.test(W)&&/Merit, by where you're expected to finish/.test(W),'next season\'s books: the equal share, merit by where the club is expected to finish');
+  // next season's division: the club may have gone down (round 3, soccer-spread: then the books are the Championship's;
+  // the summer window comes before the drop is made, so its books don't show the parachute yet: see soccer-spread.md)
+  const down=/Relegated/.test(A.SEA.seasonResult(my)||'');
+  ok(!down?/Television \(equal share\) £96\.9M/.test(W)&&/Merit, by where you're expected to finish/.test(W):/Television and solidarity £11(\.0)?M/.test(W)&&!/equal share/.test(W),
+    !down?'next season\'s books: the equal share, merit by where the club is expected to finish':`next season's books, relegated (${A.SEA.seasonResult(my)}): the Championship's money`);
 
 if(!process.env.FO_QUICK){
 /* 4. the long run: two careers, five seasons, the league's money against the real one */

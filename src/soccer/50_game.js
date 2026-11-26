@@ -119,6 +119,23 @@ const SC_SUBS=2;   // round 108: the changes a side makes (your assistant's two 
      (SC26.cnK). Small on purpose: an extra day of rest matters only at three days or fewer (Scoppa 2015, IZA dp7519),
      and clubs playing midweek in Europe keep their league form (CIES for UEFA: 1.74 points a game within five days of
      a European match, 1.74 without), because they rotate. */
+/* engine 27 (round 3, soccer-spread): the spread of a game's goals. Against the Premier League's eight seasons 2017-18
+   to 2024-25 (test/soccer-spread.js), the top flight scored 3.1 to 3.3 goals a game, its best club 100 to 106 a season
+   on average (up to 160 in a career; the real best 83 to 106), twice the real count of 6+ goal games, and now and then
+   a 9-5 or a 13-2. Three causes, measured (1,140 top-flight games, the expected goals of each):
+   - The gap's split. Each side's rate went as exp(+-e/2), so the two rates' sum grew with the gap as cosh(e/2): games
+     between clubs 45 points apart in the final table scored 1.30 times the goals of games between near neighbours,
+     against 1.15 in the real league. Now the sum grows as cosh(e/2)^(1-p); the ratio, exp(e), is the same (scSplit).
+   - The gameplans. In a game the computer plays, both sides taking the game to them made 3.9 goals and both sitting
+     deep 1.3: three quarters of the spread of a game's expected goals (the gap: 3%). The real league's goals a game
+     vary as a Poisson's do (variance 2.77 on a mean of 2.85); here 3.9 on 3.3. Half that pull on the goals is undone,
+     about the pyramid's usual mix (qc: the Championship's goals as before), and each side's share, who the plan
+     favours, is kept (makeLiveGame PQ). A person's watched games keep the plans' full pull (a simmed game is the
+     computer coaching, as before). Both together bring the top flight's goals to 2.9 a game. */
+const SC27S_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
+const SC27S={p:SC27S_ENV("SC27S_P")??0.6, q:SC27S_ENV("SC27S_Q")??0.5, qc:SC27S_ENV("SC27S_QC")??0.77};
+function scSplit(e){ if(typeof ENGINE_V==="undefined"||ENGINE_V<27)return [Math.exp(e/2),Math.exp(-e/2)];
+  const n=1/Math.pow(Math.cosh(e/2),SC27S.p); return [Math.exp(e/2)*n,Math.exp(-e/2)*n] }
 const SC26_V=26;
 function scV26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=SC26_V }
 const SC26_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
@@ -389,6 +406,10 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(s>=13&&L===0&&side==="home")return "win";
     // engine 26, the top flight: the stronger away side goes for the win too (a favourite chases the three points)
     if(s>=13&&L===0&&XI&&XI.gf>1&&SC26.awayW&&gap<0)return "win"; return st.mode[side] };
+  // engine 27: a game the computer plays (both sides, a simmed one of yours too): half the plans' pull on its goals undone (SC27S.q)
+  const PQ=(()=>{ if(ENGINE_V<27||humans.home||humans.away||!(SC27S.q>0))return 1; const H=AGGR[st.mode.home]||AGGR.balanced, A=AGGR[st.mode.away]||AGGR.balanced;
+    return Math.pow((H.own*A.opp+A.own*H.opp)/2/SC27S.qc,-SC27S.q) })();
+  const scPlanQ=()=>PQ;
   const modeOf=(s,side)=>{ const L=humans[side]&&st.late[side];
     if(L==="auto"||!humans[side])return cpuMode(side,s);
     return L||st.mode[side] };
@@ -424,8 +445,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     };
     const fH=finF("home"), fA=finF("away");
     const G0=(scV12()?SC.goals*SC12.g:SC.goals)*(XI&&XI.gf||1);   // engine 26: the division's own scoring
-    let lamH=G0/SEGS*Math.exp(e/2)*rateOf("home")*fH;
-    let lamA=G0/SEGS*Math.exp(-e/2)*rateOf("away")*fA;
+    const sp=scSplit(e), pq=scPlanQ();   // engine 27: the gap's split (scSplit), before exp(+-e/2); the plans' pull on the goals (scPlanQ)
+    let lamH=G0/SEGS*sp[0]*rateOf("home")*fH*pq;
+    let lamA=G0/SEGS*sp[1]*rateOf("away")*fA*pq;
     if(s>=12&&st.h!==st.a){ if(st.h<st.a){lamH*=1+SC.chase;lamA*=1+SC.exposed} else {lamA*=1+SC.chase;lamH*=1+SC.exposed} }
     const gH=poisson(rng,lamH), gA=poisson(rng,lamA);
     const t0=s*5;
@@ -491,7 +513,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const extraTime=()=>{
     if(XI)["home","away"].forEach(sd=>{ if(humans[sd]&&benchMine(sd))return; st.seg=SEGS; autoSubs(sd,1) });   // engine 26: one more change, in its own window
     const e=(gap+(XI?(xiE("home")-xiE("away"))*GS:0))*SC.edge; st.ot=1;
-    const G0=(scV12()?SC.goals*SC12.g:SC.goals)*(XI&&XI.gf||1); const gH=poisson(rng,G0*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,G0*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
+    const G0=(scV12()?SC.goals*SC12.g:SC.goals)*(XI&&XI.gf||1); const sp=scSplit(e), gH=poisson(rng,G0*SC.etGoals*sp[0]*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,G0*SC.etGoals*sp[1]*makeF("away","balanced","balanced")*finF("away"));
     st.h+=gH; st.a+=gA;
     const ev=[]; for(let i=0;i<gH;i++)ev.push({m:91+rng.int(30),side:"home",k:"goal",u:rng.int(100)});
     for(let i=0;i<gA;i++)ev.push({m:91+rng.int(30),side:"away",k:"goal",u:rng.int(100)});
