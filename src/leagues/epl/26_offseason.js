@@ -287,7 +287,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       Object.keys(u.para).forEach(t=>{ u.para[t].k++; if(u.para[t].k>2)delete u.para[t] });
       NAMES.forEach(t=>{ if(CONF[t]==="PL")u.plY[t]=(u.plY[t]==null?2:u.plY[t]+1) });
       P.PL.down.forEach(t=>{ u.para[t]={y:u.year,k:0,long:(u.plY[t]||2)>1}; delete u.plY[t];
-        (u.roster[t]||[]).forEach(p=>{ if(p&&p.k)p.k.sal=Math.round(p.k.sal*M27.relWage*1000)/1000 }) });
+        (u.roster[t]||[]).forEach(p=>{ if(p&&p.k)p.k.sal=Math.round(p.k.sal*M27.relWage*1000)/1000 });
+        if(u.kitty&&u.kitty[t])u.kitty[t]=Math.round(u.kitty[t]*0.5*10)/10 });   // the board takes back half the savings to cover the drop
       Object.keys(move).forEach(t=>{ if(move[t]==="PL"){ delete u.para[t]; u.plY[t]=0 } }) }
     Object.keys(move).forEach(t=>{ u.conf[t]=move[t]; if(move[t]==="PL")delete u.chute[t] });
     // keep North and South at 24, as the FA does: move a club on the border

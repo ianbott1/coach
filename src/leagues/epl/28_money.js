@@ -32,7 +32,8 @@ const M27={eq:96.9, merit:2.65, fac:[8.9,24.9], ch:11,
   chute:[0.55,0.45,0.20],
   own:{PL:[45,2.5,1420,2176], CH:[8,2.0,1300,1700]},
   board:{PL:0.70, CH:0.95},         // the board's own line: squad costs against revenue (the Championship's owners fund the gap)
-  kit:0.40,                         // the summer's money for fees: a share of revenue (the Premier League spent £3.0bn gross in summer 2025 on £6.8bn)
+  kit:{PL:0.40,CH:0.20},            // the summer's money for fees: a share of revenue (the Premier League spent £3.0bn gross in summer 2025 on £6.8bn
+                                    // of revenue, the Championship £240M on £942M, and £145M the summer before)
   green:0.85, red:1.15, ptsBase:6, ptsPer:6.5,
   relWage:0.6,                      // a relegation clause: wages cut by 40% on going down (common in English contracts)
   amortMax:5};                      // fees amortised over the contract, five years at most (the Premier League's cap)
@@ -68,7 +69,7 @@ function budget27(u,t,d){ d=d||CONF[t]; const r=rev27(u,t,d); if(!r)return null;
 function kitty27(u,t,d){ d=d||CONF[t]; const r=rev27(u,t,d); if(!r)return null;
   const prom=d==="PL"&&(CONF[t]!=="PL"||(u.moved&&u.moved.year===u.year&&u.moved.moves&&u.moved.moves[t]==="PL"));
   const owe=owed27(u,t,u.year), due=due27(u,t,u.year), levy=(u.levy&&u.levy[t])||0;   // instalments made last summer fall due now
-  return Math.max(0,Math.round((r.tot*M27.kit*(prom?1.5:1)-owe+due-levy+((u.kitty&&u.kitty[t])||0))*10)/10) }
+  return Math.max(0,Math.round((r.tot*M27.kit[d]*(prom?1.5:1)-owe+due-levy+((u.kitty&&u.kitty[t])||0))*10)/10) }
 /* instalments: owed by a buyer, due to a seller, by the summer they fall in */
 function owed27(u,t,y){ return ((u.inst&&u.inst[t])||[]).filter(x=>x.y===y&&x.f>0).reduce((s,x)=>s+x.f,0) }
 function due27(u,t,y){ return ((u.inst&&u.inst[t])||[]).filter(x=>x.y===y&&x.f<0).reduce((s,x)=>s-x.f,0) }
@@ -137,6 +138,8 @@ const mustSell27=(u,t)=>ledgerDiv(CONF[t])&&payroll(u.roster[t])>budgetOf(u,t)+0
    summers) and fit under its wage line, from its own division (a club its size or smaller) or up to two below; three
    at most a summer. The seller's backup steps up; a seller with money buys in turn. Nothing is drawn: the summer's
    order comes from the money and the rosters. */
+const M27_BUYS=[3,2,1];   // a summer's fee signings for the twelve, at most, by tier: a Championship club's market is smaller (its clubs spent
+                          // £240M gross in summer 2025 to the top flight's £3.0bn: Deloitte, cited at the top of this file)
 function market27(u,rep,pool,leave,prog,humans){
   const H=new Set(humans||[]), tierOf=t=>DIVS[CONF[t]].tier;
   const clubs=NAMES.filter(t=>!H.has(t)&&u.roster[t]&&tierOf(t)<=3);
@@ -144,7 +147,7 @@ function market27(u,rep,pool,leave,prog,humans){
   clubs.forEach(t=>{ const d=CONF[t]; K[t]=ledgerDiv(d)?kitty27(u,t,d):tKitty(u,t,payroll(u.roster[t])); must[t]=mustSell27(u,t) });
   rep.market=rep.market||[]; u.saleP=u.saleP||{};
   for(let round=0;round<3;round++){
-    const order=clubs.filter(t=>K[t]>0.3&&(buys[t]||0)<4).sort((a,b)=>K[b]-K[a]||(a<b?-1:1));
+    const order=clubs.filter(t=>K[t]>0.3&&(buys[t]||0)<M27_BUYS[tierOf(t)-1]).sort((a,b)=>K[b]-K[a]||(a<b?-1:1));
     order.forEach(B=>{
       const R=u.roster[B], dB=CONF[B], cap=budgetOf(u,B); let best=null;
       NAMES.forEach(Sl=>{ const S2=u.roster[Sl]; if(Sl===B||H.has(Sl)||!S2)return; const dt=tierOf(Sl)-tierOf(B); if(dt<0||dt>2)return;

@@ -17,7 +17,7 @@ const J27_ALLOW=0.12;                 // of the summer's share of revenue, kept 
 const J27_CPU={PL:7,CH:5};            // the computer's deals on deadline day, a division
 const jOn27=()=>fo27()&&typeof SEA!=="undefined"&&!!SEA&&!!SEA.roster;
 function jU27(sea){ const o=Object.create(U); o.roster=(sea||SEA).roster; return o }   // the summer's functions, on the season's rosters
-function jAllow27(u,t){ const d=CONF[t], r=ledgerDiv(d)?rev27(u,t,d):null; return r?Math.round(r.tot*M27.kit*J27_ALLOW*10)/10:0 }
+function jAllow27(u,t){ const d=CONF[t], r=ledgerDiv(d)?rev27(u,t,d):null; return r?Math.round(r.tot*M27.kit[d]*J27_ALLOW*10)/10:0 }
 // this season's January deals: yours (kept among the promotions) and the computer's
 function jDeals27(sea,cpuOnly){ sea=sea||SEA; const o=[];
   if(!cpuOnly&&typeof tdAllTrades==="function")tdAllTrades().forEach(x=>{ if(x.epl27)o.push(x) });
