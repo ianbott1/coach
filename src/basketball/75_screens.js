@@ -4,6 +4,15 @@
    call screen with the staff's advice, and the replay view. */
 
 /* ---- names ---- */
+/* the spot whose man the run of play names for a three or a bucket inside: a fixed pattern by the event's number (the
+   two guards and the wing took every named three, however the roster shot); engine 26 (stats): by the shares the box
+   score uses (position, rating, Shooting or Finishing), still by the event's number, so the clip and the box agree */
+function bbSlot(team,kind,u){ u=u||0;
+  if(typeof ENGINE_V==="undefined"||ENGINE_V<26)return kind==="three"?[1,2,0,1,2][u%5]:[4,3,4,2][u%4];
+  const R=typeof SEA!=="undefined"&&SEA&&SEA.roster&&SEA.roster[team]; if(!R)return kind==="three"?[1,2,0,1,2][u%5]:[4,3,4,2][u%4];
+  const k=kind==="three"?"tpm":"pts2", W=POS.map((P,i)=>{ const p=R[i]; if(!p)return 0; const r=ROLE26[P.p]||ROLE[P.p];
+    return (k==="tpm"?r.tpm:r.pts)*Math.pow(Math.max(0.55,1+(p.r-60)/20*BB_SLOPE26),2)*bbLean(p,k) }), T=W.reduce((a,b)=>a+b,0);
+  let x=((u*0.6180339887+0.31)%1)*T, i=0; while(i<4&&x>=W[i]){ x-=W[i]; i++ } return i }
 function bbPlayer(team,i,u,bn,off){
   const R=SEA.roster&&SEA.roster[team]; if(!R)return null;
   // an injured player isn't on the floor (Grokbot: "OUT 4 more weeks", and he hit threes)
@@ -33,8 +42,8 @@ function bbEventText(g,e,d){
   const surname=n=>surnameIn(n,g);   // an initial when both sides have the surname
   const tm=e.side==="home"?g.home:g.away, u=e.u||0, bn=!!(d&&d.bn&&d.bn[e.side]);
   const off=bbOff(d,e.side,tm);
-  if(e.k==="three"){ const n=bbPlayer(tm,[1,2,0,1,2][u%5],u,bn,off); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
-  if(e.k==="inside"){ const n=bbPlayer(tm,[4,3,4,2][u%4],u,bn,off); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
+  if(e.k==="three"){ const n=bbPlayer(tm,bbSlot(tm,"three",u),u,bn,off); return {team:tm,tag:"",text:e.n>1?`${e.n} threes in the stretch, ${surname(n)} with one`:`${n} buries a three`} }
+  if(e.k==="inside"){ const n=bbPlayer(tm,bbSlot(tm,"inside",u),u,bn,off); return {team:tm,tag:"",text:`${e.n} buckets inside, ${surname(n)} with an and-one`} }
   if(e.k==="foul"){ const n=bbStar(tm); return {team:tm,tag:e.f>=BB.foulOut-2?"FOULS":"",text:`${n} picks up his ${ordw(e.f)} foul`} }
   if(e.k==="sit"){ return {team:tm,tag:"BENCH",text:e.again?`${bbStar(tm)} stays on the bench to start the half, still on ${e.f} fouls`:`${bbStar(tm)} heads to the bench with ${e.f} fouls`} }   // review round: the second sit on the same fouls read as a repeat
   if(e.k==="out"){ return {team:tm,tag:"FOULED OUT",text:`${bbStar(tm)} has fouled out`} }
