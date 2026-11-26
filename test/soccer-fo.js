@@ -1,5 +1,5 @@
 /* Soccer's money side, engine 27, against English football's own figures. Last line: MATCH or MISMATCH.
-     node test/soccer-fo.js [dist/soccer-coach.html]
+     node test/soccer-fo.js [dist/soccer-coach.html]     (FO_QUICK=1: without the five seasons of part 4)
    The figures (each check names its source):
    - Premier League central payments 2024-25: an equal share of £96.9M, a merit payment of about £2.6M a place (£2.6M to
      £53.1M), facility fees of £8.9M to £24.9M:
@@ -120,6 +120,9 @@ ok(A.tdState().open&&A.LEAGUE.trade.tab()==='Transfers','January: the window is 
   const P=A.U.roster[my].find(p=>p&&p.n===(bought&&bought.x.n)); ok(P&&P.fee===bought.x.fee&&P.amY>0,'the bought man carries his fee and its write-off into next season');
   const L=A.U.roster[bought.x.team].find(p=>p&&p.n===bought.c.out.n); ok(L&&L.loan&&L.loan.from===my,'your man on loan at the seller, coming home in the summer');
   ok(fin[my]&&fin[my].sales>=((sold&&sold.fee)||0)-0.1-0.0,'the sale counts in the rule\'s revenue (profit on sales)'); }
+  const W=txt(A.tWindowHTML(A.S.off.picks));
+  ok(['The books','Squad cost ratio','Money for fees','Bids for your players','Deals agreed','The market','Loans'].every(k=>W.indexOf(k)>=0),'the summer screen renders: the books, money for fees, bids, deals, the market, loans');
+  ok(/Television \(equal share\) £96\.9M/.test(W)&&/Merit, by where you're expected to finish/.test(W),'next season\'s books: the equal share, merit by where the club is expected to finish');
 
 if(!process.env.FO_QUICK){
 /* 4. the long run: two careers, five seasons, the league's money against the real one */

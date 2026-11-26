@@ -27,8 +27,8 @@ the league's whole-squad spending.
   parachutes.
 - Real figures (sources below): top-flight revenue £6.8bn in 2024-25 (£340M a club), wages 65% of it; Championship
   revenue £942M, wages 93% of it in 2023-24.
-- Measured (`test/soccer-fo.js`, two careers, five seasons): top-flight revenue £334M a club; squad costs 63% of revenue
-  (seasons 58% to 67%; real wages 65%); the Championship 66% (real 93%: lower here, see Not yet).
+- Measured (`test/soccer-fo.js`, two careers, five seasons): top-flight revenue £331M a club; squad costs 63% of revenue
+  (seasons 59% to 69%; real wages 65%); the Championship 64% (real 93%: lower here, see Not yet).
 - Games: soccer. Files: `28_money.js`, `26_offseason.js` (the parachute clock, the relegation cut, `budgetOf`).
 - Tested: `test/soccer-fo.js` parts 2 and 4.
 - Not yet: League One and below keep the old budgets and kitties (their clubs aren't in the books).
@@ -41,7 +41,9 @@ the league's whole-squad spending.
   (its sanctions aren't published; the Premier League's are used). The season's books close at its end (`close27`:
   revenue by where the club finished, the ratio, any levy) and are shown on the books card in both windows.
 - Why: the brief: "the league's spending rule, with a points deduction for a breach".
-- Measured: no deductions in ten seasons (the computer's clubs keep to their boards' lines, which are under the rule).
+- Measured: two deductions in the ten seasons of `test/soccer-fo.js`, and one in `test/epl-rules.js`'s four (the
+  computer's clubs keep to their boards' lines, which are under the rule; a deduction comes from a club whose revenue
+  falls under its wage bill, as a relegated one's can).
   The rule bites a human club that spends past its line (a club that buys with the wage room of sales it then doesn't
   make, or carries a relegated wage bill).
 - Tested: `test/soccer-fo.js` (the rule's lines, no runaway deductions).
@@ -63,6 +65,9 @@ the league's whole-squad spending.
   at 90% of your price; Ask for more gets 15% more or the club walks away (its limit worked out once).
 - Why: the brief, and the review: the old window was a list of fixed prices, no answer, no terms.
 - Tested: `test/soccer-fo.js` part 2 (answers, release clause, instalments, write-off), `test/transfers.js` (engine 26).
+- Not yet: contract expiry is the free agency the game already had (a man in the last year of his deal isn't on the
+  summer's market and leaves on a free when it ends; in January the market shows he's out of contract in the summer
+  and his fee is low); there's no pre-contract agreement in January for a free move in the summer.
 
 ## 4. The homegrown rule (engine 27)
 - What changed: the Premier League's squad list is 25, at most 17 of them over 21 and not homegrown. Of the twelve, at
@@ -80,10 +85,10 @@ the league's whole-squad spending.
   the summer's news (`rep.market`).
 - Why: before, only your bids moved players between clubs; the computer's clubs rebuilt through the academy and free
   transfers.
-- Measured (two careers, five summers): the top flight's gross £2.23bn in squad terms (summers £1.6bn to £2.6bn; real
-  £3.0bn in 2025, the record); the six richest clubs spend 35% of it (the
-  real big six 49%); the Championship 12% of the top flight's (real 8%); promoted clubs £40M each against the top
-  flight's £47M average (real 2025: Sunderland £162M, Burnley £108M, Leeds £98M against £150M).
+- Measured (two careers, five summers): the top flight's gross £2.26bn in squad terms (summers £1.1bn to £3.1bn; real
+  £3.0bn in 2025, the record); the six richest clubs spend 36% of it (the real big six 49%); the Championship 14% of
+  the top flight's (real 8%); promoted clubs £37M each against the top flight's £47M average (real 2025: Sunderland
+  £162M, Burnley £108M, Leeds £98M against £150M).
 - Not yet: the richest clubs spend less than real ones: their twelve's wages reach their 70% line, and the model can't
   yet sell a star to make room (the sold man would leave the twelve with no buyer). Clubs don't yet sell to a club
   abroad (the real top flight's net spend was £1.2bn of £3.0bn).
@@ -94,25 +99,33 @@ the league's whole-squad spending.
   starter's season adds 1.2 to his summer's development, a bench season 0.3). If he's no better than both men at his
   position at home, he's let go. You can loan one out and borrow one in a summer (a bigger club's young player who'd
   start for you; you pay his wages). The computer's top-two-division clubs loan one young backup each a summer.
-- Measured: 128 loans in ten summers, all down the pyramid.
+- Measured: 137 loans in ten summers, all down the pyramid.
 - Tested: `test/soccer-fo.js` part 4.
 
 ## 7. The January window with fees (engine 27)
 - What changed: January's window (1 January to 2 February) is now a transfer window in the same terms as the summer's:
   the Trades tab reads Transfers; you bid a fee and the club answers, then sign him (40% now on £10M or more); clubs bid
   for yours, and you can ask for more. The twelve stay whole: the selling club takes the buyer's spare man at that
-  position on loan until the summer (he goes home when the summer opens). The money: 12% of the summer's share of revenue
-  kept back for January, plus the summer's savings, plus 80% of what you take in now. On the window's last Saturday the
-  computer's clubs do their business (`jCpu27`): the top four and bottom five of each of the top two divisions, the
-  richest first, seven deals at most in the top flight and five in the Championship, a club selling once. Your deals are
+  position on loan until the summer (he goes home when the summer opens). The money: a share of the summer's money
+  kept back for January (12% in the top flight; 30% in the Championship, where a board backs a promotion push), plus the
+  summer's savings, plus 80% of what you take in now. On the window's last Saturday the computer's clubs do their
+  business (`jCpu27`): in the top flight the top four and the bottom five, in the Championship the play-off places, the
+  richest first, seven deals at most in the top flight and three in the Championship, a club selling once. Below the
+  Championship the round-83 swaps go on as before (`LEAGUE.trade.cpuSkip` leaves the top two to the fee market).
+  January's sales count in the 1 March check's revenue. Your deals are
   kept among the day's moves (`S.promos`) and the computer's in the season's `cpuTr`, so a reload replays them; at the
   season's end the fees, instalments, write-offs and loans go into next season's books (`eplJanCarry`, from `tdCarry`).
 - Why: before, January was one-for-one swaps with no money.
 - Real figures: £372M in January 2025, about £400M in January 2026.
-- Measured: January £305M in squad terms (the five-season mean; one January with your deals in, £358M).
+- Measured: January £273M in squad terms (the ten-season mean; one January with your deals in, £358M).
 - Games: soccer. Core: two guarded lines in `src/core/98_trades.js` (`tdApply` routes `x.epl27`, as it routes `x.nba`;
-  `tdCarry` calls `eplJanCarry` before the swap) and one in `src/core/99_app.js` (the sub-tab's label from
-  `LEAGUE.trade.tab` when a league gives one).
+  `tdCarry` calls `eplJanCarry` before the swap), two in `src/core/98_trades_cpu.js` (`cpuDeadline` skips a division
+  the league's `cpuSkip` names, and adds its deals to the season's `cpuTr` rather than replacing them; nothing else sets
+  either before the deadline) and one in `src/core/99_app.js` (the sub-tab's label from `LEAGUE.trade.tab` when a
+  league gives one).
+- Why the Championship's January is its play-off places: `test/epl-predict.js` (starting strength against the final
+  table) had the Championship at 0.52 when its January had only the money-bound fee deals, against 0.62 with the old
+  swaps (the bar is 0.55; the real league is famously open). With the play-off places buying it reads 0.58.
 - Tested: `test/soccer-fo.js` part 3 (the screen, a buy, a sale, money, whole twelves, deadline day, a reload after
   deadline day and to the season's end, the books carried).
 - Not yet: no loans in January other than the ones that go with a deal; no rival bidders in January.
@@ -148,4 +161,6 @@ the league's whole-squad spending.
 - New: `src/leagues/epl/28_money.js`, `src/leagues/epl/99_fo.js`, `src/leagues/epl/99_fo_jan.js`, `test/soccer-fo.js`.
 - Changed: `src/leagues/epl/26_offseason.js`, `src/leagues/epl/27_transfers.js`, `src/leagues/epl/98_offseason_views.js`,
   `src/core/20_engine.js` (engine 27, `eng27`), `src/core/98_trades.js` (two hooks), `src/core/99_app.js` (the tab's
-  label), `test/transfers.js` (pinned to engine 26, which it measures), `test/run-all.js` (the new test, fast tier).
+  label), `src/core/98_trades_cpu.js` (two lines), `test/transfers.js` (pinned to engine 26, which it measures),
+  `test/epl-rules.js` (a table's points are three a win and one a draw less any deducted), `test/run-all.js` (the new
+  test, fast tier).
