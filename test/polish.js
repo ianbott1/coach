@@ -168,8 +168,8 @@ check('the staff rating\'s scale covers every rating shown (seven games)',()=>{
 
 // Playtest (pro basketball): asking OKC about a forward said only "Nobody of yours at his position would get him." The
 // answer says who of yours comes closest and what stands in the way (words only; the trade model is untouched).
-check('asking about a player says what stands in the way (pro basketball)',()=>{
-  const api=load('nba'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); for(let i=0;i<15;i++)ev('simAdvance()');
+check('asking about a player says what stands in the way (pro hockey; pro basketball now has the trade machine)',()=>{
+  const api=load('nhl'), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); for(let i=0;i<15;i++)ev('simAdvance()');
   if(!ev('tdState().open')){ ok(false,'trades closed on day 15'); return }
   let no=0, said=0; const ex=[];
   for(const t of ev('tdClubs()').slice(0,8)){ (api.SEA.roster[t]||[]).forEach((p,b)=>{ if(!p)return; ev(`TD_UI={club:${JSON.stringify(t)},ask:${b}}`);
