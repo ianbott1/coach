@@ -111,7 +111,7 @@ function startLive(g,step,slot){
   const rng=new RNG(liveSeed(step));
   const userIsHome=(g.home===S.myTeam);
   const oppPlan=h2h?((S.coaches[oj].plans&&S.coaches[oj].plans[step])||"balanced"):oj>=0?"balanced":cpuPlanOf(opponentOf(g),userIsHome?e.a-e.h:e.h-e.a);   // round 89: the computer's plan for its shape
-  const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step):undefined;
+  const knock=SEA.phase!=="week"||!!g.cup, ctx=typeof gameCtx==="function"?gameCtx(g.home,g.away,SEA.year,step,SEA):undefined;
   const ckey0=callKey(step)+(slot?"#"+slot:"");
   let pm=((S.planMid&&S.planMid[ckey0])||[]).map(x=>x.slice());   // round 68: plan changes made in this game
   // round 100: the game starts on the plan its card shows. A change of your own made before the first possession of
@@ -4084,6 +4084,7 @@ function render0(){
   document.querySelectorAll("[data-team]").forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); openTeam(b.dataset.team);});
   if(typeof bindLines==="function")bindLines();
+  if(typeof sportBind==="function")sportBind();   // soccer: the team sheet
   document.querySelectorAll("[data-mark]").forEach(b=>b.onclick=()=>{
     S.seen=S.seen||{}; S.seen[b.dataset.mark]=1; save(); render();});
   bindGuide();

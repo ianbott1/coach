@@ -1,5 +1,5 @@
 {
- "fp": "50a11f33f0298177",
+ "fp": "9491d6ac34f5d216",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -155,21 +155,26 @@
    "fp": "50a11f33f0298177",
    "from": "e381d9e5fb2e8b43",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "9491d6ac34f5d216",
+   "from": "50a11f33f0298177",
+   "note": "rv2/soccer engine 26: the matchday (team sheet, shapes, five changes in three windows, condition and rotation)"
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "1fd83e2bd664825d",
-    "post": "80479a984693125a",
-    "champion": "Manchester United",
-    "rec": "e77fed74c16f7deb",
-    "poll": "c0bd2a6b4af2fb30",
-    "heis": "14750437202280fd",
-    "history": "245f770158caacfa",
-    "universe": "cea8e6101522d5b6",
-    "screens": "254c9e5d6dde2757"
+    "games": "62a27731fecc7b2c",
+    "post": "71e245f6be46893d",
+    "champion": "Manchester City",
+    "rec": "f923fd199afdc4d0",
+    "poll": "ec6272bd11cf3f2f",
+    "heis": "d9c5cb211c247d5d",
+    "history": "e9dced4e97ab74f0",
+    "universe": "7f20534ba227e258",
+    "screens": "3ee830f138afb3aa"
    }
   ]
  }

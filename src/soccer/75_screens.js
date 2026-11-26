@@ -91,8 +91,12 @@ function scEventText(g,e,used){
   if(e.k==="red"){ const n=cardName(g,e,tm,u); return {team:tm,tag:"RED",text:`${n||"The centre-back"} sees a second yellow. Down to ten.`} }
   if(e.k==="cue"){ const line=pickOf(CUE[e.cue],u).replace("{t}",tm).replace("{o}",opp).replace("{s}",u%2?"left":"right");
     return {team:tm,tag:"",text:line,cue:true} }
+  // engine 26: a change (the names the engine kept when it was made) and a change of approach
+  if(e.k==="sub")return {team:tm,tag:"SUB",text:`${surname(e.pin||"")} on for ${surname(e.pout||"")}${e.u!=null&&SC_UNITW[e.u]?" ("+SC_UNITW[e.u]+")":""}`};
+  if(e.k==="shift")return {team:tm,tag:"",text:`${tm} ${SC_SHIFT[e.app]||"change their approach"}`};
   return {team:tm,tag:"",text:""};
 }
+const SC_SHIFT={press:"push up and press higher",block:"drop deeper and sit on it",wing:"look to work it wide",direct:"start going long and direct"};
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Penalties":"Extra time"):segClock(d.seg) }
 /* the replay script: one row per event, a quiet row for a quiet spell */
 function driveScript(g,drives){

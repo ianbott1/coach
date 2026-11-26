@@ -11,6 +11,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [realism.md](realism.md) | Board targets from expected wins; MLB, NFL, college football, NHL and college basketball calibration; `test/realism.js` | All seven |
 | [polish.md](polish.md) | Fifteen bugs found in play (carried-plan prompt, bench stats, nickel and dime, brackets, verdicts, sport words and more) | All seven |
 | [hockey.md](hockey.md) | Round 2 (engine 26): the goalie pull at real benches' times with today's empty-net rates, tonight's lines and legs, the timeout, the backup on the live bar | Pro hockey |
+| [soccer.md](soccer.md) | Round 2 (engine 26): the matchday, a team sheet with shapes, five changes in three windows by name, how we play from here, condition, rotation and knocks in a congested run | Soccer |
 
 ## Rules kept
 

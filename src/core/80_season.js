@@ -195,6 +195,7 @@ class Season{
         if(!cup&&this.countsInRecord()){this.rec[win][0]++; this.rec[lose][1]++}
       }
       if(LEAGUE.tracksOT&&F.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
+      if(typeof sportAfterGame==="function")sportAfterGame(this,a,b,F.drives);   // soccer (engine 26): the minutes off each man's condition
       if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function")this._creditV4(a,b,fh,fa,F.drives);   // round 74
       else if(this.roster){
         [[a,fh,fa],[b,fa,fh]].forEach(pair=>{
@@ -237,7 +238,7 @@ class Season{
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
     if(LEAGUE.tracksOT||LEAGUE.draws||LEAGUE.postFull)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
     // what the sport knows about the two sides before kick-off (soccer: each club's usual approach)
-    if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step)});
+    if(typeof gameCtx==="function")gopts=Object.assign({},gopts||{},{ctx:gameCtx(a,b,this.year,this.step,this)});
     /* round 81: any game in the league can be watched (Ian: "Football Manager ... you can watch the full game"). Before a
        computer game is played, where the dice stood and what it was played with are kept (the season's own copy, not
        saved: a load replays the season and keeps them again), so it can be played again from the same dice on a tap
@@ -262,6 +263,7 @@ class Season{
     }
     // leagues that count overtime losses (hockey): a point for losing in OT
     if(LEAGUE.tracksOT&&gs.ot&&this.phase==="week"){this.otl=this.otl||{}; this.otl[lose]=(this.otl[lose]||0)+1}
+    if(typeof sportAfterGame==="function")sportAfterGame(this,a,b,gs.drives);   // soccer (engine 26): the minutes off each man's condition
     if(this.roster&&ENGINE_V>=4&&typeof teamLines==="function"){ this._creditV4(a,b,hp,ap,gs.drives);   // round 74
       // round 81: the names the credit put on the plays (football's who-played, the scorers and assists), kept with the
       // dice so a replay names the same men as the box score even after injuries and moves. (Inside this branch: placed
