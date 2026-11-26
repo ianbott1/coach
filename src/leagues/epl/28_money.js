@@ -115,7 +115,7 @@ function close27(u,sea){
 function assess27(sea){
   if(!fo27()||sea._ded27===sea.year)return; sea._ded27=sea.year; sea.ded=sea.ded||{};
   ["PL","CH"].forEach(d=>{ const T=sea.table(d); T.forEach((t,i)=>{
-    const sales=(U&&U.saleP&&U.saleP[t])||0, x=scr27(U,t,sea.roster[t],d,i+1,sales); if(!x)return;
+    const sales=((U&&U.saleP&&U.saleP[t])||0)+(typeof jSales27==='function'?jSales27(sea,t):0), x=scr27(U,t,sea.roster[t],d,i+1,sales); if(!x)return;   // January's sales too (99_fo_jan)
     const red=M27.red*(x.rev.tot+sales), over=x.cost-red;
     if(over>0)sea.ded[t]=M27.ptsBase+Math.floor(over/M27.ptsPer) }) });
   sea.dedNote=Object.keys(sea.ded).length?Object.assign({},sea.ded):null;

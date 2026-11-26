@@ -28,7 +28,7 @@ for(let y=0;y<N;y++){
     const worst=api.NAMES.reduce((a,t)=>mx[t]>mx[a]?t:a);
     ok(mx[worst]<=2, `${yr}: ${worst} plays ${mx[worst]} in a row at the same venue`);
     ok(api.NAMES.every(t=>home[t]===per[t]/2), `${yr}: a club without half its games at home`) }
-  ok(api.NAMES.every(t=>E.pts(t)===3*(E.regRec||E.rec)[t][0]+((E.drw||{})[t]||0)), `${yr}: points aren't 3 a win and 1 a draw`);
+  ok(api.NAMES.every(t=>E.pts(t)===3*(E.regRec||E.rec)[t][0]+((E.drw||{})[t]||0)-((E.ded||{})[t]||0)), `${yr}: points aren't 3 a win and 1 a draw (less any deducted under the spending rule, engine 27)`);
   const expectMove={};
   Object.keys(DIVS).forEach(d=>{ const R=DIVS[d], T=E.table(d), P=E.po[d];
     for(let i=1;i<T.length;i++){const a=T[i-1],b=T[i],A=E.gfga(a),B=E.gfga(b);

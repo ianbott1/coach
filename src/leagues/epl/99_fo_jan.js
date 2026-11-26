@@ -9,15 +9,15 @@
    January 2026 against £3.0bn in summer 2025, https://www.gbnews.com/sport/football/premier-league-winter-transfer-window-deadline-day
    and https://www.deloitte.com/uk/en/about/press-room/deloitte-premier-league-spending-record-eclipsed.html), plus what
    was saved from the summer, plus 80% of what you take in now. A fee of £10M or more goes 40% now and the rest over the
-   next two summers. On the window's last day the computer's clubs do their own business: the clubs at the bottom
-   buying to stay up and the clubs at the top to win the league (or to go up), the richest first, a few deals a
-   division. Everything here is kept as the round-83 trades are (S.promos for yours, the season's cpuTr for theirs), so
+   next two summers. On the window's last day the computer's clubs do their own business: in the top flight the clubs
+   at the bottom buying to stay up and the clubs at the top to win the league, in the Championship the play-off places
+   buying to go up, the richest first, a few deals a division. Below the Championship the round-83 swaps go on. Everything here is kept as the round-83 trades are (S.promos for yours, the season's cpuTr for theirs), so
    a reload replays it, and carried into next season's rosters and books at the season's end. */
-const J27_ALLOW=0.12;                 // of the summer's share of revenue, kept back for January
-const J27_CPU={PL:7,CH:5};            // the computer's deals on deadline day, a division
+const J27_ALLOW={PL:0.12,CH:0.3};     // of the summer's share of revenue, kept back for January (a Championship board backs a promotion push)
+const J27_CPU={PL:7,CH:3};            // the computer's deals on deadline day, a division
 const jOn27=()=>fo27()&&typeof SEA!=="undefined"&&!!SEA&&!!SEA.roster;
 function jU27(sea){ const o=Object.create(U); o.roster=(sea||SEA).roster; return o }   // the summer's functions, on the season's rosters
-function jAllow27(u,t){ const d=CONF[t], r=ledgerDiv(d)?rev27(u,t,d):null; return r?Math.round(r.tot*M27.kit[d]*J27_ALLOW*10)/10:0 }
+function jAllow27(u,t){ const d=CONF[t], r=ledgerDiv(d)?rev27(u,t,d):null; return r?Math.round(r.tot*M27.kit[d]*J27_ALLOW[d]*10)/10:0 }
 // this season's January deals: yours (kept among the promotions) and the computer's
 function jDeals27(sea,cpuOnly){ sea=sea||SEA; const o=[];
   if(!cpuOnly&&typeof tdAllTrades==="function")tdAllTrades().forEach(x=>{ if(x.epl27)o.push(x) });
@@ -26,6 +26,8 @@ function jDeals27(sea,cpuOnly){ sea=sea||SEA; const o=[];
 function jMoney27(t,sea,cpuOnly){ let k=jAllow27(U,t)+((U.kitty&&U.kitty[t])||0);
   jDeals27(sea,cpuOnly).forEach(x=>{ if(x.buyer===t)k-=x.now; if(x.seller===t)k+=x.now*0.8 });
   return Math.max(0,Math.round(k*10)/10) }
+// January's sales so far, for the rule's revenue before the books close (the fee: the seller's book value is written off at the close)
+function jSales27(sea,t){ return jDeals27(sea).filter(x=>x.seller===t).reduce((s,x)=>s+x.fee,0) }
 const jDown27=(fee,inst)=>inst&&fee>=T27_INST?Math.round((fee-2*Math.round(fee*0.3*10)/10)*10)/10:fee;
 const jHurt27=(sea,t,i)=>sea.talent&&sea.talent.active(t).some(e=>e.idx===i);
 // who of the buyer's goes the other way on loan: the weaker of the two at that position (the backup, as a rule)
@@ -84,14 +86,15 @@ function eplJanCarry(u,x){
   P.k={sal:x.wage,yrs:x.yrs}; book27(P,x.fee,x.yrs); P.rcl=undefined; P.from=x.seller;
   L.loan={from:x.buyer,y:u.year+1} }
 
-/* the window's last day: the computer's clubs. In each of the top two divisions, the clubs with most at stake (the
-   bottom five, to stay up; the top four, to win it or go up), the richest first, each buys the man who helps it most
+/* the window's last day: the computer's clubs. In each of the top two divisions, the clubs with most at stake (in the
+   top flight the bottom five, to stay up, and the top four, to win it; in the Championship the play-off places, to go
+   up), the richest first, each buys the man who helps it most
    for what it can put down now, from a club its size or smaller in its division or one below; a club sells once */
 function jCpu27(sea){
   if(sea._j27===sea.year||sea.step!==ctDeadline())return; sea._j27=sea.year;
   const u=jU27(sea), H=sea.humans||[], used={}, out=[];
   ["PL","CH"].forEach(d=>{ const tbl=sea.table(d), n=tbl.length; let made=0;
-    const buyers=tbl.map((t,i)=>({t:t,pos:i+1})).filter(c=>H.indexOf(c.t)<0&&sea.roster[c.t]&&(c.pos<=4||c.pos>n-5))
+    const buyers=tbl.map((t,i)=>({t:t,pos:i+1})).filter(c=>H.indexOf(c.t)<0&&sea.roster[c.t]&&(d==="PL"?c.pos<=4||c.pos>n-5:c.pos<=6))
       .map(c=>Object.assign(c,{m:jMoney27(c.t,sea,true)})).sort((a,b)=>b.m-a.m||(a.t<b.t?-1:1));
     buyers.forEach(c=>{ if(made>=J27_CPU[d]||used[c.t]||c.m<1)return; const B=c.t, RB=sea.roster[B]; let best=null;
       NAMES.forEach(Sl=>{ const RS=sea.roster[Sl]; if(Sl===B||used[Sl]||H.indexOf(Sl)>=0||!RS)return;
@@ -121,7 +124,7 @@ function jView27(){
   h+=jNewsHTML27(true);
   const mine=jDeals27().filter(x=>!x.cpu);
   if(mine.length)h+=`<div class="grouphead">Your deals this window</div><div class="card" style="padding:6px 12px">${mine.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${x.buyer===my?`signed ${esc(x.pn)} from ${esc(x.seller)} for ${money(x.fee)}${x.inst&&x.fee>=T27_INST?` (${money(x.now)} now)`:""}; ${esc(x.ln)} on loan to them`:`sold ${esc(x.pn)} to ${esc(x.buyer)} for ${money(x.fee)}${x.inst&&x.fee>=T27_INST?` (${money(x.now)} now)`:""}; ${esc(x.ln)} on loan to you`}</div>`).join("")}</div>`;
-  if(ledgerDiv(d)){ const sales=(U.saleP&&U.saleP[my])||0; h+=finCard27(U,my,d,{title:"The books this season",R:R,sales:sales}) }
+  if(ledgerDiv(d)){ const sales=((U.saleP&&U.saleP[my])||0)+jSales27(SEA,my); h+=finCard27(U,my,d,{title:"The books this season",R:R,sales:sales}) }
   h+=`<div class="budgetleft done">Money for fees ${money(jMoney27(my))} &middot; wage room ${money(Math.max(0,budgetOf(jU27(),my)-payroll(R)))} a year</div>`;
   if(!st.open)return h;
   // bids for yours
@@ -179,7 +182,8 @@ function jBind27(){
 /* the hooks: engine 27 takes the January window over; a season begun on engine 26 keeps the round-83 swaps */
 LEAGUE.trade.on=jOn27;
 LEAGUE.trade.view=jView27; LEAGUE.trade.bind=jBind27;
-LEAGUE.trade.cpu=function(sea){ if(!fo27())return false; jCpu27(sea); return true };
+LEAGUE.trade.cpu=function(sea){ if(fo27())jCpu27(sea); return false };   // then the round-83 swaps below the Championship
+LEAGUE.trade.cpuSkip=g=>fo27()&&ledgerDiv(g);
 LEAGUE.trade.offerCard=function(){ return "" };
 LEAGUE.trade.news=function(){ const L=jDeals27(SEA,true).filter(x=>x.cpu); if(!L.length||SEA.phase!=="week")return ""; const k=SEA.step-L[L.length-1].step; if(k<1||k>3)return ""; return jNewsHTML27(false) };
 LEAGUE.trade.tab=()=>jOn27()?"Transfers":"Trades";
