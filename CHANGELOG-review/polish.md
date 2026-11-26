@@ -198,7 +198,7 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Live speed going back to Normal after each call: not reproduced. S.watchSpeed is set only by the speed buttons and the
   1-4 keys and kept in the save; over a live college football game with six calls answered it stayed "fast" throughout
   (node, the game's own doAdvance/answerLive/liveTick). If it's seen again, the device and screen would help.
-- A bye week skipping the pregame card: not reproduced. Oregon State's week-3 bye shows the OPEN DATE card, Play moves
+- A bye week skipping the pregame card: not reproduced. Oregon's bye (its third week, seed 5) shows the OPEN DATE card, Play moves
   one week, and the next game's card follows.
 - "at Oregon" in week 14: not changed (left for the lead). The game's college season runs 14 weeks, Sep 5 to Dec 5, and
   the generator fills Dec 5 (real life's conference championship weekend) with about 44 games, most made up (a new
