@@ -1,5 +1,5 @@
 {
- "fp": "b67133ff4419ea04",
+ "fp": "ecd19db9673c1f77",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -135,21 +135,26 @@
    "fp": "b67133ff4419ea04",
    "from": "b67133ff4419ea04",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "ecd19db9673c1f77",
+   "from": "b67133ff4419ea04",
+   "note": "Pro basketball front office (rv/nba-fo): the real 2026-27 cap sheet and contracts, fifteen on a roster, the trade machine, free agency over days, the owner and the tax. New careers start on it, so universe, seasons and screens change on purpose."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "466eba38045fb0ae",
-    "post": "51a7b9ee928aa9fa",
-    "champion": "Boston",
-    "rec": "aa929acbb3d41009",
-    "poll": "f7d6b103e4e40c76",
-    "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "games": "aa7a81e1003bed77",
+    "post": "9548b07623d63c01",
+    "champion": "Detroit",
+    "rec": "dc2161cbe2f04b97",
+    "poll": "2c32d626e4b0c056",
+    "heis": "283b9dce59145d8c",
+    "history": "2db40ae386e09226",
+    "universe": "05ab698903ac1d13",
+    "screens": "4366eb0949013d68"
    }
   ]
  }
