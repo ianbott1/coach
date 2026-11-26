@@ -1,5 +1,5 @@
 {
- "fp": "5ff55da6769956fc",
+ "fp": "402d34ff185e18b8",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -160,21 +160,26 @@
    "fp": "5ff55da6769956fc",
    "from": "1a99adc5490ddf33",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "402d34ff185e18b8",
+   "from": "5ff55da6769956fc",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; football: completions, QB runs, two backs, picks spread, MVP by slot"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "216ddeb0e4ceff58",
-    "post": "f69739e230185b96",
-    "champion": "Kansas City",
-    "rec": "5ab7158be27f2c58",
-    "poll": "bf37a9685dcbcf1e",
-    "heis": "009b8c9b3313d49d",
-    "history": "7881d9a9fa7518a8",
-    "universe": "9e85d9f8c31dbec7",
-    "screens": "0c13cb6f8f7b0581"
+    "games": "0b33abec688d92c0",
+    "post": "57afa5d25294ffb9",
+    "champion": "Baltimore",
+    "rec": "3b630f26d168d3e8",
+    "poll": "89818df40c08738a",
+    "heis": "08794c02feee4cdd",
+    "history": "8b4ac2919f72e5a9",
+    "universe": "7e0b9d188ec3669a",
+    "screens": "5c826d5d54054c2a"
    }
   ]
  }

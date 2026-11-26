@@ -38,7 +38,7 @@ const HL_SPORT=(function(){
     const r=mulberry32((u*131+(typeof e.m==="string"?e.m.length*977:0)+(e.side==="home"?17:29))>>>0);
     const kind=e.k==="last"||e.k==="lastmiss"?(e.choice==="three"?"three":"two"):e.k;
     const made=e.k!=="lastmiss";
-    const idx=kind==="three"?[1,2,0,1,2][u%5]:kind==="inside"?[4,3,4,2][u%4]:(u%2?0:1);
+    const idx=kind==="three"||kind==="inside"?bbSlot(tm,kind,u):(u%2?0:1);
     const bnA=!!(d&&d.bn&&d.bn[e.side]), bnD=!!(d&&d.bn&&d.bn[e.side==="home"?"away":"home"]);
     const offA=typeof bbOff==="function"?bbOff(d,e.side,tm):null, offD=typeof bbOff==="function"?bbOff(d,e.side==="home"?"away":"home",e.side==="home"?g.away:g.home):null;
     let nm=""; try{ nm=bbPlayer(tm,idx,u,bnA,offA)||(e.k==="last"||e.k==="lastmiss"?bbStar(tm):"") }catch(er){}

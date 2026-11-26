@@ -1,5 +1,5 @@
 {
- "fp": "519ff910b4e06870",
+ "fp": "8dec97f4cb158ecd",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -440,6 +440,11 @@
    "fp": "519ff910b4e06870",
    "from": "023f5d25eed0f0a3",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "8dec97f4cb158ecd",
+   "from": "519ff910b4e06870",
+   "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; football: completions, QB runs, two backs, picks spread, MVP by slot"
   }
  ],
  "out": [
@@ -453,7 +458,7 @@
       "result": "Losing season",
       "grade": "D"
      },
-     "book": "1cf18f310897c466"
+     "book": "202cbbd8fa24b234"
     },
     {
      "team": "Tennessee",
@@ -462,7 +467,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "9e633e8387477566"
+     "book": "51a71de001986407"
     }
    ]
   },
@@ -473,19 +478,19 @@
      "team": "Kansas City",
      "last": {
       "rec": "10-7",
-      "result": "Lost in the divisional round",
-      "grade": "B"
+      "result": "Lost in the wild card round",
+      "grade": "B-"
      },
-     "book": "66051d5831b64e46"
+     "book": "71175ff0a4ea8327"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "4-13",
+      "rec": "6-11",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "370944ba5b5f63de"
+     "book": "1a1252136470b747"
     }
    ]
   },
@@ -495,11 +500,11 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "10-7",
+      "rec": "9-8",
       "result": "Lost in the wild card round",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "c50d7a541621ee75"
+     "book": "63603c4d9c7bdef1"
     },
     {
      "team": "Tennessee",
@@ -508,7 +513,7 @@
       "result": "SUPER BOWL CHAMPIONS",
       "grade": "A+"
      },
-     "book": "789c6c45c6abec20"
+     "book": "d5e677eefabd12bc"
     }
    ]
   }

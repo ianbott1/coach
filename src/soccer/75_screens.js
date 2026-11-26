@@ -18,11 +18,15 @@ function scPlayer(team,unit,u){
 const surname=n=>{ if(!n)return ""; const L=n.split(" ").slice(-1)[0]; try{ const g=typeof live!=="undefined"&&live&&live.g; if(g&&typeof surnameIn==="function")return surnameIn(n,g) }catch(e){} return L };
 /* round 89 (engine 12): who scores leans with Finishing, who assists with Passing (1.4x a spread, as the other boxes) */
 function scLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!p||typeof attrOf!=="function")return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
-  return Math.exp(0.35*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD)) }
+  const x=Math.exp(0.35*(A[k]-p.r)/(attrScale().s*ATTR_SPREAD));
+  return ENGINE_V>=26?Math.max(1/1.4,Math.min(1.4,x)):x }   // engine 26 (stats): held to 1.4x either way, as basketball's
+/* engine 26 (stats): who scores, by unit: the striker's share 0.38 -> SC26.ST (the Golden Boot averaged 34 and reached 58,
+   where it has been 27-36 in the last three Premier League seasons), the rest to wingers, midfield and set pieces */
+const SC26={ST:+((typeof process!=="undefined"&&process.env&&process.env.SC26_ST)||29),W:28,CM:23,CB:11,FB:9};
 function scScorer(team,u){
   // who scores: strikers most, then wingers, midfield, defenders off set pieces
   let x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
-  if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=12&&SEA&&SEA.roster&&SEA.roster[team]){ const R=SEA.roster[team], B={ST:38,W:26,CM:20,CB:8,FB:8};
+  if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=12&&SEA&&SEA.roster&&SEA.roster[team]){ const R=SEA.roster[team], B=ENGINE_V>=26?SC26:{ST:38,W:26,CM:20,CB:8,FB:8};
     const w=Object.keys(B).map(k=>[k,B[k]*scLean(R[SC_UNIT[k]],"fin")]), T=w.reduce((t,o)=>t+o[1],0); let v=(x+0.5)/100*T;
     for(const [k,wk] of w){ v-=wk; if(v<0){ unit=k; break } } }
   return {n:scPlayer(team,unit,u)||"a forward", unit:unit};
