@@ -1,5 +1,5 @@
 {
- "fp": "194928a238357ea7",
+ "fp": "971fa75188a62ca2",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -400,6 +400,11 @@
    "fp": "194928a238357ea7",
    "from": "954d331fcfa162f2",
    "note": "round 2 rv2/hockey (engine 26): the goalie pull at real benches' times, tonight's lines and legs, the timeout"
+  },
+  {
+   "fp": "971fa75188a62ca2",
+   "from": "194928a238357ea7",
+   "note": "Re-recorded once on the merged engine-26 build (round two)"
   }
  ],
  "out": [
@@ -409,20 +414,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "28-45-11",
+      "rec": "34-39-11",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "f67f37589efc6d63"
+     "book": "61d7b770962e94cc"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "36-37-11",
+      "rec": "33-41-10",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "60573a4805bf90cc"
+     "book": "c3bfa820626cf985"
     }
    ]
   },
@@ -432,20 +437,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "30-45-9",
+      "rec": "35-40-9",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C"
      },
-     "book": "1ec3ecf1a2916e9e"
+     "book": "d119ca77898e710c"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "33-39-12",
-      "result": "Losing season",
-      "grade": "B-"
+      "rec": "44-34-6",
+      "result": "Missed the playoffs",
+      "grade": "C+"
      },
-     "book": "b0132ee03e143f5b"
+     "book": "4f19d3a0f7212d64"
     }
    ]
   },
@@ -455,20 +460,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "38-33-13",
+      "rec": "31-43-10",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "D"
      },
-     "book": "aca5a57c3187c93b"
+     "book": "6f2d74a99f3a180b"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "30-47-7",
+      "rec": "34-44-6",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "93cc241bdd07a832"
+     "book": "7f3ca9ef24c96d00"
     }
    ]
   }
