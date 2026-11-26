@@ -1281,13 +1281,18 @@ function openOffseason(){
   flash=null; save(); render();
 }
 
+/* engine 26 (review round 2): the summer's dice are the career's own, by its season seed and the year. On seed 0
+   every summer of every career drew the same numbers in the same order, so the same clubs and roster places got the
+   same luck: Buffalo's strength rose in 18 of 18 independent 20-year careers, the first club in each league's order
+   gained in every one. A summer closing a season played on an older engine keeps seed 0, as it was. */
+function offseasonRng(){ return eng26()?new RNG(((S.seasonSeed^Math.imul(U.year|0,0x9E3779B1))+0x0FF5EA50)>>>0||1):new RNG(0) }
 function commitOffseason(){
   const P=S.off.picks, A=S.off.act, C=S.career;
   if(A.userOpen&&S.off.move===null)return;
   if(LEAGUE.ui.offseasonBlock()!==null)return;
   // rngA was meant to carry the stream on, but the state it read was hidden (undefined), so every
   // offseason has run on seed 0 from here: kept, or every future offseason would change (Nov 2026)
-  const rng=new RNG(0); rng.sp=S.off.rngA[1];
+  const rng=offseasonRng(); rng.sp=S.off.rngA[1];
   const oldTeam=S.myTeam;
   let dest=S.off.move;
   if(dest==="retire"){S.retired=true;save();render();return}
@@ -1394,6 +1399,7 @@ function endSeason(rng,choices,act,seasonTeam){
   if(typeof peopleBank==="function"&&!isHotSeat())peopleBank(entry,my);   // round 111: the room's stories (core 93_morale)
   const before=!isHotSeat()&&U.roster&&U.roster[my]?U.roster[my].filter(Boolean).map(p=>({n:p.n,r:p.r})):null;
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
+  if(eng26())U.rc26=recentre26(U);   // engine 26: the league held to its opening level and spread (core 20_engine)
   if(typeof peopleDepart==="function"&&before)peopleDepart(before,entry,my);   // round 111: who left, and how
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();

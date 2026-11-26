@@ -22,6 +22,12 @@ const TAX_LINE=NBA$.tax;
 // centred on this league's own average franchise (pro football's was 1690)
 const orgEdge=(u,t)=>Math.max(-1.5,Math.min(1.5,(u.program[t]-1500)/(+((typeof process!=="undefined"&&process.env&&process.env.NBA_OE)||100))));
 const AGE_SHIFT={};                           // every position ages alike
+/* engine 26 (review round 2): who ages later: every position ages alike (guards' skill lasts, bigs' bodies don't: a wash). Aging, retirement and who is kept (core ageBase26). */
+const AGE26={};
+const age26=p=>AGE26[String(p.p).replace(/\d+$/,"")]||0;
+/* engine 26: a veteran stays in the league while he's good. To 33 anyone useful (as before); to 36 a man still rated
+   well above a starter's bar (it was a flat 33: nobody past 34 in twenty seasons) */
+const vetOK=p=>eng26()?(p.age-age26(p)<=33||(p.age-age26(p)<=36&&p.r>=RS_BAR+6)):p.age<=33;
 const POS_PAY={};                             // and is paid alike
 const MAX_DEAL=Math.round(NFL_CAP*0.35*10)/10; // a max contract: 35% of the cap
 
@@ -57,12 +63,12 @@ function nflResignPlan(R,u,t){
   exp.sort((a,b)=>R[b].r-R[a].r).forEach(i=>{
     const p=R[i], ask=nflAsk(p.r,p.p,p.age+1);
     // teams keep their useful players: RS_BAR/RB_BAR sit at the league's median starter and backup
-    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=12*PAY)&&p.age<=33&&!p.k.dec;
+    const worth=(i<POS.length?p.r>=RS_BAR:p.r>=RB_BAR&&ask<=12*PAY)&&vetOK(p)&&!p.k.dec;
     keep[i]=worth&&pay+ask<=lim-ROOKIE_ROOM;
     // why, from the same rule (the screen's reason used to be a fixed string)
     RESIGN_WHY[i]=keep[i]?(i<POS.length?"a starter worth what he's asking":"useful depth at a fair price")
       :p.k.dec?"his option declined"
-      :p.age>33?`his age: ${p.age+1} next season`
+      :!vetOK(p)?`his age: ${p.age+1} next season`
       :i<POS.length&&p.r<RS_BAR?`rated ${p.r}: below what the staff want in a starter`
       :i>=POS.length&&p.r<RB_BAR?`rated ${p.r}: not enough to keep as a backup`
       :i>=POS.length&&ask>12*PAY?`asking ${money2(ask)}: too much for a backup`
@@ -136,8 +142,11 @@ function nflProspects(rng,n,sh){
     const posIdx=rng.int(POS.length);
     const age=19+rng.int(4);                    // one-and-dones to four-year seniors
     // NBA rookies: mostly below the league's typical starter at first, with ceilings
-    const r0=Math.round(Math.max(42,Math.min(78,rng.gauss(+((typeof process!=="undefined"&&process.env&&process.env.NBA_PR)||57)-12*Math.pow(q,0.7),3.5*DRAFT_K.sd))));
-    const pot0=Math.round(Math.min(99,r0+Math.max(3,rng.gauss(15-6*q,5))));
+    // engine 26: four points further from the same ceiling (with rookies as good as the men they replaced, the league's
+    // balance put its peak at 24-25; the real one is about 27: test/longrun.js)
+    const PR=+((typeof process!=="undefined"&&process.env&&process.env.NBA_PR)||(eng26()?53:57)), PX=eng26()?4:0;
+    const r0=Math.round(Math.max(42,Math.min(78,rng.gauss(PR-12*Math.pow(q,0.7),3.5*DRAFT_K.sd))));
+    const pot0=Math.round(Math.min(99,r0+Math.max(3,rng.gauss(15+PX-6*q,5))));
     const {r,pot}=sh?draftShape(sh,r0,pot0,42,84):{r:r0,pot:pot0};      // core/91_draftnight
     out.push({n:playerName(rng),p:POS[posIdx].p,i:posIdx,c:age,age:age,r:r,pot:pot,
               hz:0,prod:0,st:0,from:rng.pick(LEAGUE.draftTeams)});
@@ -175,7 +184,7 @@ function nflFreeAgentPreview(u,myTeam,users){
     if(t===myTeam)return;
     const R=u.roster[t], plan=(users&&users[t]&&users[t].resign)||nflResignPlan(R,u,t);
     R.forEach((p,i)=>{ if(!p||!nbaExpiring(p)||plan[i])return;
-      if(p.r<NBA_FA_R||p.age>=33)return;                  // likely to retire or go unsigned
+      if(p.r<NBA_FA_R||(eng26()?!vetOK(Object.assign({},p,{age:p.age+1})):p.age>=33))return;                  // likely to retire or go unsigned
       out.push({key:faKey(t,p),n:p.n,p:p.p,team:t,age:p.age+1,r:p.r,pot:p.pot,
                 ask:Math.round(Math.min(nbaMax(p.age+1),nflAsk(p.r,p.p,p.age+1)*1.1)*10)/10});   // a signing's markup never passes the maximum contract (Instinct: a $22.9M ask over a $20.8M max)
     });
@@ -327,33 +336,38 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const keep=!!plan[i]&&!p.k.dec;
       if(keep){p.k=nbaK(p,ask.sal,ask.yrs);rep.resigned[t].push({n:p.n,p:p.p,r:p.r,sal:ask.sal,yrs:ask.yrs})}
       else{R[i]=null;rep.released[t].push({n:p.n,p:p.p,r:p.r,why:"expired"});
-        if(p.r>=NBA_FA_R&&p.age<=33){p.from=t;pool.push(p)} else leave(t,p,"released")}
+        if(p.r>=NBA_FA_R&&vetOK(p)){p.from=t;pool.push(p)} else leave(t,p,"released")}
     }
     // 2. aging
-    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev*0.5:0;
+    let devMod=(ch&&ch.phil&&PHILOSOPHY[ch.phil])?PHILOSOPHY[ch.phil].dev*0.5:0; const E26=eng26();
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
     R.forEach((p,i)=>{
       if(!p)return;
       const was=p.r; p.age++; p.c=p.age;
-      const a=p.age-(AGE_SHIFT[p.p]||0);
-      const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
+      const a=p.age-(E26?age26(p):(AGE_SHIFT[p.p]||0));
+      const base=E26?ageBase26(a):a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      let g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0),2.0);
+      const mu=base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0);
+      const LEAP=+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07);
+      if(E26)develop26(u,p,a,mu,rng,{leap:LEAP,floor:35});   // engine 26: a breakout reveals his ceiling, never past it or 99 (core 20_engine)
+      else{
+      let g=rng.gauss(mu,2.0);
       // a breakout season: now and then a young player jumps a level, and
       // sometimes carries a franchise with him (the spread needs a source)
-      if(a<=25&&rng.r()<+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07)){
+      if(a<=25&&rng.r()<LEAP){
         const leap=rng.range(4,9); p.pot=Math.max(p.pot,Math.round(p.r+g+leap+2)); g+=leap; p.leap=u.year;
       }
       p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
+      }
       p.peak=Math.max(p.peak||0,p.r);
       if(p.r-was>=5)rep.grew[t].push({n:p.n,p:p.p,age:p.age,from:was,to:p.r,leap:p.leap===u.year});   // the report's "big summers"
     });
     // 3. retirement
     R.forEach((p,i)=>{
       if(!p)return;
-      const a=p.age-(AGE_SHIFT[p.p]||0);
+      const a=p.age-(E26?age26(p):(AGE_SHIFT[p.p]||0));
       const odds=a>=36?0.9:a>=35?0.6:a>=34?0.35:a>=33?0.18:a>=32?0.08:0;
       if(rng.r()<odds+(p.r<55&&a>=29?0.3:0)){R[i]=null;rep.retired[t].push({n:p.n,p:p.p,age:p.age,r:p.r});leave(t,p,"retired")}
     });
@@ -434,7 +448,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const room=sp.how==="room"?sp.amt*limit[st]-out:sp.how==="mle"&&!out?sp.amt:0;
       const free=Math.max(0,NBA$.floor-payroll(R)-out);   // under the salary floor the shortfall is paid anyway: that money is free to spend
       let best=null,bv=0;
-      pool.forEach(p=>{if(p.signed||p.age>maxAge[st]||p.from===t||mine.some(o=>o.p===p))return;
+      pool.forEach(p=>{if(p.signed||(eng26()?p.age-age26(p):p.age)>maxAge[st]||p.from===t||mine.some(o=>o.p===p))return;
         const bk=R[BK(p.i)]; if(bk&&bk.keep)return;    // would cut a target you just signed
         let cost=Math.round(p.ask*(1+Math.max(0,rng.gauss(0.05,0.08))+(room>2*p.ask?0.05:0))*(1-orgEdge(u,t)*0.06)*10)/10;   // a club flush with room bids up
         if(cost>room&&cost>nbaMin(p.age)+0.05){ if(room>=p.ask*0.8)cost=Math.round(room*10)/10; else return }   // what they have, if it's close

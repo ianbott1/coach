@@ -15,7 +15,7 @@ function nOf(n,w,ws){ return n+" "+(+String(n).replace(/,/g,"")===1?w:(ws||w+"s"
 let SCHED_V=1;
 /* round 71: the engine's version for a season, kept in the universe (u.engV) so a season begun on an older engine replays
    on it (a mid-season save would otherwise re-simulate its played weeks differently). 2: football's kicks (KICK2). */
-let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||26);   // 26: hockey game day (the goalie pull as real benches pull, lines and legs, the timeout: HK_GD_V); soccer's matchday (the team sheet and formation, five changes in three windows, condition and rotation); the college roster economy (revenue sharing, NIL, the transfer portal: core 92_market); box scores, leaders and awards a stats fan believes (stats lines in all seven, MVP and Heisman by slot, baseball's walks); 25: the review round: game day as coaching (basketball timeouts and runs: BB_GD_V), results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit), the people; 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
+let ENGINE_V=1; const ENGINE_NOW=+((typeof process!=="undefined"&&process.env&&process.env.ENGINE_NOW)||26);   // 26: hockey game day (the goalie pull as real benches pull, lines and legs, the timeout: HK_GD_V); soccer's matchday (the team sheet and formation, five changes in three windows, condition and rotation); the college roster economy (revenue sharing, NIL, the transfer portal: core 92_market); box scores, leaders and awards a stats fan believes (stats lines in all seven, MVP and Heisman by slot, baseball's walks); long-career integrity (ratings held to the opening league, ceilings, aging by position, the summer's own dice); 25: the review round: game day as coaching (basketball timeouts and runs: BB_GD_V), results like the real leagues (board targets from expected wins, in-season drift and injuries by league, shown chances refit), the people; 24: round 110, the opponent counts double against your fit (planVsK) and your assistant reads the plan as well as your staff (assistantPlan); 23: round 109, a person's plan is worth what his roster suits it over the opponent's (planVs); 3: round 72, football's defenses keep to their usual scheme more (FB_FAVW3)
                                       // 4: round 74, players' lines from the game's own record (Season._creditV4)
                                       // 5: round 75, baseball's hitters and pitchers by their own ratings (BS5)
                                       // 6: round 77, baseball's running game, named relievers, the scorer's decisions (BS6)
@@ -148,6 +148,108 @@ function talentScale(){const T=LEAGUE.tuning&&LEAGUE.tuning.talentSteps; return 
 /* engine 25: how much a rating gap counts in a league's games (tuning.gap25; unset, 1): the spread of a league's results
    without re-rating every club (and with the same ratings, the shown chances' curve: wpK25) */
 function gapScale25(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=25&&LEAGUE.tuning&&LEAGUE.tuning.gap25?LEAGUE.tuning.gap25:1 }
+
+/* ============ engine 26: long careers (review round 2, test/longrun.js) ============ */
+/* A league in its twentieth season should look like the real league, as it does in its first. Measured on engine 25:
+   ratings passed the 0-99 scale (104 in hockey, 100 in baseball), the NBA's best player rose 75 to 89, hockey's goals a
+   game 6.2 to 8.4, baseball hit .400 in a third of late seasons. Causes: a breakout raised a man's potential with no
+   ceiling, so leaps compounded; development spread gains by age so the league's shape leaned (hockey: toward Skating);
+   every offseason ran on one random tape (core 99_app commitOffseason). Players peaked at 25. The fix, for summers
+   that close a season played on engine 26 (a season begun on 25 keeps its own summer):
+   - a ceiling for each man, drawn once from his name (no dice): his scouted potential plus what it hides; a
+     breakout reveals it and can't pass it, and nothing passes 99 (ceil26, develop26)
+   - an aging curve that rises to 25, holds 26-28, eases at 29 and falls faster from 31, by position in each league
+     (quarterbacks, goalies, keepers and pitchers later: each league's AGE26) (ageBase26)
+   - each summer the league's ratings are re-centred on its own opening mean and spread (REF26: the starters of ten
+     fresh universes), with each man rounded by his own hash so a small shift moves the league, not nobody
+     (recentre26); the attributes' average lean likewise (attrRecentre26, core 93_attrs)
+   - the summer's dice are the career's own (core 99_app offseasonRng). */
+function eng26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=26 }
+/* the mean summer change before the cap at potential, by effective age (age less the position's shift) */
+function ageBase26(a){ return a<=21?2.8:a<=22?2.4:a<=23?1.9:a<=24?1.5:a<=25?1.2:a<=26?1.0:a<=27?0.9:a<=28?0.8:a<=29?0.5
+  :a<=30?-0.2:a<=31?-1.0:a<=32?-2.0:a<=33?-3.0:a<=34?-4.0:-5.4 }
+const CEIL26_SD=4;   // how much a scouted potential hides: |N(0,4)|, mean +3.2, one man in fourteen 7 or more
+function ceil26(u,p){
+  if(p.cl==null){ const R=new RNG((strHash("ceil|"+((u&&u.seed)||0)+"|"+p.n+"|"+String(p.p).replace(/\d+$/,""))>>>0)||1);
+    const b=p.pot||p.r;   // less hidden near the top: a scouted 90 hides little (the top 1% held its level)
+    p.cl=Math.min(99,Math.max(b,Math.round(b+Math.abs(R.gauss(0,CEIL26_SD*Math.max(0.2,Math.min(1,(99-b)/25))))))) }
+  return Math.min(99,p.cl) }
+/* one man's summer (the pro leagues): mu his mean change, a his effective age. o.leap the breakout odds (young men),
+   o.floor the lowest rating, o.step the most one summer can add (soccer) */
+function develop26(u,p,a,mu,rng,o){
+  let g=rng.gauss(mu,2.0);
+  if(o.leap&&a<=25&&rng.r()<o.leap){
+    const L=rng.range(4,9), cl=ceil26(u,p), room=cl-Math.round(p.r+g);
+    if(room>=2){ const leap=Math.min(L,room); p.pot=Math.max(p.pot,Math.min(cl,Math.round(p.r+g+leap+2))); g+=leap; p.leap=u.year } }
+  // where a gain stops: a young man (to 25) at his ceiling, not at the scouts' potential; a man in his prime at the
+  // potential or a point past his best so far, so a bad summer can be won back (capped at the potential alone, a
+  // 28-year-old at it could only lose, and the league peaked at 25; capped at the ceiling, prime men drifted upward
+  // and the best player climbed 82 to 89 in twenty NFL seasons)
+  const top=a<=25?Math.max(p.pot,ceil26(u,p)):Math.max(p.pot,Math.min(ceil26(u,p),(p.peak||p.r)+1));
+  const step=o.step?Math.min(g,o.step):g;
+  p.r=Math.round(Math.max(o.floor||35,Math.min(g>0?top:99,p.r+step)));
+  if(a>=29)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
+  p.pot=Math.min(99,Math.max(p.pot,p.r)) }
+/* the starters' mean and spread as a career opens (ten fresh universes each, Nov 2026). Soccer by division (the
+   pyramid's levels are its own: held as one, the Premier League's spread was squeezed to 4 in twenty summers) */
+const REF26={nfl:{m:66.7,s:5.85,t:81.6}, nba:{m:59.6,s:6.16,t:74.2}, nhl:{m:59.6,s:5.97,t:73.8}, mlb:{m:59.2,s:5.57,t:73.8},
+  cfb:{m:61.1,s:10.86}, ncaab:{m:61.9,s:10.96},
+  epl:{PL:{m:70.8,s:10.15,t:93.8},CH:{m:58.3,s:7.04,t:75.7},L1:{m:52.8,s:7.63,t:71.0},L2:{m:47.9,s:6.71,t:62.9},NL:{m:41.8,s:6.48,t:57.3},
+    NN:{m:37.6,s:6.72,t:53.0},NS:{m:38.8,s:6.70,t:54.1}}};   // t: the top 1% of starters (at least three men), its mean (college: no ceilings, and its tails held without it: test/longrun.js)
+/* each position's starters against the league's (soccer: against their division's), as a career opens (same universes) */
+const REFPOS26={nfl:{QB:-1.7,RB:0.9,WR:0.3,S:0.3}, cfb:{QB:0.4,RB:0.4,DT:-0.3,CB:-0.4,S:-0.3}, nba:{SF:0.3}, ncaab:{SG:0.3,C:-0.3},
+  nhl:{D:-0.3}, epl:{}, mlb:{SS:-0.4,LF:-0.4,DH:-0.3,SP:0.3,CL:0.6}};
+function hash01(x){ return (strHash(x)%100003)/100003 }
+function recentre26(u){
+  const R=REF26[LEAGUE.id]; if(!R||!u||!u.roster)return null;
+  const byDiv=R.m==null, groups={};
+  NAMES.forEach(t=>{ const g=byDiv?(u.conf&&u.conf[t]):"all"; if(g&&(!byDiv||R[g]))(groups[g]=groups[g]||[]).push(t) });
+  const lo=LEAGUE.id==="epl"?20:(LEAGUE.id==="cfb"||LEAGUE.id==="ncaab")?30:35, out={};
+  Object.keys(groups).forEach(g=>{
+    const ref=byDiv?R[g]:R, T=groups[g];
+    const st=[]; T.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p.r) }));
+    if(st.length<10)return;
+    const m=st.reduce((s,x)=>s+x,0)/st.length, s=Math.sqrt(st.reduce((q,x)=>q+(x-m)*(x-m),0)/st.length); if(!(s>0))return;
+    // the level is held both ways; the spread only from above: never wider than it opened (a narrower league is the
+    // market's doing: weak clubs fill their gaps in free agency, and stretching it back would move every man each summer)
+    const k=Math.min(1,ref.s/s), map=(v,h)=>Math.floor(ref.m+(v-m)*k+h);
+    T.forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(!p||p.r==null)return;
+      const h=hash01("rc|"+p.n+"|"+u.year);
+      p.r=Math.max(lo,Math.min(99,map(p.r,h)));
+      if(p.pot!=null)p.pot=Math.min(99,Math.max(p.r,map(p.pot,h)));
+      if(p.cl!=null)p.cl=Math.min(99,Math.max(p.pot!=null?p.pot:p.r,map(p.cl,h))) }));
+    // the top 1% held too, from above (each man's hidden ceiling made a few more stars than the opening league had: the
+    // NBA's top three 74 to 78 in ten summers): what lies past the top tenth is drawn in toward it
+    if(ref.t){ const v=[]; T.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)v.push(p.r) })); v.sort((a,b)=>b-a);
+      const n=Math.max(3,Math.round(v.length*0.01)), top=v.slice(0,n).reduce((a,b)=>a+b,0)/n, q=v[Math.floor(v.length*0.10)];
+      if(top>ref.t&&top>q+1){ const k2=Math.max(0,(ref.t-q)/(top-q)), tm=(x,h)=>x>q?Math.floor(q+(x-q)*k2+h):x;
+        T.forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(!p||p.r==null)return; const h=hash01("rt|"+p.n+"|"+u.year);
+          p.r=tm(p.r,h); if(p.pot!=null)p.pot=Math.min(99,Math.max(p.r,tm(p.pot,h))); if(p.cl!=null)p.cl=Math.min(99,Math.max(p.pot!=null?p.pot:p.r,tm(p.cl,h))) })) } }
+    out[g]={m:Math.round(m*100)/100,s:Math.round(s*100)/100} });
+  // each position held at its opening place in the league (a later peak would otherwise lift a whole position: soccer's
+  // keepers +2.3 against the field in six summers, its scoring 1.49 to 1.2 a side; pro football's quarterbacks likewise)
+  const RP=REFPOS26[LEAGUE.id]||{}, res={}, gm={};
+  Object.keys(groups).forEach(g=>{ const st=[]; groups[g].forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p) }));
+    if(!st.length)return; const m=st.reduce((a,p)=>a+p.r,0)/st.length;
+    st.forEach(p=>{ const P=String(p.p).replace(/\d+$/,""), x=res[P]=res[P]||[0,0]; x[0]+=p.r-m; x[1]++ }) });
+  const sh={}; Object.keys(res).forEach(P=>{ if(res[P][1]>=8)sh[P]=(RP[P]||0)-res[P][0]/res[P][1] }); out.pos=sh;
+  NAMES.forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(!p||p.r==null)return; const d=sh[String(p.p).replace(/\d+$/,"")]; if(!d)return;
+    const h=hash01("rp|"+p.n+"|"+u.year), mv=v=>Math.floor(v+d+h);
+    p.r=Math.max(lo,Math.min(99,mv(p.r)));
+    if(p.pot!=null)p.pot=Math.min(99,Math.max(p.r,mv(p.pot)));
+    if(p.cl!=null)p.cl=Math.min(99,Math.max(p.pot!=null?p.pot:p.r,mv(p.cl))) }));
+  const first=byDiv?out[LEAGUE.conf.order[0]]:out.all; if(!first)return null;
+  return Object.assign({m:first.m,s:first.s,pos:out.pos},byDiv?{div:out}:{}) }
+/* college: the programs' spread held to the opening one (with no anchor, football's programs drifted apart every
+   year: sd 204 to 283 Elo in twenty seasons, its weakest rosters with them); the level both ways, the spread from above */
+function programRecentre26(u){
+  if(!u||!u.program||!LEAGUE.teams)return;
+  if(!programRecentre26.ref){ const E=LEAGUE.teams.map(t=>t[1]), m=E.reduce((s,x)=>s+x,0)/E.length;
+    programRecentre26.ref={m:m,s:Math.sqrt(E.reduce((q,x)=>q+(x-m)*(x-m),0)/E.length)} }
+  const ref=programRecentre26.ref, P=NAMES.map(t=>u.program[t]).filter(v=>v!=null); if(P.length<10)return;
+  const m=P.reduce((s,x)=>s+x,0)/P.length, s=Math.sqrt(P.reduce((q,x)=>q+(x-m)*(x-m),0)/P.length); if(!(s>0))return;
+  const k=Math.min(1,ref.s/s);
+  NAMES.forEach(t=>{ if(u.program[t]!=null)u.program[t]=ref.m+(u.program[t]-m)*k }) }
 
 class Talent{
   constructor(rng,base,roster){
@@ -479,6 +581,16 @@ function offseasonCoaching(u,rng,rec,elo,users){
     if(change&&rng.r()<0.82){fired.push(t);u.bad[t]=0}
   });
 
+  // engine 26, college: a long-serving coach retires (no coach ever did: a 68-rated coach at the top program kept it for
+  // twenty seasons, and UCLA won 6 of 20 titles in one career). From his tenth season, 5% a year and 2.5 more each year
+  // after (about sixteen seasons for one who is never fired); drawn from a hash, so no other dice move
+  const retired=[];
+  if(eng26()&&(LEAGUE.id==="cfb"||LEAGUE.id==="ncaab"))NAMES.forEach(t=>{
+    const c=u.coach[t]; if(!c||c.you||isUser(t)||fired.indexOf(t)>=0||!(c.t>=10))return;
+    if(hash01("cret|"+(u.seed||0)+"|"+t+"|"+u.year)<Math.min(0.35,0.05+0.025*(c.t-10))){
+      retired.push({team:t,name:c.n,q:c.q,t:c.t});
+      u.coach[t]=newCoach(rng,u.program[t]); u.coach[t].since=u.year+1;
+      hires.push({team:t,name:u.coach[t].n,q:u.coach[t].q,reason:"replacing "+c.n+", who retired"}) } });
   const openings=fired.slice().sort((a,b)=>u.program[b]-u.program[a]);
   openings.forEach(job=>{
     if(isUser(job))return;                        // a person's job: they're told, then it's filled
@@ -548,7 +660,7 @@ function offseasonCoaching(u,rng,rec,elo,users){
   });
 
   NAMES.forEach(t=>distinctStaff(u,t));
-  return {fired:fired,hires:hires,poached:poached,openJobs:openJobs,coordMoves:coordMoves,
+  return {fired:fired,hires:hires,poached:poached,retired:retired,openJobs:openJobs,coordMoves:coordMoves,
           userOpenBy:userOpenBy,staffOpenBy:staffOpenBy,candidatesBy:candidatesBy,
           userOpen:!!userOpenBy[userTeam],candidates:candidatesBy[userTeam]||null,
           staffOpen:staffOpenBy[userTeam]||{oc:false,dc:false}};

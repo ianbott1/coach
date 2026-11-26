@@ -3384,7 +3384,8 @@ audits (bb-screens, nba-screens, nhl-screens, epl-screens), the reads
 (sc-decisions, hk-reads, bb-reads college/pro: league calibration plus each
 call's worth), offseason systems (draftboard, fatargets, trades, bb-portal),
 and long-run history checks against the real leagues (bb-march,
-nba-history, nhl-history).
+nba-history, nhl-history, longrun: 20 seasons in all seven against the
+opening league and the real one; --short in the fast tier).
 Reports (run by hand): draft-night and draft-years (what a hand pick is
 worth), calibrate, advisors, calls, the engine harnesses
 (bb-engine, hk-engine, hk-decisions), the long-run recorders.
@@ -3534,6 +3535,21 @@ per-sport hooks only: veteran = college senior or pro 30+, staff job titles).
   new field has a default. PEOPLE_ON=0 (env) turns the layer off for probes.
 - Tests: test/morale.js (questions, bounds, reloads, carry-over; per game),
   test/probes/morale-calib.js (calibration against ENGINE_NOW=24).
+
+## Long careers (engine 26, core 20_engine.js, test/longrun.js)
+
+A league in its twentieth season should look like its first. Each summer that closes an engine-26 season:
+- recentre26 holds the starters to the opening league (REF26, REFPOS26: ten fresh universes per league): the mean
+  both ways, the spread and the top 1% from above, each position's place; soccer by division. Every man moves by his
+  own hashed rounding. attrRecentre26 (93_attrs.js) does the same for the attributes' average lean.
+- develop26 (the pro leagues): ageBase26 by effective age (each league's AGE26 shift: goalies, keepers, pitchers later;
+  an NFL quarterback at half speed from 27 to 35); a breakout reveals a hidden ceiling (ceil26, from the name, no
+  dice) and never passes it or 99.
+- college: programRecentre26 holds the programs' spread; a CPU coach retires from his tenth season; college
+  basketball anchors to its 64-team-era level (ANCHOR26_OF).
+- offseasonRng (99_app.js): the summer's dice by career and year (engine 25 kept RNG(0)).
+The offseason runs on the engine of the season it closes, so a season begun on 25 keeps its summer. Measured (20
+seasons, 2 pro and 4 college careers): see CHANGELOG-review/integrity.md.
 
 ## Real data
 

@@ -14,6 +14,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [soccer.md](soccer.md) | Round 2 (engine 26): the matchday, a team sheet with shapes, five changes in three windows by name, how we play from here, condition, rotation and knocks in a congested run | Soccer |
 | [college.md](college.md) | Round 2 (engine 26): revenue sharing and NIL as a roster budget, every program's transfer portal in one window, measured against the real sport (`test/cfb-portal.js`) | College football, college basketball |
 | [stats.md](stats.md) | Round 2 (engine 26): box scores, leaders and awards against the last three real seasons; full basketball lines, football credit, hockey and soccer goal shares, MLB walks and shutouts; `test/boxscores.js` | All seven |
+| [integrity.md](integrity.md) | Engine 26, long careers: ratings held to the opening league, hidden ceilings, aging by position, college programs and coaches, the summer's own dice; `test/longrun.js` | All seven |
 
 ## Rules kept
 
