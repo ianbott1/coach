@@ -94,3 +94,51 @@ and the 2023-2024 and 2022-2023 pages): goals 2.85, 3.28, 2.93; draws 22.9%, 21.
   re-recorded for engine 26: fast 9491d6ac34f5d216, full a6ffa8f0162a94c1, hot seat d42ac54a5a832b2d.
 - Not run: browser tests (no Playwright here), among them `test/sc-subs-taps.js`, which taps the engine-22 change
   buttons and will need the engine-26 ones.
+
+## Follow-up: the Premier League's goals and draws on the merged build
+`test/sc-manager.js` failed two checks on the merged build (7d501c8): goals a game 2.69 against a real 2.85 to 3.28,
+and draws 28.5% against a real 22% to 25%.
+
+### The cause
+Neither merged branch moved them. The stats branch changes who is credited with a goal, never how many; the
+integrity branch's re-centring, aging and potential run only in the summer, after the seasons the check plays. On
+the same seeds, Premier League games over eight seasons: this branch 2.73 goals and 29.3% draws, the merged build
+2.69 and 29.1%, engine 25 (three seasons) 2.70 and 28.6%. The three seasons the check plays had landed at 2.9 on
+this branch and 2.69 on the merge by chance: the eight-season figure was below the band on both.
+
+The cause is older: the engine plays every division with one goal rate. Over four seasons every division scored
+2.5 to 2.8 goals with 29% to 32% draws, the Premier League among them (2.63 and 28.8%). Real English football is not
+like that: in 2024-25 the Premier League scored 2.93 goals a game with 24.5% draws, and the Championship 2.45 with
+28.0% (https://www.futbol24.com/national/England/Premier-League/2024-2025/statistics,
+https://www.futbol24.com/national/England/Championship/2024-2025/statistics). The lower divisions were about right;
+the top flight was not. `test/realism.js epl` hid it, because its headline mixes every division with the cup.
+
+### The fix (engine 26 only)
+- The top flight scores more. `scXiCtx` (55_squad) now gives the engine-26 matchday a goal factor, `gf`:
+  `SC26.topG` (1.08) for a game between two Premier League clubs, halfway for a cup tie with one, 1 below. The
+  segment and extra-time goal rates multiply by it. It lives on `ctx.xi`, which only engine 26 builds, so engine 25
+  and its replays don't move.
+- A favourite chases the win. When a top-flight game is level from the 65th minute, the computer's home side already
+  went for the win; now the away side does too when it is the stronger side (`SC26.awayW`). More goals alone would
+  have needed about 3.4 a game to bring draws to 23%; this splits late draws without much more scoring.
+- Both are tunable for tests by `SC26_TOPG` and `SC26_AWAYW`. The shown chance (`LEAGUE.wdl`) is unchanged: it still
+  reads 24.5% draws and 44.5% home wins for Premier League games, against 22.9% and 45.9% played.
+- The stats branch's credit shares and the integrity branch's summer bands are untouched.
+
+### Before and after
+- `node test/sc-manager.js` (three seasons, Premier League games): before 2.69 goals, 28.5% draws; after 2.89 goals,
+  25.9% draws, home wins 42.2%, champions 84.3 points. Eight seasons: 2.91, 25.6%, 43.2%, 85.5.
+- Lower divisions unchanged: the Championship 2.56 to 2.61 goals and about 30% to 31% draws before and after.
+- `node test/realism.js epl 8`: MATCH; Brier 0.1738. Premier League games alone (six seasons, with the computer
+  running your club): 3.23 goals, 22.9% draws.
+
+### Tested
+- `node test/sc-manager.js` (3 and 8 seasons), `node test/realism.js epl 8`: MATCH.
+- `OLD=/home/claude/dist-e25 node test/engine-replay.js soccer`: MATCH. `node test/reload.js`: 18 of 18.
+- `node test/boxscores.js soccer`: MATCH. `sc-decisions`, `sc-engine`, `sc-final`, `sc-keeper`, `sc-pb`, `sc-subs`,
+  `epl-cup`, `epl-predict`, `epl-rules`, `epl-screens`: MATCH.
+- `node test/longrun.js --short`: the epl section is in every band (late goals 2.7, scoring drift 0.97); the bands out
+  are the other sports, whose builds aren't in this worktree.
+- Goldens re-recorded one at a time: fast a75d53daa33c7a59, full 81a3e9c7c3acfef6, hot seat 6584d4848247387b.
+- Not run: the browser tests (`sc-clipjoin`, `sc-motion`, `sc-subs-taps`, `sc-watch`; no Playwright here) and
+  `test/saves.js` (needs every sport's build).

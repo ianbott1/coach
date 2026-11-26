@@ -127,7 +127,9 @@ const SC26={subs:5, windows:3, ht:9,
   grp:[0,0,0,1,2,2],               // the engine's legs (defence, midfield, attack) each unit's men run in
   cnK:SC26_ENV("SC26_CNK")??0.6,   // condition at kick-off to legs: 1 - cnK x (1 - condition/100)
   keep:SC26_ENV("SC26_KEEP")??20,  // the computer keeps a man this much better on unless his line's legs are gone
-  auto:{12:2,14:1,16:1}};          // the computer's changes at 60', 70', 80' (one more at 80' when behind or tired)
+  auto:{12:2,14:1,16:1},           // the computer's changes at 60', 70', 80' (one more at 80' when behind or tired)
+  topG:SC26_ENV("SC26_TOPG")??1.08,   // the top flight's goals against the pyramid's (ctx.xi.gf: 55_squad scGoalF)
+  awayW:SC26_ENV("SC26_AWAYW")??1};    // the top flight's stronger away side goes for the win when level late
 /* formations: each unit's weight moved from the engine-23 shares (GK, CB, FB, CM, W, ST); every row sums to zero, so a
    squad equally good everywhere plays every shape alike. lean: the units the shape asks most of, for the team sheet.
    pop: the computer's (and your assistant's) leaning to the shapes clubs play now, in the same units as the fit (no
@@ -384,7 +386,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   // the computer: chase a deficit late, see out a lead, the home side goes for the win
   const cpuMode=(side,s)=>{ const L=lead(side);
     if(s>=13&&L<0)return "push"; if(s>=13&&L>=1)return "sit";
-    if(s>=13&&L===0&&side==="home")return "win"; return st.mode[side] };
+    if(s>=13&&L===0&&side==="home")return "win";
+    // engine 26, the top flight: the stronger away side goes for the win too (a favourite chases the three points)
+    if(s>=13&&L===0&&XI&&XI.gf>1&&SC26.awayW&&gap<0)return "win"; return st.mode[side] };
   const modeOf=(s,side)=>{ const L=humans[side]&&st.late[side];
     if(L==="auto"||!humans[side])return cpuMode(side,s);
     return L||st.mode[side] };
@@ -419,7 +423,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       return own*makeF(side,m[side],m[other(side)])*lateF(side,s)*ampF(side);
     };
     const fH=finF("home"), fA=finF("away");
-    const G0=scV12()?SC.goals*SC12.g:SC.goals;
+    const G0=(scV12()?SC.goals*SC12.g:SC.goals)*(XI&&XI.gf||1);   // engine 26: the division's own scoring
     let lamH=G0/SEGS*Math.exp(e/2)*rateOf("home")*fH;
     let lamA=G0/SEGS*Math.exp(-e/2)*rateOf("away")*fA;
     if(s>=12&&st.h!==st.a){ if(st.h<st.a){lamH*=1+SC.chase;lamA*=1+SC.exposed} else {lamA*=1+SC.chase;lamH*=1+SC.exposed} }
@@ -487,7 +491,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   const extraTime=()=>{
     if(XI)["home","away"].forEach(sd=>{ if(humans[sd]&&benchMine(sd))return; st.seg=SEGS; autoSubs(sd,1) });   // engine 26: one more change, in its own window
     const e=(gap+(XI?(xiE("home")-xiE("away"))*GS:0))*SC.edge; st.ot=1;
-    const G0=scV12()?SC.goals*SC12.g:SC.goals; const gH=poisson(rng,G0*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,G0*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
+    const G0=(scV12()?SC.goals*SC12.g:SC.goals)*(XI&&XI.gf||1); const gH=poisson(rng,G0*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,G0*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
     st.h+=gH; st.a+=gA;
     const ev=[]; for(let i=0;i<gH;i++)ev.push({m:91+rng.int(30),side:"home",k:"goal",u:rng.int(100)});
     for(let i=0;i<gA;i++)ev.push({m:91+rng.int(30),side:"away",k:"goal",u:rng.int(100)});
