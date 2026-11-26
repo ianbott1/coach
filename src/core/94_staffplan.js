@@ -248,7 +248,11 @@ function callImpact(args,seed,answers,meHome,runs){
     // way" because the pick was level with the assistant's while a third option was the one that mattered; Muse:
     // "grade the dramatic calls"). Not for football, which grades every option in its own list.
     let best=null; if(IMPACT_ALL&&A.dp.k!=="read"&&A.dp.k!=="prep"&&typeof verdictDefault==="undefined"){
-      A.dp.opts.forEach(o=>{ const v=o[0]; if(v===pick||v===def||/assistant/i.test(o[1]))return; let r=0; for(let m=0;m<runs;m++)r+=score(play(j,v,m));
+      // round 112: baseball's engine-26 calls name two or three men beside keeping him, so two or more options besides
+      // yours and his; they share the replays of one (each on the first of the same dice), or a pinch-hit call took
+      // three times the replays of a call in any other game, past four seconds at the final out
+      const alts=A.dp.opts.filter(o=>!(o[0]===pick||o[0]===def||/assistant/i.test(o[1]))), ar=A.dp.v26&&alts.length>1?Math.ceil(runs/alts.length):runs;
+      alts.forEach(o=>{ const v=o[0]; let r=0; for(let m=0;m<ar;m++)r+=score(play(j,v,m)); r*=runs/ar;
         if(!best||r>best.r)best={k:v,r:r} }); }
     const bo=best&&best.r>Math.max(rp,rd)?{alt:lab(best.k),altv:Math.round((best.r-rp)/runs*1000)/1000,wa:Math.round(best.r/runs*100)}:{};
     out.push(Object.assign({k:A.dp.k, h:A.dp.h, pick:lab(pick), def:lab(def), pk:pick, dk:def, cf:{mine:cf.mine,theirs:cf.theirs}, dd:cf.dd||undefined, worth:Math.round((rp-rd)/runs*1000)/1000, wp:Math.round(rp/runs*100), wd:Math.round(rd/runs*100)},bo));

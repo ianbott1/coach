@@ -104,15 +104,7 @@ const HL_SPORT=(function(){
      leaves; fouls with two strikes keep it going. From the at-bat's own hash, no game dice (MLB: about 3.9 pitches a
      plate appearance, a quarter of strikeouts looking). */
   const W_PITCH=0.42;
-  function bsPitches(q,z){ const r=mulberry32((z^0x9E3779B9)>>>0), o=q.o, out=[]; let b=0,s=0;
-    const strike=()=>{ const x=r(); if(s===2)return x<0.55?"F":x<0.8?"C":"W"; return x<0.36?"C":x<0.62?"W":"F" };   // called, swinging, foul (a foul can't be strike three)
-    const add=c=>{ out.push(c); if(c==="B")b++; else if(c==="F"){ if(s<2)s++ } else s++ };
-    const pre=(stopP,maxB,maxS)=>{ for(let k=0;k<12;k++){ if(r()<stopP&&k>0)break; const ball=r()<(b<maxB?0.4:0); if(ball)add("B"); else { const c=strike(); if((c==="C"||c==="W")&&s>=maxS){ add("F") } else add(c) } } };
-    if(o==="k"){ for(let k=0;k<14&&s<2;k++){ if(b<3&&r()<0.36)add("B"); else { const c=strike(); add(c) } } for(let k=0;k<3&&r()<0.22;k++){ if(b<3&&r()<0.4)add("B"); else add("F") } out.push(r()<0.25?"KC":"KS") }
-    else if(o==="bb"){ for(let k=0;k<14&&b<3;k++){ if(r()<0.62||s>=2&&r()<0.8)add("B"); else { const c=strike(); if(s>=2&&c!=="F")add("F"); else add(c) } } out.push("B4") }
-    else if(o==="hbp"){ pre(0.5,3,2); out.push("HBP") }
-    else { pre(0.4,3,2); out.push("X") }
-    return out }
+  function bsPitches(q,z){ return q.ibb?["B4"]:bsPitchSeq(q,z) }   // (round 112: the engine counts the same pitches, 50_game; an intentional walk is signalled, not pitched)
   const bsCount=(P,j)=>{ let b=0,s=0; for(let i=0;i<j;i++){ const c=P[i]; if(c==="B")b++; else if(c==="F"){ if(s<2)s++ } else if(c==="C"||c==="W")s++ } return [b,s] };
   function pbItems(d,from,to){ const key=(from||0)+"|"+(to==null?d.pl.length:to)+"|"+d.pl.length; if(d._pb&&d._pb.key===key)return d._pb;
     const L=d.pl.slice(0,to==null?d.pl.length:to), out=[]; let tot=0, side=from>0&&L[from-1]?L[from-1].s:null;
@@ -204,7 +196,7 @@ const HL_SPORT=(function(){
       runners.length=0; on.forEach((nm,i)=>{ if(nm)runners.push([i+1,nm,true]) }); runners.push([0,q.nm,true,true]); fpos.splice(0,fpos.length,...F.map(p=>p.slice())); end="" }
     if(C.ps&&C.k!=="change"){ const jj=pj!=null?(pu>=0.5?pj+1:pj):C.ps.length-1, [cb,cs]=bsCount(C.ps,jj);
       if(pj!=null||u<tr)top=top+` · ${cb}-${cs}`+(call?` · ${call}`:"");
-      if(pj==null&&u<tr&&u>=tp){ const lastP=C.ps[C.ps.length-1]; const lc=lastP==="KC"?"Called strike three":lastP==="KS"?"Swinging strike three":lastP==="B4"?"Ball four":""; if(lc)top=top+` · ${lc}` } }
+      if(pj==null&&u<tr&&u>=tp){ const lastP=C.ps[C.ps.length-1]; const lc=lastP==="KC"?"Called strike three":lastP==="KS"?"Swinging strike three":lastP==="B4"?(C.q&&C.q.ibb?"Intentional walk":"Ball four"):""; if(lc)top=top+` · ${lc}` } }
     if(C.k!=="change"&&u>=tr&&q&&q.h!=null){ hs=q.h; as=q.a }   // the score moves once the play is done
     // round 108 (engine 22): nobody outruns his legs. A fielder who ran the ball down jogs back to his place over the next
     // pitches (he was back in a frame), a runner moves to his base at running speed; the cap is on the playback's own
@@ -219,7 +211,7 @@ const HL_SPORT=(function(){
     if(C.k==="change"){} else runners.forEach(([k,nm,show,isB],j)=>{ if(!show)return; const [rx,ry]=Pp(...rpos[j].p); hlDot(x,rx,ry,r,ink,"rgba(0,0,0,.6)","",{num:noOf(nm),sub:sur(nm)}) });
     if(ball){ const [qx,qy]=Pp(ball[0],ball[1]); hlBall(x,qx,qy,r*0.55,lift,null,{ring:"#C8102E"}) }
     // round 108 (engine 22): the pitcher's count, as a manager watches it (every pitch he has thrown this game as shown)
-    let pcTxt=""; if((typeof ENGINE_V==="undefined"||ENGINE_V>=22)&&pn&&pn!=="bullpen"){ const cnt=(dd,upto)=>{ let k=0; (dd.pl||[]).forEach((qq,ii)=>{ if(ii>=upto||!qq||qq.t!=="pa"||qq.p!==q.p||qq.s!==batS)return; k+=bsPitches(qq,strHash("bs|"+dd.seg+"|"+ii+"|"+(qq.nm||""))).length }); return k };
+    let pcTxt=""; if((typeof ENGINE_V==="undefined"||ENGINE_V>=22)&&pn&&pn!=="bullpen"){ const cnt=(dd,upto)=>{ let k=0; (dd.pl||[]).forEach((qq,ii)=>{ if(ii>=upto||!qq||qq.t!=="pa"||qq.ibb||qq.p!==q.p||qq.s!==batS)return; k+=bsPitches(qq,strHash("bs|"+dd.seg+"|"+ii+"|"+(qq.nm||""))).length }); return k };
       let tot=0; const di0=live.drives.indexOf(d); live.drives.slice(0,di0<0?live.drives.length:di0).forEach(dd=>{ tot+=cnt(dd,1e9) }); tot+=cnt(d,C.i);
       if(C.ps&&C.k!=="change")tot+=pj!=null?pj+(pu>=0.5?1:0):(u>=tp?C.ps.length:C.ps.length-1);
       pcTxt=` · ${sur(pn)} ${tot}p`; pbDraw.pc=tot }

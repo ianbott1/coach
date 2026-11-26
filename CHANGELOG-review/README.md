@@ -15,6 +15,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [college.md](college.md) | Round 2 (engine 26): revenue sharing and NIL as a roster budget, every program's transfer portal in one window, measured against the real sport (`test/cfb-portal.js`) | College football, college basketball |
 | [stats.md](stats.md) | Round 2 (engine 26): box scores, leaders and awards against the last three real seasons; full basketball lines, football credit, hockey and soccer goal shares, MLB walks and shutouts; `test/boxscores.js` | All seven |
 | [integrity.md](integrity.md) | Engine 26, long careers: ratings held to the opening league, hidden ceilings, aging by position, college programs and coaches, the summer's own dice; `test/longrun.js` | All seven |
+| [baseball.md](baseball.md) | Round 112, engine 26: the platoon by handedness, a named nine-man bullpen with roles and rest, pitch counts and times through the order, the lineup card, holds, calls that name who comes in or hits, the intentional walk, Go to the bullpen on the live bar; `test/bs-manager.js` | Pro baseball |
 
 ## Rules kept
 

@@ -105,6 +105,10 @@ function liveSeed(step){
 }
 
 function startLive(g,step,slot){
+  // round 112 (baseball, engine 26): deadline day's computer deals before your game, as the season makes them before
+  // its games (80_season _adv). Your opponent took the field with a man he'd traded away that morning, and his line
+  // fell out of the box score. Nothing is drawn, so the deals are the same ones a step later; other sports keep theirs
+  if(SEA.phase==="week"&&!SEA.half&&step===SEA.step&&typeof bsV26==="function"&&bsV26()&&typeof cpuDeadline==="function")cpuDeadline(SEA);
   const oj=isHotSeat()?coachIndexOf(opponentOf(g)):-1;
   const h2h=oj>=0&&oj<(S.turn||0);                 // an earlier coach waited for this one
   const e=h2h?h2hElo(g,step,oj):SEA.matchupElo(g,plan);
