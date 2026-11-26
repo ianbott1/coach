@@ -104,7 +104,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff,board){
       if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
       // NBA teams draft ceilings: what he is, and more what he could be
       const ready=0.45*pl.r+0.55*Math.max(pl.r,pl.pot);
-      if(ready>=77 && rng.r() < Math.min(0.95,((ready-75)/8)*(pl.c===1?1.4:1))*keepOdds){
+      if(!pxOn() && ready>=77 && rng.r() < Math.min(0.95,((ready-75)/8)*(pl.c===1?1.4:1))*keepOdds){   // engine 26: decided at the window (pxPro)
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
         leaving.push({n:pl.n,p:pl.p,r:pl.r,c:pl.c-1,pot:pl.pot,early:true,featured:wasFeatured,
                       starter:i<POS.length, car:pl.car||null, from:pl.from||null,
@@ -350,7 +350,9 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
                            {oc:ocq*0.030, dc:dcq*0.030},
                            ch&&ch.board&&ch.board.length?ch.board.map(x=>Object.assign({},x)):null);
     leavers[t]=churn[t].leaving;
-    // seniors a transfer passed in the window: they graduate with the rest
+    // underclassmen who declared at the window, and seniors a transfer passed: the draft takes them with the rest
+    if(market&&market.pro[t])market.pro[t].forEach(x=>leavers[t].push({n:x.pl.n,p:x.pl.p,r:x.r,c:x.pl.c||0,pot:x.pl.pot,early:true,
+      featured:x.featured,starter:x.k<POS.length,car:x.pl.car||null,from:x.pl.from||null,peak:Math.max(x.pl.peak||0,x.r),idx:x.k%POS.length}));
     if(market&&market.grad[t])market.grad[t].forEach(pl=>leavers[t].push({n:pl.n,p:pl.p,r:pl.r,starter:false,
       car:pl.car||null,from:pl.from||null,peak:pl.peak||pl.r,idx:pl.i%POS.length}));
     u.trueBase[t]=rosterElo(u.roster[t])
@@ -407,7 +409,8 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
   u.year++;
   const realigned=[];                          // conferences stay as they are
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
-  if(market&&typeof S!=="undefined"&&S)S.lastMarket=market;      // for tests: the whole window
+  // for tests: the whole window, kept off the save (it holds every program's window: a few hundred KB)
+  if(market&&typeof S!=="undefined"&&S)Object.defineProperty(S,"lastMarket",{value:market,writable:true,configurable:true,enumerable:false});
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
           draft:draftResult, portal:portalReport.portal, market:market};
@@ -453,7 +456,11 @@ LEAGUE.market={
   v0:1.5, r0:82, k:8, floor:0.01, pos:{},
   // the pull up a level: a mid-major star who'd start at a high-major, or a high-major star below the contenders
   upRef:1780, upTop:2000, upAbove:6,
-  base:0.30, rosterLimit:15, window:"15 days in April", maxIn:4, depth:"top ten", when:"spring"
+  base:0.30, rosterLimit:15, window:"15 days in April", maxIn:4, depth:"top ten", when:"spring", draft:"NBA draft",
+  // the early-entry rule developRoster used (NBA teams draft ceilings), on the rating he'd reach this summer: decided
+  // with the window, so a player paid to stay isn't then lost to the draft
+  pro(pl){ const c=pl.c||0, rE=Math.min(pl.pot||pl.r,pl.r+[6.2,4.0,2.2][c]), ready=0.45*rE+0.55*Math.max(rE,pl.pot||rE);
+    return ready>=77?{p:Math.min(0.95,((ready-75)/8)*(c===0?1.4:1)),r:Math.round(rE)}:null }
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the

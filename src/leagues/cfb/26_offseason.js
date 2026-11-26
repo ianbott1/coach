@@ -90,7 +90,7 @@ function developRoster(u,t,rng,focus,devMod,bud,featured,staff,board){
       // stars leave early for the draft
       let keepOdds=bud?Math.max(0,1-bud.retention):1;
       if(featured!==undefined&&featured!==null&&featured===i)keepOdds*=0.34;
-      if(pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){
+      if(!pxOn() && pl.c>=2 && pl.r>=76 && rng.r() < ((pl.r-74)/34)*keepOdds){   // engine 26: decided at the window (pxPro)
         const wasFeatured=(featured!==undefined&&featured!==null&&featured===i);
         leaving.push({n:pl.n,p:pl.p,r:pl.r,early:true,featured:wasFeatured,
                       starter:i<POS.length, car:pl.car||null, from:pl.from||null,
@@ -238,7 +238,9 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
                            {oc:ocq*0.030, dc:dcq*0.030},
                            ch&&ch.board&&ch.board.length?ch.board.map(x=>Object.assign({},x)):null);
     leavers[t]=churn[t].leaving;
-    // seniors a transfer passed in January: they graduate with the rest
+    // underclassmen who declared at the window, and seniors a transfer passed: the draft takes them with the rest
+    if(market&&market.pro[t])market.pro[t].forEach(x=>leavers[t].push({n:x.pl.n,p:x.pl.p,r:x.r,early:true,featured:x.featured,
+      starter:x.k<POS.length,car:x.pl.car||null,from:x.pl.from||null,peak:Math.max(x.pl.peak||0,x.r),idx:x.k%POS.length}));
     if(market&&market.grad[t])market.grad[t].forEach(pl=>leavers[t].push({n:pl.n,p:pl.p,r:pl.r,starter:false,
       car:pl.car||null,from:pl.from||null,peak:pl.peak||pl.r,idx:pl.i%POS.length}));
     u.trueBase[t]=rosterElo(u.roster[t])
@@ -292,7 +294,8 @@ function offseasonRosters(u,rng,healthy,elo,rec,choices){
     u.nextRealign=u.year+4+rng.int(4);
   }
   risers.sort((a,b)=>b[1]-a[1]); fallers.sort((a,b)=>a[1]-b[1]);
-  if(market&&typeof S!=="undefined"&&S)S.lastMarket=market;      // for tests: the whole window
+  // for tests: the whole window, kept off the save (it holds every program's window: a few hundred KB)
+  if(market&&typeof S!=="undefined"&&S)Object.defineProperty(S,"lastMarket",{value:market,writable:true,configurable:true,enumerable:false});
   return {risers:risers.slice(0,5),fallers:fallers.slice(0,5),
           churn:churn,classes:classes,early:early,realigned:realigned,
           draft:draftResult, market:market};
@@ -318,15 +321,18 @@ LEAGUE.offseason={
 /* the roster economy (core 92_market, engine 26): football's part of the House settlement's cap, and the window */
 LEAGUE.market={
   sport:"football", share:0.75,       // the share of the $21.3M cap schools give football (the common 75/15/5/5 split)
-  // the cap's football share at a power-conference school paying it in full ($16.0M; a few pay less), and the
-  // collective on top for a contender: most power rosters $14-16M, contenders $30M and more, near $40M at the top
-  // (CBS Sports, 2026); a Group of Six roster a few million
+  // a power-conference roster: $11M at the bottom of the Power Four, rising with prestige to $38M at the top (the
+  // cap's football share, $16.0M, paid in full by most, and a collective on top for a contender), so most power rosters
+  // land at $14-16M and contenders at $30M and more (CBS Sports, 2026); a Group of Six roster $1.5-6M, a few million
   p4Base:11, p4Top:27, p4lo:1550, p4span:450, g6Base:1.5, g6Top:4.5, g6lo:1250, g6span:400,
   // what the open market pays a year: a starter at a contender about $1M, the best quarterbacks $3-5M (ESPN, Jan 2026),
   // the lines $1M and more; a Group of Six starter tens of thousands
   v0:1.2, r0:82, k:9.5, floor:0.02,
   pos:{QB:2.2,OT:1.25,EDGE:1.25,DT:1.1,WR:1.0,CB:1.0,WR2:0.8,RB:0.75,LB:0.75,S:0.7},
-  rosterLimit:105, window:"Jan 4-13", maxIn:8, posPush:{QB:0.3}
+  rosterLimit:105, window:"Jan 4-13", maxIn:8, posPush:{QB:0.3}, draft:"NFL draft",
+  // underclassmen declare in January, beside the window: the early-entry rule developRoster used, on the rating he'd
+  // reach this spring
+  pro(pl){ const c=pl.c||0, rE=Math.min(pl.pot||pl.r,pl.r+[6.2,4.0,2.2][c]); return c+1>=2&&rE>=76?{p:(rE-74)/34,r:Math.round(rE)}:null }
 };
 
 /* What a season is judged against, and how it is graded. The grade reads the

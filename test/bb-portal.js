@@ -2,7 +2,8 @@
    never seniors; nobody lands on two teams; rosters stay at ten with no duplicates;
    computer programs take at most the market's limit (four of the ten: about six of fifteen); no program spends more
    than its money; your offers are signed (and on your roster) or reported with a reason; the screen's preview is the
-   market that runs; the offseason screen and the banner after it render with it.
+   market that runs; the draft is declared at the window, so nobody paid to stay or signed leaves for it; the offseason
+   screen and the banner after it render with it.
    Real figures it reads against (the bands are wide: the game's ten stand for fifteen, and seniors don't transfer here):
      - 2,033 men's players had entered by April 10, 2025, about 35% of D-I rosters; 2,088 in 2024
        (https://frontofficesports.com/article/more-than-2000-mens-basketball-players-have-entered-transfer-portal/)
@@ -50,10 +51,12 @@ for(let y=0;y<N;y++){
     const m=M.money[t]; ok(m.portal===0||m.kept+m.portal<=m.two+1e-6,`${E.year} ${t}: spent ${m.kept}+${m.portal} of ${m.two}`) });
   const T=(M.targets||{})[my]||[];
   ok(T.length===want.length, `${E.year}: ${T.length} of ${want.length} targets reported`);
-  // a transfer can still declare for the NBA draft (the window is in April, the draft's deadline after it): then the
-  // banner says so with the rest who left early
-  const early=((api.S.history.slice(-1)[0].league.early||{})[my]||[]).map(p=>p.n);
-  T.forEach(x=>{ if(x.got){got++; ok(U.roster[my].some(p=>p.n===x.n)||early.includes(x.n), `${E.year}: signed ${x.n} but he isn't on your roster or in the draft`)} else ok(!!x.why, `${E.year}: missed ${x.n} with no reason`)});
+  // the draft is decided with the window (engine 26): who declares never asks to be paid, so nobody you paid to stay,
+  // and no transfer you signed, leaves for the NBA that summer
+  const early=((api.S.history.slice(-1)[0].league.early||{})[my]||[]).map(p=>p.n), keptN=((M.kept||{})[my]||[]).map(p=>p.n);
+  keptN.forEach(n=>ok(!early.includes(n), `${E.year}: paid ${n} to stay and he declared for the draft`));
+  ok(Object.values(M.pro||{}).every(L=>L.every(x=>(x.pl.c||0)<3)), `${E.year}: a senior declared early`);
+  T.forEach(x=>{ if(x.got){got++; ok(U.roster[my].some(p=>p.n===x.n), `${E.year}: signed ${x.n} but he isn't on your roster`)} else ok(!!x.why, `${E.year}: missed ${x.n} with no reason`)});
   ok(/Transfer portal/.test(api.LEAGUE.ui.offseasonBanner()),`${E.year}: the banner says nothing of the portal`);
 }
 const share=ent/Math.max(1,slots);

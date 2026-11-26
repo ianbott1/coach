@@ -95,15 +95,26 @@ function pxCtx(u,t,rec,nc){
           losing:!!(r&&r[0]<=Math.max(3,Math.round((r[0]+r[1])*0.34)))};
 }
 /* every returning player's mind at program t */
-function pxMinds(u,t,rec,R,nc){
-  R=R||u.roster[t]; const ctx=pxCtx(u,t,rec,nc), out=[];
-  R.forEach((pl,k)=>{ if(pl&&(pl.c||0)<3)out.push(pxMind(u,t,R,k,ctx)) });
+function pxMinds(u,t,rec,R,nc,feat){
+  R=R||u.roster[t]; const ctx=pxCtx(u,t,rec,nc), out=[]; out.pro=[];
+  R.forEach((pl,k)=>{ if(!pl||(pl.c||0)>=3)return; const x=pxPro(u,t,pl,k,feat);
+    if(x)out.pro.push({k:k,pl:pl,r:x.r,featured:feat===k}); else out.push(pxMind(u,t,R,k,ctx)) });
   return out;
 }
+/* the draft: a player good enough declares at the window (the league's own rule, LEAGUE.market.pro: football's
+   underclassmen in January, basketball's before the spring window closes), so nobody is paid to stay and then leaves.
+   A featured player (your choice in the season) is likelier to stay, as before. A hash: the preview is the commit */
+function pxPro(u,t,pl,k,feat){
+  const f=typeof LEAGUE!=="undefined"&&LEAGUE.market&&LEAGUE.market.pro; if(!f)return null;
+  const x=f(pl); if(!x||!(x.p>0))return null;
+  return pxH(pxKey(t,pl)+"|"+u.year+"|pro")<x.p*(feat===k?0.34:1)?x:null;
+}
+/* the featured player's slot, for the screen's view: yours, unless you're moving */
+function pxFeatUI(t){ return typeof S!=="undefined"&&S&&t===S.myTeam&&!(S.off&&S.off.move&&S.off.move!==S.myTeam)&&S.featured!=null?S.featured:null }
 /* the staff's plan (and every computer program's): pay the players who matter most, as far as most of the money goes */
 function pxStaffKeep(u,t,rec,R,minds){
   const M=MK(), B=pxBudget(u,t,rec), L=POS.length, keep={};
-  minds=minds||pxMinds(u,t,rec,R); let pay=0;
+  minds=minds||pxMinds(u,t,rec,R,null,pxFeatUI(t)); let pay=0;
   minds.slice().sort((a,b)=>{ const w=m=>POS[m.i].w*(m.st?1:0.35)*Math.max(1,m.pl.r-pxTyp(u,t)+12); return w(b)-w(a) })
     .forEach(m=>{ const key=pxKey(t,m.pl); if(pay+m.ask<=B.two*M.keepShare){ keep[key]=1; pay+=m.ask } else keep[key]=0 });
   return keep;
@@ -142,13 +153,16 @@ function pxBidBase(u,e,t,ratio,starts,wp){
 function pxMarket(u,rec,U_CH,dry,nc){
   const M=MK(), L=POS.length, year=u.year, people=new Set(Object.keys(U_CH||{}));
   const RO={}; NAMES.forEach(t=>{ RO[t]=dry?pxBanked(u,t):u.roster[t] });
-  const B={}, pay={}, left={}, nIn={}, ents=[], rep={n:0,signed:0,unsigned:0,in:{},out:{},kept:{},targets:{},money:{},grad:{},fills:{}};
-  const push=(o,t,x)=>{ (o[t]=o[t]||[]).push(x) };
+  const B={}, pay={}, left={}, nIn={}, ents=[], rep={n:0,signed:0,unsigned:0,in:{},out:{},kept:{},targets:{},money:{},grad:{},fills:{},pro:{}};
+  const push=(o,t,x)=>{ (o[t]=o[t]||[]).push(x) }, fillP={};
   // 1. the asks
   NAMES.forEach(t=>{
     B[t]=pxBudget(u,t,rec); pay[t]=0; nIn[t]=0;
-    const R=RO[t], minds=pxMinds(u,t,rec,R,nc), keep=pxKeepOf(u,t,rec,R,minds,U_CH&&U_CH[t]);
-    const gone=[];
+    const ch=U_CH&&U_CH[t], feat=ch&&ch.featured!=null?ch.featured:null;
+    const R=RO[t], minds=pxMinds(u,t,rec,R,nc,feat), keep=pxKeepOf(u,t,rec,R,minds,ch);
+    const gone=minds.pro.slice();
+    // the ones declaring for the draft leave first: the league's draft takes them with the seniors
+    minds.pro.forEach(x=>{ push(rep.pro,t,x); if(!dry&&x.featured)u.pipeline=(u.pipeline||0)+1 });
     minds.forEach(m=>{ const key=pxKey(t,m.pl), paid=!!keep[key], p=pxEnterP(m,paid);
       if(pxH(key+"|"+year+"|enter")<p){ gone.push(m); ents.push({key:key,from:t,pl:m.pl,n:m.pl.n,p:m.pl.p,i:m.i,r:m.pl.r,pot:m.pl.pot,c:m.pl.c,
           st:m.st,V:m.V,why:pxWhyOf(m,paid),paid:paid}) }
@@ -210,7 +224,7 @@ function pxMarket(u,rec,U_CH,dry,nc){
   NAMES.forEach(t=>{ const R=RO[t], typ=pxTyp(u,t);
     POS.forEach((_,i)=>{ if(!R[i]&&R[BK(i)]){ R[i]=R[BK(i)]; R[BK(i)]=null }
       [i,BK(i)].forEach(k=>{ if(R[k])return; const g=new RNG(strHash(t+"|"+year+"|fill|"+k));
-        const pl=makePlayer(g,typ-g.range(5,13),g.int(3),i); pl.nil=MK().floor; R[k]=pl; push(rep.fills,t,pl.n) }) });
+        const pl=makePlayer(g,typ-g.range(5,13),g.int(3),i); pl.nil=MK().floor; R[k]=pl; push(rep.fills,t,pl.n); if(dry)push(fillP,t,pl) }) });
     rep.money[t]={tot:B[t].tot,two:B[t].two,rest:B[t].rest,kept:Math.round(pay[t]*1000)/1000,
       portal:Math.round((B[t].two-pay[t]-left[t])*1000)/1000,left:left[t]};
   });
@@ -221,16 +235,16 @@ function pxMarket(u,rec,U_CH,dry,nc){
     if(e.from===t)return {n:nm,got:false,why:"he's leaving you"};
     return {n:nm,got:false,why:e.to?`chose ${e.to}`:"went unsigned"} }) });
   rep.ents=ents.map(e=>({key:e.key,from:e.from,n:e.n,p:e.p,i:e.i,r:e.r,pot:e.pot,c:e.c,V:e.V,why:e.why,to:e.to||null,st:e.st,bb:e.bb||[]}));
-  rep.rosters=dry?RO:null;
+  rep.rosters=dry?RO:null; if(dry)Object.defineProperty(rep,"fillP",{value:fillP});   // the screen's: not kept
   return rep;
 }
 
 /* ---- the screen's view of the market (your choices as they stand), cached until they change ---- */
 let _pxPrev=null;
 function pxPreview(t,P){
-  const key=JSON.stringify([U.year,t,SEA&&SEA.year,S.off&&S.off.move,P&&P.keep||{},P&&P.offers||[]]);
+  const key=JSON.stringify([U.year,t,SEA&&SEA.year,S.off&&S.off.move,S.featured,P&&P.keep||{},P&&P.offers||[]]);
   if(_pxPrev&&_pxPrev.key===key&&_pxPrev.u===U)return _pxPrev.rep;
-  const UC={[t]:{keep:(P&&P.keep)||{},offers:(P&&P.offers)||[]}};
+  const UC={[t]:{keep:(P&&P.keep)||{},offers:(P&&P.offers)||[],featured:pxFeatUI(t)}};
   // the other people in a hot seat: their staff's plans, until they choose
   if(isHotSeat())S.coaches.forEach((c,i)=>{ if(i!==(S.turn||0)&&c&&c.myTeam&&c.myTeam!==t&&!UC[c.myTeam])UC[c.myTeam]=(S.pending&&S.pending[c.myTeam])||{} });
   // a coach on the move: the program he leaves and the one he takes both have a new head coach by the window
@@ -242,7 +256,9 @@ function pxPreview(t,P){
    best of the others the market saw for him, on the same terms it weighs; the noise is the part that's his */
 function pxChance(t,e,lvl,P){
   const rep=pxPreview(t,P), u=U, M=MK(), wpOf=x=>{ const r=SEA.rec[x]; return r&&r[0]+r[1]?r[0]/(r[0]+r[1]):0.5 };
-  const R=rep.rosters[t], D=[R[e.i],R[BK(e.i)]].filter(p=>p&&(p.c||0)<3&&p.n!==e.n).sort((a,b)=>b.r-a.r), nx=pxTyp(u,t)-9;
+  // the depth he'd join, as the market sees it when he signs: a spot filled after the window (the next man up from the
+  // rest of the roster) counts as the market counts an empty one
+  const F=(rep.fillP&&rep.fillP[t])||[], R=rep.rosters[t], D=[R[e.i],R[BK(e.i)]].filter(p=>p&&(p.c||0)<3&&p.n!==e.n&&F.indexOf(p)<0).sort((a,b)=>b.r-a.r), nx=pxTyp(u,t)-9;
   const starts=e.r>(D[0]?D[0].r:nx)+1;
   if(!starts&&!(e.r>(D[1]?D[1].r:nx)))return 0;      // no room: your players there are better (the market won't send him)
   const mine=pxBidBase(u,e,t,lvl,starts,wpOf(t));
@@ -270,7 +286,7 @@ function pxTeam(){ return S.off&&S.off.move&&S.off.move!=="retire"?S.off.move:S.
 /* your money as your choices stand: what you've agreed to pay, and what offers out would cost if all signed */
 function pxLedger(t,P){
   const nc=S.off&&S.off.move&&S.off.move!=="retire"&&S.off.move!==S.myTeam?new Set([S.myTeam,S.off.move]):null;
-  const B=pxBudget(U,t,SEA.rec), minds=pxMinds(U,t,SEA.rec,pxBanked(U,t),nc), keep=pxKeepOf(U,t,SEA.rec,null,minds,{keep:P.keep||{}});
+  const B=pxBudget(U,t,SEA.rec), minds=pxMinds(U,t,SEA.rec,pxBanked(U,t),nc,pxFeatUI(t)), keep=pxKeepOf(U,t,SEA.rec,null,minds,{keep:P.keep||{}});
   const kept=minds.filter(m=>keep[pxKey(t,m.pl)]).reduce((s,m)=>s+m.ask,0);
   const rep=pxPreview(t,P), ents={}; rep.ents.forEach(e=>ents[e.key]=e);
   const offers=(P.offers||[]).filter(o=>ents[o[0]]).reduce((s,o)=>s+ents[o[0]].V*o[1],0);
@@ -307,6 +323,8 @@ function pxScreenHTML(num){
       <div class="fnote">rated ${m.pl.r} &middot; ${yr(m.pl.c)} next season &middot; asks ${pxMoney(m.ask)} &middot; ${word}${go||p>=0.3?" &middot; "+esc(PX_LINE[why]||why):""}${!!staff[key]!==paid?' <span class="planyou">your change</span>':""}</div></div>
       <button class="skip small ${paid?'dnpick':''}" data-pxkeep="${esc(key)}" data-v="${paid?0:1}">${paid?"Paying "+pxMoney(m.ask):"Pay "+pxMoney(m.ask)}</button></div>` };
   const open=pxOpen.mine, show=open?rows:rows.slice(0,8);
+  const pros=(rep.pro[t]||[]);
+  if(pros.length)h+=`<div class="note"><b>Declaring for the ${esc(M.draft||"draft")}:</b> ${pros.map(x=>`${esc(x.pl.n)} (${esc(x.pl.p)}, ${x.r})`).join(", ")}. ${pros.length===1?"He doesn't":"They don't"} ask to be paid.</div>`;
   h+=show.map(prow).join("")+(rows.length>8?`<button class="skip small" data-pxmore="mine">${open?"Show the first eight":"Show all "+rows.length}</button>`:"");
   // the portal
   const ents=rep.ents.filter(e=>e.from!==t), mineK=new Set((P.offers||[]).map(o=>o[0]));

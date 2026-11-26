@@ -3472,7 +3472,11 @@ budget's four buckets and, in college basketball, the old portal (runPortal).
   85 of 105; basketball 90%). pxValue(pl): what the open market pays a player,
   by rating, position and room to grow.
 - The window (pxMarket, run in LEAGUE.offseason.run before developRoster):
-  1. asks: each non-senior asks his value; the staff (and every computer
+  0. the draft: LEAGUE.market.pro(pl) (each game's early-entry rule, on the
+     rating he'll reach) says who declares (pxPro, hashed); he leaves with the
+     seniors (rep.pro, pushed into the league's leavers), so developRoster
+     skips its own early-entry roll on engine 26.
+  1. asks: each other non-senior asks his value; the staff (and every computer
      program) pays the most important first, up to keepShare of the money; a
      person's keep map overrides. Whether he enters is a hash against a push
      (buried, new head coach, a star who'd start a level up, a losing team,

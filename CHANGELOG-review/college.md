@@ -78,36 +78,61 @@ year where the real sport moves about 2,000. The portal is now the central roste
 
 **Game(s).** College football, college basketball.
 
-**Tested.** `node test/cfb-portal.js` (2 careers x 6 seasons, about a minute): MATCH 5,241 checks.
+**Tested.** `node test/cfb-portal.js` (2 careers x 6 seasons, about a minute and a half): MATCH 5,073 checks.
 
 | College football | Before (engine 25) | After | Real |
 |---|---|---|---|
-| Entrants a winter, share of the depth chart | none | 24.7% (652 a winter) | 21-29% of rosters |
-| Entrants who signed | - | 74% | under two-thirds by the window's close |
-| Group of Six all-conference who moved | 0% | 69% | 70.5% |
-| ... of them to the Power Four | - | 93% | 90% |
+| Entrants a winter, share of the depth chart | none | 24.0% (635 a winter) | 21-29% of rosters |
+| Entrants who signed | - | 76% | under two-thirds by the window's close |
+| Group of Six all-conference who moved | 0% | 68.5% | 70.5% |
+| ... of them to the Power Four | - | 90% | 90% |
 | Power Four all-conference who moved | 0% | 26-33% | 25.4% |
-| All-conference players who are transfers (seasons 4+) | 0% | 37% | 42-47% |
-| Starting quarterbacks who are transfers | 0% | 53% | 64% |
+| All-conference players who are transfers (seasons 4+) | 0% | 35% | 42-47% |
+| Starting quarterbacks who are transfers | 0% | 60% | 64% |
 | Distinct champions in 12 seasons (6 careers) | 8.7 | 7.7 | 7 (2014-2025) |
+
+The champions were counted before section 3's change, which left football's early entries as they were (15.5 and
+15.6 a year).
 
 The entrants fall from about 840 in the market's first winter to about 570 in later ones, as the real portal fell after
 schools began paying. The screen's preview was the market in every winter (12 of 12, offers and a job move included),
-and your offers signed as often as the screen's chances said (10 of 24, the chances summed to 10.7). Every roster keeps
+and your offers signed about as often as the screen's chances said (9 of 24, the chances summed to 11.0). (A fix found here: the chance now
+counts a spot the game fills after the window as an empty one, as the market does; three football targets the screen
+called a battle had been missed for "no room".) Every roster keeps
 its twenty, nobody is on two, and an engine-25 season's winter (OLD=/home/claude/dist-e25) gives the same rosters on
 both builds with no market, then the next winter runs it.
 
-College basketball, `node test/bb-portal.js 4`: MATCH 4,439 checks. Entrants 31.8% of the ten a spring (before: about
-8-10%, about 300 players; real about 35% of rosters), 76% signed, mid-major starters rated 70+ who moved 89%, all to
+College basketball, `node test/bb-portal.js 4`: MATCH 4,441 checks. Entrants 29.3% of the ten a spring (before: about
+8-10%, about 300 players; real about 35% of rosters), 76% signed, your offers 5 of 12 (the chances said 5.2), mid-major starters rated 70+ who moved 89%, all to
 high-majors; starters who are transfers 48% (seasons 3+). `test/bb-march.js 2 60` (the market build): MATCH, every
 first-round seed line and the 1 seeds' titles and Final Fours within history (48 tournaments).
 
 **Not yet.** One window a year (no spring window in football, no graduate transfers: seniors graduate). Players are
-not tampered with in season, and the portal has no "do not contact" tag. In basketball a transfer you sign can still
-declare for the NBA draft that summer; the banner says so, and you've paid for him. Your offers are one per player;
-the computer's do not escalate. Starting quarterbacks who are transfers are still under the real share.
+not tampered with in season, and the portal has no "do not contact" tag. Your offers are one per player; the computer's
+do not escalate. Starting quarterbacks who are transfers are still under the real share.
 
-## 3. Your players ask to leave: the conversations
+## 3. The draft is declared at the window
+
+**What changed.** An underclassman good enough for the pros now decides at the window, by the rule each game already
+used in the spring (football: two seasons in and rated 76 or more, on the rating he'll reach; basketball: NBA teams
+draft what he could be, the very best after one season). He doesn't ask to be paid and isn't in the portal; the screen
+lists him under "Declaring for the NFL draft" (or NBA draft). Before, the market ran first and the draft roll came after,
+so a basketball star you'd paid to stay could still leave for the NBA, as could a transfer you'd just signed.
+
+**Why.** Found in testing: 1 of 12 basketball targets the test signed left for the NBA the same spring. The real calendar
+has the same order (the NBA's early-entry deadline in late April, the NFL's in mid-January, both beside the windows).
+
+**Game(s).** College football, college basketball.
+
+**Tested.** Early entries a year, two careers x 5 seasons, base build against this one: football 15.5 and 15.6 (no
+change). Basketball 261 and 152, the starters about the same (about 130 and 110): the old rule also rolled the newcomers
+who arrived in a vacated spot that same spring, so freshmen left before playing a game; now only players on the roster at
+the window declare. `test/bb-portal.js` now checks that nobody paid to stay and no signed transfer leaves for the draft.
+
+**Not yet.** No withdrawal (real early entrants can return by the deadline), and money doesn't keep a pro prospect
+(the old retention bucket did, a little).
+
+## 4. Your players ask to leave: the conversations
 
 **What changed.** The people layer's in-season "thinking about the portal" talk (core 93_morale) now has a
 consequence in the window: a player's banked morale under 40 adds to his push, over 75 takes from it, and every point of
