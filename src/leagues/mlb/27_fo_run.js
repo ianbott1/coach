@@ -31,10 +31,13 @@ function mlbFold(u){
   const E=typeof SEA!=="undefined"&&SEA&&SEA.year===u.year?SEA:null, M=E&&E.mlb;
   if(M&&M.moves&&typeof mlbReplayMove==="function")M.moves.forEach(m=>mlbReplayMove(u,m));
   NAMES.forEach(t=>{ (u.roster[t]||[]).forEach(p=>{ if(!p)return;
-      const d=M&&M.days&&M.days[t]&&M.days[t][p.n]!=null?M.days[t][p.n]:172;
-      p.svDays=Math.min(172,d); p.svc=Math.round(((p.svc||0)+Math.min(1,d/MLB$.svcDay))*1000)/1000;
+      const d=M&&typeof mlbSvcDays==="function"?mlbSvcDays(M,t,p.n,true):MLB$.svcDay;
+      p.svDays=Math.min(MLB$.svcDay,d); p.svc=Math.round(((p.svc||0)+Math.min(1,d/MLB$.svcDay))*1000)/1000;
+      // optioned for twenty days or more in the season: an option year used
+      if(M&&M.down&&M.down[t]&&(M.down[t][p.n]||0)>=20){ p.optY=p.optY||[]; if(p.optY.indexOf(u.year)<0)p.optY.push(u.year) }
       p.qoOK=!M||!M.start||(M.start[t]&&M.start[t].indexOf(p.n)>=0) });
-    ((u.farm&&u.farm[t])||[]).forEach(p=>{ const d=M&&M.days&&M.days[t]&&M.days[t][p.n]||0;
+    ((u.farm&&u.farm[t])||[]).forEach(p=>{ const d=M&&typeof mlbSvcDays==="function"?mlbSvcDays(M,t,p.n,false):0;
+      if(d&&!p.on40)p.on40=1;   // a call-up was added to the 40-man
       if(d){ p.svc=Math.round(((p.svc||0)+Math.min(1,d/MLB$.svcDay))*1000)/1000; p.svDays=d } else p.svDays=0;
       // a 40-man man who spent part of the season in the minors uses an option year
       if(p.on40&&d<160){ p.optY=p.optY||[]; if(p.optY.indexOf(u.year)<0)p.optY.push(u.year) } }) });
@@ -66,7 +69,8 @@ function mlbRun27(u,rng,healthy,elo,rec,choices){
   u.mlbTaxN=u.mlbTaxN||{}; u.mlbOwn=u.mlbOwn||{}; u.mlbPk=u.mlbPk||{};
   NAMES.forEach(t=>{ const pay=mlbTaxPay(u,t), r0=mlbRep(u,t), tax=mlbTaxBill(pay,r0);
     const e=LEAGUE.goals.expectations((u.program&&u.program[t])||1500), w=rec[t][0], l=rec[t][1], wp=w/Math.max(1,w+l), ew=e.w/162;
-    const m=champ===t||wp>=ew+0.06?1:tax>0&&wp<ew-0.04?-1:wp<ew-0.08?-1:0;
+    const past=pay+tax>mlbBudget(u,t)*1.02;   // spent past the owner's limit (yours can: the summer screen says what it costs)
+    const m=champ===t||wp>=ew+0.06?1:(tax>0||past)&&wp<ew-0.04?-1:wp<ew-0.08||past?-1:0;
     rep.bills[t]={pay:pay,tax:tax,rep:r0,over:Math.round((pay-MLB$.cbt)*10)/10,mood:m,budget:mlbBudget(u,t)};
     u.mlbTaxN[t]=tax>0?r0+1:0;
     u.mlbOwn[t]=m });
@@ -102,7 +106,7 @@ function mlbRun27(u,rng,healthy,elo,rec,choices){
     const ocq=(u.oc&&u.oc[t])?u.oc[t].q:0, dcq=(u.dc&&u.dc[t])?u.dc[t].q:0;
     R.forEach((p,i)=>{ if(!p)return;
       const was=p.r; p.age++; p.c=p.age; const a=p.age-age26(p);
-      const mu=ageBase26(a)+c.q*0.02+devMod+(ocq+dcq)*0.01+(a<=29?orgEdge(u,t)*0.75:0)+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0);
+      const mu=ageBase26(a)+mlbYoung(a)+c.q*0.02+devMod+(ocq+dcq)*0.01+(a<=29?orgEdge(u,t)*0.75:0)+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0);
       develop26(u,p,a,mu,rng,{leap:+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07),floor:35});
       p.peak=Math.max(p.peak||0,p.r);
       if(p.r-was>=5)rep.grew[t].push({n:p.n,p:p.p,age:p.age,from:was,to:p.r,leap:p.leap===u.year}) });
@@ -125,6 +129,8 @@ function mlbRun27(u,rng,healthy,elo,rec,choices){
   const picks=mlbPlaceDraft(u,DN,rep);
   Object.keys(u.mlbPk).forEach(k=>{ if(+k.split("|")[0]<=u.year)delete u.mlbPk[k] });
 
+  // your designations: each man you designated for assignment goes on waivers before the market (his place filled below)
+  NAMES.forEach(t=>{ if(human(t))mlbUserDfa(u,t,chFor(t),rep,leave) });
   // 5a. prospects ready to play take the empty places
   NAMES.forEach(t=>{ if(!human(t)||chFor(t).farmAuto!==false)mlbFillFromFarm(u,t,rep,56) });
   // 5b. free agency
@@ -136,6 +142,8 @@ function mlbRun27(u,rng,healthy,elo,rec,choices){
       const p=nflPlayer(rng,53+rng.range(0,5),24+rng.int(8),i%POS.length);
       p.svc=Math.max(0,Math.round((mlbSvcStart(p)-1)*1000)/1000); p.k={sal:MLB$.min,yrs:1,t:mlbClass(p,null).c==="fa"?"fa":"pre",v:3}; p.joined=u.year+1; R[i]=p;
       rep.filled[t].push({n:p.n,p:p.p,r:p.r}) } });
+  // your call-ups: each man you chose from the farm takes the bench place at his position (that man optioned or designated)
+  NAMES.forEach(t=>{ if(human(t))mlbUserCalls(u,t,chFor(t),rep,leave) });
   // 6. depth: a prospect who beats a man in the majors takes his place (the computer's clubs; yours by your choice)
   NAMES.forEach(t=>{ if(!human(t)||chFor(t).farmAuto!==false)mlbDepthMoves(u,t,rep,leave) });
   mlbProtect(u);
@@ -229,6 +237,24 @@ function mlbDepthMoves(u,t,rep,leave){
     if(mlbCanOption(b)){ b.lvl="AAA"; b.on40=1; F.push(b); rep.opt[t].push({n:b.n,p:b.p,r:b.r}) }
     else { rep.dfa[t].push({n:b.n,p:b.p,r:b.r,to:mlbWaivers(u,t,b,leave)}) }
     rep.farmUp[t].push({n:c.n,p:POS[s].p,r:c.r,age:c.age,from:c.lvl}); mlbCallUp(u,t,c,k) } }
+/* your own moves on the summer screen. A designation: the man is placed on waivers (another club may claim him; if not,
+   a man with three years' service goes to free agency, a younger man to Triple-A off the 40-man). A call-up: the farm
+   man takes the bench place at his position, and the man there is optioned to Triple-A if he has an option left, or
+   designated for assignment if he doesn't. */
+function mlbUserDfa(u,t,ch,rep,leave){ const L=(ch&&ch.dfa)||[]; if(!L.length)return; const R=u.roster[t];
+  L.forEach(n=>{ const i=R.findIndex(p=>p&&p.n===n); if(i<0)return; const p=R[i]; R[i]=null;
+    rep.dfa[t].push({n:p.n,p:p.p,r:p.r,to:mlbWaivers(u,t,p,leave),mine:1}) });
+  POS.forEach((_,i)=>{ if(!R[i]&&R[BK(i)]){ R[i]=R[BK(i)]; R[BK(i)]=null } }) }
+function mlbUserCalls(u,t,ch,rep,leave){ const L=(ch&&ch.calls)||[]; if(!L.length)return; const R=u.roster[t], F=(u.farm&&u.farm[t])||[];
+  L.forEach(n=>{ const c=F.find(p=>p.n===n); if(!c)return;
+    // his place: the bench place at a position he plays, the weakest bench man there first
+    const ks=POS.map((_,s)=>s).filter(s=>mlbFits(c,s)).map(s=>BK(s)).sort((a,b)=>(R[a]?R[a].r:-1)-(R[b]?R[b].r:-1)); if(!ks.length)return;
+    const k=ks[0], b=R[k];
+    if(b){ R[k]=null;
+      if(mlbCanOption(b)){ b.lvl="AAA"; b.on40=1; F.push(b); rep.opt[t].push({n:b.n,p:b.p,r:b.r,mine:1}) }
+      else rep.dfa[t].push({n:b.n,p:b.p,r:b.r,to:mlbWaivers(u,t,b,leave),mine:1}) }
+    if(!c.on40&&mlb40(u,t)>=40)mlbClear40(u,t,rep);
+    rep.farmUp[t].push({n:c.n,p:POS[k%POS.length].p,r:c.r,age:c.age,from:c.lvl,mine:1}); mlbCallUp(u,t,c,k) }) }
 /* waivers: the club with the worst record whose man at that place is weaker, with room, claims him with his contract;
    unclaimed, a man with three years goes to free agency, a younger man to Triple-A off the 40-man */
 function mlbWaivers(u,from,p,leave){
@@ -352,8 +378,8 @@ LEAGUE.afterRebuild=function(u){ if(typeof S!=="undefined"&&S&&S.off&&typeof SEA
         resign[i]=x.act==="sign"; qo[i]=x.act==="qo" }
       else { asks[i]={sal:mlbControlSal(p,cl),yrs:1,c:cl.c,y:cl.y||0,perf:cl.c==="arb"?mlbPerf(p):0,s2:!!p.s2}; tender[i]=x.act==="tender" } });
     nflDraftClass(u,t);
-    return {pool:mlbBudget(u,t), picks:{resign:resign, qo:qo, tender:tender, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], bids:{}, block:null, trade:null, farmAuto:true}} };
-  O.choices=function(P){ const c=choices0.call(O,P); if(P&&P.tender)Object.assign(c,{tender:P.tender, qo:P.qo||{}, bids:P.bids||null, farmAuto:P.farmAuto!==false}); return c };
+    return {pool:mlbBudget(u,t), picks:{resign:resign, qo:qo, tender:tender, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], bids:{}, block:null, trade:null, farmAuto:true, calls:[], dfa:[]}} };
+  O.choices=function(P){ const c=choices0.call(O,P); if(P&&P.tender)Object.assign(c,{tender:P.tender, qo:P.qo||{}, bids:P.bids||null, farmAuto:P.farmAuto!==false, calls:(P.calls||[]).slice(), dfa:(P.dfa||[]).slice()}); return c };
 }
 /* who will be a free agent (the summer screen's list): the men other clubs' plans let go, turn down a qualifying offer
    for, or don't tender. The same plan the summer runs (mlbPlan), so the list is the market */

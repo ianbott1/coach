@@ -165,7 +165,7 @@ function mlbFarmSummer(u,t,rep){
   F.forEach(p=>{ const was=p.r; p.age++; p.c=p.age; const a=p.age-(typeof age26==="function"?age26(p):0);
     const lvlUp=p.lvl==="AAA"?0.3:p.lvl==="AA"?0.5:0.6;   // playing every day at his level
     const mu=ageBase26(a)+lvlUp+(a<=27?E*0.6:0);
-    develop26(u,p,a,mu,rng,{leap:0.08,floor:30}); p.peak=Math.max(p.peak||0,p.r);
+    develop26(u,p,a,mu,rng,{leap:MLB_ENV("MLB_FL",0.06),floor:30}); p.peak=Math.max(p.peak||0,p.r);
     if(p.r-was>=5&&rep)rep.push({n:p.n,p:p.p,age:p.age,from:was,to:p.r,lvl:p.lvl}) });
   // who stays: a 40-man man always (he is released through a designation, not here); otherwise not past 29, nor
   // a man well below his level's bar once he is no longer young
@@ -185,3 +185,17 @@ function mlbFarmSummer(u,t,rep){
   mlbNames(u,t,fresh,F2.filter(p=>fresh.indexOf(p)<0));
   u.farm[t]=F2;
   return out }
+
+/* the big leagues' young men still grow: a farm-built league is narrower than the one the game opens with, so the summer's
+   re-centre no longer lifts the low end, and the 24-to-28 group would otherwise stall a year early (peak 26-29); the
+   re-centre takes the level back, so the tilt is what's left: young men up, men past 30 a little faster down */
+function mlbYoung(a){ const k=MLB_ENV("MLB_YB",0.75); return a<=25?k:a<=28?k*0.8:a<=29?k*0.3:a<=30?0:-k*0.5 }
+/* the summer's re-centre (core recentre26) holds the majors' level and spread; it reads only the 26-man rosters, so the
+   farm is moved the same way at the same moment, or it would drift above the league it feeds (each call-up then lifting
+   the majors, and the re-centre taking it back from every man there). A front-office career only. */
+function mlbFarmRecentre(u,rc){
+  const R=typeof REF26!=="undefined"&&REF26.mlb; if(!rc||!(rc.s>0)||!R||!u||!u.mlbFO||!u.farm)return;
+  const k=Math.min(1,R.s/rc.s), map=(v,h)=>Math.floor(R.m+(v-rc.m)*k+h);
+  NAMES.forEach(t=>(u.farm[t]||[]).forEach(p=>{ const h=hash01("rcf|"+p.n+"|"+u.year);
+    p.r=Math.max(30,Math.min(99,map(p.r,h))); if(p.pot!=null)p.pot=Math.min(99,Math.max(p.r,map(p.pot,h))) })) }
+if(typeof recentre26==="function"){ const rc0=recentre26; recentre26=function(u){ const r=rc0(u); mlbFarmRecentre(u,r); return r } }

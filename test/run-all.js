@@ -41,6 +41,7 @@ add('the roster economy: revenue sharing, NIL and the transfer portal against th
 add('March vs history (ncaab)',['bb-march.js','2','100'],{long:true});
 // pro basketball
 add('playoffs (nba)',['nba-playoffs.js','4']); add('screens (nba)',['nba-screens.js']); add('the front office: cap sheet, fifteen, trades, free agency, an old career (nba)',['nba-fo.js'],{timeout:1200000});
+add('the front office: the 26 and the 40, the farm, service time and arbitration, the tax, the qualifying offer, a market against the real one, an old career (mlb, engine 27)',['mlb-fo.js'],{fast:true,timeout:900000});
 add('NBA history (nba)',['nba-history.js','2','100'],{long:true});
 add('draft labels hold their bands (pro)',['draft-labels.js','16'],{long:true});
 // pro hockey
