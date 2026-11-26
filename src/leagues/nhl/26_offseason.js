@@ -74,6 +74,7 @@ const ROOKIE_ROOM=2;                        // what re-signing leaves free for t
    keeping means a starter rated 66+, or a cheap useful backup, not past 32. */
 const RS_BAR=+((typeof process!=="undefined"&&process.env&&process.env.HK_RS)||59), RB_BAR=+((typeof process!=="undefined"&&process.env&&process.env.HK_RB)||54);
 function nflResignPlan(R){
+  { const t=typeof U!=="undefined"&&U&&U.roster&&hkFO(U)?NAMES.find(x=>U.roster[x]===R):null; if(t)return hkResignPlan(U,t,R) }   // the front office (engine 27: 27_hkrun)
   const exp=[], keep={}; let pay=0; RESIGN_WHY={};
   R.forEach((p,i)=>{if(!p)return;
     if(p.k.yrs<=1)exp.push(i); else pay+=p.k.sal});
@@ -167,7 +168,7 @@ function nflProspects(rng,n,sh){
 function nflDraftClass(u,team){
   if(!u.draftClass||u.draftClass.year!==u.year){
     const rng=new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x5bd1e995)>>>0);
-    const list=nflProspects(rng,Math.round(2*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0)); list.forEach((p,i)=>p.pid=i);
+    const list=nflProspects(rng,Math.round(LEAGUE.offseason.draftRounds*32*DRAFT_K.deep),new RNG((((u.seed||0)*2654435761)^(u.year*7919)^0x7ab1)>>>0)); list.forEach((p,i)=>p.pid=i);
     // no two prospects in one class share a name (two "Tanner Mbeki"s: Grokbot); renamed by hash, so no draw moves
     { const seen=new Set(); list.forEach(p=>{ let n=p.n, k=0; while(seen.has(n)&&k<LAST.length){ n=n.split(" ")[0]+" "+LAST[(strHash(p.n+"|"+p.pid)+k)%LAST.length]; k++ } p.n=n; seen.add(n) }) }
     u.draftClass={year:u.year,list:list};
@@ -185,6 +186,7 @@ function nflDraftClass(u,team){
    across the offseason. */
 const faKey=(team,p)=>team+"|"+p.n+"|"+p.p;
 function nflFreeAgentPreview(u,myTeam,users){
+  if(hkFO(u))return hkFreeAgentPreview(u,myTeam);   // the front office (engine 27): unrestricted and restricted, at the market's prices
   const out=[];
   NAMES.forEach(t=>{
     if(t===myTeam)return;
@@ -258,6 +260,7 @@ const rookieSal=o=>0.95;                     // entry-level deals, ~$950K
 
 /* what a player adds at his spot: over the backup, or over the starter */
 function nflGain(roster,p){
+  if(hkDeep(roster))return hkGain(roster,p);           // twenty-three deep (the front office, 27_hkrun)
   const s=roster[p.i], b=roster[BK(p.i)], w=POS[p.i].w;
   const val=x=>x?x.r+(x.pot-x.r)*0.25:0;
   if(!s)return val(p)*w*3;
@@ -266,6 +269,7 @@ function nflGain(roster,p){
 }
 /* put a player in: he starts or backs up by rating; whoever drops off is returned */
 function nflPlace(roster,p){
+  if(hkDeep(roster))return hkPlace(roster,p);
   p.i=POS.findIndex(P=>P.p===p.p);
   const s=roster[p.i], b=roster[BK(p.i)];
   let out=null;
@@ -276,6 +280,7 @@ function nflPlace(roster,p){
 }
 
 function nflRun(u,rng,healthy,elo,rec,choices){
+  if(hkSummer())return hkRun(u,rng,healthy,elo,rec,choices);   // engine 27: the front office's summer (27_hkrun)
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
   // draft night: its own dice, on the rosters as the season ended (core/91_draftnight)
   const DN=draftNight(u,rec,elo,U_CH,2);
@@ -457,26 +462,31 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     cap:Object.fromEntries(NAMES.map(t=>[t,Math.round(payroll(u.roster[t])*10)/10]))};
 }
 
-LEAGUE.cap=NFL_CAP; LEAGUE.taxLine=TAX_LINE;
+/* the cap the season reads: a career on the front office's rules (engine 27) the real $104.0M, one from before the old
+   limit until its first summer on them, so a season under way replays exactly */
+Object.defineProperty(LEAGUE,"cap",{get(){ return hkFO()?HK$.cap:NFL_CAP },enumerable:true,configurable:true});
+Object.defineProperty(LEAGUE,"taxLine",{get(){ return hkFO()?HK$.cap:TAX_LINE },enumerable:true,configurable:true});
 LEAGUE.offseason={
   newRoster:nflRoster,
   run:nflRun,
   /* the user's choices, as the offseason screen starts them: re-sign the
      starters worth keeping, spend in free agency like a middling team, draft
      the best player available */
+  init(u){ if((u.engV||0)>=27)hkStart(u) },          // a new career on engine 27 starts on the front office's rules (24_hkcap)
   open(u,t,wins){
+    if(hkSummer()||hkFO(u))return hkOpen(u,t);         // the front office (28_hkviews)
     const R=u.roster[t], resign=nflResignPlan(R), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
     return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null,
+  choices(P){return {resign:P.resign, buyouts:P.buyouts||[], nomatch:P.nomatch||null, arbYrs:P.arbYrs||null, walk:P.walk||null, bids:P.bids||null, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null,
                        hand:P.hand||null, handDone:!!P.handDone, workouts:P.workouts||[]}},   // draft night's picks (core/91_draftnight)
   faStyles:{contend:{l:"Spend to contend",d:"Chase the best players available, whatever their age. Uses nearly every dollar."},
             balanced:{l:"Balanced",d:"Fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Only players 27 and under, and keep cap space for later."}},
   workouts:0,
-  draftRounds:2,
+  get draftRounds(){ return hkSummer()||hkFO()?3:2 },  // engine 27: three rounds (an offer sheet can cost a third)
   draftStyles:{bpa:{l:"Best available",d:"Take the best player on the board, whatever the position."},
                need:{l:"Draft for need",d:"Fill the weakest spots on the roster, even if it means reaching."},
                upside:{l:"Swing for upside",d:"Raw prospects with the highest ceilings. Slower to pay off."}}
@@ -540,4 +550,4 @@ LEAGUE.seasonLine=function(h,t,r,seed){
 };
 /* home field: the base edge plus the stadium, nothing to do with prestige */
 LEAGUE.homeField=(u,t)=>LEAGUE.tuning.hfa+(LEAGUE.venues[t]||0)*0.5;
-LEAGUE.trade={by:"Mar 6"};   // round 83: the deadline, early March
+LEAGUE.trade={get by(){ return hkFO()?HK$.deadline:"Mar 6" }};   // round 83: the deadline, early March; the front office (engine 27): March 1, the 2027 date   // round 83: the deadline, early March
