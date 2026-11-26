@@ -1,5 +1,5 @@
 {
- "fp": "ba4de2ec5cc1b078",
+ "fp": "1a2a58de5b2e862e",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -160,21 +160,26 @@
    "fp": "ba4de2ec5cc1b078",
    "from": "3b79ac6211a15e85",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "1a2a58de5b2e862e",
+   "from": "ba4de2ec5cc1b078",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "28eb3177b1b52086",
-    "post": "f650e6d7c97421b2",
-    "champion": "Ohio State",
-    "rec": "90070c50c9489033",
-    "poll": "b86bc4267140e3e4",
-    "heis": "19422758f67a94a0",
-    "history": "73b5fe64bb87eba9",
-    "universe": "a7100b4e2ccaaff9",
-    "screens": "2326df602ee6f07f"
+    "games": "754b27aa00429d61",
+    "post": "2a0972f17a1ce989",
+    "champion": "Notre Dame",
+    "rec": "aa1abe9122581bb2",
+    "poll": "2e690f279429fc19",
+    "heis": "ec904f66bbdd4e4d",
+    "history": "f58de2863e3c985e",
+    "universe": "1fbab0535b25d378",
+    "screens": "54e8639d49a2baaa"
    }
   ]
  }

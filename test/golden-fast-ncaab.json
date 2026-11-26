@@ -1,5 +1,5 @@
 {
- "fp": "1b8eb6589a1574a3",
+ "fp": "2af2de7bb465972c",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -150,21 +150,26 @@
    "fp": "1b8eb6589a1574a3",
    "from": "3818fb2b6bcbfc4c",
    "note": "engine 26 (rv2/college): revenue sharing and NIL as a roster budget, the transfer portal window, the draft declared at the window"
+  },
+  {
+   "fp": "2af2de7bb465972c",
+   "from": "1b8eb6589a1574a3",
+   "note": "merged review build (college, hockey, soccer, stats, integrity; engine 26): the merge moved the college games; the preview fix (pxU) moves nothing (same fingerprints before and after)"
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "2df5b2ebc995cf83",
-    "post": "4c9b9b443f9792eb",
-    "champion": "Kentucky",
-    "rec": "0b8c7f14ce7df2e9",
-    "poll": "87d16a0d9ac0f59e",
-    "heis": "01c2a01f118bfe4d",
-    "history": "46babb28fb09c2d2",
-    "universe": "93770a3a59664167",
-    "screens": "a03aac7ef65297af"
+    "games": "23d99e48d02163ae",
+    "post": "5d25cda83179850d",
+    "champion": "North Carolina",
+    "rec": "f66af019398ff5e3",
+    "poll": "1c565a32a53f4a01",
+    "heis": "7244d7923dd47815",
+    "history": "84ec56d4b5c1614d",
+    "universe": "8e5c00a45c149daf",
+    "screens": "fb52174e4de160de"
    }
   ]
  }
