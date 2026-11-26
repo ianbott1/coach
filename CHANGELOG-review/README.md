@@ -1,6 +1,6 @@
-# Review round changelog (engines 25 and 26)
+# Review round changelog (engines 25, 26 and 27)
 
-This folder logs the code changes made alongside the playtest and design review ("Coach: a playtest and design review of the seven games", November 2026). Round one (engine 25) was six branches, built and tested one at a time, then merged into `review-improvements`. Round two (engine 26) added six more, plus follow-ups that fixed what the merge showed. Each file says what changed, why, in which game, how it was tested and what is still missing.
+This folder logs the code changes made alongside the playtest and design review ("Coach: a playtest and design review of the seven games", November 2026). Round one (engine 25) was six branches, built and tested one at a time, then merged into `review-improvements`. Round two (engine 26) added six more, plus follow-ups that fixed what the merge showed. Round three (engine 27) added six more (front offices for hockey, baseball and soccer, football's game plan, a league with a memory, shareable leagues) and two soccer fixes found along the way (`soccer-goals.md`, `soccer-spread.md`). Each file says what changed, why, in which game, how it was tested and what is still missing.
 
 | File | Area | Games |
 |---|---|---|
@@ -27,7 +27,7 @@ This folder logs the code changes made alongside the playtest and design review 
 
 ## Rules kept
 
-- Every change that moves a result is gated on its engine: `ENGINE_V >= 25` for round one and `ENGINE_V >= 26` for round two. A season begun on an older engine replays exactly as it was played (checked against the engine-25 build with `test/engine-replay.js`), and old saves load.
+- Every change that moves a result is gated on its engine: `ENGINE_V >= 25` for round one, `ENGINE_V >= 26` for round two and `ENGINE_V >= 27` for round three. A season begun on an older engine replays exactly as it was played (checked against the engine-25 and engine-26 builds with `test/engine-replay.js`), and old saves load.
 - After the round-two merge, follow-ups re-tuned what the branches moved together: soccer lines follow the team sheet, the college portal preview matches the market, Premier League goals and draws, and pro baseball's runs, platoon split and wins spread (see the Follow-up sections in `stats.md`, `college.md`, `soccer.md` and `baseball.md`).
 - Each branch's goldens matched before its merge; the goldens and hot-seat baselines were re-recorded once on the merged build after each round.
 
