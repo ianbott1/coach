@@ -1,5 +1,5 @@
 {
- "fp": "954d331fcfa162f2",
+ "fp": "194928a238357ea7",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -395,6 +395,11 @@
    "fp": "954d331fcfa162f2",
    "from": "e725cb5fde56da90",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "194928a238357ea7",
+   "from": "954d331fcfa162f2",
+   "note": "round 2 rv2/hockey (engine 26): the goalie pull at real benches' times, tonight's lines and legs, the timeout"
   }
  ],
  "out": [
@@ -404,20 +409,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "34-39-11",
+      "rec": "28-45-11",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "92609f65b556d146"
+     "book": "f67f37589efc6d63"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "33-42-9",
+      "rec": "36-37-11",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "929af5f9835a1791"
+     "book": "60573a4805bf90cc"
     }
    ]
   },
@@ -427,20 +432,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "35-33-16",
+      "rec": "30-45-9",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "B-"
      },
-     "book": "08ecfd20f5310154"
+     "book": "1ec3ecf1a2916e9e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "42-37-5",
+      "rec": "33-39-12",
       "result": "Losing season",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "208be3ad8027565e"
+     "book": "b0132ee03e143f5b"
     }
    ]
   },
@@ -450,20 +455,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "44-30-10",
-      "result": "Lost in the first round",
-      "grade": "B+"
+      "rec": "38-33-13",
+      "result": "Losing season",
+      "grade": "B-"
      },
-     "book": "bebb9ca3e2820f26"
+     "book": "aca5a57c3187c93b"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "40-31-13",
+      "rec": "30-47-7",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C+"
      },
-     "book": "45693db5b71181fc"
+     "book": "93cc241bdd07a832"
     }
    ]
   }

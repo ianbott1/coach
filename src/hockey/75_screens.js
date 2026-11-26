@@ -123,11 +123,14 @@ function hkEventText(g,e,swapped,used){
   if(e.k==="pen"){ const n=hkSkater(tm,u); return {team:tm,tag:"PENALTY",text:`${n} two minutes for ${pickOf(HK_PENS,u>>2)}`} }
   if(e.k==="save"){ const gk=hkGoalie(tm,swapped&&swapped[e.side]); return {team:tm,tag:"",text:pickFresh(HK_SAVE,u,"save",used).replace("{g}",surname(gk)).replace("{s}",surname(hkSkater(opp,u)))} }
   if(e.k==="pull")return {team:tm,tag:"",text:`pull the goalie for an extra attacker`};
+  if(e.k==="gback")return {team:tm,tag:"",text:`put the goalie back in`};
+  if(e.k==="to")return {team:tm,tag:"TIMEOUT",text:`call their timeout`};
+  if(e.k==="ln")return {team:tm,tag:"",text:{roll:"roll four lines",set:"go back to their lines as set",top:"lean on their top six",short:"shorten the bench"}[e.ln]||""};   // engine 26: level again, or out of reach
   if(e.k==="cue")return {team:tm,tag:"",text:pickFresh(HK_CUE[e.cue],u,"cue"+e.cue,used).replace("{t}",tm).replace(/\{o\}/g,opp),cue:true};
   if(e.k==="swap"){ return {team:tm,tag:"",text:`${hkGoalie(tm,true)} comes in for ${surname(hkGoalie(tm,false))}`} }
   return {team:tm,tag:"",text:""};
 }
-const shown=e=>e.k!=="cue"||((e.u||0)%3===0);
+const shown=e=>e.k==="pull"?!e.cont:e.k!=="cue"||((e.u||0)%3===0);   // engine 26: a goalie still out as a stretch starts isn't pulled again
 function segLabel(d){ return d.seg>=SEGS?(d.so?"Shootout":"Overtime"):segClock(d.seg) }
 function rowsOf(g,drives){
   const b0=(drives[0]&&drives[0].bk)||{}, rows=[], sw={home:!!b0.home,away:!!b0.away}, used={}; let last=null; const said=new Set();
@@ -251,7 +254,8 @@ function evidenceHTML(g,my,d,dp){
     return `<div class="evid"><div class="evh">${G?esc(G.n):"Your goalie"} tonight${N.bk?" (the backup, in since the change)":""}</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${N.ga} on ${N.sa} shots (${sv})</span></div>
       <div class="evr"><span class="evk">Expected from those shots</span><span class="evv">${N.xga.toFixed(1)}</span></div>
-      <div class="evn">Pulled, he isn't stopping anything. ${N.sa&&N.ga<N.xga-1?"He's been better than his shots tonight.":N.sa&&N.ga>N.xga+1?"He's let in more than his shots were worth.":"About what his shots were worth."} Early means more time six-on-five, and more time with the net empty.</div></div>` }
+      ${hkGdV()&&live&&live.eng?pullEdgeRows(g,my):""}
+      <div class="evn">Pulled, he isn't stopping anything. ${N.sa&&N.ga<N.xga-1?"He's been better than his shots tonight.":N.sa&&N.ga>N.xga+1?"He's let in more than his shots were worth.":"About what his shots were worth."} Early means more time six-on-five, and more time with the net empty.${hkGdV()?` Six on five, a side scores about ${(HK_GD.f6*60).toFixed(1)} goals an hour and gives up ${(HK_GD.ag*60).toFixed(1)} into the empty net: the better side tonight gains more from the time, the weaker one gives up more.`:""}</div></div>` }
   if(dp.k==="goalie"){
     return `<div class="evid"><div class="evh">Your goalie tonight</div>
       <div class="evr"><span class="evk">Goals against</span><span class="evv">${dp.ga} on ${dp.sa} shots</span></div>
@@ -262,6 +266,12 @@ function evidenceHTML(g,my,d,dp){
   return "";
 }
 
+/* engine 26: the pull card's evidence on who's better tonight: the chance before the puck dropped and the shots so far */
+function pullEdgeRows(g,my){ const side=g.home===my?"home":"away", e=live.eng.gap!==undefined?(side==="home"?live.eng.gap:-live.eng.gap):0;
+  const sh=(live.drives||[]).reduce((t,d)=>{ if(d.shots){ t[0]+=d.shots[side==="home"?0:1]; t[1]+=d.shots[side==="home"?1:0] } return t },[0,0]);
+  const w=e>60?"Us, clearly":e>20?"Us, a little":e<-60?"Them, clearly":e<-20?"Them, a little":"Even";
+  return `<div class="evr ${Math.abs(e)>60?'hi':''}"><span class="evk">The better side tonight, on paper</span><span class="evv">${w}</span></div>
+      <div class="evr"><span class="evk">Shots on goal so far</span><span class="evv">${sh[0]}-${sh[1]}</span></div>` }
 /* ---- the run of play ---- */
 function playsHTML(drives,my,g,limit){
   let rows=rowsOf(g,drives); if(limit)rows=rows.slice(-limit);
