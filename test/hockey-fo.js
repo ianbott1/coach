@@ -15,9 +15,9 @@
      above the average (PuckPedia via The Win Column): 32-50% here.
        https://thewincolumn.ca/2026/04/19/how-much-do-nhl-players-make-in-2025-26/
    - twenty-three on every active roster; fifty contracts or fewer; contracts no longer than seven years
-   - offer sheets are rare (2019-2025: about one a summer, PuckPedia's tracker): 0-3 a summer on average; buyouts a
-     handful a summer; arbitration filings a few
-       https://www.puckpedia.com/offer-sheet-tracker
+   - offer sheets are rare: twelve signed in the cap era, Kesler's in 2006 to Broberg's and Holloway's in 2024, about
+     0.6 a summer: 0.1-1.5 a summer here. Buyouts a handful a summer.
+       https://www.dailyfaceoff.com/news/a-brief-history-of-offer-sheets-in-the-nhls-salary-cap-era
    - the points spread stays the league's (standings points sd 12-18; the NHL about 14)
    Also: an engine-26 career's season replays as before and its first engine-27 summer brings it onto the rules.
 
@@ -103,7 +103,7 @@ ok(avg(Z.above)>=0.32&&avg(Z.above)<=0.50,`players above the average ${(100*avg(
 ok(Z.n23===Z.nTeams,`twenty-three on every roster after every summer (${Z.n23} of ${Z.nTeams})`);
 ok(Z.c50===0,`no club past fifty contracts (most ${Math.max(...Z.contracts)})`);
 ok(Z.yrsMax<=7,`no contract longer than seven years (longest ${Z.yrsMax})`);
-ok(avg(Z.os)<=3,`offer sheets ${avg(Z.os).toFixed(2)} a summer (real about one)`);
+ok(avg(Z.os)>=0.1&&avg(Z.os)<=1.5,`offer sheets ${avg(Z.os).toFixed(2)} a summer (real 0.6: twelve from 2006 to 2024)`);
 ok(avg(Z.buy)>=1&&avg(Z.buy)<=20,`buyouts ${avg(Z.buy).toFixed(1)} a summer (real about 5-15)`);
 ok(Z.ret.length>0&&Z.retBad===0,`retained salary at the deadline: ${Z.ret.length} of the computer's deals in ${Y} seasons, half or less each (most ${Z.ret.length?Math.round(100*Math.max(...Z.ret.map(r=>r.pct))):0}%), three a club and 15% of the cap at most (${Z.retBad} broken)`);
 { // your side of a deal: over the cap with the man you'd get, his club keeps part of his cap hit; past half, no deal
