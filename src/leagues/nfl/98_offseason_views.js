@@ -7,8 +7,9 @@
 function nflPlannedPay(){
   const R=U.roster[S.myTeam], P=S.off.picks;
   let pay=R.reduce((s,p,i)=>{if(!p)return s;
-    if(P.asks&&P.asks[i])return s+(P.resign[i]?P.asks[i].sal:0);
-    return s+p.k.sal},0);
+    if(P.asks&&P.asks[i]){ if(foNew()&&P.fo&&P.tag===i)return s+foTagVal(p); return s+(P.resign[i]?foPlannedSal(P,i):0) }
+    if(foNew()&&P.opt&&P.opt[i]&&foOptAble(p))return s+p.k.sal;   // the option year is next year's; this year's hit stands
+    return s+p.k.sal},0)+(foNew()?FO_DEPTH:0);
   if(P.trade)pay+=P.trade.sal-P.trade.giveSal;          // an agreed trade counts now
   return pay;
 }
@@ -77,14 +78,14 @@ function nflBoardHTML(P){
 function nflTargetsHTML(P,room){
   const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
   const mine=(P.targets||[]).filter(k=>byKey[k]);
-  let left=room-ROOKIE_ROOM;                        // leave room for the draft class
+  let left=room-nflRookieRoom();                        // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
       // the signing checks the cap after the draft, so the class is already paid for: there is no squeezing it
       // (Instinct: a "squeezing" target then had no room). This room is right on average, within about 5M either
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
       // with the gap in money, so "won't fit" says why (Grokbot: it read "won't fit" with $10.4M of room)
-      if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${ROOKIE_ROOM}M kept for the draft class`;
+      if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${nflRookieRoom()}M kept for the draft class`;
         fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`probably won't fit: ${gap} short ${kept} (about half like this still sign: the class and the fill-ins vary)`;
         if(seenPos[x.p])fit="you already want a "+x.p+": the second signs only if there is still room at "+x.p+" after the first"; seenPos[x.p]=1}
       // the list you choose from says it too, against what's left after the players you've already added
@@ -125,7 +126,7 @@ function offseasonBanner(){
   const list=(a,f)=>a.map(f).join(", ");
   let rec="";
   // the cap at work: what you pay now, against what you can (Muse: a "won't fit" signing with no payroll shown)
-  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):NFL_CAP)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
+  if(X.payroll!=null)rec+=`<div class="bnews small"><b>Payroll after the summer:</b> ${money2(X.payroll)} of ${money2(LEAGUE.budgetOf?LEAGUE.budgetOf(U,my):LEAGUE.cap)}${LEAGUE.budgetOf?" (the wage budget)":" (the cap)"}.</div>`;
   if((X.grew||[]).length){ const G=X.grew.slice().sort((a,b)=>(b.to-b.from)-(a.to-a.from));
     rec+=`<div class="bnews small"><b>Big summers:</b> ${list(G,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+") "+p.from+" to "+p.to+(p.leap?" &middot; breakout":""))}.</div>` }
   if((X.retired||[]).length)rec+=`<div class="bnews small"><b>Retired:</b> ${list(X.retired,p=>esc(p.n)+" ("+esc(p.p)+", "+p.age+")")}.</div>`;
@@ -250,14 +251,16 @@ function offseasonScreen(){
   const step=(A.userOpen||S.off.poach.length)?1:0, n=k=>step+k;
   // the roster you'd carry into the new year, and what it costs
   const R=U.roster[S.myTeam], expiring=Object.keys(P.asks||{}).map(Number);
-  const pay=nflPlannedPay(), room=LEAGUE.cap-pay;
+  const pay=nflPlannedPay(), room=nflCapRoom(U,my)-pay;
   h+=staffPlanHTML(P);
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");
   h+=`<div class="budgetleft ${room>=0?'done':''}">Payroll $${pay.toFixed(1)}M of $${LEAGUE.cap}M &middot; ${
     room>=0?"$"+room.toFixed(1)+"M room":"$"+(-room).toFixed(1)+"M over the cap"}</div>`;
+  if(foNew()&&P.fo)h+=foCapNote(pay)+foOptHTML(P);
   if(!expiring.length)h+=`<div class="note">Nobody's contract is up this year.</div>`;
   h+=expiring.map(i=>{const p=R[i], a=P.asks[i], on=!!P.resign[i];
+    if(foNew()&&P.fo)return foResignHTML(P,i,p,a);
     return `<div class="cand ${on?'on':''}">
       <div class="candtop"><div><div class="fname">${esc(p.n)} <span class="dpos">${esc(p.p)}</span></div>
       <div class="fnote">${i<POS.length?"Starter":"Backup"} &middot; age ${p.age+1} next season &middot; rated ${p.r}</div></div>
@@ -289,14 +292,15 @@ Object.assign(LEAGUE.ui,{
   /* null when you can go on; otherwise what the button says */
   offseasonBlock(){
     if(!S.off)return null;
-    const over=nflPlannedPay()-LEAGUE.cap;
+    const over=nflPlannedPay()-nflCapRoom(U,S.myTeam);
     return over>0?"Over the cap by $"+over.toFixed(1)+"M":null;
   },
   bindOffseason(){
     if(S.off&&S.off.dn&&dnOn()){ bindDraftNight(); return }
     bindDraftSection();
     document.querySelectorAll("[data-resign]").forEach(b=>b.onclick=()=>{
-      const i=+b.dataset.resign; S.off.picks.resign[i]=!S.off.picks.resign[i]; save(); render();});
+      const i=+b.dataset.resign, P=S.off.picks; P.resign[i]=!P.resign[i]; if(P.resign[i]&&P.tag===i)P.tag=null; save(); render();});
+    foBindOffseason();
     document.querySelectorAll("[data-fa]").forEach(b=>b.onclick=()=>{
       S.off.picks.fa=b.dataset.fa; save(); render();});
     document.querySelectorAll("[data-draft]").forEach(b=>b.onclick=()=>{
