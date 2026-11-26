@@ -218,3 +218,9 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - `node test/reload.js dist/football-coach.html`, `dist/basketball-coach.html`, `dist/basketball-coach-pro.html`: MATCH 18
   of 18 reloads each.
 - `node test/polish.js` (all 15 checks): MATCH, 1m56s.
+
+## After the merge: hockey's replayed goals keep their scorer (pro hockey)
+
+- **What:** in a goal clip, the scorer and the assist are never treated as hurt (`src/hockey/72_highlights.js`, the clip's on-ice picks).
+- **Why:** watching an old game again after the scorer was hurt weeks later put a line-mate on the puck, so the dot that shot wore another man's name. The merged build's seeds exposed it in `test/hk-lines.js` (233 of 240 goals right).
+- **Tested:** `test/hk-lines.js` 240 of 240 shooters and 232 of 232 last passes; hockey goldens (fast and full) and hot seat MATCH unchanged, since the change is display only.

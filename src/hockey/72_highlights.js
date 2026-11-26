@@ -96,7 +96,9 @@ const HL_SPORT=(function(){
     // round 97: a hurt man isn't on the ice (Grokbot: an injured player drawn in a clip; 144 of 900 clips in 33 games named
     // one, most often a hurt starting goalie): his line-mate at the spot instead, the backup in net
     const hurtOf=team=>new Set(SEA.talent&&SEA.talent.inj&&SEA.talent.inj[team]?SEA.talent.active(team).map(x=>x.idx):[]);
-    const H0=hurtOf(tm), bkOf=i=>typeof BK==="function"?BK(i):i+nP;
+    // review round: the scorer and his assist played in this game, so a later injury never takes them off the ice when an old
+    // game is watched again (hk-lines: 7 of 240 goals drew a line-mate shooting after the scorer was hurt weeks later)
+    const H0=hurtOf(tm), bkOf=i=>typeof BK==="function"?BK(i):i+nP; if(GN){ H0.delete(si); H0.delete(ai) }
     const pickAt=(R,H,i,l)=>{ const j=l?bkOf(i):i, o=l?i:bkOf(i); return R[j]&&!H.has(j)?j:R[o]&&!H.has(o)?o:R[j]?j:i };
     const at=(i,l)=>pickAt(R0,H0,i,l);   // a man missing or hurt: the other line's
     const slots=sd=>{ const team=sd==="home"?g.home:g.away, H=hurtOf(team); return [(gIn(sd)||H.has(5))&&typeof BK==="function"?BK(5):5,3,4,0,1,2] };
