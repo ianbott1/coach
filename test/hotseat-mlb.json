@@ -1,5 +1,5 @@
 {
- "fp": "22a6de51885cd0cf",
+ "fp": "1296628ab653cb8d",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -180,6 +180,11 @@
    "fp": "22a6de51885cd0cf",
    "from": "8cd6f6a3a427a33e",
    "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; baseball: walks 0.080 to 0.066, starter form 0.02, hitters' edge 0.035 (shutouts 19% to 13%)"
+  },
+  {
+   "fp": "1296628ab653cb8d",
+   "from": "22a6de51885cd0cf",
+   "note": "round 112 follow-up: MLB re-tuned on the merged build (engine 26)"
   }
  ],
  "out": [
@@ -189,20 +194,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "56-106",
+      "rec": "58-104",
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "7f4abe0f12c925ce"
+     "book": "842d158a8e283294"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "88-74",
-      "result": "Lost in the division series",
-      "grade": "C+"
+      "rec": "64-98",
+      "result": "Losing season",
+      "grade": "F"
      },
-     "book": "8e2bc9659e5465c2"
+     "book": "7e30e0cc4b170f6d"
     }
    ]
   },
@@ -212,20 +217,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "62-100",
-      "result": "Losing season",
-      "grade": "C+"
-     },
-     "book": "e5e00d922bb8705a"
-    },
-    {
-     "team": "Boston",
-     "last": {
       "rec": "70-92",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "8ef83de549535f19"
+     "book": "7c95626bc812ae73"
+    },
+    {
+     "team": "Boston",
+     "last": {
+      "rec": "65-97",
+      "result": "Losing season",
+      "grade": "C+"
+     },
+     "book": "b91ae711a8665314"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "099a7208a787e997",
+ "fp": "446d2472a4050b57",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -165,21 +165,26 @@
    "fp": "099a7208a787e997",
    "from": "c927c4b0c954b487",
    "note": "engine 26 (stats): stat credit, box lines, leaders and awards; morale reads the new lines, so results move; baseball: walks 0.080 to 0.066, starter form 0.02, hitters' edge 0.035 (shutouts 19% to 13%)"
+  },
+  {
+   "fp": "446d2472a4050b57",
+   "from": "099a7208a787e997",
+   "note": "round 112 follow-up: MLB re-tuned on the merged build (engine 26)"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "641e8931b3090fa8",
-    "post": "5c2aea29fa2b94cd",
-    "champion": "St. Louis",
-    "rec": "fb0d791f83bc67fe",
-    "poll": "11e5fd1038fff74c",
-    "heis": "6ae1d0d9c51bb8f5",
-    "history": "c8fc85cd648d5eba",
-    "universe": "0593407a07f84809",
-    "screens": "bf4ec9c3bed12c26"
+    "games": "dd170032864f09b7",
+    "post": "561d257d51b6f90b",
+    "champion": "NY Yankees",
+    "rec": "c66819d525412c7b",
+    "poll": "1fbef619e9248e15",
+    "heis": "79b5379ede74e6b1",
+    "history": "5b92ecc86380066c",
+    "universe": "12f1a8a433bbbbdb",
+    "screens": "2dfebd1e777a26dc"
    }
   ]
  }

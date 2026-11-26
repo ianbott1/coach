@@ -59,7 +59,7 @@ const child=(env,seed)=>new Promise(res=>{ let out=''; const p=spawn(process.exe
   const W={bb:0.69,hbp:0.72,s1:0.88,s2:1.25,s3:1.59,hr:2.04};   // wOBA weights (FanGraphs' guts, about 2024)
   const cell=()=>({n:0,w:0}), sp={LL:cell(),LR:cell(),RL:cell(),RR:cell(),SL:cell(),SR:cell()}, tto=[cell(),cell(),cell()];
   const ctxOf=gi=>{ const h=A.NAMES[gi%30], a=A.NAMES[(gi*7+3)%30]; return a===h?null:A.gameCtx(h,a,S.year,S.step) };
-  for(let gi=0;gi<2000;gi++){ const ctx=ctxOf(gi); if(!ctx)continue; const e=A.makeLiveGame(new A.RNG(5000+gi),1500,1500,'balanced','balanced',{home:false,away:false},false,ctx); e.plog=true;
+  for(let gi=0;gi<3000;gi++){ const ctx=ctxOf(gi); if(!ctx)continue; const e=A.makeLiveGame(new A.RNG(5000+gi),1500,1500,'balanced','balanced',{home:false,away:false},false,ctx); e.plog=true;
     const th={}; ['home','away'].forEach(sd=>(ctx.pen26[sd]||[]).forEach(c=>{ th[c[0]]=c[2]?'L':'R' }));
     let r; while(!(r=e.next()).done){}
     // (times through the order only where the fielding side never set a plan: a right read after three innings makes
@@ -115,7 +115,10 @@ const child=(env,seed)=>new Promise(res=>{ let out=''; const p=spawn(process.exe
   if(s26.err||s25.err){ console.log(s26.err||s25.err); ok(false,'the seasons ran'); }
   else{ const f=(x,d)=>x.toFixed(d==null?2:d);
     for(const s of [s25,s26])console.log(`  engine ${s.eng}: ${f(s.runs)} runs a side; starters ${f(s.ip)} innings, ${f(s.np,0)} pitches, ${f(s.spEra)} ERA; relievers ${f(s.rpEra)} ERA, ${f(s.app)} a game, ${f(s.outsApp)} outs each, ${f(s.rpWin*100,0)}% of wins; saves ${f(s.sv,1)} a club (leader ${s.svLead}), holds ${f(s.hld,1)}, blown ${f(s.bs,1)}; ${f(s.b2b*100,0)}% of relief outings on no days' rest, the busiest ${s.busiest}; ${f(s.ibb,1)} intentional walks and ${f(s.ph,1)} pinch hitters a club`);
-    ok(Math.abs(s26.runs-s25.runs)<=0.08,`the run level holds (${f(s26.runs)} a side against ${f(s25.runs)} on engine 25; MLB 2024 4.39)`);
+    // (round 112 follow-up: against MLB's own figure, not engine 25's. Engine 26 also cut walks to the real rate and
+    // the starter's day-to-day form, from the stats branch, and the run level is set from the real one: MLB 2021-25
+    // 4.3-4.6 a side, https://www.baseball-reference.com/leagues/majors/bat.shtml)
+    ok(s26.runs>=4.25&&s26.runs<=4.6,`the run level is MLB's (${f(s26.runs)} a side; engine 25 ${f(s25.runs)}; MLB 2021-25 4.3-4.6, 2024 4.39)`);
     ok(s26.ip>=4.95&&s26.ip<=5.5&&s26.np>=80&&s26.np<=92,'starters go about five and a third innings and 86 pitches (AL 2024: 5.2, 86)');
     ok(s26.spEra>s26.rpEra&&s26.spEra-s26.rpEra<0.45,'starters allow a little more than relievers (2024: 4.15 against 3.97)');
     ok(s26.app>=2.9&&s26.app<=3.7&&s26.outsApp>=2.9&&s26.outsApp<=3.8,'relievers: about 3.3 appearances a game, about 3.3 outs each (AL 2024)');
