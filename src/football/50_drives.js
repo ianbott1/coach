@@ -438,7 +438,8 @@ function sportSeasonNorms(sea){ const o={}; Object.keys(FB_ANS_TERM).forEach(a=>
   const m=v.reduce((x,y)=>x+y,0)/v.length; o[a]={m:m, s:Math.sqrt(v.reduce((x,y)=>x+(y-m)**2,0)/v.length)} }); return o }
 const sportStyleAttrs={blitz:"Pass rush",shell:"Coverage",box:"Strength and Tackling"};
 function sportStyleScores(R){ const T=fbShapeOf(R,null).d; return {blitz:T.rsh, shell:T.cov, box:T.str+T.tkl} }
-function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+function gameCtx(h,a,year,step,sea){ const fav={home:clubScheme(h,year),away:clubScheme(a,year)}, seed=strHash(h+"|"+a+"|"+year+"|"+step);
+  return {fav:fav, seed:seed, gp27:fb27()?fb27Ctx(h,a,year,step,fav,seed,sea):undefined,
   sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined, fbn:ENGINE_V>=15&&typeof SEA!=="undefined"&&SEA&&SEA._styles?SEA._styles.norm:undefined,
   kp:typeof fbKickCtx==="function"?fbKickCtx(h,a):undefined} }
 function fbReport(fav,seed){
@@ -541,7 +542,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
-  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA,humans); return home?M.home:M.away };   // engine 14 (the plan as it stands)
+  const smOf0=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA,humans); return home?M.home:M.away };   // engine 14 (the plan as it stands)
+  // engine 27: the weekly game plan (51_tactics): each side's levers, its drives' changes and Elo edge (st.m27), and the
+  // game's possessions from both offenses' mix and tempo
+  if(fb27()&&ctx.gp27&&ctx.gp27.g){ st.gp={home:gpOk(ctx.gp27.g.home),away:gpOk(ctx.gp27.g.away)}; st.u27=ctx.gp27.u||{};
+    ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(D){ const o=sd==="home"?"away":"home"; Object.assign(st.gp[o],fb27CpuDef(o==="home"?"h":"a",0,D.sch,st.u27[o],st.u27[sd]),{key:st.gp[o].key}) } });
+    st.total=2*fb27Drives(st.gp.home,st.gp.away,ctx.seed) }
+  st.m27Now=()=>{ if(!st.gp)return null; const k=JSON.stringify(st.gp); if(st._m27k!==k){ st._m27k=k; st.m27={home:fb27Mods(st.gp.home,st.gp.away,st.u27.home,st.u27.away),away:fb27Mods(st.gp.away,st.gp.home,st.u27.away,st.u27.home)} } return st.m27 };
+  const smOf=home=>{ const b=smOf0(home), M=st.m27Now&&st.m27Now(); if(!M)return b; const p=M[home?"home":"away"];
+    const o=Object.assign({td:0,to:0,brk:0,gain:0,sus:0},b||{}); o.td+=p.td; o.brk+=p.brk; o.gain+=p.gain; o.sus+=p.sus; o.dInt=(o.dInt||0)+p.dInt; o.dFum=(o.dFum||0)+p.dFum; return o };
+  const eloOf=home=>{ const M=st.m27Now&&st.m27Now(); return M?M[home?"home":"away"].elo:0 };
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; if(FB_ANSWERS[a].beats!==D.sch)return FB_READ.wrong;
     const f=fbReadFit(a,ctx,sd); return f===1?FB_READ.right:{td:FB_READ.right.td*f, fg:FB_READ.right.fg*f, to:FB_READ.right.to*f} };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
@@ -553,6 +563,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
                  h:st.h,a:st.a,n:st.i+1,aggr:aggr,note:res.note||null,
                  converted:(res.converted===undefined?null:res.converted),
                  togo:res.togo||null};
+    if(st.total!==DRIVES_PER_TEAM*2)drive.tot=st.total;   // engine 27: the game's possessions follow both plans (the clock reads it)
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     // round 101: where a turnover on downs happened and where a fourth down was made, for the full match's plays
     if(res.kind==="DOWNS"&&res.stall!=null)drive.stall=res.stall; if(res.cv)drive.cv=res.cv;
@@ -575,7 +586,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
       const home=(st.otGuard%2===1); fbSpecSet(ctx,home);
-      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,smOf(home));
+      const r=rollDrive(rng,(home?eloH:eloA)+eloOf(home),home?eloA:eloH,75,"urgent",null,smOf(home));
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                       h:st.h,a:st.a,n:st.total+st.otGuard,aggr:"aggressive",
@@ -592,7 +603,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     const used=home?st.usedH:st.usedA;
     const calls=()=>home?st.callsH:st.callsA, called=()=>{if(home)st.callsH++;else st.callsA++};
     const late = i>=st.total-7;
-    const offE=home?eloH:eloA, defE=home?eloA:eloH;
+    const offE=(home?eloH:eloA)+eloOf(home), defE=home?eloA:eloH;
 
     // ---- resume from a decision ----
     if(st.stage){
@@ -710,7 +721,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     // ---- their defense: the half-time change, and your reads (before your drive) ----
     if(!st.stage&&i>=st.total/2){ ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(!D||D.half)return; D.half=true;
         const behind=(sd==="home"?st.a-st.h:st.h-st.a)<0;   // their side behind
-        if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)] } }) }
+        if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)];
+          if(st.gp){ const o=sd==="home"?"away":"home", G=GP_SCH[D.sch]; st.gp[o].cov=G.cov==="c2"&&st.gp[o].cov==="c2m"?"c2m":G.cov; st.gp[o].blitz=G.blitz } } }) }
+    // engine 27: the computer's offense at half-time: well behind it throws, well ahead it runs (no draw)
+    if(fb27()&&st.gp&&!st.stage&&i>=st.total/2&&!st.half27){ st.half27=true; ["home","away"].forEach(sd=>{ if(humans[sd])return; const d=sd==="home"?st.h-st.a:st.a-st.h;
+      if(d<=-11)st.gp[sd].mix="pass"; else if(d>=14)st.gp[sd].mix="run" }) }
     if(isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
       if(!D.asked.prep&&D.fav){ D.asked.prep=true; dp=fbPrepCall(fbReport(D.fav,(ctx.seed||0)+(side==="home"?2:1))); if(i>0)dp.h="Before your first drive: the scouting report" }   // round 79: they had the ball first ("Before kickoff" came after their score: Ian)
       else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side],q) }

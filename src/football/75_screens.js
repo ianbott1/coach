@@ -40,7 +40,7 @@ function driveScript(g,drives,rosters){
   const OUTTXT={PUNT:["three and out","forced to punt","stalls out, punt","goes backwards, punt"],
                 DOWNS:["turned over on downs"],MISS:["the field goal is no good"],   // a field goal: "the kick" read as a missed extra point (Grokbot)
                 INT:["threw an interception"],FUM:["fumble, recovered by the defense"]};
-  const tot=typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24;
+  const tot=typeof fbTot==="function"?fbTot(drives):typeof DRIVES_PER_TEAM!=="undefined"?DRIVES_PER_TEAM*2:24;
   // round 100: a game being played has no d.by yet (the season credits it at the end), so the line named an injured
   // starter while the box score named his backup (Grokbot: a receiver out for 14 weeks caught a 64-yard touchdown).
   // Until it's credited, the same rule the season uses (_creditV4, teamLines): a hurt man's backup plays his slot.
@@ -156,7 +156,7 @@ function liveScoreboard(){
   const q=ask&&live.ask.q?live.ask.q:last?last.q:1;
   const kick=!live.drives.length&&!ask;
   return `<div class="wtop">
-    <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":(q>=5?"OT":"Q"+q)+(ENGINE_V>=7&&q<5?" "+fbClock(q,Math.max(0,live.drives.length-(ask?0:1))+(ask&&live.ask.dp&&(live.ask.dp.k==="fourth"||live.ask.dp.k==="two")?0.7:0),DRIVES_PER_TEAM*2):"")+" &middot; drive "+(live.drives.length+(ask?1:0))}
+    <div class="wlabel"><span class="live"></span>${live.hold&&!ask&&live.hold.clock?esc(live.hold.clock):kick?"KICKOFF":(q>=5?"OT":"Q"+q)+(ENGINE_V>=7&&q<5?" "+fbClock(q,Math.max(0,live.drives.length-(ask?0:1))+(ask&&live.ask.dp&&(live.ask.dp.k==="fourth"||live.ask.dp.k==="two")?0.7:0),fbTot(live)):"")+" &middot; drive "+(live.drives.length+(ask?1:0))}
       ${fbVenueTag()}</div>
     <div class="wscore">
       <div class="wside ${A>H?'lead':''}"><span class="wt">${esc(g.away)}</span>
