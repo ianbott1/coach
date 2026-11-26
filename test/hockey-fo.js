@@ -25,7 +25,7 @@
 const path=require('path'), {load}=require('./harness.js');
 const FILE=process.env.HK_FILE||path.join(__dirname,'..','dist','hockey-coach-pro.html');
 const Y=+process.argv[2]||20, SEED=+process.argv[3]||11;
-const X=['S','SEA','U','NAMES','faKey','hkFreeAgentPreview','hkStatus','newDynasty','openOffseason','commitOffseason','LEAGUE','HK$','hkCapHit','hkContracts','hkResOf','hkFO','POS','render','ENGINE_V'];
+const X=['S','SEA','U','NAMES','tdDeal','faKey','hkFreeAgentPreview','hkStatus','newDynasty','openOffseason','commitOffseason','LEAGUE','HK$','hkCapHit','hkContracts','hkResOf','hkFO','POS','render','ENGINE_V'];
 const A=load({file:FILE,expose:X});
 let bad=0; const ok=(c,m)=>{ console.log((c?'  ok   ':'  FAIL ')+m); if(!c)bad++ };
 const q=(a,p)=>{ const b=a.slice().sort((x,y)=>x-y); return b[Math.floor(p*(b.length-1))] }, avg=a=>a.reduce((s,x)=>s+x,0)/Math.max(1,a.length);
@@ -34,7 +34,8 @@ const H=A.HK$, CAP=H.cap;
 ok(A.hkFO(A.U),'a new career starts on the front office\'s rules');
 ok(A.NAMES.every(t=>A.U.roster[t].length===23&&A.U.roster[t].every(p=>p&&p.k&&p.k.v===3)),'twenty-three under contract on every roster as a career opens');
 ok(Math.abs(A.LEAGUE.cap-104)<1e-9,`the cap the game reads: $${A.LEAGUE.cap}M`);
-const Z={u80:[],share:[],within3:[],room8:[],low:[],over:0,under:0,contend:[],top:[],mean:[],above:[],n23:0,nTeams:0,c50:0,yrsMax:0,contracts:[],elc:[],os:[],buy:[],arb:[],sign:[],res:[],pts:[],rfaQ:[],up:[],min:[]};
+ok(A.LEAGUE.trade.by==='Mar 1',`the trade deadline: ${A.LEAGUE.trade.by} (the 2027 date)`);
+const Z={ret:[],retBad:0,u80:[],share:[],within3:[],room8:[],low:[],over:0,under:0,contend:[],top:[],mean:[],above:[],n23:0,nTeams:0,c50:0,yrsMax:0,contracts:[],elc:[],os:[],buy:[],arb:[],sign:[],res:[],pts:[],rfaQ:[],up:[],min:[]};
 const snap=(label)=>{ const U=A.U, sh=[], hits=[];
   A.NAMES.forEach(t=>{ const R=U.roster[t], c=A.hkCapHit(U,t,R); sh.push(c/CAP); Z.nTeams++;
     if(c>CAP+0.005)Z.over++; if(c<H.floor-0.005)Z.under++;
@@ -62,6 +63,8 @@ function screens(){
 let SCR0;
 for(let y=0;y<Y;y++){
   let g=0; while(A.SEA.phase!=='done'&&g++<900)A.SEA.advance();
+  (A.SEA.cpuTr||[]).forEach(x=>{ if(x.ret){ Z.ret.push(x.ret); if(x.ret.pct>0.5)Z.retBad++ } });
+  A.NAMES.forEach(t=>{ const L=(A.U.hkDead[t]||[]).filter(d=>d.why==='ret'); if(L.length>3||L.reduce((s,d)=>s+d.sal,0)>CAP*0.15+0.01)Z.retBad++ });
   A.NAMES.forEach(t=>Z.pts.push(A.SEA.rec[t][0]*2+(A.SEA.otl?A.SEA.otl[t]||0:0)));
   A.openOffseason(); if(y===1)screens(); for(let c=0;c<4;c++){ if(!A.S.off)break; if(A.S.off.act.userOpen&&A.S.off.move===null)A.S.off.move=A.S.myTeam; A.commitOffseason() }
   const r=A.S.lastNbaRep&&A.S.lastNbaRep.rep; if(r){ const n=k=>A.NAMES.reduce((s,t)=>s+(r[k][t]||[]).length,0);
@@ -102,6 +105,19 @@ ok(Z.c50===0,`no club past fifty contracts (most ${Math.max(...Z.contracts)})`);
 ok(Z.yrsMax<=7,`no contract longer than seven years (longest ${Z.yrsMax})`);
 ok(avg(Z.os)<=3,`offer sheets ${avg(Z.os).toFixed(2)} a summer (real about one)`);
 ok(avg(Z.buy)>=1&&avg(Z.buy)<=20,`buyouts ${avg(Z.buy).toFixed(1)} a summer (real about 5-15)`);
+ok(Z.ret.length>0&&Z.retBad===0,`retained salary at the deadline: ${Z.ret.length} of the computer's deals in ${Y} seasons, half or less each (most ${Z.ret.length?Math.round(100*Math.max(...Z.ret.map(r=>r.pct))):0}%), three a club and 15% of the cap at most (${Z.retBad} broken)`);
+{ // your side of a deal: over the cap with the man you'd get, his club keeps part of his cap hit; past half, no deal
+  const my=A.S.myTeam, t=A.NAMES.find(x=>x!==my), M=A.SEA.roster[my].map(p=>p&&Object.assign({},p,{k:Object.assign({},p.k)})), T=A.SEA.roster[t];
+  const q=T.slice().filter(p=>p&&!p.k.ret).sort((a,b)=>b.k.sal-a.k.sal)[0], k=T.indexOf(q)%6, a=M.findIndex((p,i)=>p&&i%6===k&&i>=12);
+  const base=M.reduce((s,p)=>s+p.k.sal,0)-M[a].k.sal, dead=(A.U.hkDead[my]||[]).reduce((s,d)=>s+d.sal,0)+((A.SEA.hkRet||[]).filter(d=>d.t===my).reduce((s,d)=>s+d.sal,0));
+  const f=(CAP-dead-q.k.sal*0.7)/base; M.forEach((p,i)=>{ if(i!==a)p.k.sal*=f });   // over by 30% of his cap hit with him
+  const M2=M.slice(); M2[a]=q; const T2=T.slice(); T2[T.indexOf(q)]=M[a];
+  const cf=A.LEAGUE.trade.capFit(A.SEA,{my:my,t:t,M:M,M2:M2,T:T,T2:T2});
+  const w=cf&&cf.ret?txt(A.LEAGUE.trade.retWords(cf.ret)):'';
+  ok(cf&&!cf.over&&cf.ret&&cf.ret.by===t&&cf.ret.pct===0.3,`a deal over the cap works with salary kept: ${w||JSON.stringify(cf)}`);
+  M.forEach((p,i)=>{ if(i!==a)p.k.sal*=1+q.k.sal*0.3/base });
+  const cf2=A.LEAGUE.trade.capFit(A.SEA,{my:my,t:t,M:M,M2:M2,T:T,T2:T2});
+  ok(cf2&&cf2.over,'over by more than half his cap hit: no deal'); }
 ok(sd>=12&&sd<=18,`standings points sd ${sd.toFixed(1)} (NHL about 14)`);
 
 /* a career begun on engine 26: its season and summer go as they went (twelve men, the old $90M limit); the next season

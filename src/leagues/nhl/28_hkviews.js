@@ -135,7 +135,7 @@ LEAGUE.payrollLine=function(t){
   const R=(SEA&&SEA.roster&&SEA.roster[t])||(U&&U.roster&&U.roster[t]); if(!R||!R.some(p=>p&&p.k))return "";
   if(!hkFO()){ const pay=payroll(R), room=LEAGUE.cap-pay;     // a career from before: the old line until its summer on engine 27
     return `<div class="progline">Payroll <b>${money2(pay)}</b> of ${money2(LEAGUE.cap)} cap &middot; ${room>=0?`${money2(room)} of room`:`<span class="dn">${money2(-room)} over</span>`}</div>` }
-  const dead=hkDeadOf(U,t), hit=hk2(payroll(R)+dead), room=HK$.cap-hit;
+  const dead=SEA&&SEA.roster&&SEA.roster[t]===R?hkDeadSeason(SEA,t):hkDeadOf(U,t), hit=hk2(payroll(R)+dead), room=HK$.cap-hit;
   return `<div class="progline">Cap hit <b>${hkMoney(hit)}</b> of ${hkMoney(HK$.cap)} &middot; ${room>=0?`${hkMoney(room)} of room`:`<span class="dn">${hkMoney(-room)} over</span>`}${dead>0?` &middot; dead money ${hkMoney(dead)}`:""}</div>` };
 /* the roster's other eleven (they play when a man ahead of them is hurt) and the reserve list */
 LEAGUE.reservesHTML=function(my,hurt){

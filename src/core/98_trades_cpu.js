@@ -40,9 +40,11 @@ function cpuDeadline(sea){
       sellers.forEach(Sl=>{ if(used[Sl]||Sl===B)return; const RB=sea.roster[B], RS=sea.roster[Sl];
         RB.forEach((p,a)=>{ if(!p||hurt(B,a))return; RS.forEach((q,b)=>{ if(!q||ctGrp(a)!==ctGrp(b)||hurt(Sl,b))return;
           const xb=ctScore(sea,B,p,a,q,CT_BUY); if(xb.s<CT_PREM)return; const xs=ctScore(sea,Sl,q,b,p,CT_SELL); if(xs.s<CT_PREM)return;
-          if(cap&&((ctPay(xb.R2)>cap&&ctPay(xb.R2)>ctPay(RB))||(ctPay(xs.R2)>cap&&ctPay(xs.R2)>ctPay(RS))))return;
-          const v=xb.s+xs.s; if(!best||v>best.v)best={v:v,B:B,Sl:Sl,a:a,b:b,gn:p.n,qn:q.n} }) }) });
+          const cf=LEAGUE.trade.capFit?LEAGUE.trade.capFit(sea,{my:B,t:Sl,M:RB,M2:xb.R2,T:RS,T2:xs.R2}):null;   // a league's own cap (pro hockey: the seller keeps salary)
+          if(cf?cf.over:cap&&((ctPay(xb.R2)>cap&&ctPay(xb.R2)>ctPay(RB))||(ctPay(xs.R2)>cap&&ctPay(xs.R2)>ctPay(RS))))return;
+          const v=xb.s+xs.s; if(!best||v>best.v)best={v:v,B:B,Sl:Sl,a:a,b:b,gn:p.n,qn:q.n,ret:cf&&cf.ret||null} }) }) });
       if(best){ used[best.B]=used[best.Sl]=1; const x={my:best.B,t:best.Sl,a:best.a,b:best.b,gn:best.gn,qn:best.qn,y:sea.year,d:(LEAGUE.dates||[])[sea.step]||"",cpu:1,step:sea.step};
+        if(best.ret)x.ret=best.ret;
         if(tdApply(sea,x))out.push(x) } }) });
   sea.cpuTr=out }
 // the deals of the day, for the news (a buyer's new man, his old club)

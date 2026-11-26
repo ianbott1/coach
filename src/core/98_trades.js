@@ -71,7 +71,8 @@ function tdDeal(t,a,b,a2,b2,pk){
   // a first-round pick (round 86): two years on, the man it brings, at the slot the club's record says it will be
   const pkT=pk?(pk==="mine"?1:-1)*tdPickVal(t,pk==="mine"?my:t,T2):0, pkM=pk?(pk==="mine"?-1:1)*tdPickVal(my,pk==="mine"?my:t,M2):0;
   const dNow=tdVal(T2,false)-tdVal(T,false), score=w*dNow+(1-w)*(tdVal(T2,true)-tdVal(T,true)+pkT)-TD_PROP*Math.max(0,-dNow);
-  const cap=LEAGUE.taxLine||LEAGUE.cap, over=cap?[[M,M2],[T,T2]].some(([x,y])=>tdPay(y)>cap&&tdPay(y)>tdPay(x)):false;
+  const cf=LEAGUE.trade.capFit?LEAGUE.trade.capFit(SEA,{my:my,t:t,M:M,M2:M2,T:T,T2:T2}):null;   // a league's own cap (pro hockey's dead money and retained salary)
+  const cap=LEAGUE.taxLine||LEAGUE.cap, over=cf?cf.over:cap?[[M,M2],[T,T2]].some(([x,y])=>tdPay(y)>cap&&tdPay(y)>tdPay(x)):false;
   const now=teamRating(M2)-teamRating(M), fut=(tdVal(M2,true)-tdVal(M,true)+pkM)/R_SLOPE;
   // and it won't give you more than you give, now and in two years counted together: it will swap one for the other
   // when that suits where it stands, never both (measured: without this a coach who took the best deal every day
@@ -80,6 +81,7 @@ function tdDeal(t,a,b,a2,b2,pk){
   const fair=now+fut<=-0.01;
   const d={t:t,a:a,b:b,give:give,get:get,score:score,yes:score>=TD_PREM&&!over&&fair,over:over,fair:fair,w:w,now:now,fut:fut};
   if(two)Object.assign(d,{a2:a2,b2:b2,give2:M[a2],get2:T[b2]});
+  if(cf&&cf.ret)d.ret=cf.ret;
   if(pk)Object.assign(d,{pk:pk,pkSlot:tdPickSlot(pk==="mine"?my:t)});
   return d
 }
@@ -150,11 +152,13 @@ function tdApply(sea,x){
       (sea.talent.inj[tm]||[]).forEach(e=>{ if(e.idx===s)e.idx=k; else if(e.idx===k)e.idx=s }) } });   // an injury goes with the man, not the slot
     get.tdFrom=x.t; give.tdFrom=my });
   sea.talent.base[my]+=rosterElo(M)-e0; sea.talent.base[x.t]+=rosterElo(T)-f0;
+  if(x.ret&&LEAGUE.trade.onRetain)LEAGUE.trade.onRetain(sea,x);   // salary kept by the club that sent him (pro hockey)
   return true }
 function tdDo(d){
   S.promos=S.promos||{}; const k=SEA.step, x={t:d.t,a:d.a,b:d.b,gn:d.give.n,qn:d.get.n,my:S.myTeam,y:SEA.year,d:(LEAGUE.dates||[])[k]||""};
   if(d.give2)Object.assign(x,{a2:d.a2,b2:d.b2,gn2:d.give2.n,qn2:d.get2.n});
   if(d.pk)x.pk=d.pk;
+  if(d.ret)x.ret=d.ret;
   if(!tdApply(SEA,x))return; (S.promos[k]=S.promos[k]||[]).push({tr:x});
   TD_UI={done:x}; save(); render() }
 // at the season's end, into the universe's rosters (next season's): the same two men, found by name
@@ -171,13 +175,14 @@ function tdCarry(u){
     [[x.gn,x.qn]].concat(x.gn2?[[x.gn2,x.qn2]]:[]).forEach(([gn,qn])=>{
       const a=M.findIndex(p=>p&&p.n===gn), b=T.findIndex(p=>p&&p.n===qn); if(a<0||b<0)return;
       const g=M[a], q=T[b]; M[a]=q; T[b]=g; [q,g].forEach(p=>{ p.yrsHere=0; p.joined=SEA.year });
-      [[M,a],[T,b]].forEach(([R,i])=>{ const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z } }) }) })) }
+      [[M,a],[T,b]].forEach(([R,i])=>{ const s=i%POS.length, k=BK(s); if(R[s]&&R[k]&&R[k].r>R[s].r){ const z=R[s]; R[s]=R[k]; R[k]=z } }) });
+    if(x.ret&&LEAGUE.trade.carryRetain)LEAGUE.trade.carryRetain(u,x) })) }
 function tdTrades(){ const L=tdLog(); return [].concat(...Object.keys(L).sort((a,b)=>a-b).map(k=>L[k])).filter(x=>x.y===undefined||x.y===SEA.year) }
 
 /* the Trades tab */
 let TD_UI={};
 function tdLine(d,mine){ const sg=v=>(v>=0?"+":"")+v.toFixed(1);
-  return `<span style="color:${d.now>=0?"var(--good,#7fd17f)":"var(--bad,#e88)"}">${sg(d.now)} now</span>, <span style="color:var(--muted)">${sg(d.fut)} in two years</span>` }
+  return `<span style="color:${d.now>=0?"var(--good,#7fd17f)":"var(--bad,#e88)"}">${sg(d.now)} now</span>, <span style="color:var(--muted)">${sg(d.fut)} in two years</span>${d.ret&&LEAGUE.trade.retWords?" &middot; "+LEAGUE.trade.retWords(d.ret):""}` }
 function tdPl(t,p,i){ return `${plLink(t,p.n)} <span style="color:var(--muted)">${esc(POS[i%POS.length].p)} ${p.r}${p.age?`, ${p.age}`:""}${p.k&&p.k.sal?`, $${p.k.sal.toFixed(1)}M`:""}</span>` }
 function tdPickRows(L,my,label){ if(!L.length)return "";
   return `<div class="fnote" style="margin-top:8px">${label}:</div>`+L.map(d=>`<div class="prow2" style="align-items:center"><div class="pmain"><div class="pname">${tdPl(my,d.give,d.a)}${d.pk==="mine"?" and your first-round pick":""}</div>
@@ -190,11 +195,11 @@ function tradesView(){
   const my=S.myTeam, st=tdState(), R=SEA.roster[my];
   let h=`<div class="note">${esc(st.why)} Up to ${TD_MAX} trades a season: one for one at the same position, or two for two (a pair at each of two positions). A club weighs now against two years ahead by where it stands, under the cap, and you always give a little more than you get.</div>`;
   const nm2=(a,b)=>esc(a)+(b?" and "+esc(b):"");
-  if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${nm2(x.gn,x.gn2)}${x.pk==="mine"?" and your first-round pick":""} to ${esc(x.t)}, ${nm2(x.qn,x.qn2)}${x.pk==="theirs"?" and their first-round pick":""} to you.</div>` }
+  if(TD_UI.done){ const x=TD_UI.done; h+=`<div class="card" style="padding:10px 12px;margin:8px 0"><b>Done.</b> ${nm2(x.gn,x.gn2)}${x.pk==="mine"?" and your first-round pick":""} to ${esc(x.t)}, ${nm2(x.qn,x.qn2)}${x.pk==="theirs"?" and their first-round pick":""} to you.${x.ret&&LEAGUE.trade.retWords?" "+LEAGUE.trade.retWords(x.ret,1):""}</div>` }
   if(typeof cpuTradesHTML==="function")h+=cpuTradesHTML();   // round 85: the computer's clubs' deadline deals
-  const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${nm2(x.gn,x.gn2)}${x.pk==="mine"?" and your first-round pick":""} to ${esc(x.t)} for ${nm2(x.qn,x.qn2)}${x.pk==="theirs"?" and their first-round pick":""}</div>`).join("")}</div>`;
+  const done=tdTrades(); if(done.length)h+=`<div class="grouphead">Your trades this season</div><div class="card" style="padding:6px 12px">${done.map(x=>`<div style="margin:4px 0">${esc(x.d)}: ${nm2(x.gn,x.gn2)}${x.pk==="mine"?" and your first-round pick":""} to ${esc(x.t)} for ${nm2(x.qn,x.qn2)}${x.pk==="theirs"?" and their first-round pick":""}${x.ret&&LEAGUE.trade.retWords?" ("+LEAGUE.trade.retWords(x.ret)+")":""}</div>`).join("")}</div>`;
   if(!st.open)return h;
-  const cap=LEAGUE.taxLine||LEAGUE.cap; if(cap&&R.some(p=>p&&p.k))h+=`<div class="note">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;
+  const cap=LEAGUE.taxLine||LEAGUE.cap; if(LEAGUE.trade.payNote)h+=LEAGUE.trade.payNote(my); else if(cap&&R.some(p=>p&&p.k))h+=`<div class="note">Payroll $${tdPay(R).toFixed(1)}M of $${cap}M.</div>`;
   // shop one of mine
   h+=`<div class="grouphead">Shop a player</div>`;
   if(TD_UI.shop!=null&&R[TD_UI.shop]){ const a=TD_UI.shop, O=tdOffers(a);
