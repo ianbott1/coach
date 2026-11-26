@@ -2109,7 +2109,7 @@ function rosterView(){
       :"Nobody featured. Tap a starter to feature him."}${F&&S.off?` <span class="planwhy">Featuring resets when the new season starts: pick again then.</span>`:""}</div>`;
   if(typeof linesHTML==="function")h+=linesHTML();   // hockey: lines and ice time
   if(typeof staffRolesHTML==="function")h+=staffRolesHTML();   // baseball: the rotation and the bullpen's roles (round 82)
-  h+=`<div class="grouphead">Two deep &middot; starters average ${avg}</div>`;
+  h+=`<div class="grouphead">${(LEAGUE.text&&LEAGUE.text.depthHead)||"Two deep"} &middot; starters average ${avg}</div>`;
   if(typeof attrShapeHTML==="function")h+=attrShapeHTML(my);   // round 87: the team's shape
   h+=POS.map((P,i)=>{
     const s=R[i], b=R[BK(i)], inj=hurt[i];
@@ -2134,6 +2134,7 @@ function rosterView(){
         ${b.st2&&b.st2.g?`<div class="sline2 bk">${esc(statLine(P.p,b.st2))}</div>`:""}
       </div></div>`;   // the backup's season too, where you decide whether to start him (Muse: 3 goals the roster wouldn't show)
   }).join("");
+  if(LEAGUE.reservesHTML)h+=LEAGUE.reservesHTML(my,hurt);   // pro basketball's fifteen: the men behind the rotation
   h+=rosterStatsHTML(my);
   const hz=SEA.mvpRace(30).filter(x=>x.t===my);
   if(hz.length){

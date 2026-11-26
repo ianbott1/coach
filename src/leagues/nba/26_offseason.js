@@ -94,6 +94,12 @@ function nflRoster(rng,programElo){
     b.r=Math.min(b.r,r[i].r); b.k=nbaK(b,Math.round(Math.max(nbaMin(b.age),Math.min(nbaMax(b.age),nflAsk(b.r,b.p,b.age)*(0.8+(strHash(b.n+"|k")%56)/100)))*10)/10,b.k.yrs);
     r.push(b);
   });
+  // and a third man at each spot (the front office: fifteen on a roster), on the minimum
+  POS.forEach((_,i)=>{
+    const c=nflPlayer(rng,target-rng.range(9,17),rng.pick([21,22,23,24,27,30,33]),i);
+    c.r=Math.min(c.r,r[BK(i)].r); c.k=nbaK(c,nbaMin(c.age),1+rng.int(2));
+    r.push(c);
+  });
   // nobody starts past the second apron (the front office: a payroll of fifteen is the real thing)
   const pay=payroll(r);
   if(pay>NBA$.ap2-4){const f=(NBA$.ap2-4)/pay; r.forEach(p=>p.k.sal=Math.max(nbaMin(p.age),Math.round(p.k.sal*f*10)/10))}
@@ -234,24 +240,33 @@ function nflApplyTrade(u,myTeam,T,rep,leave,pool){
 }
 const rookieSal=o=>nbaRookieSal(o);   // the real rookie scale (24_cap): $15.2M for the first pick, the minimum in the second round
 
-/* what a player adds at his spot: over the backup, or over the starter */
+/* what a player adds at his spot: over the backup, or over the starter. Fifteen deep (the front office), a third man
+   at each spot plays when a man ahead of him is hurt: worth about a third of a backup's place */
+const NBA_DEEP=R=>R&&R.length>2*POS.length;
+const NBA_TH=0.35;
 function nflGain(roster,p){
-  const s=roster[p.i], b=roster[BK(p.i)], w=POS[p.i].w;
+  const s=roster[p.i], b=roster[BK(p.i)], w=POS[p.i].w, deep=NBA_DEEP(roster), th=deep?roster[BK(BK(p.i))]:null;
   const val=x=>x?x.r+(x.pot-x.r)*0.25:0;
   if(!s)return val(p)*w*3;
-  if(val(p)>val(s))return (val(p)-val(s))*w*2+ (val(s)-val(b))*w;
-  return Math.max(0,val(p)-val(b))*w;
+  if(val(p)>val(s))return (val(p)-val(s))*w*2+ (val(s)-val(b))*w+(deep?Math.max(0,val(b)-val(th))*w*NBA_TH:0);
+  if(!deep)return Math.max(0,val(p)-val(b))*w;
+  if(val(p)>val(b))return (val(p)-val(b))*w+Math.max(0,val(b)-val(th))*w*NBA_TH;
+  return th?Math.max(0,val(p)-val(th))*w*NBA_TH:val(p)*w*0.5;
 }
-/* put a player in: he starts or backs up by rating; whoever drops off is returned */
+/* put a player in: he starts or backs up by rating (or, fifteen deep, is the third man); whoever drops off is returned */
 function nflPlace(roster,p){
   p.i=POS.findIndex(P=>P.p===p.p);
-  const s=roster[p.i], b=roster[BK(p.i)];
+  const s=roster[p.i], b=roster[BK(p.i)], deep=NBA_DEEP(roster), ti=BK(BK(p.i)), th=deep?roster[ti]:null;
   let out=null;
   if(!s){roster[p.i]=p}
-  else if(p.r>s.r){out=b;roster[BK(p.i)]=s;roster[p.i]=p}
-  else {out=b;roster[BK(p.i)]=p}
+  else if(!deep){ if(p.r>s.r){out=b;roster[BK(p.i)]=s;roster[p.i]=p} else {out=b;roster[BK(p.i)]=p} }
+  else if(p.r>s.r){out=th;roster[ti]=b||null;roster[BK(p.i)]=s;roster[p.i]=p}
+  else if(!b||p.r>b.r){out=b?th:null;if(b)roster[ti]=b;roster[BK(p.i)]=p}
+  else {out=th;roster[ti]=p}
   return out;
 }
+/* the order at one spot, best first: starter, backup, third man */
+function nbaSortSpot(R,i){ const L=[R[i],R[BK(i)],R[BK(BK(i))]], o=L.filter(Boolean).sort((a,b)=>b.r-a.r); [i,BK(i),BK(BK(i))].forEach((j,k)=>R[j]=o[k]||null) }
 
 function nflRun(u,rng,healthy,elo,rec,choices){
   const U_CH=choices.users||(choices.userTeam?{[choices.userTeam]:choices}:{});
@@ -265,6 +280,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     rep.drafted[t]=[];rep.signed[t]=[];rep.filled[t]=[];rep.opts[t]=[]});
   // the front office (Nov 2026): a career from before comes onto the real cap sheet this summer (24_cap)
   nbaMigrate(u);
+  NAMES.forEach(t=>{ const R=u.roster[t]; while(R.length<3*POS.length)R.push(null) });   // fifteen: a third man at each spot
   // options on next season, the last of a deal: the player's (he opts out when the market pays more) and the club's
   // (yours as you chose it; the computer's keeps a man worth his money)
   NAMES.forEach(t=>{ const ch=chFor(t), R=u.roster[t];
@@ -333,8 +349,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const odds=a>=36?0.9:a>=35?0.6:a>=34?0.35:a>=33?0.18:a>=32?0.08:0;
       if(rng.r()<odds+(p.r<55&&a>=29?0.3:0)){R[i]=null;rep.retired[t].push({n:p.n,p:p.p,age:p.age,r:p.r});leave(t,p,"retired")}
     });
-    // a starter's empty spot goes to his backup first
-    POS.forEach((_,i)=>{if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}});
+    // a starter's empty spot goes to his backup first (and a backup's to the third man)
+    POS.forEach((_,i)=>nbaSortSpot(R,i));
     const d=u.program[t]-before;
     if(d>30)risers.push([t,Math.round(d)]); if(d<-30)fallers.push([t,Math.round(d)]);
   });
@@ -342,11 +358,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // agreed trades go through now: after contracts and aging, before the draft
   rep.trade={};
   Object.keys(U_CH).forEach(t=>{const ch=U_CH[t]; if(ch&&ch.trade)nflApplyTrade(u,t,ch.trade,rep,leave,pool)});
-  NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
+  NAMES.forEach(t=>POS.forEach((_,i)=>nbaSortSpot(u.roster[t],i)));
 
   // 4. the draft: drawn before the summer began (draft night), placed now
   delete u.draftClass;
   const picks=placeDraftNight(u,DN,rep,pool,leave,"draft");
+  // the pick ledger: this draft's picks are made
+  if(u.nbaPk)Object.keys(u.nbaPk).forEach(k=>{ if(+k.split("|")[0]<=u.year)delete u.nbaPk[k] });
   // rookie-scale deals: four years, the club's option on the fourth; a second-rounder two at the minimum
   NAMES.forEach(t=>u.roster[t].forEach(p=>{ if(!p||!p.drafted||p.joined!==u.year+1||!p.draft||p.k.v)return;
     p.k=p.draft.overall<=30?{sal:nbaRookieSal(p.draft.overall),yrs:4,v:2,rk:1,opt:"T"}:{sal:nbaMin(p.age),yrs:2,v:2} }));
@@ -383,7 +401,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const sp=nbaSpend(u,t,R,mleUsed);
       if(cost>sp.amt&&cost>nbaMin(p.age)+0.05){rep.targets[t].push({n:n,p:pos,from:team,got:false,why:`wanted $${cost.toFixed(1)}M; you had ${sp.how==="room"?"$"+sp.amt.toFixed(1)+"M of cap room":sp.how==="mle"?"only the "+money2(sp.amt)+" mid-level exception":"no cap room or exception left"}`});return}
       if(sp.how==="mle"&&cost>nbaMin(p.age)+0.05)mleUsed[t]=1;
-      p.signed=true; p.k=nbaK(p,cost,nflYears(p.age,p.p,p.r)); p.yrsHere=0; p.joined=u.year+1;
+      p.signed=true; p.k=nbaK(p,cost,nflYears(p.age,p.p,p.r)); p.faY=u.year+1; p.yrsHere=0; p.joined=u.year+1;
       p.keep=true;                                  // not to be cut again this offseason
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from,target:true});
@@ -415,7 +433,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       if(!best||bv<0.8)return;
       const [p,cost]=best; p.signed=true;
       if(sp.how==="mle"&&cost>nbaMin(p.age)+0.05)mleUsed[t]=1;
-      p.k=nbaK(p,cost,nflYears(p.age,p.p,p.r)); p.yrsHere=0; p.joined=u.year+1;
+      p.k=nbaK(p,cost,nflYears(p.age,p.p,p.r)); p.yrsHere=0; p.joined=u.year+1; p.faY=u.year+1;
       const out=nflPlace(R,p);
       rep.signed[t].push({n:p.n,p:p.p,r:p.r,age:p.age,sal:cost,yrs:p.k.yrs,from:p.from,how:sp.how});
       if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"fa"}); if(out.r>=58&&!out.signed){out.from=t;out.ask=nflAsk(out.r,out.p,out.age);pool.push(out)} else leave(t,out,"released")}
@@ -428,11 +446,12 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   NAMES.forEach(t=>{
     const R=u.roster[t];
     for(let i=0;i<R.length;i++)if(!R[i]){
-      const p=nflPlayer(rng,53+rng.range(0,5),24+rng.int(8),i%POS.length);
+      const p=i<2*POS.length?nflPlayer(rng,53+rng.range(0,5),24+rng.int(8),i%POS.length):nflPlayer(rng,45+rng.range(0,5),22+rng.int(10),i%POS.length);
       p.k={sal:nbaMin(p.age),yrs:1,v:2}; p.joined=u.year+1; R[i]=p;
       rep.filled[t].push({n:p.n,p:p.p,r:p.r});
     }
     POS.forEach((_,i)=>{const s=R[i],b=R[BK(i)]; if(b.r>s.r+1){R[i]=b;R[BK(i)]=s}});
+    POS.forEach((_,i)=>{const b=R[BK(i)],c=R[BK(BK(i))]; if(b&&c&&c.r>b.r+1){R[BK(i)]=c;R[BK(BK(i))]=b}});
     R.forEach((p,i)=>{p.i=i%POS.length});
     const c=u.coach[t];
     u.trueBase[t]=rosterElo(R)+(c.t<=1?ROOKIE_DIP:0)+rng.gauss(0,ROSTER_NOISE*0.6);

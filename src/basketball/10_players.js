@@ -50,7 +50,10 @@ function injuryCost(roster,idx){
   const P=POS[idx];
   if(!roster||!roster[BK(idx)])return -P.w*P.drop*R_SLOPE;
   const gap=Math.max(3,roster[idx].r-roster[BK(idx)].r);
-  return -P.w*((1-BENCH)*gap+BENCH*6)*R_SLOPE;
+  // pro basketball's fifteen (the front office, Nov 2026): the third man takes the backup's minutes, so a deep bench
+  // softens an injury and a thin one deepens it; ten deep (college, older careers) a walk-on's worth, as before
+  const th=roster[BK(BK(idx))], d2=th?Math.max(1,Math.min(14,roster[BK(idx)].r-th.r)):6;
+  return -P.w*((1-BENCH)*gap+BENCH*d2)*R_SLOPE;
 }
 
 /* ============ box scores ============ */
