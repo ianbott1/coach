@@ -10,6 +10,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [people.md](people.md) | Traits and morale, conversations, press conferences, fans, storylines, the Staff room setting | All seven |
 | [realism.md](realism.md) | Board targets from expected wins; MLB, NFL, college football, NHL and college basketball calibration; `test/realism.js` | All seven |
 | [polish.md](polish.md) | Fifteen bugs found in play (carried-plan prompt, bench stats, nickel and dime, brackets, verdicts, sport words and more) | All seven |
+| [stats.md](stats.md) | Round 2 (engine 26): box scores, leaders and awards against the last three real seasons; full basketball lines, football credit, hockey and soccer goal shares, MLB walks and shutouts; `test/boxscores.js` | All seven |
 
 ## Rules kept
 
