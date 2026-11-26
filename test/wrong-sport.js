@@ -27,7 +27,7 @@ const LEAGUE_WORDS={
 // words wrong in one league only (round 56: baseball's offseason is the winter, "the start of summer": Instinct)
 const OWN_WRONG={mlb:["summers?"]};
 // where a word is right in another league: the pros draft college players, so college talks of the pros
-const ALLOW={cfb:["\\bNFL\\b"],ncaab:["\\bNBA\\b"]};
+const ALLOW={cfb:["\\bNFL\\b"],ncaab:["\\bNBA\\b","field goals?"],nba:["field goals?"]};   // review round: basketball's "Field goal %" is the league's own stat
 // club names that happen to hold another sport's word (AFC Wimbledon, Accrington Stanley + "Cup third round")
 const NAMES_OK={epl:/\bAFC [A-Z][a-z]+|Accrington Stanley/g};
 const GAMES={'football-coach.html':['football','cfb','Alabama'],'football-coach-pro.html':['football','nfl','Kansas City'],
