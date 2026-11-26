@@ -17,6 +17,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [integrity.md](integrity.md) | Engine 26, long careers: ratings held to the opening league, hidden ceilings, aging by position, college programs and coaches, the summer's own dice; `test/longrun.js` | All seven |
 | [baseball.md](baseball.md) | Round 2 (engine 26): the platoon by handedness, a named nine-man bullpen with roles and rest, pitch counts and times through the order, the lineup card, holds, calls that name who comes in or hits, the intentional walk, Go to the bullpen on the live bar; `test/bs-manager.js` | Pro baseball |
 | [hockey-fo.md](hockey-fo.md) | Round 3 (engine 27): the hockey front office: the real 2026-27 cap ($104.0M) and floor, twenty-three and a reserve list, entry-level deals, restricted and unrestricted free agency, qualifying offers, arbitration, offer sheets with the 2026 pick table, buyouts, retained salary to the March 1 deadline, clubs spending like the real league; `test/hockey-fo.js` | Pro hockey |
+| [fb-tactics.md](fb-tactics.md) | Round 3 (engine 27): football's game day, a weekly game plan (run-pass mix, tempo, coverage, pressure, a key) that depends on both rosters, fourth downs and two-point tries at real rates in every game, half-time, timeouts and challenges, the NFL's interceptions leader; `test/fb-tactics.js` | College football, pro football |
 
 ## Rules kept
 

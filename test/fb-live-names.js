@@ -6,7 +6,7 @@
 const path=require('path'); const {load}=require('./harness.js');
 const D=f=>path.join(process.env.DIST||path.join(__dirname,'..','dist'),f);
 let bad=0;
-for(const [f,team,N,seeds] of [['football-coach-pro.html','Green Bay',17,[5,11]],['football-coach.html','Alabama',12,[5,11]]]){
+for(const [f,team,N,seeds] of [['football-coach-pro.html','Green Bay',17,[5,11]],['football-coach.html','Alabama',12,[5,11,17]]]){
   const A=load({file:D(f),settable:['live'],expose:['driveScript','S','SEA','newDynasty','doAdvance','live','liveTick','answerLive']});
   let games=0,lines=0,diff=0,hurtG=0; const ex=[];
   for(const seed of seeds){ A.newDynasty(team,seed,'T');
