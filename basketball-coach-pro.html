@@ -227,7 +227,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .linescore{overflow-x:auto;margin:10px 0 2px}.linescore table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px}
 .linescore th{text-align:left;font-weight:600;color:var(--bone);padding:2px 6px 2px 0;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
 .linescore td{text-align:center;padding:2px 3px;color:var(--muted);min-width:14px}.linescore td.b{color:var(--bone);font-weight:700}
-.hlpitch{margin:8px 0 6px}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
+.hlpitch{margin:8px 0 6px}.hlpitch.big{width:min(100vw,1240px);position:relative;left:50%;transform:translateX(-50%)}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
 .wtop{margin:16px;padding:18px 16px;border:1px solid var(--vote);
  background:linear-gradient(180deg,rgba(139,159,232,.13),transparent)}
 .wtop.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.14),transparent)}
@@ -556,6 +556,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .slotbk{top:auto;bottom:12px}
 .attnbtns{display:flex;flex-direction:column;gap:6px}
 /* round 108: the play by play */
+.lstats{margin:4px 16px 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13px;color:var(--muted)}.lsteam{display:flex;flex-direction:column;gap:3px}.lsteam b{color:var(--bone);font-weight:600;margin-bottom:2px}.lsteam.mine b{color:var(--sodium)}.lsrow i{font-style:normal;color:#E9ECF2}@media(max-width:480px){.lstats{grid-template-columns:1fr}}
 .pbp{margin:4px 16px 10px;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .pbpl{display:flex;gap:10px;padding:6px 10px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.35;color:var(--muted)}
 .pbpl:first-child{border-top:0}.pbpl b{color:var(--bone);font-weight:600}
@@ -1036,7 +1037,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="0af4735";
+<script>const BUILD_ID="18fed49";
 /* ============ league: pro basketball ============ */
 /* Thirty franchises, named by city, in six divisions of five. Players are
    fictional. The structure is the real league's: an 82-game schedule,
@@ -3846,7 +3847,7 @@ const HL_SPORT=(function(){
     const sd=p[0], to=p[1], fta=p[2], ftm=p[3], tpa=p[4], tpm=p[5], fga2=p[6], fgm2=p[7], ob=p[8], late=p[9];
     const A=[], u=k=>pbSeed(d,i,k);
     let x3=tpa-tpm, x2=fga2-fgm2, k=0;
-    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; A.push({t:"miss",three:three,who:pickBy(three?W3:W2,u("s"+k)),reb:off?"off":"def",rb:pickBy(WRB,u("r"+k))}); k++ };
+    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; const who=pickBy(three?W3:W2,u("s"+k)); let rb=pickBy(WRB,u("r"+k)); if(off&&rb===who)rb=(rb+4)%5; A.push({t:"miss",three:three,who:who,reb:off?"off":"def",rb:rb}); k++ };   // round 111: not his own miss
     if(to&&!tpa&&!fga2&&!fta){ A.push({t:"to",who:pickBy(WTO,u("t")),st:pickBy(WST,u("st"))}); return A }
     for(let j=0;j<ob;j++)miss(true);
     if(tpm||fgm2){ const three=!!tpm; A.push({t:"make",three:three,who:pickBy(three?W3:W2,u("s"+k)),pts:three?3:2,and1:!three&&fta===1,ftm:ftm}); return A }
@@ -3857,7 +3858,11 @@ const HL_SPORT=(function(){
   function pbPlan(d){
     if(d._pb)return d._pb; const out=[]; let tot=0;
     (d.pl||[]).forEach((p,i)=>{ const acts=pbActs(d,i,p); let w=PB_W.base; acts.forEach(a=>{ w+=a.t==="to"?PB_W.to:a.t==="ft"?PB_W.ft:PB_W.att });
-      out.push({side:p[0],acts:acts,w:w,at:tot,pts:2*p[7]+3*p[5]+p[3]}); tot+=w });
+      // round 111 (Ian: "no transition play"): off a stop (a defensive board or a turnover), a side runs about two in three times (about 15% of trips, the NBA's share)
+      // when the trip ends in a shot from the floor: up the floor in about 3 s and straight at the rim, no half-court set
+      const pv=out[out.length-1], pe=pv&&pv.acts[pv.acts.length-1], stop=pe&&pv.side!==p[0]&&(pe.t==="to"||pe.t==="miss"&&pe.reb==="def"), a0=acts[0];
+      const trans=BB_RT&&!!stop&&a0&&(a0.t==="make"||a0.t==="miss")&&!a0.three&&pbSeed(d,i,"tr")%100<65; if(trans)w*=0.5;
+      out.push({side:p[0],acts:acts,w:w,at:tot,pts:2*p[7]+3*p[5]+p[3],trans}); tot+=w });
     return d._pb={P:out,tot:tot} }
   /* the men the screen showed scoring in a stretch it played back: [side 0/1, kind 3 / 2 / 1 (a free throw), roster slot],
      kept with the game so the box score credits them (teamLines) */
@@ -3868,8 +3873,19 @@ const HL_SPORT=(function(){
       else if(a.t==="ft"){ for(let z=0;z<a.m;z++)out.push([q.side,1,sl]) } }));
     return out }
   /* how long the stretch takes on screen (ms), or 0 where there's nothing to play back */
+  /* round 111 (Ian: "basketball is very fast ... Slow should be real time"): the full match in real time on Slow, half
+     of it on Normal (fullRT); a possession takes its share of the stretch's minutes, in game seconds (pbTimes) */
+  const BB_RT=true, BB_VRUN=7.5;
+  function spanOf(d){ return d.seg>=8?5:BB.quarters?6:5 }
   function playback(L,d){ if(!d||!Array.isArray(d.pl)||!d.pl.length)return 0;
+    if(BB_RT&&typeof fullRT==="function")return Math.round(spanOf(d)*60000*fullRT());
     const sp=typeof speedMult==="function"?speedMult():1; return Math.round(pbPlan(d).tot*700/Math.pow(Math.max(0.25,sp),0.75)) }
+  /* a possession's phases in game seconds: up the floor (about 5 s, less when short), the acts at their real lengths (a
+     shot's gather, flight and board about 2.6 s, a trip to the line 3 s a shot, a turnover 2 s), and the ball worked round
+     the floor in what's left, a pass every 2.4 s or so */
+  function pbTimes(G,acts,trans){ const per=a=>a.t==="ft"?3*a.n:a.t==="to"?2:2.6; let TA=acts.reduce((s,a)=>s+per(a),0), TB=trans?Math.max(0.3*G,G-TA):Math.min(5,0.3*G);
+    if(TB+TA>0.92*G&&!trans){ const k=0.92*G/(TB+TA); TB*=k; TA*=k } if(trans)return {tb:TB/G, tw:TB/G, np:1};
+    const TW=Math.max(0,G-TB-TA); return {tb:TB/G, tw:(TB+TW)/G, np:Math.max(1,Math.min(7,Math.round(TW/2.4)))} }
   // the clock at a fraction of a stretch (the full stretch, unclamped)
   const clockAt=(s,f)=>{ f=Math.max(0,Math.min(1,f)); const mm=x=>{ const t=Math.max(0,Math.round(x*60)), m=Math.floor(t/60), sec=t%60; return m+":"+(sec<10?"0":"")+sec };
     if(s>=8)return "OT"+(s-7>1?(s-7):"")+" "+mm(5*(1-f));
@@ -3896,10 +3912,11 @@ const HL_SPORT=(function(){
     const NM=pbDraw._n=pbDraw._n&&pbDraw._n.d===d?pbDraw._n:{d:d,home:hlNamed(g.home,onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"")),away:hlNamed(g.away,onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,""))};
     const an=home?NM.home:NM.away, dn=home?NM.away:NM.home;
     // phases: bring it up (to tb), work it round (to tw), then the possession's acts share the rest
-    const tb=0.22, tw=0.42, acts=cur.acts, na=acts.length;
+    const acts=cur.acts, na=acts.length, G=cur.w/plan.tot*spanOf(d)*60, gs=(d.seg*spanOf(d)+f*spanOf(d))*60, PT=BB_RT?pbTimes(G,acts,cur.trans):null, tb=PT?PT.tb:0.22, tw=PT?PT.tw:0.42;
     const seed=pbSeed(d,pi,"p"), rr=mulberry32(seed>>>0);
-    const passes=[]; { let h=0; const n=1+Math.floor(rr()*3); for(let k=0;k<n;k++){ let q=Math.floor(rr()*5); if(q===h)q=(q+1)%5; passes.push(q); h=q } }
-    const sway=(i)=>[Math.sin(Date.now()/700+i*1.7)*0.01,Math.cos(Date.now()/830+i*2.3)*0.016];
+    const passes=[]; { let h=0; const n=PT?PT.np:1+Math.floor(rr()*3); for(let k=0;k<n;k++){ let q=Math.floor(rr()*5); if(q===h)q=(q+1)%5; passes.push(q); h=q } }
+    const clkS=BB_RT?gs:Date.now()/1000;   // round 111: the men's drift on the game's clock (a frozen frame is still)
+    const sway=(i)=>[Math.sin(clkS*1000/700+i*1.7)*0.01,Math.cos(clkS*1000/830+i*2.3)*0.016];
     // the set they run: five out, four out and one in, horns, a post-up (from the possession's own hash; a side that
     // lives on threes spreads the floor more often)
     const SETS=[ATT,[[0.66,0.5],[0.8,0.06],[0.8,0.94],[0.72,0.2],[0.72,0.8]],[[0.64,0.5],[0.79,0.1],[0.79,0.9],[0.8,0.39],[0.8,0.61]],[[0.66,0.5],[0.78,0.12],[0.76,0.86],[0.84,0.7],[0.9,0.38]]];
@@ -3907,7 +3924,7 @@ const HL_SPORT=(function(){
     const setW=offK==="threes"?[20,45,15,20]:offK==="paint"?[25,10,25,40]:offK==="pnr"?[30,15,40,15]:[34,22,22,22];
     const SET=SETS[pickBy(setW,seed)];
     // off the ball: men cut and relocate through the half-court (a slow figure of eight round their spot)
-    const cutT=Date.now()/1000;
+    const cutT=clkS;
     let att=SET.map((p,i)=>{ const s=sway(i), cx=Math.sin(cutT*0.9+i*2.1+seed%7)*0.035, cy=Math.sin(cutT*1.8+i*1.3)*0.05; return [Math.min(0.95,p[0]+s[0]+cx),Math.max(0.03,Math.min(0.97,p[1]+s[1]+cy))] }), ball, held=true, lift=0, top="", end="", endInk=null;
     const defOf=(A,bi)=>A.map(([a,y],i)=>{ const dd=i===bi?0.3:0.22; return [hlLerp(a,RIM[0],dd),hlLerp(y,RIM[1],dd)] });
     const SH3=[[0.92,0.035],[0.77,0.14],[0.69,0.5],[0.77,0.86],[0.92,0.965]];
@@ -3918,11 +3935,13 @@ const HL_SPORT=(function(){
     if(u<tb){ // bring it up: from the other end, the defence getting back
       const e=hlEase(u/tb), mir=p=>[1-p[0],1-p[1]];
       att=att.map((p,i)=>{ const m=mir(defOf(ATT,-1)[i]); return [hlLerp(m[0],p[0],e),hlLerp(m[1],p[1],e)] });
-      def=defOf(att,0).map((p,i)=>{ const m=mir(ATT[i]); return [hlLerp(m[0],p[0],e),hlLerp(m[1],p[1],e)] });
-      ball=[att[0][0]-0.015,att[0][1]]; top=`${clk} · ${aT} bring it up`;
+      const ed=cur.trans?Math.pow(e,1.6):e;   // on the break the defence trails the ball up the floor
+      def=defOf(att,0).map((p,i)=>{ const m=mir(ATT[i]); return [hlLerp(m[0],p[0],ed),hlLerp(m[1],p[1],ed)] });
+      ball=[att[0][0]-0.015,att[0][1]]; top=cur.trans?`${clk} · ${aT} on the break`:`${clk} · ${aT} bring it up`;
     }else if(u<tw){ // the ball round the floor
       const v=(u-tb)/(tw-tb)*passes.length, k=Math.min(passes.length-1,Math.floor(v)), ph=v-k, from=k?passes[k-1]:0, to=passes[k];
-      if(ph<0.35){ const e=hlEase(ph/0.35), a=att[from], b=att[to]; ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)]; held=false; holder=-1 }
+      const pS=PT?(tw-tb)*G/passes.length:1, fl=PT?Math.min(0.6,Math.max(0.35,Math.hypot((att[to][0]-att[from][0])*28,(att[to][1]-att[from][1])*15)/11+0.1)/pS):0.35;
+      if(ph<fl){ const e=PT?ph/fl:hlEase(ph/fl), a=att[from], b=att[to]; ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)]; held=false; holder=-1 }
       else { holder=to; ball=[att[to][0]-0.012,att[to][1]] }
       def=defOf(att,holder); top=`${clk} · ${aT} ball`;
     }else{ // the acts: shots, boards, the turnover, free throws
@@ -3958,11 +3977,11 @@ const HL_SPORT=(function(){
     if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=pbDraw.st, ab=p=>home?p:[1-p[0],1-p[1]], sA=home?0:1, sD=1-sA;
       const cur={}; att.forEach((p,i)=>cur[sA+"|"+i]=ab(p)); def.forEach((p,i)=>cur[sD+"|"+i]=ab(p));
       const dt=Q&&Q.d===d?el-Q.el:-1;
-      let lagM=0, nCl=0; if(dt>=0&&dt<400){ const lim=BB_VMAX*dt/Math.max(1,PB.ms)*plan.tot; Object.keys(cur).forEach(k=>{ const o=Q.pos[k]; if(!o)return; const q=cur[k], dx=(q[0]-o[0])*28, dy=(q[1]-o[1])*15, m=Math.hypot(dx,dy), L2=lim*28;
+      let lagM=0, nCl=0; if(dt>=0&&dt<400){ const lim=BB_RT?BB_VRUN*dt/Math.max(1,PB.ms)*spanOf(d)*60/28:BB_VMAX*dt/Math.max(1,PB.ms)*plan.tot; Object.keys(cur).forEach(k=>{ const o=Q.pos[k]; if(!o)return; const q=cur[k], dx=(q[0]-o[0])*28, dy=(q[1]-o[1])*15, m=Math.hypot(dx,dy), L2=lim*28;
         if(m>L2&&m>0){ cur[k]=[o[0]+dx*L2/m/28,o[1]+dy*L2/m/15]; nCl++; lagM+=m-L2 } });
         const back=p=>home?p:[1-p[0],1-p[1]]; att=att.map((p,i)=>back(cur[sA+"|"+i])); def=def.map((p,i)=>back(cur[sD+"|"+i]));
         if(held&&holder>=0&&att[holder])ball=[att[holder][0]-0.012,att[holder][1]] }
-      pbDraw.st={d,el,pos:cur}; pbDraw.pos={att:att.map(ab),def:def.map(ab),sA,ball:ab(ball),held,holder,nCl:typeof nCl==='number'?nCl:0,lagM:typeof lagM==='number'?lagM:0,upf:plan.tot/Math.max(1,PB.ms)} }
+      pbDraw.st={d,el,pos:cur}; pbDraw.pos={att:att.map(ab),def:def.map(ab),sA,ball:ab(ball),held,holder,nCl:typeof nCl==='number'?nCl:0,lagM:typeof lagM==='number'?lagM:0,upf:BB_RT?BB_VRUN*spanOf(d)*60/Math.max(1,PB.ms)/(BB_VMAX*28):plan.tot/Math.max(1,PB.ms)} }
     const ink=kits[home?0:1].fill, dink=kits[home?1:0].fill;
     const scr=att.map(p=>P(W,H,c,p[0],p[1])), crowd=(px,py)=>scr.some(q=>Math.abs(q[0]-px)<r*5&&Math.abs(q[1]-py)<r*2.6);
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=dn[i]; hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:crowd(px,py)?"":q[1]}:null) });
@@ -3974,6 +3993,11 @@ const HL_SPORT=(function(){
     hlTicker(x,W,H,top,8.01);   // top right: the score bug has the left
     if(end){ const key=pi+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
     pbPatch(hs,as,clk);
+    // round 111 (Ian: a play by play in every sport, synced): each trip once it's over, by name
+    if(typeof hlFeedTick==="function")hlFeedTick(()=>{ const out=[]; plan.P.forEach((q2,j)=>{ if(q2.at+q2.w>T)return; const hm=q2.side===0, A=hm?NM.home:NM.away, Dn=hm?NM.away:NM.home, tm=hm?g.home:g.away, ot=hm?g.away:g.home, nm=k=>surname(A[k])||tm, dm=k=>surname(Dn[k])||ot;
+      const bits=q2.acts.map(a=>a.t==="to"?`${nm(a.who)} turns it over, ${dm(a.st)} with the steal`:a.t==="ft"?`${nm(a.who)} ${a.m} of ${a.n} at the line`:a.t==="make"?(a.three?`${nm(a.who)} from three`:a.and1?`${nm(a.who)} scores and one`:`${nm(a.who)} scores`)
+        :`${nm(a.who)} misses${a.three?" from three":""}, ${a.reb==="off"?nm(a.rb)+" offensive board":dm(a.rb)+" rebound"}`);
+      if(!bits.length)return; out.push({k:d.seg+"|b"+j,m:clockAt(d.seg,(q2.at+q2.w)/plan.tot),team:tm,text:(q2.trans?"On the break: ":"")+bits.join("; "),big:q2.acts.some(a=>a.t==="make"&&a.three)?"three":null}) }); return out });
     // the crowd, once a basket: your side's three, or a basket that takes the lead
     { const L0=pbDraw._sc; pbDraw._sc={d:d,h:hs,a:as};
       if(L0&&L0.d===d&&(hs!==L0.h||as!==L0.a)&&typeof sfx==="function"){ const meH=live.userIsHome, mineUp=meH?hs-L0.h:as-L0.a, my=meH?hs:as, th=meH?as:hs, was=meH?L0.h-L0.a:L0.a-L0.h;
@@ -4003,7 +4027,18 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {drawPos:()=>pbDraw.pos||null, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
+  /* round 111: live player stats from the log, as far as the screen has shown: points, boards, steals, threes */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const g=L.g, rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
+    const add=(tm,sl,k,v)=>{ if(sl==null||sl<0)return; const key=tm+"|"+sl, R=(SEA.roster&&SEA.roster[tm])||[]; (rows[key]=rows[key]||{tm,nm:sur(R[sl]&&R[sl].n),pts:0,reb:0,stl:0,tpm:0})[k]+=v };
+    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+      plan.P.forEach(q=>{ if(Tl!=null&&q.at+q.w>Tl)return; const A=q.side, tA=A?g.away:g.home, tD=A?g.home:g.away, fa=five[A], fd=five[1-A];
+        q.acts.forEach(a=>{ if(a.t==="make"){ add(tA,fa[a.who],"pts",a.pts+(a.and1&&a.ftm?1:0)); if(a.three)add(tA,fa[a.who],"tpm",1) } else if(a.t==="ft")add(tA,fa[a.who],"pts",a.m);
+          else if(a.t==="miss"){ if(a.reb==="off")add(tA,fa[a.rb],"reb",1); else add(tD,fd[a.rb],"reb",1) } else if(a.t==="to")add(tD,fd[a.st],"stl",1) }) }) };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,null));
+    const P=L.pb; if(P&&P.d&&!L.done&&Array.isArray(P.d.pl)){ const el=P.frozen!=null?P.frozen:Date.now()-P.at; one(P.d,Math.min(1,el/Math.max(1,P.ms))*pbPlan(P.d).tot) }
+    return lsOut(rows,(a,b)=>b.pts-a.pts||b.reb-a.reb,r=>r.pts||r.reb||r.stl?`${r.pts} pts, ${r.reb} reb${r.stl?", "+r.stl+" stl":""}${r.tpm?", "+r.tpm+" 3PM":""}`:"") }
+  return {liveStats, drawPos:()=>pbDraw.pos||null, pbSpan:spanOf, pbPlan, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, goalsLabel:"Crunch time"};
 })();
 /* Basketball's big moments (round 73, core 96_moments): the last shot, made to win it. From the game's own last
    possession, the one the highlights play. */
@@ -4193,9 +4228,9 @@ function liveView(){
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   return `<div class="watchwrap">
     ${liveScoreboard()}
-    ${typeof hlBox==="function"?hlBox():""}
+    ${typeof hlBox==="function"?hlBox():""}${typeof hlFeedHTML==="function"?hlFeedHTML():""}
     <div class="grouphead">Run of play</div>
-    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Tip-off at ${esc(venue)}&hellip;</span></div>`}</div>
+    <div class="plays">${playsHTML(liveShown(),my,g)||`<div class="empty">${owlMark(40)}<span>Tip-off at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">
       <div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"
         aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>
@@ -7765,7 +7800,7 @@ function hlCan(){
   return true }
 /* the pitch box in the live view: a place for the canvas, which moves in after each redraw (the redraw replaces the
    page; the canvas, and a clip half played, carry on) */
-function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; return `<div id="hlpitch" class="hlpitch" aria-label="Highlights"></div>` }
+function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; const big=hlMode()==="full"&&typeof live!=="undefined"&&live&&!live.done; return `<div id="hlpitch" class="hlpitch${big?" big":""}" aria-label="Highlights"></div>` }   // round 111 (Ian: "a bigger field"): the full match breaks out of the page's column
 function hlMount(){
   if(!hlCan())return; const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return;
   if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
@@ -7775,14 +7810,16 @@ function hlMount(){
   if(HL.leg){ if(HL.leg.parentNode!==box){ try{ box.appendChild(HL.leg) }catch(e){} } HL.leg.innerHTML=HL.cur&&HL.cur.legend?hlLegendHTML(HL.cur.legend):""; HL.leg.style.display=HL.cur&&HL.cur.legend?"":"none" }
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
   // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
-  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
+  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur||(HL_SPORT.ambient&&hlMode()==="full")?"none":"" }   // round 111 (Grokbot: "a dim second field renders under the live one" after a switch to Full match): the full match keeps its own field up between drives, so the drive chart's stays hidden
   if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
   else if(HL_SPORT.collapseIdle)box.style.display=""
   // round 102: the whole surface above the action bar on a laptop (at 1280x800 the bar hid a quarter of baseball's field,
   // home plate and the batter, and soccer's near touchline): a surface too tall for the room left is drawn narrower, centred
   let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
-  try{ const bar=document.querySelector(".actionbar"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-top-6;
-    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
+  try{ const bar=document.querySelector(".actionbar"), big=box.classList&&box.classList.contains("big"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-(big?10:top)-6;
+    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect));
+    // round 111: the full match's surface as big as the window allows (its own bug carries the score and the clock); the page scrolls to it once a game
+    if(big&&HL.bigFor!==live&&top>8&&(live.pb||HL.cur)){ HL.bigFor=live; try{ window.scrollTo(0,Math.max(0,top-6)) }catch(e){} } }catch(e){}
   const H=Math.round(W*HL_SPORT.aspect);
   if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
   if(!HL.cur)hlDraw(null,0);
@@ -7827,7 +7864,7 @@ function hlPlay(L,drive){
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
-  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)) });
+  clips.forEach(c=>{ c.dur=c.rtS&&hlMode()==="full"&&typeof fullRT==="function"?Math.round(c.rtS*1000*fullRT()):Math.round(c.base*Math.min(1.6,k)) });   // round 111: a clip that knows its real seconds (football's drives) runs them on the full match's pace
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
@@ -7911,12 +7948,19 @@ function hlDraw(c,t){
    share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
    goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
    HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
+/* round 111 (Ian: "At slow full match the match should basically take as long as it would take to watch the match in
+   real time - for example, 90 minutes for a soccer game"; "Normal should feel like typical viewing pace"): a sport that
+   plays at real speeds (evPB.rt) runs the play between moments as a share of real time: Slow 1, Normal 1/2, Fast 1/4,
+   Very fast 1/10 (soccer measured 19 wall seconds a game minute on Slow, 14 on Normal). The moments keep their length. */
+const FULL_RT={slow:1,normal:0.5,fast:0.25,rapid:0.1};
+function fullRT(){ return FULL_RT[(typeof S!=="undefined"&&S&&S.watchSpeed)||"normal"]||0.5 }
+function hlEvAmb(d){ const E=HL_SPORT.evPB, sp=typeof speedMult==="function"?speedMult():1; return E.rt?E.span(d)*60000*fullRT():E.ms(d)/Math.pow(Math.max(0.25,sp),0.75) }
 function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,S.mode||"all")||[] }catch(e){}
   const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
   clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
   clips.sort((a,b)=>a.f-b.f);
   for(let i=1;i<clips.length;i++)if(clips[i].f<clips[i-1].f+0.04)clips[i].f=Math.min(0.985,clips[i-1].f+0.04);   // round 103: two in one minute, a moment apart (no play squeezed to nothing between them)
-  const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
+  const amb=hlEvAmb(d), seg=[]; let pf=0, at=0;
   clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
   const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
   return d._ev={seg:seg,tot:at,clips:clips} }
@@ -7938,6 +7982,7 @@ function hlEvDraw(x,W,H){
   P.seg.slice(0,i).forEach(z=>{ if(z.k==="clip")goal(z.c) });
   let clock;
   if(q.k==="clip"){ const t=Math.min(1,(el-q.at)/Math.max(1,q.ms)), rv=q.c.reveal!=null?q.c.reveal:HL_SPORT.reveal;
+    if(rv!=null&&t>=rv&&HL_SPORT.feedClips&&q.c.text&&typeof hlFeedTick==="function"){ const c0=q.c; hlFeedTick(()=>[{k:"c|"+d.seg+"|"+c0.f, m:S.clock(d,c0.f), team:c0.tm||"", text:c0.text, big:c0.kind==="goal"?"goal":null}]) }   // round 111: the clip's line in the play by play
     if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
     clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
@@ -8120,6 +8165,7 @@ function hlInks(home,away){
    second. Kept with the game on screen (live.feed). */
 let hlFeedT=0;
 function hlFeedTick(get){
+  if(typeof live!=="undefined"&&live&&Date.now()-hlStatT>1000){ hlStatT=Date.now(); try{ const el=document.getElementById("lstats"); if(el){ const h=hlStatRows(); if(h!==el.innerHTML)el.innerHTML=h } }catch(e){} }
   if(typeof live==="undefined"||!live||Date.now()-hlFeedT<250)return; hlFeedT=Date.now();
   let lines=[]; try{ lines=get()||[] }catch(e){ return }
   const F=live.feed=live.feed||[], seen=live.feedK=live.feedK||{}; let added=false;
@@ -8127,11 +8173,22 @@ function hlFeedTick(get){
   if(added){ try{ const el=document.getElementById("pbp"); if(el)el.innerHTML=hlFeedRows() }catch(e){} } }
 const PBP_SHOW=9;
 function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
-  if(!F.length)return `<div class="pbpe">Kick-off: the play by play follows the ball.</div>`;
-  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}'</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
-function hlFeedHTML(){ if(typeof pbOn!=="function"||!pbOn()||typeof live==="undefined"||!live)return "";
+  if(!F.length)return `<div class="pbpe">The play by play follows the action.</div>`;
+  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}${typeof x.m==="number"?"'":""}</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+/* ---- round 111: live player stats (Ian: "live player stats") ----
+   The game's own men, counted from the engine's log up to the point the screen has shown (HL_SPORT.liveStats: per
+   side, its men's lines, best first); patched in place with the play by play, about once a second. */
+let hlStatT=0;
+function hlEvCurF(d){ try{ const P=live.pb; if(!P||P.d!==d)return 1; const E=hlEvPlan(live,d), el=P.frozen!=null?P.frozen:Date.now()-P.at; let i=E.seg.findIndex(q=>el<q.at+q.ms+(q.k==="clip"?250:0)); if(i<0)return 1; const q=E.seg[i];
+  return q.k==="clip"?q.f-0.0001:q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)) }catch(e){ return 1 } }
+function hlStatRows(){ if(typeof live==="undefined"||!live||typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return "";
+  let T=null; try{ T=HL_SPORT.liveStats(live) }catch(e){ return "" } if(!T)return "";
+  const g=live.g, my=typeof S!=="undefined"?S.myTeam:null, n=typeof S!=="undefined"&&S.pbpOpen?8:4;
+  return [g.away,g.home].map(tm=>{ const R=(T[tm]||[]).slice(0,n); return `<div class="lsteam ${tm===my?"mine":""}"><b>${esc(tm)}</b>${R.length?R.map(r=>`<span class="lsrow"><i>${esc(r.nm)}</i> ${esc(r.line)}</span>`).join(""):`<span class="lsrow">&mdash;</span>`}</div>` }).join("") }
+function hlStatHTML(){ if(typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return ""; return `<div class="grouphead">Player stats, so far</div><div class="lstats" id="lstats">${hlStatRows()}</div>` }
+function hlFeedHTML(){ if(typeof live==="undefined"||!live||!((typeof pbOn==="function"&&pbOn())||(typeof hlMode==="function"&&hlMode()==="full"&&typeof hlCan==="function"&&hlCan())))return "";   // round 111: every sport's full match (football's drives aren't a playback)
   // round 108: the pitch tells it; the feed is one line, the latest, unless you open it (Ian: "I'm not sure how necessary the text is")
-  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }
+  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>${hlStatHTML()}` }
 /* ============ views: pro basketball ============ */
 /* Power rankings, the playoff picture (six straight in, 7-10 play in), the
    stakes line, and the playoffs: a drawn series bracket for each conference,
@@ -9055,6 +9112,19 @@ function presentAsk(r,floorCall){
 }
 /* round 101: the full match plays back what the engine logged (HL_SPORT.playback gives its length on screen). A stretch
    whose start was already shown (a call came inside it) plays on from where it stopped (live.pbSeen). */
+/* round 111: a speed change inside a stretch takes hold at once. A stretch now runs minutes on Slow; the old length ran on
+   to its end. The stretch keeps its place: the same point of the same clip, or the same share of the play. */
+function pbRescale(){ const P=live&&live.pb; if(!P||live.done||!P.d||typeof HL_SPORT==="undefined")return;
+  const el=P.frozen!=null?P.frozen:Date.now()-P.at, d=P.d; let el2, ms2;
+  if(HL_SPORT.evPB&&d._ev&&typeof hlEvPlan==="function"){ const o=d._ev, i0=o.seg.findIndex(q=>el<q.at+q.ms), i=i0<0?o.seg.length-1:i0, q=o.seg[i], t=q.ms?Math.max(0,Math.min(1,(el-q.at)/q.ms)):1;
+    delete d._ev; const n=hlEvPlan(live,d), q2=n.seg[i]||n.seg[n.seg.length-1]; el2=q2.at+t*q2.ms; ms2=n.tot }
+  else { const m=HL_SPORT.playback(live,d,P.from,P.to); if(!m)return; el2=el/Math.max(1,P.ms)*m; ms2=m }
+  P.ms=ms2; if(P.frozen!=null)P.frozen=el2; else { P.at=Date.now()-el2; if(live.timer&&!live.paused){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.max(0,ms2-el2)) } } }
+/* round 111 (Muse: "the live scoreboard read 22-10 at 13:02 while Run of Play already listed 29-13 at 10:00"): the run of
+   play lists what the screen has shown, not the stretch still playing or the ones held behind it */
+function liveShown(){ if(typeof live==="undefined"||!live)return []; let n=live.drives.length;
+  if(!live.done){ if(live.pb&&live.pb.d){ const i=live.drives.indexOf(live.pb.d); if(i>=0)n=Math.min(n,i) } if(live.hold&&typeof live.hold.n==="number")n=Math.min(n,live.hold.n) }
+  return live.drives.slice(0,n) }
 function pbOn(){ return typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan() }
 function pbFrom(d){ const S0=live.pbSeen; return S0&&S0.seg===d.seg?S0.n:0 }
 function pbScoreAt(d,i,h,a){ const q=i>0&&d.pl&&d.pl[i-1]; return q&&q.h!=null?[q.h,q.a]:[h,a] }
@@ -12692,7 +12762,7 @@ function render0(){
       document.querySelectorAll("[data-pbp]").forEach(x=>onPress(x,()=>{ S.pbpOpen=!S.pbpOpen; save(); render() }));
       document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
-        S.watchSpeed=x.dataset.speed;save();render()}));
+        S.watchSpeed=x.dataset.speed;pbRescale();save();render()}));
     }
     return;
   }
@@ -13384,7 +13454,7 @@ window.addEventListener("keydown",e=>{
     if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();live.paused=true;liveTick();return}
     if(e.key==="Enter"){e.preventDefault();skipLive();return}
     if(["1","2","3","4"].indexOf(e.key)>=0){e.preventDefault();
-      S.watchSpeed=SPEEDS[+e.key-1][0];save();render();return}
+      S.watchSpeed=SPEEDS[+e.key-1][0];pbRescale();save();render();return}
     return;
   }
   if(watch){
