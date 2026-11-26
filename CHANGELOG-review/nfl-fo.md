@@ -232,6 +232,14 @@ capped in `foAsk`, so the extra clamp is gone.
 - The test prints "of cap 110" in its payroll summary line. That line reads the cap from a fresh load with no career,
   so it is cosmetic. The per-season check uses the live cap ($301.2M) and passed.
 
+## Other tests on the final build
+
+- `node test/fatargets.js dist/football-coach-pro.html`: MATCH all checks (17 of 20 targets signed; the three missed
+  ones are reported with a reason).
+- `ONLY=football-coach-pro.html TEAM="Kansas City" node test/trades.js` could not run here. Playwright's Chromium isn't
+  installed in this environment, and installing packages isn't allowed. In-season trades now read `LEAGUE.cap` and
+  `LEAGUE.taxLine` through getters, so this test should be run where a browser is available.
+
 ## Not built: plans
 
 **Free agency as a multi-day market.**
