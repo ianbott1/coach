@@ -87,6 +87,13 @@ const BS={
   pinch:0.1,          // a pinch hitter off the bench against a weak bat: this much better
   hfa:0.0             // home edge comes in the Elo
 };
+/* engine 26 (stats): walks 0.080 -> bb (a walk in about 9.5% of plate appearances, where the majors walked 8.2-8.6% in
+   2023-25), a starter's day-to-day form 0.12 -> form, and x a small edge to the hitters that keeps the runs where they
+   were: about one game in five had a shutout, where the majors had one in 13% of games in 2024 (321 in 2,429). Most
+   of the scoreless games came from the starter's form and the plan read; the read is the game's own and stays. */
+const BS26={bb:+((typeof process!=="undefined"&&process.env&&process.env.BS26_BB)||0.066), form:+((typeof process!=="undefined"&&process.env&&process.env.BS26_F)||0.02),
+  x:+((typeof process!=="undefined"&&process.env&&process.env.BS26_X)||0.035)};
+const bsV26=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=26;
 const APPROACH={
   pull:   {l:"Pull hitters, sitting on the fastball", counter:"away"},
   patient:{l:"Patient: working counts, taking walks", counter:"zone"},
@@ -155,7 +162,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1)*gapScale25();
   const other=s=>s==="home"?"away":"home";
   const SPc=(ctx.sp)||{};
-  const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,BS.form), bf:0, ra:0,
+  const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,bsV26()?BS26.form:BS.form), bf:0, ra:0,
       stam:BS.stamina[0]+rng.int(BS.stamina[1]-BS.stamina[0]+1)-(bsV6()?BS6.stamCut:0), tm:spTire(sd)}, pen:false, closer:false, bat:0,
     tell:{pull:0,bip:0,pit:0,pa:0,k:0,wh:0,n:0}});
   const st={h:0,a:0,drives:[],seg:0,humans:humans,lines:{h:blankTeamLine(),a:blankTeamLine()},
@@ -184,8 +191,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   /* one plate appearance: the batting side (bat), the side in the field (fs) */
   function pa(bat,fs,extra,hx){
     const e=(bat==="home"?gap:-gap)*BS.edge*100/100, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
-    const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
-    const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
+    const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0)+(bsV26()?BS26.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
+    const p={k:BS.k*dn*M.k, bb:(bsV26()?BS26.bb:BS.bb)*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 17 (round 94): the plan your lineup suits, through its own outcomes (one-sided: twice the gap's log-odds a point)
     if(planAmpV()){ p.s1*=BS17.g; p.s2*=BS17.g; p.s3*=BS17.g; p.hr*=BS17.g; p.bb*=BS17.g }
     if(ctx.lz&&planAmpV()){ const pl=st.mode[bat], E=ctx.spz&&humans[bat]&&planVsV()?planVsTot(bsFitZ(ctx.lz[bat],pl),-bsVsZ(ctx.spz[fs],pl),BS17.cap):bsFitZ(ctx.lz[bat],pl), xe=2*E*BS.edge,   /* engine 23: a person's plan against the day's starter */ w=BS17.w, Ef=ctx.spz&&humans[fs]&&planVsV()?planVsTot(bsFitZ(ctx.lz[fs],st.mode[fs]),-bsVsZ(ctx.spz[bat],st.mode[fs]),BS17.cap):bsFitZ(ctx.lz[fs],st.mode[fs]),
