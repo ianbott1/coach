@@ -16,6 +16,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [stats.md](stats.md) | Round 2 (engine 26): box scores, leaders and awards against the last three real seasons; full basketball lines, football credit, hockey and soccer goal shares, MLB walks and shutouts; `test/boxscores.js` | All seven |
 | [integrity.md](integrity.md) | Engine 26, long careers: ratings held to the opening league, hidden ceilings, aging by position, college programs and coaches, the summer's own dice; `test/longrun.js` | All seven |
 | [baseball.md](baseball.md) | Round 2 (engine 26): the platoon by handedness, a named nine-man bullpen with roles and rest, pitch counts and times through the order, the lineup card, holds, calls that name who comes in or hits, the intentional walk, Go to the bullpen on the live bar; `test/bs-manager.js` | Pro baseball |
+| [soccer-fo.md](soccer-fo.md) | Round 3 (engine 27): the money side of English football: revenue by division and parachutes, wage budgets from revenue, the squad cost rule with its points deduction, both windows negotiated (bids, counters, release clauses, instalments), the computer's market, loans, the homegrown quota; `test/soccer-fo.js` | Soccer |
 
 ## Rules kept
 
