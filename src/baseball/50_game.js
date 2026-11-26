@@ -150,7 +150,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const rOf=(side,nm)=>ctx.rate&&ctx.rate[side]&&nm?ctx.rate[side][nm]:null;
   const spTire=sd=>{ const n=ctx.sp&&ctx.sp[sd]&&ctx.sp[sd].n, a=atOf(sd,n), r=rOf(sd,n); return a&&a.sta!=null&&r!=null?Math.exp(-BS10.sta*(a.sta-r)-bsHalfVar(BS10.sta)):1 };   // engine 10: how fast he tires
   if(typeof humans!=="object"||humans===null)humans={home:!!humans, away:!humans};
-  const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1);
+  // engine 25 (review round): the gap counts LEAGUE.tuning.gap25 of itself (core gapScale25): clubs were spread wider than
+  // MLB's (wins sd 14.6-15.2, the best record 111 on average; MLB ~13 and ~104) and favourites won 59% where 57% was shown
+  const gap=(eloH-eloA)*(typeof GAP_SCALE!=="undefined"?GAP_SCALE:1)*gapScale25();
   const other=s=>s==="home"?"away":"home";
   const SPc=(ctx.sp)||{};
   const side0=sd=>({app:null, ans:null, prepd:false, sp:{n:(SPc[sd]&&SPc[sd].n)||null, q:(SPc[sd]&&SPc[sd].q)||0, form:rng.gauss(0,BS.form), bf:0, ra:0,

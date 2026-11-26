@@ -430,7 +430,15 @@ LEAGUE.offseason={
 LEAGUE.goals={
   /* what the job demands, by program strength: wins over a 30-game season,
      and par for March (how far into the NCAA tournament the job expects) */
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=24)return {w:w,par:1.2,l:"A deep March run. The Sweet 16 is the floor.",t:"SECOND WEEKEND"};
+      if(xw>=21)return {w:w,par:0.6,l:"Make the NCAA tournament and win a game when you get there.",t:"WIN IN MARCH"};
+      if(xw>=18)return {w:w,par:0.2,l:"Get into the field. Selection Sunday should be a good day.",t:"DANCE"};
+      if(xw>=14.5)return {w:w,par:0,l:"A winning season and a real run at the conference title.",t:"CONTEND"};
+      return {w:w,par:0,l:"Show progress. A winning conference record would be real movement.",t:"BUILD SOMETHING"} }
     if(p>=1950)return {w:24,par:1.2,l:"A deep March run. The Sweet 16 is the floor.",t:"SECOND WEEKEND"};
     if(p>=1800)return {w:21,par:0.6,l:"Make the NCAA tournament and win a game when you get there.",t:"WIN IN MARCH"};
     if(p>=1650)return {w:18,par:0.2,l:"Get into the field. Selection Sunday should be a good day.",t:"DANCE"};

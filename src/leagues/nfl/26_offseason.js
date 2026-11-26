@@ -448,7 +448,15 @@ LEAGUE.offseason={
 
 /* what a season is judged against, and how it is graded */
 LEAGUE.goals={
-  expectations(p){
+  byWins:true,
+  /* engine 25: from what the season's own chances say this roster should win (core expectedWins) */
+  expectations(p,xw){
+    if(xw!=null){ const w=Math.round(xw);
+      if(xw>=11.5)return {w:w,l:"A deep playoff run. Anything less is a disappointment.",t:"SUPER BOWL OR BUST"};
+      if(xw>=10)return {w:w,l:"Win the division and a playoff game.",t:"CONTEND"};
+      if(xw>=8.5)return {w:w,l:`Get into the playoffs. ${w} wins should do it.`,t:"PLAYOFFS"};
+      if(xw>=6.5)return {w:w,l:"Be competitive in December and show the rebuild is working.",t:"PUSH FORWARD"};
+      return {w:w,l:`Show progress. ${w} wins would be real movement here.`,t:"BUILD SOMETHING"} }
     if(p>=1790)return {w:12,l:"A deep playoff run. Anything less is a disappointment.",t:"SUPER BOWL OR BUST"};
     if(p>=1720)return {w:10,l:"Win the division and a playoff game.",t:"CONTEND"};
     if(p>=1650)return {w:9,l:"Get into the playoffs. Nine wins should do it.",t:"PLAYOFFS"};

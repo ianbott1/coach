@@ -1,5 +1,5 @@
 {
- "fp": "4d085cb93511b9d4",
+ "fp": "c02d5ae543b0c6c2",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -360,6 +360,11 @@
    "fp": "4d085cb93511b9d4",
    "from": "4d085cb93511b9d4",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "c02d5ae543b0c6c2",
+   "from": "4d085cb93511b9d4",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [
@@ -369,20 +374,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "35-2",
-      "result": "Lost in the Elite Eight",
-      "grade": "A+"
+      "rec": "33-4",
+      "result": "Lost in the Sweet 16",
+      "grade": "A"
      },
-     "book": "ecab9f1eb7d841ac"
+     "book": "22787305feeb247b"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "27-8",
-      "result": "Lost in the Second Round",
-      "grade": "B"
+      "rec": "27-7",
+      "result": "Lost in the Sweet 16",
+      "grade": "B-"
      },
-     "book": "b5c8271c142c4fcc"
+     "book": "9f6354c38b692026"
     }
    ]
   },
@@ -392,20 +397,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "33-3",
-      "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "rec": "27-9",
+      "result": "Lost in the Second Round",
+      "grade": "B"
      },
-     "book": "9049ac00db289ad6"
+     "book": "36c6a80e5cdeebdc"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "25-6",
-      "result": "Lost in the First Round",
-      "grade": "B-"
+      "rec": "31-3",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "06ab0a02e60d15e8"
+     "book": "17d3125a00eda722"
     }
    ]
   },
@@ -415,20 +420,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "18-13",
-      "result": "Missed the NCAA tournament",
-      "grade": "D"
+      "rec": "27-7",
+      "result": "Lost in the First Round",
+      "grade": "B-"
      },
-     "book": "8520f59f5a7d9031"
+     "book": "66c22ae1e65f3d38"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "26-8",
-      "result": "Lost in the First Round",
-      "grade": "B-"
+      "rec": "35-4",
+      "result": "NATIONAL CHAMPIONS",
+      "grade": "A+"
      },
-     "book": "aa403501c83a6d10"
+     "book": "e2f283f8fefa2c8f"
     }
    ]
   }

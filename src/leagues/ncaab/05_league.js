@@ -34,7 +34,7 @@ const LEAGUE={
     "San Antonio","Toronto","Utah","Washington"],
   awards:{mvp:"Player of the Year", weights:{PG:1,SG:1,SF:1,PF:1,C:1}},   // awards compare each player with his position (86_awards)
   tuning:{century:200, /* round 60: achievements */ wpK:{safe:406,balanced:420,aggressive:434},   /* round 32: pace held to ±8%; safe/aggressive refitted relative to balanced */   /* the engine's own win chance per rating gap, by your gameplan (measured Nov 2026: p=1/(1+10^(-gap/k))) */
-    hfa:105, pFloor:950, pCeil:2500},   // program strength spans more than in football
+    hfa:105, pFloor:950, pCeil:2500, inj25:{hz:+((typeof process!=="undefined"&&process.env&&process.env.INJ_HZ)||0.75),mul:[0.9,1.5],cap:+((typeof process!=="undefined"&&process.env&&process.env.INJ_CAP)||180)}},   // inj25: engine 25 (core injTune25): fewer starters hurt, and no one injury past 180 points (~4.5 points of margin, PTS_ELO 40)   // program strength spans more than in football
   /* arenas that are genuinely hard to visit (added to a prestige-based base) */
   venues:{"Kansas":30,"Duke":30,"Kentucky":24,"Gonzaga":22,"Purdue":22,"Michigan State":20,"Syracuse":16,
     "Houston":20,"Arizona":20,"North Carolina":18,"Iowa State":22,"Wisconsin":18,"Texas Tech":20,"BYU":20,

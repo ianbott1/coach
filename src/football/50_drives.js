@@ -160,7 +160,7 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   // pro football softens a big mismatch (past 100 a gap counts half): a stacked roster went 17-0, 98%+ was shown in
   // 1.7% of games (Ian, round 39: "you never see 99% in pro football"); college, with its real mismatches, doesn't
   const SD=LEAGUE.tuning.softDrive, gq=offElo-defElo, ga=Math.abs(gq), gs=!SD||ga<=SD[0]?gq:Math.sign(gq)*(SD[0]+(ga-SD[0])*SD[1]);
-  const x = gs * GAP_SCALE / 470 * (A.gap || 1) * (sm||fbV14()?FB14.gap:1);   // engine 14: college's gap counts a little more (computer underdogs now take risks)
+  const x = gs * GAP_SCALE * gapScale25() / 470 * (A.gap || 1) * (sm||fbV14()?FB14.gap:1);   // engine 25: LEAGUE.tuning.gap25 (core gapScale25)   // engine 14: college's gap counts a little more (computer underdogs now take risks)
   const field = (startYd - 27) / 100;              // better starting spot helps
   let td = 0.238 + x * 0.115 + field * 0.24 + A.td;
   let fg = 0.170 + x * 0.0227 + field * 0.10 + A.fg;

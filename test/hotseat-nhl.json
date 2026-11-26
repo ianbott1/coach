@@ -1,5 +1,5 @@
 {
- "fp": "09fe8f46858a32ee",
+ "fp": "e725cb5fde56da90",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -385,6 +385,11 @@
    "fp": "09fe8f46858a32ee",
    "from": "09fe8f46858a32ee",
    "note": "Round 109 (Grokbot round 13 asks 2-3): a person's plan against tonight's opponent (planVs), baseball's card counts today's starter, soccer's keeper weighs 0.20; engine 23."
+  },
+  {
+   "fp": "e725cb5fde56da90",
+   "from": "09fe8f46858a32ee",
+   "note": "Engine 25 (realism review): board targets from the expected wins of the schedule, plus this league's calibration (see CHANGELOG-review/realism.md); engine 24 seasons replay unchanged"
   }
  ],
  "out": [
@@ -394,20 +399,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-41-12",
+      "rec": "30-44-10",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "B-"
      },
-     "book": "9749c05006b847a2"
+     "book": "790acc895b10341e"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "31-50-3",
+      "rec": "24-46-14",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "b8a69e9d01258c83"
+     "book": "d96439688fd12fcb"
     }
    ]
   },
@@ -417,20 +422,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "29-43-12",
+      "rec": "29-45-10",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C+"
      },
-     "book": "114e0de39817fa9c"
+     "book": "97f012bbb298c491"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "42-35-7",
+      "rec": "40-35-9",
       "result": "Losing season",
-      "grade": "B+"
+      "grade": "B-"
      },
-     "book": "0536f7c7966761fb"
+     "book": "e390533b1c15c3d4"
     }
    ]
   },
@@ -440,20 +445,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "43-30-11",
-      "result": "Missed the playoffs",
-      "grade": "C+"
+      "rec": "40-32-12",
+      "result": "Lost in the second round",
+      "grade": "A-"
      },
-     "book": "15bdf04af5212e78"
+     "book": "900b66cad2cf0837"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "29-48-7",
+      "rec": "27-45-12",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C"
      },
-     "book": "dd134845b9fa86c2"
+     "book": "a07282f5fdd75c33"
     }
    ]
   }
