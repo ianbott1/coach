@@ -530,6 +530,11 @@ Round 111: watching (no engine change: engine 24, the sims' files untouched; Ian
   the bar for a moment before the first stretch). sc-subs-taps.js's run-up timed out at the new pace (it tapped a
   stretch early; the change was made once, on the next stretch); the run-up now skips playback, and it passes.
   draft-labels.js (pro football's "likely gone", 50% of 30) fails identically on the published a39cf41.
+- Found after the suite: after a call mid-game the page had reflowed and the field sat 34 px under the bar on a laptop
+  (the page scrolled to the field once a game). It now scrolls back after each call: 0 px in all seven at 1280x800,
+  1366x650, 1920x1080 and an iPhone 13. Re-run on that build: fit, score-visible, bar-cover, stray-tap, plan-confirm,
+  bs-call-hold, sc-subs-taps, runplay-sync, live-stats, pbp-feed, pb-rescale, all pass. runplay-sync now cuts a stretch
+  every so often so its samples reach scoring (at the new pace soccer's 45 s saw only 0-0) and needs two scores seen.
 
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
