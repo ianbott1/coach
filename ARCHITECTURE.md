@@ -487,6 +487,10 @@ Round 111 (branch rv/gameday): game day as coaching (engine 25, BB_GD_V in baske
   minutes (st.xm, in six-stretch units of tight) cost F x xm x (1 - staK x Stamina) in the last two stretches and
   overtime, F set so the league's mean gap (gMean) nets to nothing. The star's foul rate follows his minutes. The
   computer plays the usual rotation: no change to its games. st.legs: what the bar shows, from the same sum.
+- Basketball's last minute, behind by one to eight (k "defend", core GATE_KINDS): asked inside the last stretch. playSeg
+  stops before the trailing side's fouls (st.lpD: the stretch so far, for eng.partial; st.lpFinish: the rest), and the
+  answer plays it: foul (the old loop, the assistant's) or play it out (one possession each). Nothing is drawn while it
+  waits, so the computer's games and an unasked game are as before.
 
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not

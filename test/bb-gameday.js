@@ -61,6 +61,23 @@ for(const pro of [false,true]){
     n++; wSave+=x.h>x.a?1:0; wTO+=y.h>y.a?1:0; ptsS+=x.h-x.a; ptsT+=y.h-y.a }
   console.log(`  ${n} games with a run against you: timeout won ${(100*wTO/n).toFixed(1)}%, saved ${(100*wSave/n).toFixed(1)}%; margin ${(ptsT/n).toFixed(2)} against ${(ptsS/n).toFixed(2)}`);
   check(n>0&&(ptsT-ptsS)/n>-0.2&&(ptsT-ptsS)/n<2,'a timeout on a run is worth a little, not a lot (under two points)');
+  // 4b. behind in the last minute: foul or play it out (asked inside the last stretch; your assistant fouls)
+  { let asked=0, bad=0, par=0, parN=0; const by={};
+    for(let s=1;s<=N;s++){ const gap=((s*29)%300)-150, x=run(G,s,gap,{home:true,away:false});
+      const q=x.asks.find(a=>a.k==='defend'); if(!q)continue; asked++; if(!(q.lead<0&&q.lead>=-8))bad++;
+      const f=run(G,s,gap,{home:true,away:false},dp=>dp.k==='defend'?'foul':dp.opts[dp.opts.length-1][0]);
+      const d=run(G,s,gap,{home:true,away:false},dp=>dp.k==='defend'?'defend':dp.opts[dp.opts.length-1][0]);
+      if(parN<300){ parN++; if(f.h===x.h&&f.a===x.a)par++ }
+      const k=-q.lead<=2?'1-2':-q.lead<=4?'3-4':'5-8', B=by[k]=by[k]||{n:0,f:0,d:0}; B.n++; B.f+=f.h>f.a?1:0; B.d+=d.h>d.a?1:0 }
+    console.log(`  behind in the last minute: asked ${(asked/N).toFixed(2)} a game; won by foul / play it out: `+Object.keys(by).sort().map(k=>`down ${k} ${(100*by[k].f/by[k].n).toFixed(1)}/${(100*by[k].d/by[k].n).toFixed(1)} (${by[k].n})`).join(', '));
+    check(asked>0&&bad===0,'the last-minute call comes only when you\'re behind by one to eight');
+    check(par===parN,`your assistant fouls, as the computer does (${par} of ${parN})`);
+    // the stretch so far, while the call waits (core plays it up to the call), and the stretch it becomes
+    let pOk=0, pN=0;
+    for(let s=1;s<=N&&pN<100;s++){ const e=G.makeLiveGame(new G.RNG(s),1500,1500,'balanced','balanced',{home:true,away:false}); e.plog=true; let gg=0,r,D=null,sc=null;
+      while(gg++<400){ r=e.next(); if(r.done)break; if(r.ask){ if(r.ask.k==='defend'){ D=e.partial(); sc=[r.mine,r.theirs] } e.reply(r.ask.opts[r.ask.opts.length-1][0]); continue }
+        if(D&&r.drive&&r.drive.seg===G.SEGS-1){ pN++; const d=r.drive; if(D.sh===sc[0]&&D.sa===sc[1]&&D.pl.length>0&&JSON.stringify(d.pl.slice(0,D.pl.length))===JSON.stringify(D.pl)&&d.pl.length>D.pl.length)pOk++; D=null } } }
+    check(pN>0&&pOk===pN,`the last stretch waits for the call with its score so far, and goes on from there (${pOk} of ${pN})`) }
   // 5. the rotation: what tight and deep are worth against the usual, by the starters' gap over the bench and Stamina
   { const R=G.BB_GD, M=Math.min(N,3000), cell=(g,sta,rot)=>{ let w=0,m=0;
       for(let s=1;s<=M;s++){ const e=G.makeLiveGame(new G.RNG(s),1500,1500,'balanced','balanced',{home:true,away:false},false,{rot:{home:{g,sta},away:{g:R.gMean,sta:0}}});

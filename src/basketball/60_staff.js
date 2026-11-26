@@ -218,6 +218,12 @@ function staffTake(dp, ctx){
     R.push({who:"capy", pick:mine?(cur||"normal"):"save", line:mine?`Now that we have the floor, I'd rather not change too much. Calm is a defense of sorts.`
       :`It seems to me runs end on their own more often than not. I'd keep the timeout for the finish, myself.`});
   }
+  else if(dp.k==="defend"){
+    const F=dp.ft||{m:0,a:0}, cold=F.a>=4&&F.m/F.a<(dp.avg/100)-0.05;   // Pearl goes by tonight's free throws alone
+    R.push({who:"bears", pick:"foul", line:["FOUL. FOUL. FOUL. MAKE THEM EARN IT AT THE LINE.","HACK EVERYBODY. WE'RE NOT GOING HOME."][Math.abs(seed)%2]});
+    R.push({who:"pearl", pick:cold?"foul":"defend", line:pearlSay(cold?`They've missed ${F.a-F.m} free throws tonight! Send them to the line!`:`They've been good at the line tonight. Let's just get a stop!`,seed)});
+    R.push({who:"capy", pick:"defend", line:`Fouling, it seems to me, is mostly a way of giving away points on purpose. I'd rather play it out.`});
+  }
   else if(dp.k==="last"){
     R.push({who:"bears", pick:"three", line:bearYell("last",seed)});
     R.push({who:"pearl", pick:"three", line:pearlSay(`A three wins it! Overtime is a whole other game, and they're tired too.`,seed)});

@@ -56,3 +56,25 @@
 - How tested: node test/bb-gameday.js 1500 (all pass, incl. "the usual roster gains nothing" and "a thin bench wants it
   tight, a deep one deep"); node test/bb-gameday-ui.js MATCH (rotation buttons, the change said in the run of play,
   legs); golden --fast both basketballs: screens only, re-recorded.
+
+## 3. Basketball end game: behind in the last minute, foul or play it out (engine 25)
+- What changed: when you're behind by one to eight in the last minute of regulation (the moment the engine's trailing
+  side starts fouling), the game stops inside the last stretch and asks: foul to stop the clock and send them to the
+  line (what the computer and your assistant do, as before), or play it out (they run a possession down, you get one
+  more). The full match plays the stretch up to the call and goes on from there (core eng.partial, as baseball's
+  in-inning calls). Graded by replay; asked only in reach and when an option gains 4 points on your assistant (core
+  GATE_KINDS "defend"), or as the close game's late-window floor call.
+- Why: the last minute of a close game had no decision; fouling was automatic.
+- Measured (test/bb-gameday.js, 1,500 games, every other call left to the assistant): college (free throws 71.5%)
+  fouling wins more at every deficit (down 1-2: 17.4% against 12.8%; 3-4: 5.4 against 2.2); pro (78.5%) playing it out
+  is better down 1-2 (28.4 against 24.3) and level from 3. So the answer moves with the league and the deficit; the
+  card shows the deficit and the league's free-throw rate (not tonight's free throws, which predict nothing in the
+  engine: every side shoots the league's rate).
+- Not built: "hold for the last shot" and "two-for-one". Worked through on the engine's own numbers both are quizzes
+  (holding with the score tied wins whenever your early shot isn't better than the held one by more than their make
+  rate; the two-for-one is right whenever the clock allows), which the call rules don't allow; the tied last possession
+  would also change the computer's own overtime rate.
+- Games: college and pro basketball. How tested: node test/bb-gameday.js 1500 (all pass: asked only when behind 1-8;
+  the assistant fouls as the computer, 300 of 300 identical; the stretch waits with its score and possession log and
+  goes on from it, 100 of 100); node test/bb-gameday-ui.js MATCH; golden --fast: college MATCH, pro screens only (one
+  call more in the season's count; results identical), re-recorded.

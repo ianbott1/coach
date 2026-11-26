@@ -237,6 +237,13 @@ function closeCall(lead,rep,n,cur){
     opts:(cur&&DEFENSES[cur]?[["keep","Keep your setup: "+DEFENSES[cur].l]]:[]).concat(Object.keys(DEFENSES).filter(d=>d!==cur).map(d=>[d,DEFENSES[d].l])).concat([ASSIST]),
     report:Object.assign({},rep), n:n, pearl:top};
 }
+/* round 111: behind in the last minute (one to eight). Fouling stops the clock and buys possessions at the price of
+   their free throws; playing it out lets them run one down, and gets you one more. The computer and your assistant
+   foul, as before. Graded by replay; asked only in reach and when it gains on your assistant (core GATE_KINDS defend) */
+function defendCall(L,ftm,fta){
+  return {k:"defend",h:`Down ${-L}, under a minute left`,b:"Foul to stop the clock and send them to the line, or play it out and get a stop?",
+    opts:[["foul","Foul: send them to the line"],["defend","Play it out: get a stop"],ASSIST], ft:{m:ftm,a:fta}, avg:Math.round(BB.ft*100), down:-L};
+}
 function lastCall(left){
   return {k:"last",h:"Down 2, last possession",b:"A three wins it. A two sends it to overtime."+(left===0?" No timeouts left: no play drawn up, a scramble the length of the floor.":left>0?" Timeout: you draw up the play.":""),
     opts:[["three","Go for the win: three"],["two","Tie it: two, and overtime"],ASSIST]};
@@ -423,7 +430,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // to stop the clock, sending the leader to the line and getting the ball
     // back, up to four times (extra possessions: the game lasts longer)
     const lastSeg=s===SEGS-1, trail=st.h+dh-(st.a+da);
-    const foulH=lastSeg&&trail<0&&trail>=-8, foulA=lastSeg&&trail>0&&trail<=8;
+    // round 111 (engine 25): the last minute of regulation, a person behind by one to eight: foul or play it out, asked
+    // here, inside the stretch (core: the full match plays the stretch up to the call, eng.partial). The rest of the
+    // stretch waits in st.lpFinish; nothing is drawn while it waits
+    const tail=()=>{
+    let foulH=lastSeg&&trail<0&&trail>=-8, foulA=lastSeg&&trail>0&&trail<=8;
+    // round 111: behind in the last minute, a person may play it out instead: they run a possession down, you get one
+    const outH=foulH&&GD&&st.lf&&st.lf.home==="defend", outA=foulA&&GD&&st.lf&&st.lf.away==="defend";
+    if(outH){ foulH=false; let b0=pl?snapL(st.lines.a):null; da+=possession(rng,ehA,"sit",st.lines.a); if(pl){ plRec(1,st.lines.a,b0); b0=snapL(st.lines.h) } dh+=possession(rng,ehH,"push",st.lines.h); if(pl)plRec(0,st.lines.h,b0) }
+    if(outA){ foulA=false; let b0=pl?snapL(st.lines.h):null; dh+=possession(rng,ehH,"sit",st.lines.h); if(pl){ plRec(0,st.lines.h,b0); b0=snapL(st.lines.a) } da+=possession(rng,ehA,"push",st.lines.a); if(pl)plRec(1,st.lines.a,b0) }
     if(foulH||foulA){
       for(let k=0;k<4;k++){
         const behindH=foulH&&st.h+dh<st.a+da, behindA=foulA&&st.a+da<st.h+dh;
@@ -456,6 +471,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(bn)d.bn=bn;
     if(pl)d.pl=pl;
     st.drives.push(d); return d;
+    };
+    const lh=GD&&lastSeg&&!st.lpAsked?(trail<0&&trail>=-8&&humans.home?"home":trail>0&&trail<=8&&humans.away?"away":null):null;
+    if(lh){ st.lpAsked=true; const o=other(lh), Lo=st.lines[o==="home"?"h":"a"];
+      st.lpD={seg:s,pl:pl?pl.slice():null,sh:st.h+dh,sa:st.a+da}; st.lpFinish=tail;
+      queueCall(lh,defendCall(lh==="home"?trail:-trail,Lo.ftm,Lo.fta)); return null }
+    return tail();
   };
   // the last possession, when a side trails by two: a three to win or a two to tie
   const lastShot=(side,choice)=>{
@@ -518,15 +539,18 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       else { const was=X.def; readIt(side,0.45); st.autoDid=X.def!==was&&DEFENSES[X.def]?"read their finish himself and switched to "+DEFENSES[X.def].l.split(":")[0].toLowerCase():"read their finish himself and kept the defense as it was" }
       return }
     if(dp.k==="last"){ lastShot(side,v==="three"?"three":"two"); st.lastDone=true }
+    if(dp.k==="defend"){ (st.lf=st.lf||{})[side]=v==="defend"?"defend":"foul"; if(v!=="foul"&&v!=="defend")st.autoDid="fouled to stop the clock, as every computer coach does"; return }
   };
   st.next=function(){
     if(st.done)return {done:true,h:st.h,a:st.a,drives:st.drives};
     if(st.ask)return st.ask;
     if(st.pendingSide){ const P=st.pendingSide, v=st.answer; st.pendingSide=null; st.answer=null; st.autoDid=null; apply(P.side,P.dp,v) }
-    if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q;
-      st.ask={ask:Q.dp,mine:Q.side==="home"?st.h:st.a,
-              theirs:Q.side==="home"?st.a:st.h,q:st.seg<4?1:st.seg<SEGS?2:3,side:Q.side};
+    if(st.queue.length){const Q=st.queue.shift(); st.pendingSide=Q; const sh=st.lpD?st.lpD.sh:st.h, sa=st.lpD?st.lpD.sa:st.a;   // a call inside the last stretch: its score so far
+      st.ask={ask:Q.dp,mine:Q.side==="home"?sh:sa,
+              theirs:Q.side==="home"?sa:sh,q:st.seg<4?1:st.seg<SEGS?2:3,side:Q.side};
       const r=st.ask; st.ask=null; st.waiting=r; return r}
+    // round 111: the rest of a stretch that stopped for a call inside it
+    if(st.lpFinish){ const f=st.lpFinish; st.lpFinish=null; st.lpD=null; const d=f(); st.seg++; return {drive:d,h:st.h,a:st.a} }
     const s=st.seg;
     if(s===0&&!st.p0){st.p0=true; ["home","away"].forEach(sd=>{ const o=other(sd);
       if(humans[sd]&&!humans[o]&&fav[o])queueCall(sd,prepCall(scoutReport(fav[o],(ctx.seed||0)+(o==="home"?1:2)))) });
@@ -568,10 +592,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     }
     if(s>=SEGS&&st.h!==st.a){st.done=true; return {done:true,h:st.h,a:st.a,drives:st.drives}}
     if(s>=SEGS+6){ if(rng.r()<0.5)st.h++; else st.a++; st.done=true; return {done:true,h:st.h,a:st.a,drives:st.drives} }
-    const d=playSeg(s); st.seg++;
+    const d=playSeg(s); if(!d)return st.next();   // a call inside the stretch (round 111): asked first
+    st.seg++;
     return {drive:d,h:st.h,a:st.a};
   };
   st.reply=function(v){ st.answer=v; st.waiting=null };
+  st.partial=function(){ return st.lpD||null };   // core pbPartialStart: the stretch so far, while its call waits
   // round 111: the live game's own buttons (core: setLivePlan "act:<id>", made as a stretch starts). A timeout of yours:
   // the other side's run stops, and the floor is yours for a minute (myTimeoutCall)
   st.actsFor=function(side){ if(!GD||!humans[side]||st.done)return [];

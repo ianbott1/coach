@@ -119,6 +119,14 @@ function foulRule(){ const o=BB.foulOut; return `Foul trouble comes to you once 
       ${dp.rot&&dp.rot!=="normal"?`<div class="evr"><span class="evk">Your rotation</span><span class="evv">${dp.rot==="tight"?"tight: he's out there more":"deep: he's out there less"}</span></div>`:""}
       <div class="evn">${tight?"A tight crew: every bump is a whistle tonight.":loose?"A loose crew: they're letting them play.":"An ordinary crew so far."} Sitting him costs you now; a fifth foul costs you the finish, when he matters most.</div>
       <div class="evn">${foulRule()}</div></div>` }
+  // round 111: behind in the last minute: their free throws tonight against the league's
+  // (not tonight's free throws: a hot or cold night at the line says nothing about the next two, and the card says only
+  // what bears on the call)
+  if(dp.k==="defend"){ const opp=g.home===my?"away":"home";
+    return `<div class="evid"><div class="evh">${esc(g[opp])} at the line</div>
+      <div class="evr"><span class="evk">Free throws, the league over</span><span class="evv">${dp.avg}%</span></div>
+      <div class="evr"><span class="evk">You're down</span><span class="evv">${dp.down}</span></div>
+      <div class="evn">Fouling stops the clock and buys you more trips down the floor, at the price of their free throws. Playing it out lets them run a possession down, and gets you one more of your own.</div></div>` }
   // round 111: a timeout: how many you have, what one does, and (when the defense is this call's) what they're running
   if(dp.k==="timeout"||dp.k==="tomine"){
     return `<div class="evid"><div class="evh">Your timeouts</div>
