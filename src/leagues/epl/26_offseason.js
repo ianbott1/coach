@@ -14,6 +14,7 @@ const NFL_CAP=320;                          // the richest club's budget (Englis
    relegated club keeps a parachute (55% of its top-flight budget, fading
    over two summers), as the Premier League pays its relegated clubs. */
 function budgetOf(u,t){
+  if(typeof fo27==="function"&&fo27()&&u&&u.program&&u.roster){ const b27=budget27(u,t); if(b27!=null)return b27 }   // engine 27: the top two divisions' money (28_money)
   const s=(u&&u.program&&u.program[t])||1500, d=CONF[t];
   // per tier: a floor, a ceiling, and how fast stature lifts it (millions a year)
   const B={PL:[90,320,1500,1.0],CH:[20,60,1300,0.1],L1:[5,18,1150,0.032],L2:[2,6,1050,0.0115],
@@ -268,6 +269,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   // promotion and relegation down the pyramid: at each boundary the upper
   // division's relegated go down and the lower division's promoted go up; the
   // National League's relegated go North or South by region, evened to 24 each
+  const F27=typeof fo27==="function"&&fo27();
+  if(F27&&typeof SEA!=="undefined"&&SEA&&SEA.po)close27(u,SEA);   // engine 27: the season's books closed, before anyone moves (28_money)
   if(typeof SEA!=="undefined"&&SEA&&SEA.po&&SEA.po.PL){
     NAMES.forEach(t=>SEA.seasonResult(t));                 // freeze every club's season first
     u.conf=u.conf||{}; NAMES.forEach(t=>{if(!u.conf[t])u.conf[t]=CONF[t]});
@@ -279,6 +282,13 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       P[hi].down.forEach(t=>move[t]=lo); P[lo].up.forEach(t=>move[t]=hi) });
     P.NN.up.concat(P.NS.up).forEach(t=>move[t]="NL");
     P.NL.down.forEach(t=>move[t]=(LEAGUE.region[t]==="S"?"NS":"NN"));
+    if(F27){ // engine 27: the parachute's clock and the relegation clause (28_money)
+      u.para=u.para||{}; u.plY=u.plY||{};
+      Object.keys(u.para).forEach(t=>{ u.para[t].k++; if(u.para[t].k>2)delete u.para[t] });
+      NAMES.forEach(t=>{ if(CONF[t]==="PL")u.plY[t]=(u.plY[t]==null?2:u.plY[t]+1) });
+      P.PL.down.forEach(t=>{ u.para[t]={y:u.year,k:0,long:(u.plY[t]||2)>1}; delete u.plY[t];
+        (u.roster[t]||[]).forEach(p=>{ if(p&&p.k)p.k.sal=Math.round(p.k.sal*M27.relWage*1000)/1000 }) });
+      Object.keys(move).forEach(t=>{ if(move[t]==="PL"){ delete u.para[t]; u.plY[t]=0 } }) }
     Object.keys(move).forEach(t=>{ u.conf[t]=move[t]; if(move[t]==="PL")delete u.chute[t] });
     // keep North and South at 24, as the FA does: move a club on the border
     // (the Midlands) across, not one of the relegated
@@ -317,6 +327,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     if(u.alumni[t].length>40){u.alumni[t].sort((a,b)=>b.peak-a.peak);u.alumni[t].length=40}
   };
 
+  if(F27)loanBack27(u,rep,pool,leave);   // engine 27: the season's loans end (28_money)
   NAMES.forEach(t=>{
     const before=u.program[t], c=u.coach[t], R=u.roster[t], ch=chFor(t);
     const plan=(ch&&ch.resign)?ch.resign:nflResignPlan(R,budgetOf(u,t));
@@ -328,6 +339,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     for(let i=0;i<R.length;i++){
       const p=R[i]; if(!p)continue;
       p.yrsHere=(p.yrsHere||0)+1;
+      if(F27&&p.amY>0)p.amY--;                              // engine 27: a year of his fee written off
       if(p.k.yrs>1){p.k.yrs--;continue}
       const ask={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)};
       const keep=!!plan[i];
@@ -345,7 +357,8 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const base=E26?ageBase26(a):a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(ocq+dcq)*0.01;                      // both ends: both assistants
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      const mu=base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0);
+      const mu=base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0)+(F27&&p.loanGot?LOAN_DEV[p.loanGot]||0:0);
+      if(p.loanGot)delete p.loanGot;
       const LEAP=+((typeof process!=="undefined"&&process.env&&process.env.NBA_LEAP)||0.07);
       if(E26)develop26(u,p,a,mu,rng,{leap:LEAP,floor:20, step:12});   // engine 26: a breakout reveals his ceiling, never past it or 99 (core 20_engine)
       else{
@@ -380,9 +393,12 @@ function nflRun(u,rng,healthy,elo,rec,choices){
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
 
   // the transfer window: your sales, then your bids (27_transfers.js)
-  rep.transfers={};
+  rep.transfers={}; rep.humans=Object.keys(U_CH);
   Object.keys(U_CH).forEach(t=>{ if(u.roster[t])tWindow(u,t,U_CH[t]||{},rep,pool,leave,prog0) });
   NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}}));
+  if(F27){ market27(u,rep,pool,leave,prog0,Object.keys(U_CH));   // engine 27: the computer's clubs buy and sell (28_money)
+    loans27(u,rep,pool,leave,U_CH);
+    NAMES.forEach(t=>POS.forEach((_,i)=>{const R=u.roster[t]; if(!R[i]&&R[BK(i)]){R[i]=R[BK(i)];R[BK(i)]=null}})) }
 
   // 4. the academy: English football has no draft. Each club brings through
   // one or two youngsters (17-19), better at bigger clubs; they join as
@@ -392,7 +408,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
     const R=u.roster[t], n=1+(rng.r()<0.5?1:0), base=eloToRating(u.program[t]||1500);
     for(let k=0;k<n;k++){
       const i=rng.int(POS.length), p=nflPlayer(rng,base-rng.range(6,12),17+rng.int(3),i);
-      p.pot=Math.min(99,Math.round(p.r+rng.range(8,20))); p.k={sal:0.5,yrs:3}; p.joined=u.year+1; p.academy=true;
+      p.pot=Math.min(99,Math.round(p.r+rng.range(8,20))); p.k={sal:0.5,yrs:3}; p.joined=u.year+1; p.academy=true; if(F27)p.hg=1;
       const made=nflGain(R,p)>0.6||!R[p.i]||!R[BK(p.i)];
       if(made){const out=nflPlace(R,p); if(out){rep.released[t].push({n:out.n,p:out.p,r:out.r,why:"academy",sal:(out.k&&out.k.sal)||0});
         if(out.r>=58){out.from=t;pool.push(out)} else leave(t,out,"released")}}
@@ -510,9 +526,10 @@ LEAGUE.offseason={
     const R=u.roster[t], resign=nflResignPlan(R,budgetOf(u,t)), asks={};
     R.forEach((p,i)=>{if(p&&p.k.yrs<=1)asks[i]={sal:nflAsk(p.r,p.p,p.age+1),yrs:nflYears(p.age+1,p.p)}});
     nflDraftClass(u,t);                              // made now, so the screen can show it
-    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null, bids:[], sales:[], kitty:tKitty(u,t,payroll(R))}};
+    if(fo27()&&typeof SEA!=="undefined"&&SEA&&SEA.phase==="done")close27(u,SEA);   // engine 27: the season's books, before the kitty is read
+    return {pool:NFL_CAP, picks:{resign:resign, asks:asks, fa:"balanced", draft:"bpa", board:[], targets:[], block:null, trade:null, bids:[], sales:[], kitty:(fo27()&&kitty27(u,t,tNextConf(t))!=null)?kitty27(u,t,tNextConf(t)):tKitty(u,t,payroll(R))}};
   },
-  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null, bids:P.bids||[], bidTerms:P.bidTerms||{}, sales:P.sales||[], kitty:P.kitty}},
+  choices(P){return {resign:P.resign, fa:P.fa, draft:P.draft, board:P.board||[], targets:P.targets||[], trade:P.trade||null, bids:P.bids||[], bidTerms:P.bidTerms||{}, sales:P.sales||[], kitty:P.kitty, loans:P.loans||[], loansIn:P.loansIn||[]}},
   faStyles:{contend:{l:"Spend to contend",d:"Free transfers: the best available, whatever their age. Uses nearly all the wage budget."},
             balanced:{l:"Balanced",d:"Free transfers: fill real holes with players in their prime. Leaves a little room."},
             young:{l:"Stay young",d:"Free transfers: only players 27 and under, and keep wage room for later."}},

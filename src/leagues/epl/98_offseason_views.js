@@ -105,6 +105,7 @@ function nflTargetsHTML(P,room){
    order, checked against the money and the wage budget as they stand), and
    the market at each position: players who'd improve you, and whether they'd come. */
 function tWindowHTML(P){
+  if(typeof fo27==="function"&&fo27())return tWindowHTML27(P);   // engine 27: the window you negotiate (99_fo)
   const my=S.myTeam, H=nflHumans(), pay=nflPlannedPay();
   const offers=tOffers(U,my,H), sales=P.sales||[], salesIn=sales.reduce((a,o)=>a+o.fee,0);
   const kitty=(P.kitty!=null?P.kitty:tKitty(U,my,payroll(U.roster[my])))+salesIn, carry=(U.kitty&&U.kitty[my])||0;
