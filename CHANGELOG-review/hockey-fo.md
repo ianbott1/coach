@@ -150,7 +150,7 @@ limit, no floor, no restricted free agents, no entry-level deals, no buyouts, no
 
 ## Tests run (this branch)
 - `node test/hockey-fo.js` (20 seasons, seed 11): MATCH (also seeds 3 and 7 for 20 seasons while tuning).
-- `OLD=/home/claude/dist-e26 node test/engine-replay.js`: MATCH for all seven games.
+- `OLD=/home/claude/dist-e26 node test/engine-replay.js`: MATCH for all seven games ("an older season replays as it was played").
 - `test/reload.js dist/hockey-coach-pro.html`: MATCH 18 of 18 reloads. `test/saves.js`: MATCH. `test/migrate.js`:
   MATCH 2253 of 2253 checks.
 - `node test/boxscores.js hockey`: one band misses on its one seeded season, 50-goal men 15 against a band of 0-14
@@ -164,7 +164,11 @@ limit, no floor, no restricted free agents, no entry-level deals, no buyouts, no
   penalty (53'); MATCH with ENGINE_NOW=26. The game day draws each five-minute spell on its own, so a spell's
   even-strength goals can land inside a power play begun late in the spell before (src/hockey/50_game.js). The
   deeper roster moves the season's dice onto it; the game day itself is unchanged here.
-- `test/longrun.js --short`: see the report.
+- `test/longrun.js --short`: MISMATCH, one band: hockey's top goal scorer (late) 76.0 against 45-72; every other band in
+  all seven games ok. The --short run is one six-season career. Three careers each (`longrun.js nhl --short
+  --careers 3`): engine 26 averages 70.2, engine 27 72.1, so the shift is a couple of goals at most, on a band
+  engine 26 already sits near the top of. Goals a game are unchanged (6.4). Not tuned here: the leaders' share is
+  the game day's (src/hockey), and the band is the brief's to keep.
 
 ## Files
 - New: `src/leagues/nhl/24_hkcap.js`, `27_hkrun.js`, `28_hkviews.js`, `29_hktrades.js`, `test/hockey-fo.js`.
