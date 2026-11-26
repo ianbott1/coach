@@ -162,6 +162,11 @@ function pbRescale(){ const P=live&&live.pb; if(!P||live.done||!P.d||typeof HL_S
     delete d._ev; const n=hlEvPlan(live,d), q2=n.seg[i]||n.seg[n.seg.length-1]; el2=q2.at+t*q2.ms; ms2=n.tot }
   else { const m=HL_SPORT.playback(live,d,P.from,P.to); if(!m)return; el2=el/Math.max(1,P.ms)*m; ms2=m }
   P.ms=ms2; if(P.frozen!=null)P.frozen=el2; else { P.at=Date.now()-el2; if(live.timer&&!live.paused){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.max(0,ms2-el2)) } } }
+/* round 111 (Muse: "the live scoreboard read 22-10 at 13:02 while Run of Play already listed 29-13 at 10:00"): the run of
+   play lists what the screen has shown, not the stretch still playing or the ones held behind it */
+function liveShown(){ if(typeof live==="undefined"||!live)return []; let n=live.drives.length;
+  if(!live.done){ if(live.pb&&live.pb.d){ const i=live.drives.indexOf(live.pb.d); if(i>=0)n=Math.min(n,i) } if(live.hold&&typeof live.hold.n==="number")n=Math.min(n,live.hold.n) }
+  return live.drives.slice(0,n) }
 function pbOn(){ return typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan() }
 function pbFrom(d){ const S0=live.pbSeen; return S0&&S0.seg===d.seg?S0.n:0 }
 function pbScoreAt(d,i,h,a){ const q=i>0&&d.pl&&d.pl[i-1]; return q&&q.h!=null?[q.h,q.a]:[h,a] }

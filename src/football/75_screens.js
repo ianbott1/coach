@@ -164,7 +164,7 @@ function liveScoreboard(){
 
 function liveView(){
   const g=live.g, my=S.myTeam;
-  const last=live.drives[live.drives.length-1]||null;
+  const shown=liveShown(), last=shown[shown.length-1]||null;   // round 111: the drives the screen has shown
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   const OUT={TD:"TD",FG:"FG",PUNT:"PUNT",DOWNS:"DOWNS",MISS:"NO GOOD",INT:"INT",FUM:"FUMBLE"};
   const ballOf=d=>{const end=d.pts>0?100:Math.min(95,d.start+18);
@@ -176,7 +176,7 @@ function liveView(){
     ${typeof HL!=="undefined"&&HL.foot&&HL.footG===g&&!live.done?`<div class="fpos">${esc(HL.foot)}</div>`:last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started ${fbYd(last.start)}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
     <div class="grouphead">Drive chart</div>
-    <div class="plays">${live.drives.slice().reverse().map(d=>{
+    <div class="plays">${shown.slice().reverse().map(d=>{
       const tm=d.home?g.home:g.away;
       return `<div class="play ${tm===my?'mine':''}">
         <span class="pq">Q${d.q} &middot; ${d.n}</span>
