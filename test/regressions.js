@@ -640,16 +640,16 @@ for(const [f,team] of [['basketball-coach-pro.html','Orlando'],['soccer-coach.ht
       ok(lines[p]===want,`${f} ${tm}: under ${p} a plan line ${lines[p]?'shows':'is missing'} (fits ${PL.map(q=>q+' '+fit[q].toFixed(1)).join(', ')})`) });
     console.log(`  ${f} ${tm}: chance ${PL.map(p=>shown[p]).join(' / ')}; fit ${PL.map(q=>fit[q].toFixed(1)).join(' / ')} Elo; with the plan's own worth ${PL.map(q=>pe[q].toFixed(1)).join(' / ')}`) }
   console.log(`  plan fit: the chance moved for ${moved} rosters, a plan line showed ${lined} times`) }
-/* 79. the chance before a game is the engine's, from the lineup you picked: a backup started moves it as much as it
+/* 79. the chance before a game is the engine's, from the lineup you picked (engine 27: with both clubs' weekly game plans in college football): a backup started moves it as much as it
    moves the game (Muse: 12% -> 12% with a point guard 26 worse; the game charged it in full), on every screen */
 for(const [f,team] of [['basketball-coach-pro.html','Detroit'],['basketball-coach.html','Duke'],['football-coach.html','Alabama'],['soccer-coach.html','Arsenal'],['hockey-coach-pro.html','Toronto']]){
-  const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','wpScale','cpuPlanOf','sportPlanFit','sportPlanFitC','sportPlanShift','ENGINE_V'])}); A.newDynasty(team,11,'T');
+  const A=load({settable:SET,file:D(f),expose:EXP.concat(['winProb','swapDepth','BK','wpScale','cpuPlanOf','sportPlanFit','sportPlanFitC','sportPlanShift','ENGINE_V','sportPlanDayEdge'])}); A.newDynasty(team,11,'T');
   for(let i=0;i<3;i++)A.SEA.advance();
   const my=A.S.myTeam, g=A.SEA.sched.find(x=>x.week>=A.SEA.step&&(x.home===my||x.away===my)); if(!g)continue;
   const opp=g.home===my?g.away:g.home, home=g.home===my;
   // round 89 (engine 12): the computer's club plays the plan its roster suits, and the game charges that fit
   const oppFit=()=>{ if(typeof A.cpuPlanOf!=='function')return 0; const e=A.SEA.matchupElo(g,'balanced'), d=home?e.h-e.a:e.a-e.h, op=A.cpuPlanOf(opp,-d); return op==='balanced'?0:(A.sportPlanFitC||A.sportPlanFit)(opp,op)+(A.ENGINE_V>=15&&A.sportPlanShift?A.sportPlanShift(op,-d):0) };   // round 92: and that plan's own worth at their gap
-  const eng=()=>{ A.SEA.userTeam=my; const e=A.SEA.matchupElo(g,'balanced'), d=(home?e.h-e.a:e.a-e.h)-oppFit(); return 1/(1+Math.pow(10,-d/A.wpScale('balanced'))) };
+  const eng=()=>{ A.SEA.userTeam=my; const e=A.SEA.matchupElo(g,'balanced'), pd=typeof A.sportPlanDayEdge==='function'?A.sportPlanDayEdge(g.home,g.away,e.h-e.a):0, d=(home?e.h-e.a:e.a-e.h)-oppFit()+(home?pd:-pd); return 1/(1+Math.pow(10,-d/A.wpScale('balanced'))) };
   const R=A.SEA.roster[my]; let bi=-1,gap=0; for(let i=0;i<A.POS.length;i++){ const a=R[i],b=R[A.BK(i)]; if(a&&b&&a.r-b.r>gap){gap=a.r-b.r;bi=i} }
   const w0=A.winProb(my,opp,home,g.neutral); ok(Math.abs(w0-eng())<1e-9,`${f}: the chance shown (${w0.toFixed(3)}) isn't the engine's (${eng().toFixed(3)})`);
   A.swapDepth(A.SEA,bi); const w1=A.winProb(my,opp,home,g.neutral);

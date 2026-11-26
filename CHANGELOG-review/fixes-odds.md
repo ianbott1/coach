@@ -90,3 +90,7 @@ undercounting tonight's starter on engine 27; soccer was game text. Everything t
 - Engine-26 baseball seasons keep the starter at 853 a unit (their games are as they were played).
 - Not run here: the rest of `test/regressions.js` (only sections 37 and 69, the failing ones, were run on the final
   build), `test/run-all.js`, and the browser tests that need Playwright's Chromium.
+
+## Follow-up: check 79 counts the weekly game plan
+
+The merged build's full `test/regressions.js` run showed two more college football failures in check 79 ("the chance shown is the engine's"): the check rebuilt the engine's chance without the weekly game-plan edge that the chance now counts on engine 27. The check now adds `sportPlanDayEdge` the way `gameEdge` does. Test only; no result moves. Check 79 run alone: 10 of 10.
