@@ -48,8 +48,8 @@ function hkResignPlan(u,t,R,aim){
 /* a buyout the computer makes: an older man paid far over what he's worth now, with years left; the cap he frees has
    to buy a better man (one a summer at most) */
 function hkCpuBuyout(u,t,R){
-  let best=null; R.forEach((p,i)=>{ if(!p||p.k.elc||p.k.yrs<3||p.age<29)return;
-    const over=p.k.sal-hkAsk(p.r,p.age+1); if(over<3||over<p.k.sal*0.45)return;
+  let best=null; R.forEach((p,i)=>{ if(!p||p.k.elc||p.k.yrs<3||p.age<28)return;
+    const over=p.k.sal-hkAsk(p.r,p.age+1); if(over<2||over<p.k.sal*0.35)return;
     if(!best||over>best.over)best={i:i,over:over} });
   return best?[best.i]:[] }
 /* a qualified restricted man's deal: long (buying his free-agent years, near his market) if he's young and good, else
@@ -297,7 +297,7 @@ function hkRun(u,rng,healthy,elo,rec,choices){
   NAMES.forEach(t=>{ const R=u.roster[t]; let g=0;
     while(hkCapHit(u,t,R)+hkFill(R)<HK$.floor&&g++<6){ const short=HK$.floor-hkCapHit(u,t,R)-hkFill(R);
       const p=pool.filter(x=>!x.signed).sort((a,b)=>hkGain(R,b)-hkGain(R,a))[0]; if(!p)break;
-      const sal=hk2(Math.max(p.ask,Math.min(HK$.max,short+HK$.min))); sign({t:t,p:p,sal:sal,yrs:1},HK_FAD) } });
+      const sal=hk2(Math.max(p.ask,Math.min(HK_TOP*0.6,short+HK$.min))); sign({t:t,p:p,sal:sal,yrs:1},HK_FAD) } });
   pool.filter(p=>!p.signed).forEach(p=>leave(p.from,p,"unsigned"));
   NAMES.forEach(t=>u.roster[t].forEach(p=>{ if(p){ delete p.keep; delete p.aged } }));
 
@@ -307,7 +307,7 @@ function hkRun(u,rng,healthy,elo,rec,choices){
     L.slice().sort((a,b)=>b.r-a.r).forEach(p=>{ const k=POS.findIndex(P=>P.p===p.p), S=hkSlots(k), last=S.map(j=>R[j]);
       const open=last.indexOf(null)>=0, worst=last.filter(Boolean).sort((a,b)=>a.r-b.r)[0];
       if(p.r<46||!(open&&p.r>=48||worst&&p.r>worst.r+1))return;
-      if(!p.k)p.k={sal:hkElcSal(p.draft&&p.draft.overall),yrs:hkElcYrs(p.age),v:3,elc:1};
+      if(!p.k||p.k.v!==3)p.k={sal:hkElcSal(p.draft&&p.draft.overall),yrs:hkElcYrs(p.age),v:3,elc:1};
       if(hkCapHit(u,t,R)+hkFill(R)-(open?HK$.min:worst.k.sal)+p.k.sal>HK$.cap)return;
       L.splice(L.indexOf(p),1); p.joined=u.year+1; p.yrsHere=0; delete p.two;
       const out=hkPlace(R,p); rep.up[t].push({n:p.n,p:p.p,r:p.r,age:p.age});
@@ -318,8 +318,8 @@ function hkRun(u,rng,healthy,elo,rec,choices){
       rep.filled[t].push({n:p.n,p:p.p,r:p.r}) }
     // opening night: every club cap-compliant. Still over, the worst value below the top twelve is waived and a man
     // signed for the minimum takes his place
-    for(let g=0;g<8&&hkCapHit(u,t,R)>HK$.cap+0.001;g++){ let wi=-1,wv=0;
-      R.forEach((p,i)=>{ if(!p||i<2*POS.length||p.k.sal<=HK$.min+0.001)return; const v=(p.k.sal-HK$.min)/Math.max(1,p.r-38); if(v>wv){wv=v;wi=i} });
+    for(let g=0;g<16&&hkCapHit(u,t,R)>HK$.cap+0.001;g++){ let wi=-1,wv=0;
+      for(const lo of [2*POS.length,POS.length]){ R.forEach((p,i)=>{ if(!p||i<lo||p.k.sal<=HK$.min+0.001)return; const v=(p.k.sal-HK$.min)/Math.max(1,p.r-38); if(v>wv){wv=v;wi=i} }); if(wi>=0)break }
       if(wi<0)break; const out=R[wi]; rep.released[t].push({n:out.n,p:out.p,r:out.r,cap:true,why:"waived"}); leave(t,out,"waived");
       const p=nflPlayer(rng,44+rng.range(0,4),24+rng.int(9),wi%POS.length); hkService(p); p.k={sal:HK$.min,yrs:1,v:3}; p.joined=u.year+1; R[wi]=p;
       rep.filled[t].push({n:p.n,p:p.p,r:p.r}) }
@@ -357,7 +357,7 @@ function hkPlaceDraft(u,DN,rep,pool,leave){
     const made=p.r>=52&&(!worst||p.r>worst.r+2||S.some(j=>!R[j]));
     if(made){ p.k={sal:hkElcSal(d.overall),yrs:hkElcYrs(p.age),v:3,elc:1}; const o=hkPlace(R,p);
       if(o){ rep.released[t].push({n:o.n,p:o.p,r:o.r,why:"draft"}); if(o.r>=HK_POOLR){ o.from=t; pool.push(o) } else leave(t,o,"released") } }
-    else (u.hkRes[t]=u.hkRes[t]||[]).push(p);
+    else { p.k=null; (u.hkRes[t]=u.hkRes[t]||[]).push(p) }   // his rights held: no contract yet
     rep.drafted[t].push({n:p.n,p:p.p,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made});
     out.push({n:p.n,p:p.p,team:t,r:p.r,pot:p.pot,from:p.from,d:p.draft,made:made,pid:p.pid});
   });

@@ -73,5 +73,27 @@ ok(Z.yrsMax<=7,`no contract longer than seven years (longest ${Z.yrsMax})`);
 ok(avg(Z.os)<=3,`offer sheets ${avg(Z.os).toFixed(2)} a summer (real about one)`);
 ok(avg(Z.buy)>=1&&avg(Z.buy)<=20,`buyouts ${avg(Z.buy).toFixed(1)} a summer (real about 5-15)`);
 ok(sd>=12&&sd<=18,`standings points sd ${sd.toFixed(1)} (NHL about 14)`);
-console.log(bad?`MISMATCH ${bad}`:'MATCH the front office keeps the real league\'s cap sheets');
-process.exit(bad?1:0);
+
+/* a career begun on engine 26: its season and summer go as they went (twelve men, the old $90M limit); the next season
+   is on engine 27 but keeps the old rules until its summer, which brings the career onto the front office's */
+(async()=>{
+  const season=B=>{ let g=0; while(B.SEA.phase!=='done'&&g++<900)B.SEA.advance() };
+  const summer=B=>{ B.openOffseason(); for(let c=0;c<4;c++){ if(!B.S.off)break; if(B.S.off.act.userOpen&&B.S.off.move===null)B.S.off.move=B.S.myTeam; B.commitOffseason() } };
+  for(let i=0;i<20;i++)await new Promise(r=>setImmediate(r));   // the first career's saves land in its own storage first
+  // golden.js's loader: its loadSave goes through the game's own load path
+  const gsrc=require('fs').readFileSync(path.join(__dirname,'golden.js'),'utf8');
+  const mk=()=>{ const m={exports:{}}; new Function('require','module',gsrc.slice(0,gsrc.indexOf('const args'))+'\nmodule.exports={load};')(require,m); return m.exports.load(FILE) };
+  process.env.ENGINE_NOW='26'; const O=mk(); process.env.ENGINE_NOW='';
+  O.newDynasty('Boston',5,'T');
+  const B=mk(); await B.loadSave(JSON.stringify(O.S));
+  const hit=t=>B.U.roster[t].reduce((s,p)=>s+(p?p.k.sal:0),0)+(((B.U.hkDead||{})[t])||[]).reduce((s,d)=>s+d.sal,0);
+  ok(!B.U.hkFO&&B.U.engV===26,'an engine-26 save loads on its old rules');
+  season(B); summer(B);
+  ok(!B.U.hkFO&&B.NAMES.every(t=>B.U.roster[t].length===12)&&B.LEAGUE_CAP()===90,`its summer goes as before: twelve men, the $${B.LEAGUE_CAP()}M limit`);
+  ok(B.U.engV===27,'its next season is on engine 27');
+  season(B); summer(B);
+  ok(B.U.hkFO&&B.NAMES.every(t=>B.U.roster[t].length===23&&B.U.roster[t].every(p=>p&&p.k&&p.k.v===3)),'its first engine-27 summer brings it onto the front office: twenty-three under contract');
+  const hits=B.NAMES.map(hit);
+  ok(hits.every(c=>c<=CAP+0.01&&c>=H.floor-0.01),`every club between the floor and the cap after it ($${Math.min(...hits).toFixed(1)}M to $${Math.max(...hits).toFixed(1)}M)`);
+  console.log(bad?`MISMATCH ${bad}`:'MATCH the front office keeps the real league\'s cap sheets');
+  process.exit(bad?1:0) })();
