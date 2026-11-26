@@ -1,5 +1,5 @@
 {
- "fp": "3d45da509d39d7b9",
+ "fp": "dff8646687a39947",
  "log": [
   {
    "fp": "ed5aedc9bd02de30",
@@ -145,21 +145,26 @@
    "fp": "3d45da509d39d7b9",
    "from": "3d45da509d39d7b9",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "dff8646687a39947",
+   "from": "3d45da509d39d7b9",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Arsenal#1": [
    {
     "year": 2026,
-    "games": "a535b50304cdfe00",
-    "post": "cec788ef4c6c0e4b",
-    "champion": "Arsenal",
-    "rec": "cf8f89d31ccebf68",
-    "poll": "1654660bd2888ced",
-    "heis": "065f6e734e9dbdc7",
-    "history": "8526fe2171a3e13d",
-    "universe": "d44bd69fe2f99477",
-    "screens": "7228f63e8e312633"
+    "games": "1fd83e2bd664825d",
+    "post": "80479a984693125a",
+    "champion": "Manchester United",
+    "rec": "e77fed74c16f7deb",
+    "poll": "c0bd2a6b4af2fb30",
+    "heis": "14750437202280fd",
+    "history": "245f770158caacfa",
+    "universe": "cea8e6101522d5b6",
+    "screens": "6aaed722684ad597"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "c81a35489f0479ac",
+ "fp": "fb5be3f201059a15",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -130,21 +130,26 @@
    "fp": "c81a35489f0479ac",
    "from": "c81a35489f0479ac",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "fb5be3f201059a15",
+   "from": "c81a35489f0479ac",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
-    "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "games": "8ae967571dc98874",
+    "post": "ef42f5910387dea0",
+    "champion": "Kentucky",
+    "rec": "f3898e52f269a393",
+    "poll": "0863a3f3eaf37450",
+    "heis": "748bf7ff93096a2f",
+    "history": "a12f75cc4c556c8c",
+    "universe": "776159ab6135149b",
+    "screens": "978992fb5498f323"
    }
   ]
  }

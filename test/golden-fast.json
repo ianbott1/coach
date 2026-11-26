@@ -1,5 +1,5 @@
 {
- "fp": "30c6ece58cf32d78",
+ "fp": "c2f41bc5900cccb7",
  "log": [
   {
    "fp": "8832b5880900579a",
@@ -145,21 +145,26 @@
    "fp": "30c6ece58cf32d78",
    "from": "30c6ece58cf32d78",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "c2f41bc5900cccb7",
+   "from": "30c6ece58cf32d78",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Alabama#1": [
    {
     "year": 2026,
-    "games": "1dede2795cb4e7ad",
-    "post": "9415b158a2c02390",
-    "champion": "Ohio State",
-    "rec": "fdad2e3cad9aef25",
-    "poll": "b598e68e8e87dfc2",
-    "heis": "c15cc548db28d6ea",
-    "history": "103a796d2863e60b",
-    "universe": "1b20d91c1b4f9bc1",
-    "screens": "97bd0fa8c835b056"
+    "games": "33ff58d2235bac2f",
+    "post": "4c0880218fe8bcca",
+    "champion": "Texas",
+    "rec": "896ddaae6d2ea66c",
+    "poll": "219ddeff7e045c94",
+    "heis": "ddb36b0e16ce96bb",
+    "history": "59281e2ee81b57cd",
+    "universe": "fb84e015b256c78a",
+    "screens": "5b1be7f68b2a9628"
    }
   ]
  }

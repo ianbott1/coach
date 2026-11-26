@@ -1,5 +1,5 @@
 {
- "fp": "b67133ff4419ea04",
+ "fp": "5bc2221a6b1e47e0",
  "log": [
   {
    "fp": "4b280136fbac3641",
@@ -135,21 +135,26 @@
    "fp": "b67133ff4419ea04",
    "from": "b67133ff4419ea04",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "5bc2221a6b1e47e0",
+   "from": "b67133ff4419ea04",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "466eba38045fb0ae",
-    "post": "51a7b9ee928aa9fa",
-    "champion": "Boston",
-    "rec": "aa929acbb3d41009",
-    "poll": "f7d6b103e4e40c76",
-    "heis": "2c98bc6f5fc13050",
-    "history": "238e72fb17299dd5",
-    "universe": "ab0d577291777efc",
-    "screens": "d2b4364c464bd3a4"
+    "games": "a5df5b376c07c33d",
+    "post": "d2185ee4cfa3cc16",
+    "champion": "Oklahoma City",
+    "rec": "df5f73ffe32be961",
+    "poll": "8025929176a26004",
+    "heis": "cdd8e3f6bfb7201e",
+    "history": "ecfc2d5ecae3f35d",
+    "universe": "2f8960d0fb11f132",
+    "screens": "9f29f2b9c5e9c183"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "55b61b4531d1e1c8",
+ "fp": "2acf046a2a38e0a8",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -160,21 +160,26 @@
    "fp": "55b61b4531d1e1c8",
    "from": "55b61b4531d1e1c8",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "2acf046a2a38e0a8",
+   "from": "55b61b4531d1e1c8",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b375b5824914dfb",
-    "post": "2ce5cd62c82d3d44",
-    "champion": "Columbus",
-    "rec": "55f305fef7c7b9eb",
-    "poll": "3930f4d04e8ea79e",
-    "heis": "cb6ffd0cc49ff6af",
-    "history": "fa786d72b291d325",
-    "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "games": "d97d97d72c33ad05",
+    "post": "821b3017ed442479",
+    "champion": "Toronto",
+    "rec": "ae5a99a634ae26b6",
+    "poll": "22a42b9654143cfd",
+    "heis": "c7d069560a15593d",
+    "history": "e5cc56d45198ccca",
+    "universe": "849fa650d96b5356",
+    "screens": "c59f8cd41e62356e"
    }
   ]
  }

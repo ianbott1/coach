@@ -1,5 +1,5 @@
 {
- "fp": "45cff08c498c4f41",
+ "fp": "34c762b7beebe588",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -615,85 +615,90 @@
    "fp": "45cff08c498c4f41",
    "from": "45cff08c498c4f41",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "34c762b7beebe588",
+   "from": "45cff08c498c4f41",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Duke#1": [
    {
     "year": 2026,
-    "games": "271351c39fadc282",
-    "post": "b69d4c7aab97e870",
-    "champion": "Virginia",
-    "rec": "1d0e5919d6b8fe14",
-    "poll": "2a55a0cfd29942e4",
-    "heis": "dd994c11b697e524",
-    "history": "21cc7906f23c649c",
-    "universe": "cda6df899c20e613",
-    "screens": "e5c6d88bb39fe44b"
+    "games": "8ae967571dc98874",
+    "post": "ef42f5910387dea0",
+    "champion": "Kentucky",
+    "rec": "f3898e52f269a393",
+    "poll": "0863a3f3eaf37450",
+    "heis": "748bf7ff93096a2f",
+    "history": "a12f75cc4c556c8c",
+    "universe": "776159ab6135149b",
+    "screens": "978992fb5498f323"
    },
    {
     "year": 2027,
-    "games": "8b71fa244157a983",
-    "post": "d8420014f6a573a7",
-    "champion": "Kansas",
-    "rec": "cb0c3ecc030bed49",
-    "poll": "6104f50439b52067",
-    "heis": "28a248eac8caf373",
-    "history": "1cfe3e490fe2066c",
-    "universe": "1201eb0eed5137f3",
-    "screens": "f9ad6f1d8fef3b6a"
+    "games": "0987e6b880645a2e",
+    "post": "dc4a134850b27f5c",
+    "champion": "Kentucky",
+    "rec": "4538d5b10276017c",
+    "poll": "676db4a6f4fc1cce",
+    "heis": "bc5b7fbb65d276af",
+    "history": "15218e37c457433a",
+    "universe": "660a2ec487ceffb1",
+    "screens": "80fd235bc4214833"
    }
   ],
   "Coppin State#2024": [
    {
     "year": 2026,
-    "games": "579ab9b17a5abc4e",
-    "post": "fbe3aca85b0afff3",
+    "games": "2b86f45cb9e762d8",
+    "post": "a3937ca3340311b7",
     "champion": "Kansas",
-    "rec": "41226e6462dc1cff",
-    "poll": "26edc4b624e67dc9",
-    "heis": "942c9abdaed040d4",
-    "history": "df81ab6f6095ef61",
-    "universe": "c8dd6c65cf73eba9",
-    "screens": "c039db1878c5348d"
+    "rec": "4e0c1e0e5e4cf040",
+    "poll": "bd87714480bed886",
+    "heis": "621cb7370928fe2f",
+    "history": "7636d64a74581d0d",
+    "universe": "347be5907855b53e",
+    "screens": "95d9e63b029fff6b"
    },
    {
     "year": 2027,
-    "games": "0bf3825a8491afed",
-    "post": "af8b5d5ec45a2356",
-    "champion": "Tennessee",
-    "rec": "5c8ec1099f2db11c",
-    "poll": "9a4ecb50cbc55f8a",
-    "heis": "ef6bde742321790a",
-    "history": "29b9279493cb5e15",
-    "universe": "aed5cccc2bc23039",
-    "screens": "6661cbd84ab5b719"
+    "games": "e1851e5703a45280",
+    "post": "a13615cbaf16aa99",
+    "champion": "Arizona",
+    "rec": "2311bb60aad89dd8",
+    "poll": "50fd595e0b7e46f3",
+    "heis": "2e423890091e41ca",
+    "history": "1b1f964d9f74e1c8",
+    "universe": "c84fe8278d8b24ef",
+    "screens": "9513fb3f02d8401f"
    }
   ],
   "Gonzaga#777": [
    {
     "year": 2026,
-    "games": "d8345ccdb39e7f1a",
-    "post": "fa9101419af9ee3d",
-    "champion": "Illinois",
-    "rec": "da7875b27f313df1",
-    "poll": "dbdd18f0523ce927",
-    "heis": "1ae6b7cab1508080",
-    "history": "19307abf6ac1bf1f",
-    "universe": "2f83e65e774c7024",
-    "screens": "c462ef207c623d03"
+    "games": "92e254471fad8a57",
+    "post": "cea1f638898ed554",
+    "champion": "North Carolina",
+    "rec": "f8b9d97be8c1d382",
+    "poll": "ab4cebd5a5cb725e",
+    "heis": "dc1d32a9b51d9acc",
+    "history": "0cd8ac0a69510608",
+    "universe": "e86fd80000316167",
+    "screens": "c7a57ceecd47c00c"
    },
    {
     "year": 2027,
-    "games": "ef9cef075f497453",
-    "post": "cb8e62f02ff87475",
-    "champion": "Michigan",
-    "rec": "38fb16f56e37e8b3",
-    "poll": "2acaa39089e082dd",
-    "heis": "f92ecd8e6f821427",
-    "history": "5d5d55ca8c20f031",
-    "universe": "662e2b7be7041649",
-    "screens": "a0e58cf0897d88d4"
+    "games": "474ea7800d5c0910",
+    "post": "95d6bbaecc593cbc",
+    "champion": "Illinois",
+    "rec": "47158f9c448a8be4",
+    "poll": "841c10333477b51d",
+    "heis": "5135c66960bd4ce0",
+    "history": "ee0cd58a1b39ed08",
+    "universe": "ae9dea0cd9669808",
+    "screens": "4e17dc884be0ed4c"
    }
   ],
   "schedules#60": [

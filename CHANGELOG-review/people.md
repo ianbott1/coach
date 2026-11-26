@@ -88,9 +88,34 @@ character aside; toggling the setting swaps names both ways.
 
 ## Goldens
 
-Re-recorded deliberately for all seven games (fast and full), with notes: engine 25's morale and crowd edge changes
-results; the team card, roster, player page, news and history rows show the people; the pro staff rooms speak as
-realistic staff. See the golden commit for the exact commands and fingerprints.
+Re-recorded deliberately for all seven games (fast and full, and the hot-seat fingerprints), with notes: engine 25's
+morale and crowd edge change results; the team card, roster, player page, news and history rows show the people; the
+pro staff rooms speak as realistic staff.
+
+Evidence that nothing else moved: with `PEOPLE_ON=0` (the layer off), the NBA fast golden's games, records, poll,
+awards and history equal round 110's, and its universe equals round 110's once `engV` (24 -> 25) is stripped
+(`STRIP=engV ... --fast --dump`: e953fd4864c412b6 on both builds); only `screens` differ. The NBA hot-seat fingerprint
+with `PEOPLE_ON=0` is round 110's exactly (d9c452b4879407ca).
+
+Commands: `node test/golden.js dist/<game>.html [--fast] --write --note "..."` and
+`node test/hotseat.js dist/<game>.html --write --note "..."`, one at a time.
+
+| golden | old -> new |
+|---|---|
+| golden-fast.json (cfb) | 30c6ece58cf32d78 -> c2f41bc5900cccb7 |
+| golden.json (cfb) | e16166e4f2373c43 -> d46abfb12035629a |
+| golden-fast-nfl | f214c1e9bd9f5025 -> 9370c2cda3faba15 |
+| golden-nfl | 2dadafc3c2ca9735 -> 7e8c4e25dfdb5f4b |
+| golden-fast-ncaab | c81a35489f0479ac -> fb5be3f201059a15 |
+| golden-ncaab | 45cff08c498c4f41 -> 34c762b7beebe588 |
+| golden-fast-nba | b67133ff4419ea04 -> 5bc2221a6b1e47e0 |
+| golden-nba | b0d4fc8493ebefae -> dd71d385f7ff168e |
+| golden-fast-nhl | 55b61b4531d1e1c8 -> 2acf046a2a38e0a8 |
+| golden-nhl | 5b5b8ddc7dd608c4 -> 9be5b4b9edfa25b8 |
+| golden-fast-epl | 3d45da509d39d7b9 -> dff8646687a39947 |
+| golden-epl | 970533ca1a8ba026 -> 77f8649b23529ebb |
+| golden-fast-mlb | b47ce354d7c745ac -> 2c4d08bcccb9ed43 |
+| golden-mlb | 1ebdddcc4e20204a -> c4c7acc5df5c46eb |
 
 ## Other tests run
 

@@ -1,5 +1,5 @@
 {
- "fp": "5b5b8ddc7dd608c4",
+ "fp": "9be5b4b9edfa25b8",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -630,59 +630,64 @@
    "fp": "5b5b8ddc7dd608c4",
    "from": "5b5b8ddc7dd608c4",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "9be5b4b9edfa25b8",
+   "from": "5b5b8ddc7dd608c4",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "4b375b5824914dfb",
-    "post": "2ce5cd62c82d3d44",
-    "champion": "Columbus",
-    "rec": "55f305fef7c7b9eb",
-    "poll": "3930f4d04e8ea79e",
-    "heis": "cb6ffd0cc49ff6af",
-    "history": "fa786d72b291d325",
-    "universe": "18a791ee655ca54a",
-    "screens": "63be25ea974c0253"
+    "games": "d97d97d72c33ad05",
+    "post": "821b3017ed442479",
+    "champion": "Toronto",
+    "rec": "ae5a99a634ae26b6",
+    "poll": "22a42b9654143cfd",
+    "heis": "c7d069560a15593d",
+    "history": "e5cc56d45198ccca",
+    "universe": "849fa650d96b5356",
+    "screens": "c59f8cd41e62356e"
    },
    {
     "year": 2027,
-    "games": "bf7968c9bf562981",
-    "post": "f3f35c7404a434b2",
-    "champion": "Toronto",
-    "rec": "f051de7537522d58",
-    "poll": "9e1437b4306e21ad",
-    "heis": "5ed6f299aaee8f70",
-    "history": "7f2db36e6a75c3ca",
-    "universe": "87bd4428c7b36740",
-    "screens": "5857e2088a822e0d"
+    "games": "ada8e12038dfb3a9",
+    "post": "049c9c4127e53c68",
+    "champion": "Anaheim",
+    "rec": "6bb2a05189909bc9",
+    "poll": "1b2991c18a78687a",
+    "heis": "a1c3d97100e026e6",
+    "history": "20105c80c7095a95",
+    "universe": "5458b8787b1bd09f",
+    "screens": "ec4e333b3672fb4e"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "bd891d8c005cd02b",
-    "post": "7d7b2c34aec1e7f4",
-    "champion": "Colorado",
-    "rec": "dc3fd307d0d0ec0e",
-    "poll": "103fbed1ccbe4635",
-    "heis": "5ee332f850b9731e",
-    "history": "c2ef3c8c856d0962",
-    "universe": "15fee3f90c993552",
-    "screens": "a1a3587d0b86e07a"
+    "games": "83ad354d54b7769a",
+    "post": "2aff8ce854badbc2",
+    "champion": "Columbus",
+    "rec": "52eb4a7bb07a6165",
+    "poll": "27e3ac1f975463f0",
+    "heis": "148a7400b1e28680",
+    "history": "bd73dfac8db3a187",
+    "universe": "7b62288b17e01c03",
+    "screens": "95cd08ba9ef3fab0"
    },
    {
     "year": 2027,
-    "games": "8c46407e8062acf3",
-    "post": "b36f644e102bcb07",
-    "champion": "Montreal",
-    "rec": "ec0a5b5717cfeda6",
-    "poll": "6473ff5c85c28291",
-    "heis": "bb56911fa58c1c5b",
-    "history": "90d9fb97e15f5a7e",
-    "universe": "7f42d9d51d1e1edc",
-    "screens": "ba0114893bd9103b"
+    "games": "0808d4ecdd3e259f",
+    "post": "1986778460eb9c6a",
+    "champion": "Winnipeg",
+    "rec": "1861f8fa899f06e5",
+    "poll": "f0d2a7172850cb2c",
+    "heis": "c50e33e3236d1a31",
+    "history": "c13df5a798b7e089",
+    "universe": "1535556e4c8822f0",
+    "screens": "0c6f25b0c33556bf"
    }
   ],
   "schedules#60": [

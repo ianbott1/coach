@@ -1,5 +1,5 @@
 {
- "fp": "1ebdddcc4e20204a",
+ "fp": "c4c7acc5df5c46eb",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -275,59 +275,64 @@
    "fp": "1ebdddcc4e20204a",
    "from": "1ebdddcc4e20204a",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "c4c7acc5df5c46eb",
+   "from": "1ebdddcc4e20204a",
+   "note": "Engine 25, the people (round 111): team morale (at most 2% of a level game's chance) and the home crowd (0.8% more) move results, and morale nudges development; seasons and the league differ from season 1. With PEOPLE_ON=0 the NBA fast fingerprint's games, records and league match round 110 (universe equal but for engV 24->25); screens differ (dressing-room line, moods, people news and history lines, a realistic pro staff room)."
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "3d5153dfcd8c114e",
-    "post": "ea40287c68cafad9",
-    "champion": "San Diego",
-    "rec": "7d949ee2c854cfb8",
-    "poll": "6b40d8b4cdc9d8de",
-    "heis": "7d5b897b0d9b6c32",
-    "history": "da15fbfd7101bc37",
-    "universe": "56c8183973a51f1f",
-    "screens": "1612d5c806ff6c05"
+    "games": "33d586fea97eb908",
+    "post": "889751271a0cd248",
+    "champion": "Minnesota",
+    "rec": "7b3dba5514b67275",
+    "poll": "ba60258cf91b5943",
+    "heis": "71d4f8033ca45d66",
+    "history": "5772a91fc819a077",
+    "universe": "66a52d358821479e",
+    "screens": "cd8d128582396950"
    },
    {
     "year": 2027,
-    "games": "65a1a5d715c40c67",
-    "post": "bad36f6d60532f8a",
-    "champion": "Houston",
-    "rec": "c4e613880ca2a9ed",
-    "poll": "bee24a447b87d565",
-    "heis": "773ec581dad87a9c",
-    "history": "6acd7d078226bbb4",
-    "universe": "0e503d756a19b330",
-    "screens": "49217556b3802e33"
+    "games": "3132ff995584e076",
+    "post": "de866f1b0a6459be",
+    "champion": "Milwaukee",
+    "rec": "2cdcbdfa881a6530",
+    "poll": "210060d0baf721db",
+    "heis": "e255f6a32a9974df",
+    "history": "f1d59945b051c2c6",
+    "universe": "10aeea2b5898f1bd",
+    "screens": "9543f2962159bc17"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "abe739d49baf153f",
-    "post": "8aaf7e8aa772ad4d",
-    "champion": "LA Dodgers",
-    "rec": "fb7cecfa7faad8b4",
-    "poll": "8b06c4145b3597e1",
-    "heis": "c538f6ec29f1dea8",
-    "history": "2776d71e098b91d8",
-    "universe": "c04512530a010990",
-    "screens": "d8c11aef312cc5ae"
+    "games": "b648523b9daf3a0e",
+    "post": "182e3bc9f6bfe97c",
+    "champion": "NY Mets",
+    "rec": "71be2a50677d6467",
+    "poll": "b7b800b9e6fe4a01",
+    "heis": "d75e9f4c11e6a0c1",
+    "history": "29f6e1dd3ec5b0c3",
+    "universe": "526d38f69b8ff976",
+    "screens": "efec01bdb0708a78"
    },
    {
     "year": 2027,
-    "games": "88a0371b52e58170",
-    "post": "db2fe55acf519f7a",
-    "champion": "NY Mets",
-    "rec": "253cfe6202274537",
-    "poll": "d5ad3a32919dca35",
-    "heis": "eac2183831bc1117",
-    "history": "53e39dd404565cdb",
-    "universe": "49e8d24da1631d6f",
-    "screens": "c9701884af330e6e"
+    "games": "a49a2b0201e07739",
+    "post": "2d633bbc8fbc4ed4",
+    "champion": "Philadelphia",
+    "rec": "717e57e072693505",
+    "poll": "21f6c29ab62eed9f",
+    "heis": "43e32280d33fa1ec",
+    "history": "b9076543897212e3",
+    "universe": "4f3370f78e9bf539",
+    "screens": "fcc6d4792fd8060e"
    }
   ],
   "schedules#60": [
