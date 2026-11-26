@@ -112,7 +112,10 @@ function teamLines(rng,c){
   const cl=POS.findIndex(P=>P.p==="CL"), clAct=c.act.find(x=>x.i===cl), dec=B.dec||{};
   Object.keys(B.pit).forEach(nm=>{ if(nm==="bullpen")return; const p=B.pit[nm], x=nm==="closer"?(clAct?{pl:clAct.pl,i:cl}:null):at[nm]; if(!x)return;
     const pos=nm==="closer"?"CL":posOf(x.i); if(!isPitcher(pos))return;
-    out.push({pl:x.pl,pos:pos,line:{gs:nm==="closer"?0:B.sp?(nm===B.sp?1:0):1,ip:p.outs,er:p.er,k:p.k,bb:p.bb,w:dec.w===nm?1:0,l:dec.l===nm?1:0,sv:dec.sv===nm?1:0}}) });
+    const line={gs:nm==="closer"?0:B.sp?(nm===B.sp?1:0):1,ip:p.outs,er:p.er,k:p.k,bb:p.bb,w:dec.w===nm?1:0,l:dec.l===nm?1:0,sv:dec.sv===nm?1:0};
+    if(dec.hld&&dec.hld.indexOf(nm)>=0)line.hld=1;   // engine 26: holds (the key only where there is one, so older lines are as they were)
+    out.push({pl:x.pl,pos:pos,line:line}) });
+  if(typeof bsNoteUse==="function"&&typeof bsV26==="function"&&bsV26()&&c.sea)bsNoteUse(c.sea,c.tm,B,c.sea.step);   // engine 26: who pitched today, for tomorrow's bullpen
   return out;
 }
 /* a watched game's log, by hitter (round 56): home runs, RBI and hits for the men it named (core 80_season credits them) */

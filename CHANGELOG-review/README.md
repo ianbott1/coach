@@ -10,6 +10,7 @@ This folder logs the code changes made alongside the playtest and design review 
 | [people.md](people.md) | Traits and morale, conversations, press conferences, fans, storylines, the Staff room setting | All seven |
 | [realism.md](realism.md) | Board targets from expected wins; MLB, NFL, college football, NHL and college basketball calibration; `test/realism.js` | All seven |
 | [polish.md](polish.md) | Fifteen bugs found in play (carried-plan prompt, bench stats, nickel and dime, brackets, verdicts, sport words and more) | All seven |
+| [baseball.md](baseball.md) | Round 112, engine 26: the platoon by handedness, a named nine-man bullpen with roles and rest, pitch counts and times through the order, the lineup card, holds, calls that name who comes in or hits, the intentional walk, Go to the bullpen on the live bar; `test/bs-manager.js` | Pro baseball |
 
 ## Rules kept
 

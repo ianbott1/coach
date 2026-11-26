@@ -1,5 +1,5 @@
 {
- "fp": "8cd6f6a3a427a33e",
+ "fp": "f8c632346a46fb10",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -175,6 +175,11 @@
    "fp": "8cd6f6a3a427a33e",
    "from": "70282015ae24bd2a",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "f8c632346a46fb10",
+   "from": "8cd6f6a3a427a33e",
+   "note": "round 112 (engine 26): baseball's dugout: platoon by handedness, a named nine-man bullpen with roles and rest, pitch counts and times through the order, the lineup card (rest days, platoon starts), holds and named decisions, calls that name who"
   }
  ],
  "out": [
@@ -184,20 +189,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "71-91",
+      "rec": "53-109",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C-"
      },
-     "book": "cef0dfc6dd0b9559"
+     "book": "f3610dee94420162"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "68-94",
+      "rec": "56-106",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "8e80e7f1e25d4c2c"
+     "book": "5d911730d2eae8f3"
     }
    ]
   },
@@ -207,20 +212,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "81-81",
+      "rec": "66-96",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "01b0f76db509f199"
+     "book": "44930009723d9753"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "69-93",
+      "rec": "73-89",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "8be99dab2eefb048"
+     "book": "748daff1aab4148e"
     }
    ]
   }

@@ -1,5 +1,5 @@
 {
- "fp": "c927c4b0c954b487",
+ "fp": "2655b170a3259e21",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -160,21 +160,26 @@
    "fp": "c927c4b0c954b487",
    "from": "d1816e678b5e89e8",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "2655b170a3259e21",
+   "from": "c927c4b0c954b487",
+   "note": "round 112 (engine 26): baseball's dugout: platoon by handedness, a named nine-man bullpen with roles and rest, pitch counts and times through the order, the lineup card (rest days, platoon starts), holds and named decisions, calls that name who"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "cba5ed34372ca4d7",
-    "post": "6aed1ef25ee61071",
-    "champion": "St. Louis",
-    "rec": "8cfec14df36733e7",
-    "poll": "1a1194b6eb7af2cd",
-    "heis": "52d392c8bde291f9",
-    "history": "70aaef234aa11be3",
-    "universe": "bee125cdf2e3a9f5",
-    "screens": "f67ec6e4e1d79f47"
+    "games": "0b11f324fad45b81",
+    "post": "3687f1e7a62e5fa2",
+    "champion": "LA Dodgers",
+    "rec": "4d18837c23afa1b7",
+    "poll": "6e53267c11f484de",
+    "heis": "f1cee76b626cd9da",
+    "history": "5d28d2ba34afadde",
+    "universe": "aff44a808af12478",
+    "screens": "a3ad51e6d08494f9"
    }
   ]
  }

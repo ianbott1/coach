@@ -134,12 +134,176 @@ function pinchCall(inn,lead,who,bench,on){
     q:`${on}. ${who||"Your number nine"} is up. Pinch-hit${bench?" with "+bench:""}?`,
     opts:[["pinch",`Pinch-hit${bench?": "+bench.split(" ").slice(-1)[0]:""}`],["let","Let him hit"],ASSIST]};
 }
+/* engine 26: the bullpen calls name the men (who, not whether) */
+const bsScoreH=(inn,lead)=>`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`;
+function pullCall26(inn,lead,P,R,on){
+  return {k:"pull",inn:inn,h:bsScoreH(inn,lead),
+    q:`${P.n||"Your starter"} has thrown ${P.np} pitches to ${P.bf} batters${P.ra?` and given up ${nOf(P.ra,"run")}`:""}.${on?" "+on:""} Go to the bullpen?`,
+    opts:R.map(penOpt26).concat([["stay","Leave him in"],ASSIST]), bf:P.bf, ra:P.ra, np:P.np, sp:P.n||null, tto:Math.floor(P.bf/9)+1, pen:R.map(penInfo26), v26:1};
+}
+function penCall26(inn,lead,C,R,on){
+  return {k:"pen",inn:inn,h:bsScoreH(inn,lead)+(on?"":""),
+    q:`${C.n} has thrown ${C.np} pitches${C.outs?`, ${nOf(C.outs,"out")}`:""}${C.ra?`, ${nOf(C.ra,"run")}`:""}. ${on} Make a change?`,
+    opts:[["keep",`Leave ${C.n} in`]].concat(R.map(penOpt26)).concat([ASSIST]), cur:penInfo26(C), pen:R.map(penInfo26), v26:1};
+}
+function penuCall(inn,lead,X,R,want){
+  return {k:"penu",inn:inn,h:bsScoreH(inn,lead),
+    q:`You called for the bullpen. ${X.cur?X.cur.n+" has thrown "+X.cur.np+" pitches":(X.sp.n||"Your starter")+" has thrown "+X.sp.np+" pitches"}. Who comes in?`,
+    opts:R.map(penOpt26).concat([["keep","Not yet"]]), cur:X.cur?penInfo26(X.cur):null, sp:X.cur?null:X.sp.n, np:X.cur?X.cur.np:X.sp.np, pen:R.map(penInfo26), want:want?want.n:null, v26:1};
+}
+function penOpt26(c){ return ["pen:"+c.n,`${c.n}: ${bsPenWords(c)}`] }
+function penInfo26(c){ return {n:c.n,r:c.r,th:c.th,role:c.role,py:c.py||0,p2:c.p2||0,np:c.np,bf:c.bf,ra:c.ra} }
+function pinchCall26(inn,lead,up,B,on,pn,th){
+  return {k:"pinch",inn:inn,h:bsScoreH(inn,lead),
+    q:`${on}. ${up||"Your hitter"} is up against ${pn||"their pitcher"}, a ${th==="L"?"left":"right"}-hander. Pinch-hit?`,
+    opts:B.map(x=>["ph:"+x.n,`Pinch-hit with ${x.n} (${bsBatsWords(bsBats(x.n))})`]).concat([["let","Let him hit"],ASSIST]), pn:pn, th:th, v26:1};
+}
+function ibbCall(inn,lead,up,next,on){
+  return {k:"ibb",inn:inn,h:bsScoreH(inn,lead),
+    q:`${on}. ${up||"Their hitter"} is up, ${next||"a weaker hitter"} on deck. Walk him intentionally?`,
+    opts:[["walk",`Walk ${up||"him"}`],["pitch","Pitch to him"],ASSIST], up:up, next:next};
+}
 function stealCall(inn,lead,runner,outs){
   return {k:"steal",inn:inn,h:`${ordw(inn)} inning, ${lead>0?"up "+lead:lead<0?"down "+(-lead):"tied"}`,
     q:`${runner||"Your runner"} on first, ${outs===0?"nobody":"one"} out. Send him?`,
     opts:[["send","Send him"],["hold","Hold him"],ASSIST]};
 }
+/* round 112 (engine 26): one plate appearance's pitches, from its own hash and its result (no game dice): the full
+   match draws them pitch by pitch (72_highlights), and from engine 26 the engine counts them, so a pitcher's count on
+   the screen is the count he tires by. A strikeout ends on strike three, a walk on ball four, a ball in play on the pitch
+   the count leaves (MLB: about 3.9 pitches a plate appearance). */
+function bsPitchSeq(q,z){ const r=mulberry32((z^0x9E3779B9)>>>0), o=q.o, out=[]; let b=0,s=0;
+  const strike=()=>{ const x=r(); if(s===2)return x<0.55?"F":x<0.8?"C":"W"; return x<0.36?"C":x<0.62?"W":"F" };   // called, swinging, foul (a foul can't be strike three)
+  const add=c=>{ out.push(c); if(c==="B")b++; else if(c==="F"){ if(s<2)s++ } else s++ };
+  const pre=(stopP,maxB,maxS)=>{ for(let k=0;k<12;k++){ if(r()<stopP&&k>0)break; const ball=r()<(b<maxB?0.4:0); if(ball)add("B"); else { const c=strike(); if((c==="C"||c==="W")&&s>=maxS){ add("F") } else add(c) } } };
+  if(o==="k"){ for(let k=0;k<14&&s<2;k++){ if(b<3&&r()<0.36)add("B"); else { const c=strike(); add(c) } } for(let k=0;k<3&&r()<0.22;k++){ if(b<3&&r()<0.4)add("B"); else add("F") } out.push(r()<0.25?"KC":"KS") }
+  else if(o==="bb"){ for(let k=0;k<14&&b<3;k++){ if(r()<0.62||s>=2&&r()<0.8)add("B"); else { const c=strike(); if(s>=2&&c!=="F")add("F"); else add(c) } } out.push("B4") }
+  else if(o==="hbp"){ pre(0.5,3,2); out.push("HBP") }
+  else { pre(0.4,3,2); out.push("X") }
+  return out }
 function ordw(n){ return ["","1st","2nd","3rd","4th","5th","6th","7th","8th","9th"][n]||n+"th" }
+
+/* ============ round 112 (engine 26): the dugout ============
+   (design review, Nov 2026: baseball asked two questions a game and nobody managed a bullpen, wrote a lineup or
+   pinch-hit for the platoon.) What a real manager decides, played by the engine:
+   - Handedness. Every player bats left, right or both and throws left or right (from his name, so no dice move:
+     about a third of hitters bat left and one in nine switch-hit; about 28% of plate appearances come against a
+     left-hander, FanGraphs). A batter facing a pitcher of the other hand does better: the gap is FanGraphs' league
+     platoon split (2012: left-handed batters .332 wOBA against right-handers, .291 against left-handers; right-handed
+     batters .337 and .313; switch-hitters about even; blogs.fangraphs.com/basic-hitter-platoon-splits-2002-2012),
+     centred on each batter's usual mix of pitchers, so his rating is still what he does over a season.
+   - A named bullpen of nine: the closer, the set-up man and the long man from the roster, and six more arms (a
+     second set-up man, the lefty specialist, three middle relievers and a mop-up man: bsCorps; with eight the
+     busiest made 90-95 appearances, where MLB's busiest make about 80, clubs shuttling arms from the minors). Each pitches by his
+     own rating. Rest carries between days: who pitched yesterday and how much (MLB relievers average 19 pitches an
+     outing, baseball-reference 2024), and nobody goes three days running without paying for it (fastballs are about
+     half a mile an hour slower on back-to-back days and more than two slower on a third straight day:
+     tht.fangraphs.com/do-relief-pitchers-suffer-from-pitching-back-to-back-days).
+   - A starter's pitches are counted (the full match's own pitches: bsPitchSeq) and he tires by them, and hitters do
+     better each time through the order (MLB starters 2016-25: .713 OPS the first time, .747 the second, .780 the
+     third; mlb.com/glossary/miscellaneous/third-time-through-the-order-penalty).
+   - The manager's calls are the real ones: who comes in (not only whether), the pinch hitter (which one, by the
+     platoon), the intentional walk. The computer and your assistant manage by the same rules (bsPenRank, penPlan). */
+const BS_V26=26;   // the engine version these arrive with (core 20 ENGINE_NOW)
+function bsV26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=BS_V26 }
+const BS26_ENV=(k,d)=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return v!=null&&v!==""?+v:d };
+const BS26={
+  // the platoon gap (advantage less disadvantage) in the engine's log-odds, by the batter's hand; pL: the share of
+  // plate appearances against a left-hander
+  platL:BS26_ENV("BS26_PL",0.068), platR:BS26_ENV("BS26_PR",0.028), pL:0.30,
+  // the starter: times through the order (each time from the second), tiring past p0 pitches (by his Stamina), and sp0
+  // to hold the league's starters where they were
+  tto:BS26_ENV("BS26_TTO",0.021), p0:BS26_ENV("BS26_P0",80), fat:BS26_ENV("BS26_FAT",0.004), sp0:BS26_ENV("BS26_SP0",-0.002),
+  pPA:BS26_ENV("BS26_PPA",4.12),   // his limit in pitches, from his stamina in batters (set so starters average 86 pitches, AL 2024)
+  // a reliever: rp0 at the league's usual reliever rating (BS6_RP), rq a point of rating
+  rp0:BS26_ENV("BS26_RP0",-0.05), rq:BS26_ENV("BS26_RQ",0.008),
+  b2b:0.02, b3:0.08, heavy:25, heavyPen:0.04,   // pitched yesterday; the third day running; a heavy day yesterday (25+ pitches)
+  xPt:BS26_ENV("BS26_XPT",0.012),   // a rating point of hitting, in the platoon's log-odds (for choosing a pinch hitter)
+  phMin:3, ibbGap:6,
+  rest:BS26_ENV("BS26_REST",7), restC:BS26_ENV("BS26_RESTC",17), platMin:BS26_ENV("BS26_PLATMIN",2)   // the lineup card (bsLineup26)
+};
+const BS26_ROLE={cl:"closer",su:"set-up",su2:"set-up",lefty:"lefty specialist",mid:"middle relief",lr:"long relief",mop:"long relief"};
+/* the hands, from the name (a hash, the same all career) */
+// (kept by name: a replayed game asks them every plate appearance)
+const BS_HANDK={b:new Map(),t:new Map()};
+function bsBats(nm){ if(!nm)return "R"; let x=BS_HANDK.b.get(nm); if(x===undefined){ const h=strHash("bats|"+nm)%100; x=h<33?"L":h<44?"S":"R"; BS_HANDK.b.set(nm,x) } return x }
+function bsThrows(nm){ if(!nm)return "R"; let x=BS_HANDK.t.get(nm); if(x===undefined){ x=strHash("throws|"+nm)%100<28?"L":"R"; BS_HANDK.t.set(nm,x) } return x }
+const BS_HAND={L:"left",R:"right",S:"both sides"};
+function bsBatsWords(b){ return b==="L"?"bats left":b==="S"?"a switch-hitter":"bats right" }
+/* the batter's platoon term against a pitcher's hand (positive helps him); a switch-hitter always has the platoon side */
+function bsPlat(b,t){ if(b==="S")return 0; const pL=BS26.pL;
+  if(b==="L")return t==="R"?BS26.platL*pL:-BS26.platL*(1-pL);
+  return t==="L"?BS26.platR*(1-pL):-BS26.platR*pL }
+/* the six arms beyond the roster's three: a second set-up man, the lefty specialist, three middle relievers (one of them
+   the arm a club shuttles up and down from its farm team) and the mop-up man. Their names and ratings come from the club and the years (a hash: an arm stays three seasons or so), the
+   ratings about the league's usual reliever (BS6_RP), so they add nothing to any club on average */
+const BS26_CORPS=[["su2","R",3],["lefty","L",-1],["mid","R",0],["mid","L",-2],["mop","R",-5],["mid","R",-3]];
+function bsCorps(t,year,taken){ const out=[], seen=new Set(taken||[]);
+  BS26_CORPS.forEach(([role,th,off],k)=>{ const r=mulberry32(strHash("corps|"+t+"|"+k+"|"+Math.floor((year+k)/3))>>>0); let n=null;
+    for(let j=0;j<8&&(!n||seen.has(n));j++){ const f=PNAMES_F[Math.floor(r()*PNAMES_F.length)], l=PNAMES_L[Math.floor(r()*PNAMES_L.length)]; n=f+" "+(typeof wideLast==="function"?wideLast(f,l,PNAMES_L):l) }
+    seen.add(n); out.push({n:n, r:Math.round(BS6_RP+off+(r()+r()+r()-1.5)*4), th:th, role:role}) });
+  return out }
+/* the season's pitching log, for rest between days: {team: {name: [[day, pitches], ...]}} (kept on the season, not saved:
+   a load replays the season and keeps it again) */
+function bsUse(sea){ if(!sea)return null; if(!sea._bsUse||sea._bsUse.y!==sea.year)Object.defineProperty(sea,"_bsUse",{value:{y:sea.year,t:{}},writable:true,configurable:true,enumerable:false}); return sea._bsUse }
+function bsNoteUse(sea,t,B,step){ const U=bsUse(sea); if(!U||!B||!B.pit)return; const T=U.t[t]=U.t[t]||{}, D=U.d=U.d||{}, k=t+"|"+step;
+  if(D[k])return; D[k]=1;   // once a game, however often the season credits it
+  const S=(U.s=U.s||{})[t]=U.s[t]||{}, dec=B.dec||{};
+  Object.keys(B.pit).forEach(nm=>{ const p=B.pit[nm]; if(!p||nm==="bullpen"||nm==="closer")return;
+    if(p.np>0){ const L=T[nm]=T[nm]||[]; L.push([step,p.np]); if(L.length>3)L.shift() }
+    if(nm===B.sp)return;   // the season's relief lines (the bullpen card): every reliever, on the roster or not
+    const s=S[nm]=S[nm]||{g:0,outs:0,er:0,k:0,bb:0,np:0,w:0,l:0,sv:0,hld:0,bs:0};
+    s.g++; s.outs+=p.outs||0; s.er+=p.er||0; s.k+=p.k||0; s.bb+=p.bb||0; s.np+=p.np||0;
+    if(dec.w===nm)s.w++; if(dec.l===nm)s.l++; if(dec.sv===nm)s.sv++; if((dec.hld||[]).indexOf(nm)>=0)s.hld++; if((dec.bs||[]).indexOf(nm)>=0)s.bs++ }) }
+/* a team's relievers this season, by name: {g, outs, er, k, bb, np, w, l, sv, hld, bs} */
+function bsRelief(t){ const U=typeof SEA!=="undefined"&&SEA?bsUse(SEA):null; return U&&U.s&&U.s[t]||{} }
+function bsRestOf(sea,t,nm,step){ const U=bsUse(sea), L=U&&U.t[t]&&U.t[t][nm]; let py=0,p2=0; (L||[]).forEach(([d,n])=>{ if(d===step-1)py+=n; else if(d===step-2)p2+=n }); return [py,p2] }
+/* the bullpen today: [name, rating, throws left (1/0), role, pitches yesterday, pitches the day before] */
+function bsPen26(t,step){ try{ if(typeof SEA==="undefined"||!SEA||!SEA.roster||!SEA.roster[t])return null; const R=SEA.roster[t], H=hurtSet(t), out=[];
+    const cl=BS_CL, su=BK(BS_CL), lr=BK(BS_SP[2]), add=(p,role)=>{ if(p)out.push({n:p.n,r:p.r,th:bsThrows(p.n),role:role}) };
+    const clOk=R[cl]&&!H.has(cl), suOk=R[su]&&!H.has(su);
+    if(clOk){ add(R[cl],"cl"); if(suOk)add(R[su],"su") } else if(suOk)add(R[su],"cl");   // a hurt closer's set-up man closes
+    if(R[lr]&&!H.has(lr))add(R[lr],"lr");
+    bsCorps(t,SEA.year,R.filter(Boolean).map(p=>p.n)).forEach(c=>out.push(c));
+    return out.map(c=>{ const [py,p2]=bsRestOf(SEA,t,c.n,step); return [c.n,c.r,c.th==="L"?1:0,c.role,py,p2] }) }catch(e){ return null } }
+/* the bench today: the four best healthy backups not in the lineup (the backup catcher stays put) */
+function bsBench26(t,lu){ try{ const R=SEA.roster[t], H=hurtSet(t), inLu=new Set(lu||[]), B=[], C=BS_HIT[0];
+    BS_HIT.forEach(i=>[i,BK(i)].forEach(j=>{ const p=R[j]; if(!p||H.has(j)||inLu.has(p.n))return; if(i===C&&!(j===C&&!inLu.has(R[BK(C)]&&R[BK(C)].n)))return; B.push(p) }));
+    return B.sort((a,b)=>b.r-a.r).slice(0,4).map(p=>p.n) }catch(e){ return [] } }
+/* engine 26: the lineup card. The nine by position as before, with two of a manager's daily choices:
+   - a day off: a regular sits about one day in fourteen, a catcher about one in six (MLB regulars start about 150 of
+     162 games, catchers 120-130). Resting buys almost nothing at the plate (a hitter playing five days in seven
+     against seven loses about 3 points of OBP: baseballprospectus.com/news/article/21090), so it's a schedule, not a
+     tonic: by a hash of the day, no draws.
+   - the platoon: a backup who bats from the other side starts against a starter of the hand the regular hits worst,
+     when he's the better bat against him by BS26.platMin points (the same worth the pinch hitter is weighed by).
+   The order is by ability against today's starter (engine 5's order: the third best leads off, the best bats second;
+   the best orders gain about a win a season over a typical one, blogs.fangraphs.com/how-significant-is-batting-order,
+   so the order is the book's and isn't asked). Returns {lu, c: the catcher, why: [[name in, name out, reason]]}. */
+function bsLineup26(t,step,opp){ try{ const R=SEA.roster[t], H=hurtSet(t), y=SEA.year, sp=opp?spCtx(opp,step):null, th=sp?bsThrows(sp.n):"R", why=[];
+    const v=p=>p.r+bsPlat(bsBats(p.n),th)/BS26.xPt;
+    const P=BS_HIT.map((i,k)=>{ const reg=R[i], bk=R[BK(i)], regOk=reg&&!H.has(i), bkOk=bk&&!H.has(BK(i));
+      if(!regOk)return bkOk?bk:reg||null;
+      if(bkOk){ const rest=strHash("rest|"+t+"|"+i+"|"+y+"|"+step)%100<(i===BS_HIT[0]?BS26.restC:k===8?0:BS26.rest);
+        if(rest){ why.push([bk.n,reg.n,"rest"]); return bk }
+        if(i!==BS_HIT[0]&&bsBats(bk.n)!==bsBats(reg.n)&&v(bk)-v(reg)>=BS26.platMin){ why.push([bk.n,reg.n,"platoon"]); return bk } }
+      return reg });
+    const c=P[0]?P[0].n:null, rk=P.map((p,k)=>({p:p,k:k,v:p?v(p):0})).sort((a,b)=>(b.v-a.v)||(a.k-b.k));
+    return {lu:BS_ORDER5.map(j=>rk[j]&&rk[j].p?rk[j].p.n:null), c:c, why:why, th:th} }catch(e){ return null } }
+/* the relievers in order for a moment (sit: save, tie, eighth, high, early, blowout, other; lefties: the next three
+   batters are mostly left-handed), the rested first */
+const BS26_ORDER={save:["cl","su","su2","mid","lefty","lr","mop"], tie:["cl","su","su2","mid","lefty","lr","mop"], eighth:["su","su2","mid","lefty","cl","lr","mop"],
+  high:["su2","su","mid","lefty","lr","mop","cl"], early:["lr","mop","mid","lefty","su2","su","cl"], blow:["mop","lr","mid","lefty","su2","su","cl"], other:["mid","lefty","mop","lr","su2","su","cl"]};
+function bsPenFat(c){ return (c.py>0&&c.p2>0?BS26.b3:c.py>0?BS26.b2b:0)+(c.py>=BS26.heavy?BS26.heavyPen:0) }
+function bsPenOk(c){ return !(c.py>0&&c.p2>0)&&c.py<BS26.heavy }
+function bsPenRank(pen,used,sit,lefties){ const ord=BS26_ORDER[sit]||BS26_ORDER.other, o=lefties&&sit!=="save"&&sit!=="tie"?["lefty"].concat(ord.filter(r=>r!=="lefty")):ord;
+  // in the low-leverage innings a man who pitched yesterday waits behind the next role (a long season: MLB's busiest
+  // relievers make 75-80 appearances)
+  const lo=sit==="early"||sit==="blow"||sit==="other", K=[], N=[];
+  for(const c of pen){ if(used[c.n])continue; const x={c:c,k:o.indexOf(c.role)*100-c.r+(lo&&c.py>0?150:0)}; if(bsPenOk(c))K.push(x); else { x.f=bsPenFat(c); N.push(x) } }
+  K.sort((a,b)=>a.k-b.k); N.sort((a,b)=>a.f-b.f||a.k-b.k);
+  return K.concat(N).map(x=>x.c) }
+function bsPenWords(c){ return `${BS26_ROLE[c.role]||"relief"}, ${c.th==="L"?"left":"right"}-handed${c.py>0&&c.p2>0?", third day running":c.py>=BS26.heavy?`, ${c.py} pitches yesterday`:c.py>0?", pitched yesterday":""}` }
 
 function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   ctx=ctx||{}; const fav=ctx.fav||{};
@@ -163,6 +327,15 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   st.gap=gap;
   const pickApp=side=>{ if(fav[side]&&rng.r()<0.6)return fav[side]; return APPROACH_KEYS[rng.int(3)] };
   st.S.home.app=pickApp("home"); st.S.away.app=pickApp("away");
+  // engine 26: the named bullpen, its rest, and the starter's pitch count (no draws: everything below is read off the game)
+  if(bsV26()&&ctx.pen26)["home","away"].forEach(sd=>{ const X=st.S[sd], L=ctx.pen26[sd]; if(!L)return;
+    X.v26=true; X.pen26=L.map(a=>({n:a[0],r:a[1],th:a[2]?"L":"R",role:a[3],py:a[4]||0,p2:a[5]||0})); X.used={}; X.cur=null; X.bfAll=0; X.holdTo=0; X.want=false;
+    X.th={}; X.pen26.forEach(c=>{ X.th[c.n]=c.th }); if(X.sp.n)X.th[X.sp.n]=bsThrows(X.sp.n);
+    X.sp.np=0; X.sp.stamP=Math.round(X.sp.stam*BS26.pPA) });
+  // who comes in late, and the intentional walk, are asked only where a choice gains on your assistant (core 94's gate,
+  // as the starter's pull is); the bullpen you call for yourself (penu) is always asked
+  if(bsV26()&&typeof SPREAD_KINDS!=="undefined"){ SPREAD_KINDS.pen=1; SPREAD_KINDS.ibb=1 }
+  st.k26=0;   // the at-bat's place in the inning's log (the full match's index: its pitches are drawn from it)
   const lead=side=>side==="home"?st.h-st.a:st.a-st.h;
   const queueCall=(side,dp)=>{ const key=dp.k+(dp.h||"")+side; if(!humans[side]||st.asked[key])return false;
     st.asked[key]=true; st.queue.push({side:side,dp:dp}); if(dp.k!=="prep"&&dp.k!=="read"&&inn()>=8)(st.lateGot=st.lateGot||{})[side]=true; return true };
@@ -175,16 +348,23 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(R.long&&relOuts(fs,R.long.n)<6&&(X.rel===R.long.n||(!X.rel&&inn()<=6)))return (X.rel=R.long.n,R.long);
     X.rel="bullpen"; return {n:"bullpen",q:0} };
   let pNow=null;   // engine 10: who is pitching this plate appearance (set by pitEdge)
-  const pitEdge=fs=>{ const X=st.S[fs]; pNow=null; if(X.closer)return BS.closer; if(X.pen){ const R=bsV6()?relief(fs):null; if(R&&R.n!=="bullpen")pNow=R.n; return bsPen()+(R?R.q:0) }
+  // engine 26: a reliever by his own rating and rest, and how many pitches he has thrown today; the starter by times
+  // through the order and his pitch count
+  const pitEdge26=X=>{ const C=X.cur; if(C){ pNow=C.n; const long=C.role==="lr"||C.role==="mop";
+      return BS26.rp0+(C.r-BS6_RP)*BS26.rq-C.fat-Math.max(0,C.np-(long?55:30))*BS26.fat }
+    const P=X.sp; pNow=P.n; return P.q+P.form+BS26.sp0-BS26.tto*Math.min(3,Math.floor(P.bf/9))-Math.max(0,P.np-BS26.p0)*BS26.fat*(P.tm||1) };
+  const pitEdge=fs=>{ const X=st.S[fs]; pNow=null; if(X.v26)return pitEdge26(X); if(X.closer)return BS.closer; if(X.pen){ const R=bsV6()?relief(fs):null; if(R&&R.n!=="bullpen")pNow=R.n; return bsPen()+(R?R.q:0) }
     pNow=X.sp.n;
     const P=X.sp; return P.q+P.form-Math.max(0,P.bf-18)*bsTired()*(P.tm||1) };
   // the plan's effect on their bats: right read, wrong read
   const readEdge=(bat,fs)=>{ const A=st.S[bat].app, X=st.S[fs]; if(!X.ans)return 0; return ANSWERS[X.ans].beats===A?BS.read.right:(APPROACH[A].counter===X.ans?0:BS.read.wrong) };
   const modeMul=sd=>{ const m=st.mode[sd]; return m==="aggressive"?{hr:1.25,k:1.12,s1:0.94,bb:1}:m==="safe"?{hr:0.82,k:0.88,s1:1.06,bb:1.04}:{hr:1,k:1,s1:1,bb:1} };
   /* one plate appearance: the batting side (bat), the side in the field (fs) */
+  let paNm=null;   // engine 26: the batter, for the platoon
+  const thOf=(fs,n)=>{ const X=st.S[fs]; return X.th&&X.th[n]||bsThrows(n) };
   function pa(bat,fs,extra,hx){
     const e=(bat==="home"?gap:-gap)*BS.edge*100/100, pe=pitEdge(fs), re=readEdge(bat,fs), M=modeMul(bat);
-    const x=e-pe+re+(extra||0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
+    const x=e-pe+re+(extra||0)+(st.S[fs].v26?bsPlat(bsBats(paNm),thOf(fs,pNow)):0)+(bsV5()?BS5.x:0)+(bsV6()?BS6.x:0), up=Math.exp(x*2.2), dn=Math.exp(-x*1.6);
     const p={k:BS.k*dn*M.k, bb:BS.bb*up*M.bb, hbp:BS.hbp, s1:BS.s1*up*M.s1, s2:BS.s2*up, s3:BS.s3, hr:BS.hr*up*M.hr};
     // engine 17 (round 94): the plan your lineup suits, through its own outcomes (one-sided: twice the gap's log-odds a point)
     if(planAmpV()){ p.s1*=BS17.g; p.s2*=BS17.g; p.s3*=BS17.g; p.hr*=BS17.g; p.bb*=BS17.g }
@@ -212,13 +392,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   // the half-inning in progress
   let H=null;   // {bat, fs, outs, b:[r1,r2,r3], runs, ev}
   const startHalf=(bat)=>{ if(st.box&&st.box[other(bat)])st.box[other(bat)].resp={};   // round 74: runners left on are gone
-    H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], bn:[null,null,null], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0};
+    H={bat:bat, fs:other(bat), outs:0, b:[0,0,0], bn:[null,null,null], runs:0, ev:H&&H.bat==="away"?H.ev:[], hits:0, n:0};
     if(st.seg>=SEGS&&!st.playoff){ H.b[1]=1; H.bn[1]=who(bat,(st.S[bat].bat+8)%9) }   // extra innings: a runner on second (the last man up)
   };
   let D=null;   // the inning's drive
   const inn=()=>st.seg+1;
   const score=(n,how)=>{ if(H.bat==="home")st.h+=n; else st.a+=n; H.runs+=n;
-    if(st.S[H.fs].pen===false&&!st.S[H.fs].closer)st.S[H.fs].sp.ra+=n };
+    if(st.S[H.fs].pen===false&&!st.S[H.fs].closer)st.S[H.fs].sp.ra+=n; else if(st.S[H.fs].cur)st.S[H.fs].cur.ra+=n };
   const walkoff=()=>H.bat==="home"&&st.seg>=SEGS-1&&st.h>st.a;
   const onDesc=()=>{ const b=H.b; const n=b.filter(Boolean).length; if(!n)return "Bases empty";
     if(n===3)return "Bases loaded"; return (b[0]&&b[1]?"Men on first and second":b[0]&&b[2]?"Men on first and third":b[1]&&b[2]?"Men on second and third":b[0]?"A man on first":b[1]?"A man on second":"A man on third")+(H.outs?`, ${H.outs} out`:", nobody out") };
@@ -255,15 +435,79 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   // the same man both times)
   const benchFree=bat=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat]; return !!ph&&!(ENGINE_V>=7&&Object.keys(sub[bat]).some(k=>sub[bat][k]===ph)) };
   const pinchWorth=(bat,slot)=>{ const ph=ctx&&ctx.bench&&ctx.bench[bat], b=rateOf(bat,who(bat,slot)), r=rateOf(bat,ph); return benchFree(bat)&&lead(bat)<=0&&(b==null||r==null||r>b) };
+  /* ---- engine 26: the dugout (BS26). The computer's manager and your assistant follow the same rules; you are asked
+     the ones that matter (callsDue) ---- */
+  // the moment, for who comes in: a save (the ninth, up one to three), a tie late, the eighth with a lead, a close game
+  // from the seventh, early, a blowout
+  const sit26=fs=>{ const L=lead(fs), i=inn(); if(i>=9&&L>=1&&L<=3)return "save"; if(i>=9&&L===0)return fs==="home"||i>=10?"tie":"high";
+    if(i===8&&L>=0&&L<=3)return "eighth"; if(Math.abs(L)>=5)return "blow"; if(i<=5)return "early"; if(i>=7&&Math.abs(L)<=2)return "high"; return "other" };
+  // the next three batters: mostly left-handed (a switch-hitter doesn't count: he bats right against a lefty)
+  const nextBats=bat=>{ const X=st.S[bat]; return [0,1,2].map(k=>bsBats(who(bat,(X.bat+k)%9))) };
+  const lefties26=bat=>nextBats(bat).filter(b=>b==="L").length>=2;
+  const penRank=fs=>bsPenRank(st.S[fs].pen26,st.S[fs].used,sit26(fs),lefties26(other(fs)));
+  const halfStart=()=>H&&H.outs===0&&H.n===0;
+  // who the computer would bring in now, or null to stay
+  // (the ranking is read only when he'd make a change: it was a tenth of a replayed game)
+  const penPlan26=fs=>{ const X=st.S[fs]; if(!X.v26||!H)return null; const L=lead(fs), i=inn(), hs=halfStart(); let c0;
+    const top=()=>c0!==undefined?c0:(c0=penRank(fs)[0]||null);
+    if(!X.cur){ const P=X.sp; let go=P.np>=P.stamP||P.ra>=5||(P.bf>=18&&P.ra>=4);
+      if(!go&&hs&&i>=6&&P.np>=P.stamP-15)go=true;                       // he won't get through another inning
+      if(!go&&hs&&i>=9&&L>=1&&L<=3)go=true;                             // the closer's inning
+      if(!go&&i>=6&&P.bf>=18&&Math.abs(L)<=2&&(H.b[1]||H.b[2])&&P.np>=P.stamP-25)go=true;   // third time through, trouble, a close game
+      return go?top():null }
+    const C=X.cur, long=C.role==="lr"||C.role==="mop", sit=sit26(fs);
+    if(C.bf<3&&!hs)return null;   // the three-batter rule: three batters, or the end of an inning
+    let go=false;
+    if(hs){ if(C.outs>=(long?(sit==="blow"?9:6):3)||C.np>=(long?45:22))go=true;
+      else if(sit==="save"&&C.role!=="cl"||sit==="eighth"&&!/^(su|su2|cl)$/.test(C.role)||long&&i>=7&&Math.abs(L)<=3)go=true }
+    else if(C.np>=(long?65:35)||C.ra>=3)go=true;
+    else if(C.role==="lefty"&&bsBats(who(other(fs),st.S[other(fs)].bat%9))!=="L")go=true;   // his lefties are done
+    else if(C.th!=="L"&&i>=7&&Math.abs(L)<=2&&(H.b[1]||H.b[2])&&lefties26(other(fs))&&top()&&top().th==="L")go=true;   // the lefty for the lefties
+    const c=go?top():null; if(!c||c.n===C.n)return null;
+    if(!bsPenOk(c)&&C.np<40&&C.ra<3)return null;   // nobody rested: he stays
+    return c };
+  const bringIn=(fs,c)=>{ const X=st.S[fs]; if(!c||X.used[c.n])return false; const was=X.cur?X.cur.n:X.sp.n;
+    X.cur={n:c.n,r:c.r,th:c.th,role:c.role,bf:0,np:0,outs:0,ra:0,fat:bsPenFat(c),py:c.py,p2:c.p2}; X.used[c.n]=true; X.pen=true;
+    if(H)H.ev.push({k:"pc",side:fs,inn:inn(),nm:c.n,was:was,role:c.role,th:c.th,u:(st.seg*31+X.bfAll*7)%100});
+    return true };
+  const findPen=(fs,n)=>(st.S[fs].pen26||[]).find(c=>c.n===n&&!st.S[fs].used[n])||null;
+  // your starter is tiring (asked before the computer would take him out), in pitches
+  const pullDue26=fs=>{ const X=st.S[fs], P=X.sp; if(X.cur||inn()<5||inn()>8)return false; const L=Math.abs(lead(fs));
+    if(P.stayBf!==undefined&&P.bf<P.stayBf+3&&P.ra===P.stayRa)return false;
+    return (L<=3&&P.np>=Math.max(70,P.stamP-12))||(L<=2&&inn()>=6&&P.np>=Math.max(60,P.stamP-24)) };
+  // the pinch hitter by the platoon: a hitter's worth against this pitcher, in rating points
+  const vsVal=(bat,nm,fs)=>{ const r=rateOf(bat,nm); return r==null?null:r+bsPlat(bsBats(nm),thOf(fs,(st.S[fs].cur?st.S[fs].cur.n:st.S[fs].sp.n)))/BS26.xPt };
+  const bench26=bat=>{ const B=(ctx.bench26&&ctx.bench26[bat])||[], used=new Set(Object.keys(sub[bat]).map(k=>sub[bat][k])); return B.filter(n=>!used.has(n)) };
+  const phPick=(bat,slot)=>{ const fs=other(bat), cur=vsVal(bat,who(bat,slot),fs); let best=null;
+    bench26(bat).forEach(n=>{ const v=vsVal(bat,n,fs); if(v!=null&&(!best||v>best.v))best={n:n,v:v} });
+    return best&&cur!=null&&best.v-cur>=BS26.phMin&&lead(bat)<=0?best.n:null };
+  // the intentional walk: first base open, a man in scoring position, late and close, and the next man a much weaker hitter
+  const ibbGap=fs=>{ const bat=other(fs), X=st.S[bat], a=rateOf(bat,who(bat,X.bat%9)), b=rateOf(bat,who(bat,(X.bat+1)%9)); return a==null||b==null?0:a-b };
+  const ibbOpen=fs=>H&&!H.b[0]&&(H.b[1]||H.b[2]);
+  const ibbSpot=fs=>ibbOpen(fs)&&inn()>=8&&Math.abs(lead(fs))<=1;   // asked of you
+  const ibbWorth=fs=>ibbOpen(fs)&&inn()>=7&&Math.abs(lead(fs))<=2&&ibbGap(fs)>=BS26.ibbGap;   // the computer's rule, and your assistant's
+  const pinch26=(bat,slot)=>{ const fs=other(bat), up=who(bat,slot), B=bench26(bat).map(n=>({n:n,v:vsVal(bat,n,fs)})).sort((a,b)=>(b.v||0)-(a.v||0)).slice(0,3), pn=st.S[fs].cur?st.S[fs].cur.n:st.S[fs].sp.n;
+    const dp=pinchCall26(inn(),lead(bat),up,B,onDesc(),pn,thOf(fs,pn)); dp.k26=1; dp.pick=phPick(bat,slot); dp.best=B[0]?B[0].n:null; dp.upV=vsVal(bat,up,fs); dp.upR=rateOf(bat,up);
+    dp.vals=B.map(x=>[x.n,Math.round(x.v||0),rateOf(bat,x.n),bsBats(x.n)]); dp.upBats=bsBats(up); return dp };
+  const stay26=X=>{ X.holdTo=X.bfAll+3; if(!X.cur){ const P=X.sp; P.stamP=Math.max(P.stamP,P.np+12); P.stayBf=P.bf; P.stayRa=P.ra } };
+  const cpu26=fs=>{ const X=st.S[fs]; if(humans[fs]&&X.holdTo>X.bfAll)return; const c=penPlan26(fs); if(c)bringIn(fs,c) };
+  st.actsFor=function(side){ const X=st.S[side]; if(!X||!X.v26||!humans[side]||st.done)return [];
+    const left=(X.pen26||[]).filter(c=>!X.used[c.n]).length; if(!left)return [];
+    return [{id:"pen",l:"Go to the bullpen",on:X.want?true:undefined,pend:"Called: when you next take the field"}] };
+  st.act=function(side,id){ const X=st.S[side]; if(!X||!X.v26||!humans[side]||st.done||id!=="pen")return false; X.want=true; return true };
   const doAB=()=>{
     const bat=H.bat, fs=H.fs, X=st.S[bat];
     const slot=X.bat%9; X.bat++;
     let extra=0; if(st.late[bat+"pinch"]){ st.late[bat+"pinch"]=false; const was=who(bat,slot), ph=ctx&&ctx.bench&&ctx.bench[bat];
       extra=bsV5()?0:bsPinchEdge(rateOf(bat,was),rateOf(bat,ph));   // (engine 5: his own rating, below)
       if(ph)sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph||null,was:was}) }
+    if(st.late[bat+"ph"]){ const ph=st.late[bat+"ph"], was=who(bat,slot); st.late[bat+"ph"]=null;   // engine 26: the man you chose
+      sub[bat][slot]=ph; H.ev.push({k:"ph",side:bat,u:rng.int(100),inn:inn(),slot:slot,nm:ph,was:was}) }
+    const ibb=!!st.late[fs+"ibb"]; if(ibb)st.late[fs+"ibb"]=false;   // engine 26: the intentional walk (no pitches, no dice)
     const nm=who(bat,slot), pre=H.bn.slice(), preB=H.b.slice(), ev0=H.ev.length, out0=H.outs;
     const run0=bat==="home"?st.h:st.a;   // round 74: the box score, counted
-    const o=bsV5()?pa(bat,fs,extra,hitEdge(bat,nm)):pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
+    paNm=nm; if(ibb){ if(!st.S[fs].pen)st.S[fs].sp.bf++; H.ev.push({k:"ibb",side:fs,u:(slot*29+st.seg*13)%100,inn:inn(),slot:slot,nm:nm}) }
+    const o=ibb?"bb":bsV5()?pa(bat,fs,extra,hitEdge(bat,nm)):pa(bat,fs,extra-(slot>=6?0.02:slot<=3?-0.02:0)), L=st.lines[bat==="home"?"h":"a"];
     const b=H.b;
     // the strikeout that strands a rally: once a half-inning (round 56: four times in one inning, Muse)
     if(o==="k"){ H.outs++; L.k++; if(b[0]+b[1]+b[2]>=2&&rng.r()<0.6){ const u=rng.int(100); if(!H.kkSaid){ H.kkSaid=true; H.ev.push({k:"kk",side:fs,u:u,inn:inn(),on:b[0]+b[1]+b[2]}) } } }   // the same draws as before
@@ -284,19 +528,23 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(dp){ const j=q.lastIndexOf(pre[0]); if(preB[0]&&j>=0)q.splice(j,1) }
     if(o==="bb"||o==="hbp"||o==="s1"||o==="s2"||o==="s3")q.push(nm);
     const occ=[2,1,0].filter(i=>b[i]); while(q.length>occ.length)q.shift(); H.bn=[null,null,null]; occ.forEach((i,k)=>{ H.bn[i]=q[k]||null });
-    const Xf=st.S[fs], pn=Xf.closer?"closer":Xf.pen?(bsV6()?relief(fs).n:"bullpen"):Xf.sp.n;
+    const Xf=st.S[fs], pn=Xf.v26?(Xf.cur?Xf.cur.n:Xf.sp.n):Xf.closer?"closer":Xf.pen?(bsV6()?relief(fs).n:"bullpen"):Xf.sp.n;
     H.ev.slice(ev0).forEach(e=>{ if(e.k!=="ph"){ e.r=[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null]; e.p=pn } });
     bsCount(st,bat,fs,nm,o,run0,pre,preB,H.outs-out0,pn,H.ev.slice(ev0),inn()+bat);
+    H.n++;
+    if(Xf.v26){ const np=ibb?0:bsPitchSeq({o:o},strHash("bs|"+st.seg+"|"+st.k26+"|"+(nm||""))).length, Pp=bsBoxSide(st,fs).pit[pn];   // the full match's own pitches
+      (Xf.cur||Xf.sp).np+=np; if(Pp){ Pp.np=(Pp.np||0)+np; Pp.bf=(Pp.bf||0)+1 } Xf.bfAll++; if(Xf.cur){ Xf.cur.bf++; Xf.cur.outs+=H.outs-out0 } }
+    st.k26++;
     // round 101: the full match's at-bat log (the game on screen only; read off what just happened, no draws)
     if(D&&D.pl){ const E=H.ev.slice(ev0), ph=E.find(e=>e.k==="ph");
       D.pl.push({t:"pa",s:bat==="home"?0:1,nm:nm,slot:slot,o:o,dp:dp,sf:E.some(e=>e.k==="rbi"&&e.hit===0),out0:out0,outs:H.outs,
         pre:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],post:[b[0]?H.bn[0]:null,b[1]?H.bn[1]:null,b[2]?H.bn[2]:null],
-        runs:(bat==="home"?st.h:st.a)-run0,p:pn,ph:ph?ph.was:null,h:st.h,a:st.a}) }
+        runs:(bat==="home"?st.h:st.a)-run0,p:pn,ph:ph?ph.was:null,h:st.h,a:st.a,ibb:ibb?1:undefined}) }
     if(H.outs>out0&&st.seg>=SEGS-1)st.lastOut={k:"end",side:fs,bat:bat,nm:nm,slot:slot,how:o==="k"?"k":dp?"dp":(slot+st.seg)%2?"fly":"gb",r:[preB[0]?pre[0]:null,preB[1]?pre[1]:null,preB[2]?pre[2]:null],p:pn,outs:out0,u:(slot*37+st.seg*11)%100,inn:inn()};
   };
   const steal=(side)=>{ const ok=rng.r()<bsStealP(onFirst[side],catcherOf(other(side)),atOf(side,onFirst[side]),atOf(other(side),catcherOf(other(side)))); const b=H.b; b[0]=0; if(ok){ b[1]=1; H.bn[1]=H.bn[0] } H.bn[0]=null; if(!ok){ H.outs++; st.lastOut=null } H.ev.push({k:ok?"sb":"cs",side:side,u:rng.int(100),inn:inn(),nm:onFirst[side]});
     if(D&&D.pl)D.pl.push({t:ok?"sb":"cs",s:side==="home"?0:1,nm:onFirst[side],outs:H.outs,post:[H.b[0]?H.bn[0]:null,H.b[1]?H.bn[1]:null,H.b[2]?H.bn[2]:null],h:st.h,a:st.a});
-    bsCountSteal(st,side,ok,onFirst[side]); if(!ok){ const Xf=st.S[other(side)]; bsCountOuts(st,other(side),Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n,1) } };
+    bsCountSteal(st,side,ok,onFirst[side]); st.k26++; if(!ok){ const Xf=st.S[other(side)]; bsCountOuts(st,other(side),Xf.v26?(Xf.cur?Xf.cur.n:Xf.sp.n):Xf.closer?"closer":Xf.pen?"bullpen":Xf.sp.n,1); if(Xf.cur)Xf.cur.outs++ } };
   st.log=[];
   const apply=(side,dp,v)=>{
     const X=st.S[side];
@@ -308,6 +556,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(pick){ st.log.push({side:side,h:dp.h,k:"read",pick:pick,truth:t,right:ANSWERS[pick].beats===t,evid:dp.best,fe:ANSWERS[pick].beats===dp.best}); if(pick!==X.ans)X.prepd=false; X.ans=pick }
       else { const was=X.ans; readIt(side,0.45); st.autoDid=X.ans!==was&&ANSWERS[X.ans]?"read them himself and switched to "+ANSWERS[X.ans].l.split(":")[0].toLowerCase():"read them himself and kept the plan as it was" }
       return }
+    if(X.v26&&(dp.k==="pull"||dp.k==="pen"||dp.k==="penu")){ const c=typeof v==="string"&&v.indexOf("pen:")===0?findPen(side,v.slice(4)):v==="pen"?penRank(side)[0]:null;
+      if(c){ bringIn(side,c); if(dp.k==="penu")X.want=false; return }
+      if(v==="stay"||v==="keep"){ stay26(X); X.want=false; return }
+      const w=penPlan26(side); if(w)bringIn(side,w); st.autoDid=w?`brought in ${w.n}`:X.cur?`left ${X.cur.n} in`:"left him in, by the computer's rule"; return }
+    if(dp.k==="ibb"){ const go=v==="walk"||(v==="normal"&&ibbWorth(side)); if(go)st.late[side+"ibb"]=true; if(v==="normal")st.autoDid=go?"put him on":"pitched to him"; return }
+    if(dp.k==="pinch"&&st.S[side].v26&&ctx.bench26){ const ph=typeof v==="string"&&v.indexOf("ph:")===0?v.slice(3):v==="pinch"?(dp.best||null):v==="normal"?dp.pick:null;
+      if(ph&&bench26(side).indexOf(ph)>=0)st.late[side+"ph"]=ph; if(v==="normal")st.autoDid=ph?`sent up ${ph}`:"let him hit"; return }
     if(dp.k==="pull"){ if(v==="pen")X.pen=true; else if(v==="stay"){ X.sp.stam=Math.max(X.sp.stam,X.sp.bf+3); X.sp.stayBf=X.sp.bf; X.sp.stayRa=X.sp.ra } else { cpuPen(side); st.autoDid=X.pen?"went to the bullpen":"left him in, by the computer's rule" } return }
     if(dp.k==="pinch"){ if(v==="pinch"||(v==="normal"&&dp.worth))st.late[side+"pinch"]=true; if(v==="normal")st.autoDid=st.late[side+"pinch"]?"sent up the pinch hitter (he's the better bat)":"let him hit"; return }
     if(dp.k==="steal"){ const go=v==="send"||(v==="normal"&&dp.p>=BS_SEND); if(v==="normal")st.autoDid=go?"sent him (a good jump to be had)":"held him"; if(go&&H&&H.b[0]&&!H.b[1])steal(side); return }
@@ -315,15 +570,29 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   /* the calls due before the next at-bat (people only; the computer manages as above) */
   function callsDue(){
     const bat=H.bat, fs=H.fs;
+    // engine 26: your bullpen. Who comes in when you call for him (the button), when your starter tires, and when your
+    // reliever is done late in a close game; and the intentional walk
+    if(humans[fs]&&st.S[fs].v26){ const X=st.S[fs], sc=lead(fs);
+      if(X.want&&halfStart()&&!st.asked["penu"+inn()+fs]){ st.asked["penu"+inn()+fs]=true; X.want=false; const R=penRank(fs).slice(0,3);
+        if(R.length&&queueCall(fs,penuCall(inn(),sc,X,R,penPlan26(fs))))return true }
+      if(!(X.holdTo>X.bfAll)){
+        if(pullDue26(fs)&&!st.asked["pull"+inn()+fs]){ st.asked["pull"+inn()+fs]=true; const R=penRank(fs).slice(0,2);
+          if(R.length&&queueCall(fs,pullCall26(inn(),sc,X.sp,R,H.b.some(Boolean)?onDesc()+".":"")))return true }
+        if(X.cur&&inn()>=7&&Math.abs(sc)<=3){ const w=penPlan26(fs), key="pen"+inn()+fs+X.cur.n;
+          if(w&&!st.asked[key]){ st.asked[key]=true; const R=[w].concat(penRank(fs).filter(c=>c.n!==w.n)).slice(0,2);
+            if(queueCall(fs,penCall26(inn(),sc,X.cur,R,onDesc()+".")))return true } } }
+      if(ibbSpot(fs)&&ibbGap(fs)>=6&&!st.asked["ibb"+inn()+fs]){ st.asked["ibb"+inn()+fs]=true; const B=st.S[bat];
+        const dp=ibbCall(inn(),sc,who(bat,B.bat%9),who(bat,(B.bat+1)%9),onDesc()); dp.gap=ibbGap(fs); dp.worth=ibbWorth(fs); dp.team=ctx.team&&ctx.team[bat];
+        if(queueCall(fs,dp))return true } }
     // your starter, tiring in a close game, with you in the field
-    if(humans[fs]&&pullDue(fs)&&!st.asked["pull"+inn()+fs]){ st.asked["pull"+inn()+fs]=true; const X=st.S[fs];
+    if(humans[fs]&&!st.S[fs].v26&&pullDue(fs)&&!st.asked["pull"+inn()+fs]){ st.asked["pull"+inn()+fs]=true; const X=st.S[fs];
       if(queueCall(fs,pullCall(inn(),lead(fs),X.sp,H.b.some(Boolean)?onDesc()+".":"")))return true }
     if(humans[bat]&&inn()>=7&&Math.abs(lead(bat))<=2){ const X=st.S[bat], slot=X.bat%9;
       // tied or behind only (round 56: the help says "when you're chasing", and a third of the calls came with a lead: Instinct)
       // round 58, measured on replays: a pinch hitter is worth asking you about tied or down one from the 8th (about 4
       // points on your assistant); in the 7th, or down two, about 2: those go to him
-      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&lead(bat)>=-1&&inn()>=8&&!st.asked["pinch"+inn()+bat]&&(ENGINE_V<7||benchFree(bat))){ st.asked["pinch"+inn()+bat]=true;
-        const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench&&ctx.bench[bat]||null,onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
+      if((H.b[1]||H.b[2])&&slot>=6&&lead(bat)<=0&&lead(bat)>=-1&&inn()>=8&&!st.asked["pinch"+inn()+bat]&&(X.v26&&ctx.bench26?bench26(bat).length>0:ENGINE_V<7||benchFree(bat))){ st.asked["pinch"+inn()+bat]=true;
+        const dp=X.v26&&ctx.bench26?pinch26(bat,slot):pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench&&ctx.bench[bat]||null,onDesc()); if(!dp.k26){ dp.worth=pinchWorth(bat,slot) } dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true }
       // the steal: asked tied from the 8th (3 to 4 points on your assistant, measured); elsewhere he decides (1 to 2)
       if(H.b[0]&&!H.b[1]&&H.outs<2&&lead(bat)===0&&inn()>=8&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
@@ -334,8 +603,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // be a spectator for three innings", Muse). If nothing worth asking has come by then, the first pinch-hit or steal
     // chance is yours, even where the replays put it under 3 points on your assistant.
     if(humans[bat]&&inn()>=8&&Math.abs(lead(bat))<=1&&!(st.lateGot&&st.lateGot[bat])){ const X=st.S[bat], slot=X.bat%9;
-      if((H.b[1]||H.b[2])&&slot>=5&&ctx.bench&&ctx.bench[bat]&&!st.asked["pinch"+inn()+bat]&&(ENGINE_V<7||benchFree(bat))){ st.asked["pinch"+inn()+bat]=true;
-        const dp=pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench[bat],onDesc()); dp.worth=pinchWorth(bat,slot); dp.team=ctx.team&&ctx.team[bat];
+      if((H.b[1]||H.b[2])&&slot>=5&&ctx.bench&&ctx.bench[bat]&&!st.asked["pinch"+inn()+bat]&&(X.v26&&ctx.bench26?bench26(bat).length>0:ENGINE_V<7||benchFree(bat))){ st.asked["pinch"+inn()+bat]=true;
+        const dp=X.v26&&ctx.bench26?pinch26(bat,slot):pinchCall(inn(),lead(bat),who(bat,slot),ctx.bench[bat],onDesc()); if(!dp.k26){ dp.worth=pinchWorth(bat,slot) } dp.team=ctx.team&&ctx.team[bat];
         if(queueCall(bat,dp))return true }
       if(H.b[0]&&!H.b[1]&&H.outs<2&&!st.asked["steal"+inn()+bat]){ st.asked["steal"+inn()+bat]=true;
         const rn=onFirst[bat], cn=catcherOf(other(bat)), dp=stealCall(inn(),lead(bat),rn,H.outs);
@@ -348,14 +617,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // yours: the computer's rule too, except while the pull call is still to be asked this inning (round 53: once
     // it had been asked, nothing took a spent starter out until the inning ended; leaving it to the assistant gave
     // up a run a game more than the computer, and won 39% to its 49%)
-    if(!humans[fs]||st.S[fs].pen||!pullDue(fs)||st.asked["pull"+inn()+fs])cpuPen(fs);
-    cpuCloser(fs);
+    if(st.S[fs].v26){ cpu26(fs); if(!humans[fs]&&!st.late[fs+"ibb"]&&ibbWorth(fs))st.late[fs+"ibb"]=true }
+    else{ if(!humans[fs]||st.S[fs].pen||!pullDue(fs)||st.asked["pull"+inn()+fs])cpuPen(fs);
+      cpuCloser(fs) }
     // the computer's steal: a chance like any other, taken only when the runner should make it (round 58)
     // (yours too, wherever you weren't asked: your assistant plays the computer's rule)
     if((!humans[bat]||!st.asked["steal"+inn()+bat])&&H.b[0]&&!H.b[1]&&H.outs<2&&(bsV6()?rng.r()<bsTryRate(onFirst[bat],atOf(bat,onFirst[bat]))&&bsStealP(onFirst[bat],catcherOf(fs),atOf(bat,onFirst[bat]),atOf(fs,catcherOf(fs)))>=BS6.send:rng.r()<BS.stealTry&&bsStealP(onFirst[bat],catcherOf(fs))>=BS_SEND))steal(bat);
     // and its pinch hitter, in the spots you're asked about (round 58: it never pinch-hit, while your assistant did)
-    if(inn()>=7&&Math.abs(lead(bat))<=2&&(H.b[1]||H.b[2])&&(st.S[bat].bat%9)>=6&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
-      if(pinchWorth(bat,st.S[bat].bat%9))st.late[bat+"pinch"]=true }
+    if(inn()>=7&&Math.abs(lead(bat))<=2&&(H.b[1]||H.b[2])&&(st.S[bat].bat%9)>=(st.S[bat].v26?5:6)&&!st.asked["pinch"+inn()+bat]){ st.asked["pinch"+inn()+bat]=true;
+      if(st.S[bat].v26&&ctx.bench26){ const p=phPick(bat,st.S[bat].bat%9); if(p)st.late[bat+"ph"]=p }   // engine 26: the best bat on the bench against this pitcher
+      else if(pinchWorth(bat,st.S[bat].bat%9))st.late[bat+"pinch"]=true }
   }
   function finishHalf(){
     st.lines[H.bat==="home"?"h":"a"];
@@ -373,7 +644,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(st.seg===3&&!st.r1&&!H){ st.r1=true; ["home","away"].forEach(sd=>{ if(!humans[sd]){ readIt(sd,0.45); return } const O=st.S[other(sd)]; O.tell.n=1; queueCall(sd,readCall(O.tell,st.S[sd].ans)) });
       if(st.queue.length)return st.next() }
     // the inning
-    if(!D){ D={seg:st.seg,h:0,a:0,sh:st.h,sa:st.a,ev:[]}; if(st.plog)D.pl=[]; startHalf("away") }
+    if(!D){ D={seg:st.seg,h:0,a:0,sh:st.h,sa:st.a,ev:[]}; if(st.plog)D.pl=[]; st.k26=0; startHalf("away") }
     let guard=0;
     while(guard++<200){
       if(callsDue())return st.next();
@@ -456,14 +727,20 @@ function sportPlanEvidence(o){ try{ const sp=spCtx(o,cardStepFor(o)), R=SEA.rost
   const z=bsSpZ(o,cardStepFor(o)), lean=z>0.25?"leans to Stuff: misses bats, which hurts Swing for the fences":z<-0.25?"leans to Control: walks few, which hurts Small ball":"no strong lean";
   return `${esc(sp.n)} starts for ${esc(o)}: Stuff ${attrShow(A.stf)}, Control ${attrShow(A.ctl)}, ${lean} (${esc(bsSeasonLine(o,sp.n))})` }catch(e){ return null } }   // round 94: the reason line
 function sportPlanFitLine(t,pl){ return planAmpV()?planFitWords(t,pl,{safe:"contact and eye",aggressive:"power"}):"" }
-function gameCtx(h,a,year,step){ const LH=lineupOf(h), LA=lineupOf(a), BH=benchBat(h), BA=benchBat(a); return {lz:planAmpV()?{home:Math.round(bsLeanZ(h)*1000)/1000,away:Math.round(bsLeanZ(a)*1000)/1000}:undefined, spz:planVsV()?{home:bsSpZ(h,step),away:bsSpZ(a,step)}:undefined, fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
-  lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:catcherName(h),away:catcherName(a)},
-  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h,step,LH,BH),away:bsAttrs(a,step,LA,BA)}:undefined} }
+function gameCtx(h,a,year,step){ const K26=bsV26()?[bsLineup26(h,step,a),bsLineup26(a,step,h)]:null;   // engine 26: the lineup card
+  const LH=K26&&K26[0]?K26[0].lu:lineupOf(h), LA=K26&&K26[1]?K26[1].lu:lineupOf(a), BH=benchBat(h), BA=benchBat(a);
+  // engine 26: each bullpen by name with its rest, and each bench
+  const G26=bsV26()?{ph:bsPen26(h,step),pa:bsPen26(a,step),bh:bsBench26(h,LH),ba:bsBench26(a,LA)}:null; if(G26&&!G26.ph&&!G26.pa)G26.ph=G26.pa=undefined;
+  return {lz:planAmpV()?{home:Math.round(bsLeanZ(h)*1000)/1000,away:Math.round(bsLeanZ(a)*1000)/1000}:undefined, spz:planVsV()?{home:bsSpZ(h,step),away:bsSpZ(a,step)}:undefined, fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, sp:{home:spCtx(h,step),away:spCtx(a,step)},
+  lineup:{home:LH,away:LA}, bench:{home:BH,away:BA}, team:{home:h,away:a}, catcher:{home:K26&&K26[0]?K26[0].c:catcherName(h),away:K26&&K26[1]?K26[1].c:catcherName(a)},
+  rate:{home:ratesOf(h),away:ratesOf(a)}, pen:{home:penCtx(h),away:penCtx(a)}, seed:strHash(h+"|"+a+"|"+year+"|"+step), at:bsV10()?{home:bsAttrs(h,step,LH,BH,G26&&G26.bh),away:bsAttrs(a,step,LA,BA,G26&&G26.ba)}:undefined,
+  pen26:G26?{home:G26.ph,away:G26.pa}:undefined, bench26:G26?{home:G26.bh,away:G26.ba}:undefined} }
 /* engine 10: the attributes of the men the engine reads today (the nine, the bench bat, the day's starter, the long man
    and the set-up man), by name, as [group, values in the group's order]: kept with each computer game for its replay
    (round 81), so short */
-function bsAttrs(t,step,lu,bench){ try{ const R=SEA.roster[t]||[], want=new Set((lu||[]).concat([bench])); const sp=spCtx(t,step), pc=penCtx(t);
+function bsAttrs(t,step,lu,bench,more){ try{ const R=SEA.roster[t]||[], want=new Set((lu||[]).concat([bench]).concat(more||[])); const sp=spCtx(t,step), pc=penCtx(t);
     if(sp)want.add(sp.n); if(pc){ if(pc.long)want.add(pc.long.n); if(pc.setup)want.add(pc.setup.n) }
+    if(more&&R[BS_CL])want.add(R[BS_CL].n);   // engine 26: the closer pitches by his own attributes too
     const o={}; R.forEach(p=>{ if(!p||!p.n||!want.has(p.n)||o[p.n])return; const A=typeof attrOf==="function"?attrOf(p):null; if(!A)return; const g=attrGrp(p); o[p.n]=[g].concat(attrKeys(g).map(k=>A[k])) }); return o }catch(e){ return {} } }
 /* engine 6: the named relievers: the long man (the third starter's backup) and the set-up man (the closer's), healthy,
    each with his edge by rating against the rotation's top three, as a starter's is */
@@ -535,6 +812,7 @@ function bsCountOuts(st,fs,pn,n){ if(n>0){ const F=bsBoxSide(st,fs), P=F.pit[pn]
 function bsCountSteal(st,side,ok,nm){ const B=bsBoxSide(st,side); if(ok&&nm){ const b=B.bat[nm]=B.bat[nm]||{ab:0,h:0,hr:0,rbi:0,r:0,bb:0,sb:0,k:0}; b.sb++ } }
 function bsBoxDone(st){
   const box=JSON.parse(JSON.stringify(st.box||{home:{bat:{},pit:{},seq:[]},away:{bat:{},pit:{},seq:[]}}));
+  if(bsV26()&&st.S.home.v26)return bsBoxDone26(st,box);
   if(bsV6())return bsBoxDone6(st,box);
   ["home","away"].forEach(sd=>{ delete box[sd].resp; const F=box[sd], won=sd==="home"?st.h>st.a:st.a>st.h, sp=st.S[sd].sp.n, seq=F.seq; F.dec={};
     const spRows=seq.filter(x=>x[0]===sp), exit=spRows.length?spRows[spRows.length-1][2]:null, iExit=seq.map(x=>x[0]).lastIndexOf(sp);
@@ -560,6 +838,26 @@ function bsBoxDone6(st,box){
       if(last&&last!==w&&last!==sp){ const i0=seq.findIndex(x=>x[0]===last), lead0=i0>=0?seq[i0][1]:0; if(lead0>=1&&lead0<=3)F.dec.sv=last } }
     else F.dec.l=F.behind||order[0]||sp;
     delete F.seq; delete F.resp; delete F.aheadP; delete F.behind });
+  return box;
+}
+/* engine 26: the decisions by name, every reliever his own (no "bullpen"), and the holds and blown saves. The win: as
+   engine 6 (the pitcher of record when his side went ahead for good; a starter needs five innings, or it goes to the
+   first reliever). The save: the man who finished it, not the winner, who came in with a lead of one to three or pitched
+   three innings. A hold: a reliever who came in with a lead of one to three, got an out, and left with the lead, and
+   neither won nor saved it. A blown save: a reliever who came in with a lead of one to three and lost it. (MLB's rule
+   also counts the tying run on deck; the box score's seq has no bases.) */
+function bsBoxDone26(st,box){
+  ["home","away"].forEach(sd=>{ const F=box[sd], won=sd==="home"?st.h>st.a:st.a>st.h, sp=st.S[sd].sp.n, seq=F.seq||[]; F.dec={}; F.sp=sp;
+    const order=[], first={}, last={}; seq.forEach(x=>{ if(order.indexOf(x[0])<0){ order.push(x[0]); first[x[0]]=x[1] } last[x[0]]=x[2] });
+    const outs=n=>F.pit[n]?F.pit[n].outs:0, fin=seq.length?seq[seq.length-1][0]:null;
+    if(won){ let w=F.aheadP||order[0]||sp; if(w===sp&&outs(sp)<15)w=order[1]||sp; F.dec.w=w;
+      if(fin&&fin!==w&&fin!==sp&&((first[fin]>=1&&first[fin]<=3)||(first[fin]>=1&&outs(fin)>=9)))F.dec.sv=fin }
+    else F.dec.l=F.behind||order[0]||sp;
+    const hld=[], bs=[]; order.forEach(n=>{ if(n===sp)return; const L0=first[n]; if(!(L0>=1&&L0<=3))return;
+      const lost=seq.some(x=>x[0]===n&&x[2]<=0); if(lost){ bs.push(n); return }
+      if(n!==fin&&n!==F.dec.w&&n!==F.dec.sv&&outs(n)>=1&&last[n]>=1)hld.push(n) });
+    if(hld.length)F.dec.hld=hld; if(bs.length)F.dec.bs=bs;
+    delete F.seq; delete F.resp; delete F.respK; delete F.aheadP; delete F.behind });
   return box;
 }
 function playGame(rng, eloH, eloA, planH, planA, opts){
