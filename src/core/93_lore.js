@@ -257,7 +257,7 @@ function loreBank(){
   if(ch){ const was=lo.last[ch]!=null?lo.last[ch]:L.last[ch], prev=lo.ch.filter(x=>x[0]<y).sort((a,b)=>b[0]-a[0]);
     let run=0; for(const x of prev){ if(x[0]===y-1-run&&x[1]===ch)run++; else break }
     let line="";
-    if(run>=1)line=run===1?`${ch} win it again: back-to-back ${L.titleWord}s.`:`${ch} make it ${run+1} in a row.`;
+    if(run>=1)line=run===1?`${ch} win it again: back-to-back ${L.titleWord}s.`:`${ch} make it ${["","","","three","four","five","six","seven","eight"][run+1]||run+1} in a row.`;
     else if(was===0)line=`The first ${L.titleWord} in ${lorePoss(ch)} history.`;
     else if(was&&y-was>=15)line=`${lorePoss(ch)} first ${L.titleWord} since ${loreYs(was)}: ${y-was} years.`;
     else{ const n=prev.filter(x=>x[1]===ch&&x[0]>y-10).length; if(n>=2)line=`${lorePoss(ch)} ${["","","third","fourth","fifth","sixth"][n+1]||(n+1)+"th"} ${L.titleWord} in ten years.`;
@@ -273,7 +273,10 @@ function loreBank(){
   Object.keys(pairs).forEach(k=>{ const r=lo.riv[k]||[0,0,y,y], a=k.split("|")[0]; r[0]++; if(pairs[k]===a)r[1]++; r[2]=y; lo.riv[k]=r });
   { const ks=Object.keys(lo.riv); if(ks.length>60)ks.sort((a,b)=>lo.riv[a][2]-lo.riv[b][2]).slice(0,ks.length-60).forEach(k=>delete lo.riv[k]) }
   // awards night, banked: the winners, and the honours men carry
-  const aw=loreAwards(); if(aw.length){ lo.aw.push([y,aw.map(a=>[a.name,a.w.n,a.w.t,a.w.pos||""])]); if(lo.aw.length>30)lo.aw=lo.aw.slice(-30) }
+  const aw=loreAwards();
+  aw.slice(0,L.sides?2:1).forEach(a=>{ if(a.w&&!a.w.pos&&!a.vote&&!a.f.length)return;
+    news.push([a.w.t===S.myTeam?"gold":"muted",`${a.name}: ${a.w.n} (${a.w.t})`,a.vote?`${a.w.pts} points, ${a.w.fp} of ${a.voters} first-place votes${a.f[0]?`; ${a.f[0].n} was second with ${a.f[0].pts}`:""}.`:(a.w.line?a.w.line+".":"")]) });
+  if(aw.length){ lo.aw.push([y,aw.map(a=>[a.name,a.w.n,a.w.t,a.w.pos||""])]); if(lo.aw.length>30)lo.aw=lo.aw.slice(-30) }
   loreHonours();
   // each club's win share, for next year's coach of the year
   const rg=L.college?SEA.rec:(SEA.regRec||SEA.rec); lo.lw={};
@@ -409,7 +412,7 @@ function loreBookHTML(){
     h+=`<div class="grouphead">Longest waits</div>`+D.map(d=>row(esc(d.t),"",d.y?"last won "+esc(loreYs(d.y)):"never")).join("");
     const R=Object.keys(lo.riv||{}).map(k=>[k,lo.riv[k]]).filter(x=>x[1][0]>=2).sort((a,b)=>b[1][0]-a[1][0]||b[1][2]-a[1][2]).slice(0,6);
     if(R.length)h+=`<div class="grouphead">${LEAGUE.draws?"Title races":"Postseason rivalries"}</div>`+R.map(([k,r])=>{ const ab=k.split("|");
-      return row(esc(ab[0]+" and "+ab[1]),r[0]+" meetings",LEAGUE.draws?"":esc(ab[0])+" "+r[1]+"-"+(r[0]-r[1])) }).join("");
+      return row(esc(ab[0]+" and "+ab[1]),r[0]+" meetings",LEAGUE.draws?"":esc(ab[0])+" won "+r[1]+", "+esc(ab[1])+" "+(r[0]-r[1])) }).join("");
     h+=`<div class="fnote">${esc(myTitleLine(my,last(my),y))}</div>`;
   }
   return h }

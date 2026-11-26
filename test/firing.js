@@ -1,5 +1,6 @@
 /* Firing follows the rule the game states: miss expectations two years
-   running at the same job and you're fired; never for one bad season. A
+   running at the same job and you're fired; never for one bad season (engine 27: the owner's patience sets the count,
+   and an impatient one fires after one bad year; core 93_lore). A
    season misses when its grade says so ("Short of the mark" or "A bad
    year"). A fired coach always has at least one job to take. In a hot seat the computer never fires or poaches a human coach.
      node test/firing.js [file.html] [careers=10]   last line: MATCH or MISMATCH */
@@ -31,9 +32,16 @@ let bad=0, offseasons=0, firings=0, oneBad=0; const fail=m=>{bad++; if(bad<=8)co
         api.openOffseason(); const S=api.S; offseasons++;
         const now=api.seasonGradeFor(E.rec[my][0],E.rec[my][1],E.seasonResult(my),S.expNow);
         const prev=(S.history||[]).find(h=>h.year===E.year-1&&h.team===my);
-        const shouldGo=missed(now)&&!!prev&&/Short of the mark|A bad year/.test(prev.gradeLine||'');
+        let shouldGo=missed(now)&&!!prev&&/Short of the mark|A bad year/.test(prev.gradeLine||'');
+        // engine 27 (league life): the owner's patience, as the You tab states it (core 93_lore): measured two misses in a
+        // row, patient three, impatient two or one bad year after the first; a title in the last two seasons buys one more
+        const B=api.boss(my);
+        if(B){ const H=(S.history||[]).filter(h=>h.team===my).sort((a,b)=>b.year-a.year); let y=E.year-1, ten=0, run=0, open=true, title=false;
+          for(const h of H){ if(h.year!==y)break; ten++; if(open&&/Short of the mark|A bad year/.test(h.gradeLine||''))run++; else open=false; if(ten<=2&&h.champion===my)title=true; y-- }
+          const need=[2,2,3][B.pat]+(title?1:0);
+          shouldGo=missed(now)&&(run+1>=need||(B.pat===0&&!title&&ten>=1&&/A bad year/.test(now.l))) }
         const went=!!S.off.act.userOpen;
-        if(went){firings++; if(!missed(now)||!prev||!/Short of the mark|A bad year/.test(prev.gradeLine||''))oneBad++}
+        if(went){firings++; if(!missed(now)||!prev||!/Short of the mark|A bad year/.test(prev.gradeLine||''))oneBad++}   // (engine 27: an impatient owner's one bad year counts here)
         if(went!==shouldGo)fail(`${E.year} ${my}: ${went?'fired':'kept'} after ${prev?prev.grade+' ('+prev.gradeLine+')':'no earlier season here'} then ${now.g} (${now.l})`);
         // the other human coaches are not the computer's to fire or poach
         if(process.env.TRAP){const C=api.U.coach; humans.forEach(t=>{let v=C[t]; Object.defineProperty(C,t,{configurable:true,enumerable:true,get(){return v},set(x){if(v&&v.you&&!x.you)console.log('   TRAP',t,'replaced by',x.n,'during',my+"'s offseason",new Error().stack.split('\n').slice(2,6).map(s=>s.trim().split(' ')[1]).join(' < ')); v=x}})})}
