@@ -140,7 +140,8 @@ counted by comparing rosters, so trades and retirements carry no dead money.
   - An old save at season's end converts at open (cap 301.2).
   - A reload mid-offseason gives the same contracts and specialists.
   - Committing sets `foV` 1 (payroll 239.9), and play continues.
-- `node test/nfl.js dist/football-coach-pro.html 3 8`: MATCH on every rule. See entry 4 for the numbers.
+- `node test/nfl.js dist/football-coach-pro.html 3 8`: MATCH on the draft-board build. On the contracts build, its cap
+  gate failed until the fix in entry 5. See entries 4 and 5.
 
 ## 3. A kicker and a punter for every club
 
@@ -203,12 +204,33 @@ The expected changes are in pro football only:
 The NBA and NHL fast goldens were checked unchanged after the core draft-night hook: NBA MATCH b67133ff4419ea04, NHL
 MATCH 55b61b4531d1e1c8. College football MATCH 30c6ece58cf32d78.
 
-- `test/golden-fast-nfl.json`: re-recorded (`node test/golden.js dist/football-coach-pro.html --fast --write --note ...`).
-- `test/golden-nfl.json`: re-recorded.
-- `test/hotseat-nfl.json`: see the commit.
+| File | Command | Old | New |
+|---|---|---|---|
+| `test/golden-fast-nfl.json` | `node test/golden.js dist/football-coach-pro.html --fast --write --note "..."` | f214c1e9bd9f5025 | 1a99adc5490ddf33 |
+| `test/golden-nfl.json` | `node test/golden.js dist/football-coach-pro.html --write --note "..."` | 2dadafc3c2ca9735 | a1be55afbbeef0c0 |
+| `test/hotseat-nfl.json` | `node test/hotseat.js dist/football-coach-pro.html --write --note "..."` | 028fe72b3eea2f64 | 023f5d25eed0f0a3 |
+
+The hotseat run had no crashes before re-recording; only its fingerprint changed.
+
+College football's full goldens are unchanged too: `node test/golden.js dist/football-coach.html --check` MATCH
+e16166e4f2373c43, and `node test/hotseat.js dist/football-coach.html --check` MATCH 32a8fcd0b28207d3.
 
 Favourite win rate (`test/nfl.js 3 8`): 0.581 on HEAD's build and 0.583 after these changes, so the gap below the NFL's
 0.63-0.66 band was already there and isn't from this branch. Parity is something to look at in a later round.
+
+## 5. Fix: the cap gate on the re-sign screen
+
+**What.** `foContract` capped a year's pay at the top ask ($60M). As a result, a planned re-signing could never push the
+payroll over the cap. `test/nfl.js`'s gate sets an ask to $500M, and the offseason went ahead anyway. The ask is already
+capped in `foAsk`, so the extra clamp is gone.
+
+**How tested.**
+- `node test/nfl.js dist/football-coach-pro.html 3 8` on the build before the fix: FAIL "over the cap, but the offseason
+  is not blocked", then a crash in the test.
+- `node test/nfl.js dist/football-coach-pro.html 1 1` after the fix: MATCH every rule held. The offseason gate blocks
+  over the cap and goes ahead under it.
+- The test prints "of cap 110" in its payroll summary line. That line reads the cap from a fresh load with no career,
+  so it is cosmetic. The per-season check uses the live cap ($301.2M) and passed.
 
 ## Not built: plans
 

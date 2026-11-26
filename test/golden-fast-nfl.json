@@ -1,5 +1,5 @@
 {
- "fp": "f214c1e9bd9f5025",
+ "fp": "1a99adc5490ddf33",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -150,21 +150,26 @@
    "fp": "f214c1e9bd9f5025",
    "from": "f214c1e9bd9f5025",
    "note": "Round 110: the card's chance before your plan (planFree), the live bar from your plan (screens only)"
+  },
+  {
+   "fp": "1a99adc5490ddf33",
+   "from": "f214c1e9bd9f5025",
+   "note": "Pro football front office (rv/nfl-fo): computer clubs draft from a real board; the 2026 cap ($301.2M) and real contracts; a kicker and punter whose ratings move field goals and punts. Games, records and screens differ from season 1 (in-season trades on the new contracts, kicks)"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "03d9a62996f32a50",
-    "post": "9a97ef2d7b9b4bc5",
-    "champion": "New Orleans",
-    "rec": "9e0100c131c9cc8f",
-    "poll": "44f7189f05bd9377",
-    "heis": "ac04dcfdb5834804",
-    "history": "509f74bb6a73f72b",
-    "universe": "54ca01c1f69b2ea2",
-    "screens": "32c7ee79450888b4"
+    "games": "98e3a54103092a9d",
+    "post": "ba69a6b24289792e",
+    "champion": "LA Rams",
+    "rec": "d770d858850011e7",
+    "poll": "5e0000cccc8fc725",
+    "heis": "a9f2df332371a701",
+    "history": "96563ce252467ecd",
+    "universe": "f0ad93547147e72c",
+    "screens": "607e8f1d2769cfaf"
    }
   ]
  }
