@@ -102,6 +102,57 @@ const SC18_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.e
 function scV18(){ return (typeof ENGINE_V!=="undefined"&&ENGINE_V>=18)||SC18_ENV("SC18")===1 }
 const SC18={a0:SC18_ENV("SC18_A0")??1.8, a1:SC18_ENV("SC18_A1")??2.0, ao:SC18_ENV("SC18_AO")??1.6, ao1:SC18_ENV("SC18_AO1")??0.8, k0:SC18_ENV("SC18_K0")??1.25, k1:SC18_ENV("SC18_K1")??0.5, ko:SC18_ENV("SC18_KO")??0.75, ko1:SC18_ENV("SC18_KO1")??0.7, kd:SC18_ENV("SC18_KD")??1.35, noise:SC18_ENV("SC18_N")??8};
 const SC_SUBS=2;   // round 108: the changes a side makes (your assistant's two at 60' and 70', or yours, when you like)
+/* engine 26 (review round 2): the matchday, as a Premier League manager has it. Every game, the computer's too:
+   - The team sheet (ctx.xi, from 55_squad's scSheet): who starts in each unit, the first choice or the man behind him,
+     and the formation. Each stretch a side plays the strength of the men on the pitch, by the formation's weights
+     (FORMATIONS: the engine-23 shares moved a little toward the units the shape leans on), against what its rating
+     already counts (teamRating: the first choice for most of the game, the man behind him for the bench share). So a
+     rested star costs his gap for as long as he sits, a formation that leans on your best units is worth a little, and
+     a change brings on a better or a worse man as well as fresh legs.
+   - Five changes in three windows, half-time free, one more (and a window) in extra time: IFAB Law 3
+     (theifab.com/laws/latest/the-players). The computer makes its changes at 60', 70' and 80', the most tired line
+     first, and keeps a much better man on unless his legs have gone: about four a match (Premier League 2023-24: about
+     four a team a match, all five in 42.5% of matches, the first at about the hour: kwestthoughts.substack.com/p/
+     data-dump-2023-24-substitution-trends, theanalyst.com/articles/assessing-each-premier-league-teams-substitutions-
+     2023-24). A change freshens its share of its line's legs (SC26.sh).
+   - Condition from the last games (55_squad scCond): a man who played three days ago starts with less in his legs
+     (SC26.cnK). Small on purpose: an extra day of rest matters only at three days or fewer (Scoppa 2015, IZA dp7519),
+     and clubs playing midweek in Europe keep their league form (CIES for UEFA: 1.74 points a game within five days of
+     a European match, 1.74 without), because they rotate. */
+const SC26_V=26;
+function scV26(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=SC26_V }
+const SC26_ENV=k=>{ const v=typeof process!=="undefined"&&process.env&&process.env[k]; return typeof v==="string"&&v?+v:null };
+const SC26={subs:5, windows:3, ht:9,
+  sh:[0.6,0.5,0.5,0.6,0.5,0.5],    // a change's share of its line's legs: GK, CB, FB, CM, W, ST
+  grp:[0,0,0,1,2,2],               // the engine's legs (defence, midfield, attack) each unit's men run in
+  cnK:SC26_ENV("SC26_CNK")??0.6,   // condition at kick-off to legs: 1 - cnK x (1 - condition/100)
+  keep:SC26_ENV("SC26_KEEP")??20,  // the computer keeps a man this much better on unless his line's legs are gone
+  auto:{12:2,14:1,16:1}};          // the computer's changes at 60', 70', 80' (one more at 80' when behind or tired)
+/* formations: each unit's weight moved from the engine-23 shares (GK, CB, FB, CM, W, ST); every row sums to zero, so a
+   squad equally good everywhere plays every shape alike. lean: the units the shape asks most of, for the team sheet.
+   pop: the computer's (and your assistant's) leaning to the shapes clubs play now, in the same units as the fit (no
+   effect on a game): the Premier League's 2024-25 shapes were 4-2-3-1 in about 54% of teams' games, a back three 15%,
+   4-3-3 15%, 4-1-4-1 4% and 4-4-2 3% (https://www.premierleague.com/news/4323030); with these the clubs' picks come out
+   about 61%, 14%, 16%, 8% and 2% (scratch fmpop.js, 984 squads) */
+const FORMATIONS={
+  "4-2-3-1":{d:[0,0,-0.01,0.03,0,-0.02], pop:0, lean:"midfield", l:"Two holding midfielders and a number ten behind one striker"},
+  "4-3-3":  {d:[0,-0.01,-0.01,0,0.03,-0.01], pop:-0.2, lean:"wingers", l:"Three in midfield, two wide forwards and a striker"},
+  "4-4-2":  {d:[0,-0.01,-0.01,-0.02,0.01,0.03], pop:-0.6, lean:"strikers", l:"Two banks of four and two up front"},
+  "3-5-2":  {d:[0,0.02,0.02,0.01,-0.06,0.01], pop:-0.4, lean:"centre-backs and wing-backs", l:"Three centre-backs, wing-backs and a strike pair, no wingers"},
+  "4-1-4-1":{d:[0,0.01,0,0.02,0.01,-0.04], pop:-0.2, lean:"midfield and centre-backs", l:"A holding midfielder behind four, one striker"}};
+const FM_KEYS=Object.keys(FORMATIONS);
+const SC_UNITW=["keeper","centre-back","full-back","midfield","wide","striker"];
+const SC_APPL={press:"Press higher",block:"Sit deeper",wing:"Work it wide",direct:"Go direct"};
+const fmW=(fm,u)=>posW(POS[u])+(fm&&FORMATIONS[fm]?FORMATIONS[fm].d[u]||0:0);   // no shape: the usual shares
+const scLegs0=c=>Math.max(0.3,Math.min(1,1-SC26.cnK*(1-(c==null?100:c)/100)));
+/* a side's strength from its men on the pitch, against what its rating counts (Elo, before GAP_SCALE). Q: ctx.xi[side]
+   (u: each unit's first choice s and the man behind him b, ratings; av: who's fit, "both", "s", "b" or ""); on: who's
+   on in each unit now (0 the first choice, 1 the man behind him) */
+function scXiElo(Q,on){ if(!Q||!Q.u)return 0; let v=0;
+  Q.u.forEach((q,u)=>{ if(!q.av)return; const P=POS[u], rs=q.av==="b"?q.b:q.s, rb=q.av==="s"?q.s:q.b;
+    const usual=q.av!=="both"?(q.av==="b"?q.b:q.s):u===0?q.s:(1-P.bench)*q.s+P.bench*q.b;
+    v+=fmW(Q.fm,u)*(on[u]?rb:rs)-posW(P)*usual });
+  return R_SLOPE*v }
 const AGGR = {
   safe:      {own:1.12, opp:1.08},   // take the game to them: more football, both ways
   balanced:  {own:1.00, opp:1.00},
@@ -308,6 +359,26 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} return APPROACH_KEYS[i];
   };
   st.S.home.app=pickApp("home"); st.S.away.app=pickApp("away");
+  // engine 26: the team sheets (no draws). Each side's men on the pitch, its changes and windows, its legs at kick-off
+  const XI=scV26()&&ctx.xi&&ctx.xi.home&&ctx.xi.away?ctx.xi:null;
+  if(XI)["home","away"].forEach(sd=>{ const X=st.S[sd], Q=XI[sd];
+    X.on=Q.u.map(q=>q.av==="b"?1:q.av==="s"?0:(q.on?1:0)); X.chg=Q.u.map(()=>0); X.win={}; X.slog=[]; X.on0=X.on.slice();
+    const g=[[0,0],[0,0],[0,0]]; Q.u.forEach((q,u)=>{ if(u===0)return; const w=posW(POS[u]), G=SC26.grp[u]; g[G][0]+=w*scLegs0(X.on[u]?q.cb:q.cs); g[G][1]+=w });
+    X.E=g.map(x=>x[1]?x[0]/x[1]:1) });
+  const benchMine=sd=>ENGINE_V>=22&&humans[sd]&&st.bench&&st.bench[sd];   // round 108: once you've made a change yourself the bench is yours
+  const xiE=sd=>XI?scXiElo(XI[sd],st.S[sd].on):0;
+  const GS=typeof GAP_SCALE!=="undefined"?GAP_SCALE:1;
+  const subAv=(sd,u)=>{ const X=st.S[sd], q=XI&&XI[sd].u[u]; return !!(q&&u>0&&q.av==="both"&&!X.chg[u]&&X.subs<SC26.subs&&!st.done) };
+  const winAv=sd=>{ const X=st.S[sd], s=st.seg; return s===SC26.ht||!!X.win[s]||Object.keys(X.win).length<SC26.windows+(s>=SEGS?1:0) };
+  const doSub=(sd,u)=>{ const X=st.S[sd], q=XI[sd].u[u], was=X.on[u]; X.on[u]=1-was; X.chg[u]=1; X.subs++; if(st.seg!==SC26.ht)X.win[st.seg]=1;
+    const G=SC26.grp[u]; X.E[G]+=(scLegs0(X.on[u]?q.cb:q.cs)-X.E[G])*SC26.sh[u]; if(u===1)X.booked=0;
+    X.slog.push([st.seg,u]); subMark(sd,G);
+    (st.subEv=st.subEv||[]).push({side:sd,k:"sub",u:u,pin:X.on[u]?q.nb:q.ns,pout:X.on[u]?q.ns:q.nb}) };
+  // the computer's pick (and your assistant's): the line whose legs are lowest, unless the man behind is much worse
+  const subPicks=(sd,n)=>{ const X=st.S[sd], Q=XI[sd];
+    return [1,2,3,4,5].filter(u=>subAv(sd,u)).map(u=>{ const q=Q.u[u], dq=X.on[u]?q.s-q.b:q.b-q.s, legs=1-X.E[SC26.grp[u]];
+      return {u:u,dq:dq,legs:legs,v:legs*40+dq} }).filter(c=>c.dq>-SC26.keep||c.legs>0.5).sort((a,b)=>b.v-a.v||a.u-b.u).slice(0,n).map(c=>c.u) };
+  const autoSubs=(sd,n)=>{ if(!winAv(sd))return; subPicks(sd,n).forEach(u=>doSub(sd,u)) };
   const queueCall=(side,dp)=>{ if(!humans[side]||st.asked[dp.k+(dp.stage||"")+side])return;
     st.asked[dp.k+(dp.stage||"")+side]=true; st.queue.push({side:side,dp:dp}) };
   // the computer: chase a deficit late, see out a lead, the home side goes for the win
@@ -325,7 +396,8 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   // the flank: spotted about four times in ten
   const aimIt=(side)=>{ if(rng.r()<0.4)st.S[side].aim=st.S[other(side)].weak };
   const segment=(s)=>{
-    const H=st.S.home, A=st.S.away, e=gap*SC.edge, ev=[];
+    const H=st.S.home, A=st.S.away, e=(gap+(XI?(xiE("home")-xiE("away"))*GS:0))*SC.edge, ev=[];
+    if(st.subEv){ st.subEv.forEach(x=>ev.push(Object.assign({m:Math.max(1,s*5)},x))); st.subEv=null }   // engine 26: the changes made as this stretch starts
     const m={home:modeOf(s,"home"), away:modeOf(s,"away")};
     const rateOf=(side)=>{
       const X=st.S[side], O=st.S[other(side)], ap=APPROACH[X.app], oap=APPROACH[O.app];
@@ -408,17 +480,23 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
       TA:{home:H.tellAll?Object.assign({},H.tellAll):null,away:A.tellAll?Object.assign({},A.tellAll):null},
       st:{home:[H.sh,H.sot],away:[A.sh,A.sot]}};
     if(ENGINE_V>=22){ d.ap={home:H.app,away:A.app}; d.md={home:m.home,away:m.away}; if(st.subQ&&(st.subQ.home.length||st.subQ.away.length)){ d.sub=st.subQ; st.subQ=null } }   // round 108: how each side is playing and the mode it played the stretch in (the computer's late push or sit too), for the pitch (no draws)   // round 108: how each side is playing, for the pitch (no draws)
+    if(XI){ if(s===0)d.xi0={home:H.on0.slice(),away:A.on0.slice(),fm:{home:XI.home.fm,away:XI.away.fm}};
+      ["home","away"].forEach(sd=>{ const L=st.S[sd].slog.filter(x=>x[0]===s); if(L.length){ d.sb=d.sb||{home:[],away:[]}; d.sb[sd]=L.map(x=>x[1]) } }) }   // engine 26: who started, and the changes as this stretch began (55_squad's minutes)
     st.drives.push(d); return d;
   };
   const extraTime=()=>{
-    const e=gap*SC.edge; st.ot=1;
+    if(XI)["home","away"].forEach(sd=>{ if(humans[sd]&&benchMine(sd))return; st.seg=SEGS; autoSubs(sd,1) });   // engine 26: one more change, in its own window
+    const e=(gap+(XI?(xiE("home")-xiE("away"))*GS:0))*SC.edge; st.ot=1;
     const G0=scV12()?SC.goals*SC12.g:SC.goals; const gH=poisson(rng,G0*SC.etGoals*Math.exp(e/2)*makeF("home","balanced","balanced")*finF("home")), gA=poisson(rng,G0*SC.etGoals*Math.exp(-e/2)*makeF("away","balanced","balanced")*finF("away"));
     st.h+=gH; st.a+=gA;
     const ev=[]; for(let i=0;i<gH;i++)ev.push({m:91+rng.int(30),side:"home",k:"goal",u:rng.int(100)});
     for(let i=0;i<gA;i++)ev.push({m:91+rng.int(30),side:"away",k:"goal",u:rng.int(100)});
     ev.sort((x,y)=>x.m-y.m);
     if(st.h===st.a){ st.so=true; const p=0.5+Math.tanh(e)*SC.penEdge; st.pens=rng.r()<p?"home":"away" }
-    st.drives.push({seg:SEGS,sh:st.h,sa:st.a,ot:1,so:st.so,pens:st.pens||null,h:gH,a:gA,shots:[0,0],pp:[false,false],ev:ev});
+    if(st.subEv){ st.subEv.forEach(x=>ev.unshift(Object.assign({m:91},x))); st.subEv=null }
+    const dE={seg:SEGS,sh:st.h,sa:st.a,ot:1,so:st.so,pens:st.pens||null,h:gH,a:gA,shots:[0,0],pp:[false,false],ev:ev};
+    if(XI)["home","away"].forEach(sd=>{ const L=st.S[sd].slog.filter(x=>x[0]===SEGS); if(L.length){ dE.sb=dE.sb||{home:[],away:[]}; dE.sb[sd]=L.map(x=>x[1]) } });
+    st.drives.push(dE);
   };
   // your assistant makes the other change: the most tired unit
   const assistantSub=(side)=>{ const X=st.S[side]; const u=[0,1,2].reduce((a,b)=>X.E[b]<X.E[a]?b:a,0);
@@ -479,9 +557,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
     if(s===11&&!st.r2){st.r2=true; ["home","away"].forEach(sd=>{ cpuRead(sd,0.3);
       { const d=readCall(2,st.S[other(sd)].tell,st.S[other(sd)].lastCue,st.S[sd].ctr,undefined,st.S[sd].ctrMine); d.pearl1=(st.p1||{})[sd]; d.best1=(st.b1||{})[sd]; queueCall(sd,d) }}); if(st.queue.length)return st.next()}   // what Pearl read at 25
     // round 108: once you've made a change yourself the bench is yours (your assistant made both at 60' and 70' regardless)
-    const benchMine=sd=>ENGINE_V>=22&&humans[sd]&&st.bench&&st.bench[sd];
+    if(!XI){
     if(s===12&&!st.s1){st.s1=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
-    if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) }
+    if(s===14&&!st.s2){st.s2=true; ["home","away"].forEach(sd=>{ if(!benchMine(sd))assistantSub(sd) }) } }
+    else if(SC26.auto[s]&&!(st.sA||{})[s]){ (st.sA=st.sA||{})[s]=true; ["home","away"].forEach(sd=>{ if(benchMine(sd))return;
+      const X=st.S[sd], n=SC26.auto[s]+(s===16&&(lead(sd)<0||Math.min(...X.E)<0.55)?1:0); autoSubs(sd,n) }) }
     if(SC_FINAL&&s===16&&!st.fn){st.fn=true; ["home","away"].forEach(sd=>{ if(Math.abs(lead(sd))>1)return;
       if(scV18()&&humans[sd]){ const rd=X=>Math.round(Math.max(5,Math.min(95,65-25*scLegsZ(X)+rng.gauss(0,SC18.noise))));   // the staff's read of each back line's legs, 0-100; drawn only for a person's side
         queueCall(sd,finalCall18(lead(sd),st.playoff,{mine:rd(st.S[sd]),theirs:rd(st.S[other(sd)])})) }
@@ -494,8 +574,28 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knockout, ctx){
   st.reply=function(v){ st.answer=v; st.waiting=null };
   /* round 108 (engine 22): a change of your own, any time, from the next five minutes: fresh legs in one unit (0 the back,
      1 midfield, 2 up front). Two a match, as your assistant makes; once you make one the bench is yours, and he makes none. */
-  st.subsLeft=side=>Math.max(0,SC_SUBS-st.S[side].subs);
-  st.subNow=function(side,u){ if(ENGINE_V<22||!humans[side]||!(u>=0&&u<=2)||st.done)return false; const X=st.S[side];
+  st.subsLeft=side=>Math.max(0,(XI?SC26.subs:SC_SUBS)-st.S[side].subs);
+  /* engine 26: the live game's own buttons (core setLivePlan "act:<id>", made as the next stretch starts): a change by
+     name ("s<unit>": the man behind on for the man on, or the first choice back on for the man who started for him),
+     and how you play from here ("app:<approach>": press higher, sit deeper, work it wide, go direct; the computer reads
+     you again only at its 25' and 55' reads, as before) */
+  st.XI=XI;
+  st.subPick=side=>XI?subPicks(side,1)[0]:undefined;
+  st.windowsLeft=side=>XI?Math.max(0,SC26.windows-Object.keys(st.S[side].win).length):0;
+  st.actsFor=function(side){ if(!XI||!humans[side]||st.done)return [];
+    const X=st.S[side], Q=XI[side], left=st.subsLeft(side), wl=st.windowsLeft(side), wOk=winAv(side), sn=n=>String(n||"").split(" ").slice(-1)[0];
+    const pk=st.subPick(side), q0=pk!=null?Q.u[pk]:null, hint=benchMine(side)?"":q0?` Your assistant: ${sn(X.on[pk]?q0.ns:q0.nb)} on for ${sn(X.on[pk]?q0.nb:q0.ns)} (${SC_UNITW[pk]}).`:"";
+    const grp=`Changes: ${left} of ${SC26.subs} left, ${wl} window${wl===1?"":"s"} (half-time is free).${hint}`;
+    const can=left>0&&wOk, subs=!can?[]:[1,2,3,4,5].filter(u=>Q.u[u].av==="both"&&!X.chg[u]).map(u=>{ const q=Q.u[u], inN=X.on[u]?q.ns:q.nb, outN=X.on[u]?q.nb:q.ns, lg=Math.round(X.E[SC26.grp[u]]*100);
+      return {id:"s"+u, l:`${sn(inN)} for ${sn(outN)} (${SC_UNITW[u]}, legs ${lg})`, grp:grp, pend:"On at the next break"} });
+    const ag=(subs.length?"":left>0?`No more changes until half-time or a window (${left} left). `:"No changes left. ")+"How we play from here";
+    const apps=APPROACH_KEYS.map(k=>({id:"app:"+k, l:SC_APPL[k], on:X.app===k, grp:ag, pend:"From the next five minutes"}));
+    return subs.concat(apps) };
+  st.act=function(side,id){ if(!XI||!humans[side]||st.done)return false; const X=st.S[side];
+    if(id.indexOf("app:")===0){ const k=id.slice(4); if(!APPROACH[k]||X.app===k)return false; X.app=k; (st.subEv=st.subEv||[]).push({side:side,k:"shift",app:k}); return true }
+    if(id[0]==="s"){ const u=+id.slice(1); if(!subAv(side,u)||!winAv(side))return false; st.bench=st.bench||{}; st.bench[side]=true; doSub(side,u); return true }
+    return false };
+  if(!XI)st.subNow=function(side,u){ if(ENGINE_V<22||!humans[side]||!(u>=0&&u<=2)||st.done)return false; const X=st.S[side];
     if(X.subs>=SC_SUBS)return false;   // his changes already made count (assistantSub counts them)
     st.bench=st.bench||{}; st.bench[side]=true; X.E[u]=1; X.subs++; if(u===0)X.booked=0; subMark(side,u); return true };
   return st;
@@ -505,8 +605,8 @@ function clubStyle(t,year){ return rosterStyle(t,year)||APPROACH_KEYS[strHash(t+
 /* round 92: the press from Stamina and Tackling, the low block from Positioning, the flanks from Pace, going direct from Heading */
 const sportStyleAttrs={press:"Stamina and Tackling",block:"Positioning",wing:"Pace",direct:"Heading"};
 function sportStyleScores(R){ const T=scShapeOf(R,null); return {press:T.sta+T.tck, block:T.pos, wing:T.pac, direct:T.hed} }
-function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
-  sh:scV12()?{home:scShapeT(h),away:scShapeT(a)}:undefined} }
+function gameCtx(h,a,year,step,sea){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+  sh:scV12()?{home:scShapeT(h),away:scShapeT(a)}:undefined, xi:typeof scXiCtx==="function"?scXiCtx(h,a,sea,step):undefined} }   // engine 26: the team sheets (55_squad)
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

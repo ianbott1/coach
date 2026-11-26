@@ -1,6 +1,9 @@
 /* soccer (engine 22): your changes, any time. A change made at 30' freshens that unit from the next stretch, once; the
    bench is then yours (your assistant makes no change at 60' or 70'); a third is refused; begun again from the save (a reload) the game makes the same changes. With no change of yours your assistant still makes both.
      node test/sc-subs.js [dist]   last line: MATCH or MISMATCH */
+// engine 26 replaced these changes with five in three windows (test/sc-manager.js): this checks the engine-22 path, which
+// a season begun on engine 25 or before still plays
+process.env.ENGINE_NOW=process.env.ENGINE_NOW||'25';
 const path=require('path'); const {load}=require('./harness.js');
 const DIST=process.argv[2]||path.join(__dirname,'..','dist'); let bad=0; const chk=(ok,m)=>{ console.log((ok?'  ok   ':'  FAIL ')+m); if(!ok)bad++ };
 const EXP=['S','SEA','newDynasty','doAdvance','live','liveTick','answerLive','setSubMidGame','liveSubsLeft','startLive','save','load'];
