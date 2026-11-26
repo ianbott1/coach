@@ -472,6 +472,60 @@ Round 107: the game agrees with itself (engine 21; the November 23 reviews, Muse
 - Left for later: the pitch applying soccer's late change, the hockey rink on a
   phone, red-zone punts (round 106), kicks against going for it (a model question).
 
+Round 111: watching (no engine change: engine 24, the sims' files untouched; Ian's notes Nov 25, Grokbot round 14).
+- Real time (Ian: "Slow should be real time"). FULL_RT (core 97): the full match's share of real time, slow 1, normal
+  0.5, fast 0.25, very fast 0.1. Soccer and hockey (evPB.rt: a stretch's game minutes x 60,000 ms x fullRT) and
+  basketball (playback: spanOf x 60,000 x fullRT) run on the game clock: Slow 60 wall seconds a game minute (was 11 to
+  19; probes/r111-pace.js). Baseball and football play each action at real speed with a shortened wait: BS_DW 6 s
+  between pitches (real 15 to 20), FB_PRE 4 s to the snap (real 25 to 40): about 53 and 14 minutes a game on Slow.
+  Motion is computed in game time, so Normal is the same play at twice the speed. pbRescale (core 99): a speed change
+  inside a stretch takes hold at once and keeps the stretch's place (it ran on at the old length, now minutes; test
+  pb-rescale.js).
+- Soccer and hockey move like the sport: the ball or puck at a pass's real speed (spBall/hpPuck: soccer 15 to 22 m/s,
+  hockey 15, icing 22), the man it reaches carrying it on (a dribble: SP_DRIB 4.6 m/s, HP_SKATE 6.5) instead of each
+  touch easing the play to a stop; the shapes follow the ball as it really moves (a 1 s lag in 110 or 80 ms steps); a
+  game-time speed cap (soccer 6.5 m/s off the ball, hockey 8; ball men 1.55 and 1.4 times). Hockey's last leg of a move is
+  skated in (the puck lay still 59% of frames; 4% now), and in real time a pass every 3 s or so (filler touches on their
+  own dice: hk-pb's counted events unchanged, 50.6 to 95.1 touches a stretch). Skaters and outfield men loop round their
+  spots on the game clock. Measured on Slow (probe, clip frames skipped): soccer stutters 18 to 3.1 a man-minute, men
+  over 12 m/s 683 to 0 frames a man-minute, skater median 0.5 to 1.2 m/s; hockey stutters 10.6 to 1.8, over 12 m/s 594
+  to 0, skater median 0.2 to 2.0. The 2,000 m/s "jumps" both builds showed were the probe reading stale positions across a
+  clip (hk-clipjoin and sc-clipjoin check the joins). sc-motion's lag limit is 1.0 m for both (was 0.6 for hockey): at
+  real speeds a man is a little behind a shape that slides faster than he can run (soccer 0.85, hockey 0.85 m).
+- Hockey: neutral-zone faceoffs on the painted dots (0.39, 0.61; they were drawn at 0.4, 0.6, about 0.6 m off); every
+  faceoff is on a dot (3 games: centre 23, end zones 126, neutral 15).
+- Basketball: possessions at their real lengths (pbTimes: up the floor about 5 s, a shot's gather, flight and board
+  2.6 s, the ball worked round in what's left, a pass every 2.4 s at 11 m/s); men at most BB_VRUN 7.5 m/s; the drift on
+  the game clock. Transition (Ian: "no transition play"): off a defensive board or a turnover, a trip that ends in a shot
+  from the floor runs about two in three times (16% of trips; NBA about 15%), up the floor in about 3 s, the defence
+  trailing. Presentation only: the engine's possessions are the same.
+- Baseball on real seconds (bsGeom, 72_highlights): who fields it, where the ball goes, when each man gets where, and
+  the race the log decided. Ground-ball outs: the fielder takes it where it comes to him (26 m/s), the throw (33 m/s)
+  beats the batter (4.3 s to first) in 43 of 43 (bs-plays.js; closest 1.5 s); the batter runs it out through the bag.
+  Hits: the outfielder runs the ball down where it gets to and throws it in (51 of 51 within 2 m of the ball). Sac flies:
+  the runner tags, leaves on the catch and scores ahead of a late throw (3 of 3). A bat, back and through the zone on a
+  swing; a third of pitches break (24%: slower, bending, looping); runners lead off and take a secondary lead (623 of
+  623 off the bag at release).
+- Football: each snap on real seconds (fbTimes: the set, the play by length, the whistle; about 8.6 s a snap on Slow);
+  men at most 11 yards a game second.
+- A play by play in every sport (Grokbot: "named, readable, in sync"): hockey (each move's end and each clip's line),
+  basketball (each trip once over), baseball (each at-bat once decided, steals), football (each snap, each kick and
+  drive end); test pbp-feed.js. Live player stats under it in every sport (hlStatRows; HL_SPORT.liveStats): counted
+  from the log as far as the screen has shown, the stretches shown and the one playing up to now: basketball points,
+  boards, steals, threes; baseball hits for at-bats, homers, RBI, walks; hockey and soccer goals and shots; football
+  passing, rushing, receiving. At the final they add up (live-stats.js: points and goals to the score, hits to the line
+  score, all six games).
+- A bigger field: the full match breaks out of the page's column (.hlpitch.big, up to 1240 px, as tall as the window
+  allows above the action bar; the page scrolls to it once a game). 1280x800: soccer 648x402 to 1059x657, baseball
+  677x420 to 1059x657, NBA 779x421 to 1216x657; 1920x1080 900 wide to 1240.
+- The run of play lists what the screen has shown (liveShown): it listed the stretch still playing (Muse: run of play
+  29-13 at 10:00 while the scoreboard read 22-10). runplay-sync.js: six games, about 450 samples each at Very fast, the
+  newest row never ahead of the header and the header always the field's score.
+- The duplicate field on a switch to Full match: not reproduced here (football, both builds, 300 samples after the
+  switch). Football's drive chart is now kept hidden whenever the full match is up, the one way it could show under it.
+- Not done, round 112: hockey's rink crowding one end, baseball's controls under the bar on a phone, Skip to next call
+  that skips, soccer assists and passes in the live stats.
+
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
   the answer (planScoutHTML, core 99_app): for each plan, your roster's lean and the opponent's answer to it as league
