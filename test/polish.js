@@ -205,5 +205,24 @@ check('a hired assistant keeps the name he was hired under (college basketball)'
   ok(C.length>=2&&new Set(firsts).size===firsts.length&&firsts.indexOf('Trent')<0&&hired===shown,`${C.length} candidates (${C.map(c=>c.n).join(', ')}) beside the head coach Trent and ${dc&&dc.n}; hired "${shown}", on the staff as "${hired}"`);
 });
 
+// Playtest (college basketball): one roster held four Kel'els, two Spearmans and two Guidrys. A new career's rosters and
+// each summer's unmet newcomers take a first name and a surname nobody else on the roster has (returners, transfers
+// and recruits you signed keep theirs, so a repeat can still come, rarely).
+check('names on a college roster don\'t repeat (college basketball and football)',()=>{
+  for(const [lg,yrs] of [['ncaab',2],['cfb',1]]){
+    const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T');
+    const count=()=>{ let rep=0, teams=0; const three=[];
+      for(const t of ev('NAMES')){ const R=(api.U.roster[t]||[]).filter(p=>p&&p.n); teams++; const c={};
+        R.forEach(p=>{ const sp=p.n.indexOf(' '); ['f'+p.n.slice(0,sp),'l'+p.n.slice(sp+1)].forEach(k=>c[k]=(c[k]||0)+1) });
+        Object.entries(c).forEach(([k,v])=>{ if(v>1)rep+=v-1; if(v>2)three.push(t+' '+k.slice(1)+' x'+v) }) }
+      return {rep,teams,three} };
+    const a=count();
+    for(let y=0;y<yrs;y++){ let n=0; while(api.SEA.phase!=='done'&&n++<3000)ev('simAdvance()'); api.openOffseason();
+      if(api.S.off.act&&api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam; api.commitOffseason() }
+    const b=count();
+    ok(a.rep===0&&!b.three.length&&b.rep<=b.teams*0.12,`${lg}: a new career's ${a.teams} rosters repeat ${a.rep} names; after ${yrs} summer(s) ${b.rep} repeats${b.three.length?', '+b.three.slice(0,3).join('; '):', none three deep'}`);
+  }
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

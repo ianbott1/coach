@@ -972,7 +972,7 @@ function newDynasty(team,seed,coachName,roster){
     u.coach[c.myTeam]={id:0,n:c.career.name,q:0,t:0,hired:true,you:true,
                        w:0,l:0,titles:0,confs:0,fired:0,stops:[]};
   });
-  distinctLeague(u);
+  distinctLeague(u); distinctNewcomers(u,new Set());   // college: one first name and one surname a roster (core 21_names)
   u.schedV=4;                                            // a schedule drawn the same way every time (schedOrder); 3: round 71's spreads; 4: round 79, no back-to-back sets (baseball)
   u.engV=ENGINE_NOW;                                     // round 71: new careers on the current engine
   attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
@@ -1367,6 +1367,7 @@ function endSeason(rng,choices,act,seasonTeam){
   // and realignment move teams, and the season belongs to the group it was played in
   const entry=seasonEntry(my);
   if(typeof bankStory==="function")bankStory(entry);   // its comeback and collapse; the head-to-head with each coach (round 41)
+  const known=new Set(); NAMES.forEach(t=>(U.roster[t]||[]).forEach(p=>{ if(p)known.add(p) }));   // who was on a roster before the summer
   const B=LEAGUE.offseason.run(U,rng,SEA.healthy(),SEA.elo,SEA.rec,choices);
   const off=Object.assign({},act,B);
   const exp=S.expNow||expectations();
@@ -1401,7 +1402,7 @@ function endSeason(rng,choices,act,seasonTeam){
         coachNow:(U.coach&&U.coach[t])?{n:U.coach[t].n,q:U.coach[t].q,t:U.coach[t].t}:null},
       league:LEAGUE.historyExtras(SEA,off,t)});
   });
-  distinctLeague(U);
+  distinctLeague(U); distinctNewcomers(U,known);   // college: the summer's unmet newcomers take names free on their roster
   U.schedV=4;                                            // (schedOrder; 3: round 71; 4: round 79)
   U.engV=ENGINE_NOW;                                     // a new season on the current engine (round 71)
   delete S.schedLock;                                    // a new season draws its own, the same way every time

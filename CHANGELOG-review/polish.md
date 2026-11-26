@@ -155,3 +155,19 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js "keeps the name"` (head coach named Trent, candidates forced to Trent): before, "Trent
   Cristobal" was hired and joined as "Herman Cristobal"; after, the candidates are Andre Kiffin, Herman Cristobal, Cole
   Bowden and the hire keeps his name. MATCH.
+
+## College rosters: one first name and one surname each (college basketball and football)
+- What: a new career's college rosters, and each summer's newcomers nobody has met (the computer's freshmen, the walk-on
+  who fills a spot a transfer left), take a first name and a surname nobody else on their roster has, by hash so no
+  draw moves (core/21_names.js distinctNewcomers, called at a new career and at the end of the offseason in
+  core/99_app.js). Returners, transfers and recruits you signed off your board keep their names, so a repeat can still
+  come, rarely. Not on load: an old save's rosters stay as they are until their next summer.
+- Why: playtest: one college basketball roster held four Kel'els, two Spearmans and two Guidrys. A college roster drew
+  from 55-60 first names, so a new career began with 297 first-name repeats across 365 basketball rosters and 357 across
+  132 football rosters, some three deep.
+- Which games: college basketball, college football. Results of a first season don't move (names aren't drawn from);
+  later seasons can (the portal reads a hash of a starter's name), and screens and the universe's names change in both
+  goldens.
+- Tested: `node test/polish.js "don't repeat"`: before, ncaab 297 repeats at the start and 362 after two summers
+  (Tariq x3 at North Carolina), cfb 357 and 406; after, 0 at the start, 25 after two summers (none three deep) and 0
+  after one summer of football. MATCH. `node test/reload.js dist/basketball-coach.html`: MATCH 18 of 18 reloads.
