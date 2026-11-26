@@ -13,7 +13,7 @@ function finCard27(u,t,d,opts){
     ["Television and solidarity",d==="CH"?r.tv:null],["Parachute payment",r.chute||null],["Matchday, commercial and the rest",r.own]].filter(x=>x[1]!=null);
   return `<div class="card" style="padding:10px 12px;margin:8px 0"><div class="olab">${esc(opts.title||"The books")}</div>
     <div style="margin:4px 0">Revenue ${money(r.tot)} a year: ${parts.map(([l,v])=>`${esc(l)} ${money(v)}`).join(" &middot; ")}.</div>
-    <div style="margin:4px 0">Squad costs ${money(cost)}: the squad's wages (the twelve here are ${money(payroll(R))} of them) ${am?` and ${money(SQ27*am)} of transfer fees written off this year`:", no transfer fees to write off"}.</div>
+    <div style="margin:4px 0">Squad costs ${money(cost)}: the squad's wages (the twelve here are ${money(payroll(R))} of them)${am?`, and ${money(SQ27*am)} of transfer fees written off this year`:", no transfer fees to write off"}.</div>
     <div style="margin:4px 0"><b>Squad cost ratio ${pct27(ratio)}</b>${sales?` (revenue plus ${money(sales)} profit on sales)`:""}: ${esc(line)}. The board's own line is ${pct27(M27.board[d])}.</div>
     <div class="fnote">The ${esc(LEAGUE.conf.names[d])}'s rule: squad costs up to 85% of revenue; over it a levy, and over 115% on 1 March six points off and one more for every &pound;6.5M over.</div></div>` }
 
