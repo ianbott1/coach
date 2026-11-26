@@ -168,6 +168,7 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   let to = 0.135 - x * 0.0339 + A.to;
   if(sm){ td+=sm.td+sm.brk*(100-startYd)/73; to+=sm.to; td*=1+sm.sus; fg*=1+sm.sus }
   if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g; if(planAmpV()){ td*=FB17.g; fg*=FB17.g } }   // engine 17: suited plans everywhere score more; held to the league's level   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
+  if(fb27()){ td*=FB27.tdK; fg*=FB27.fgK }   // engine 27: fourth downs gone for keep drives alive; held to the league's scoring
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
   to = Math.max(0.03, Math.min(0.30, to));
@@ -192,8 +193,9 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
     // engine 20: the fourth and N a kick is asked at follows the drive too (it read "fourth and 3" whatever the drive; no draw)
     const kt=ENGINE_V>=20?fbTogo(3,startYd,stall):undefined;
     return rng.r()<fgOdds(stall)?{pts:3,kind:"FG",stall:stall,togo:kt}:{pts:0,kind:"MISS",stall:stall,togo:kt} }
-  if (r < o.td + o.fg + o.to) {
-    return {pts:0, kind: rng.r()<0.55 ? "INT" : "FUM",
+  const T27=fb27()?fb27To(o.to,sm):null;   // engine 27: picks and fumbles, each at the league's rate, following the gap less steeply
+  if (r < o.td + o.fg + (T27?T27[0]+T27[1]:o.to)) {
+    return {pts:0, kind: rng.r()<(T27?T27[0]/(T27[0]+T27[1]):0.55) ? "INT" : "FUM",
             stall:Math.min(96,startYd+Math.round(rng.range(0,42)))};
   }
   // the drive stalled: where it died, and how far short, decide the options
@@ -315,6 +317,7 @@ function nextStart(rng, prevKind, at){
    pause; otherwise the game runs start to finish. */
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
+  if(fb27())return playGame27(rng,eloH,eloA,planH,planA,opts);   // engine 27: one engine for every game (51_tactics)
   const st={
     h:0, a:0, drives:[], prev:"TD", idx:0,
     total:DRIVES_PER_TEAM*2,
@@ -553,6 +556,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     // round 101: where a turnover on downs happened and where a fourth down was made, for the full match's plays
     if(res.kind==="DOWNS"&&res.stall!=null)drive.stall=res.stall; if(res.cv)drive.cv=res.cv;
+    if(res.go)drive.go=1; if(res.two)drive.two=1; if(res.att!=null&&res.kind!=="FG"&&res.kind!=="MISS")drive.att=res.att;   // engine 27: a fourth down gone for, a two-point try
     /* round 80: a turnover's return is drawn with the next drive's start (nextStart, its first draw); for the clip, the
        same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
        the ball was lost (stall) and where they took over (retTo, from their own goal). */
@@ -608,8 +612,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         // the call comes at the stall with the drive's end already rolled: choosing what was rolled keeps it. A missed
         // kick asked about and kicked again got a second try the computer never gets (round 43: +5.5 points a game
         // for leaving every call to your assistant)
-        const rolled=P.res.kind==="FG"||P.res.kind==="MISS"?"kick":P.res.kind==="DOWNS"?"go":"punt";
+        const rolled=fb27()&&P.auto?P.auto:P.res.kind==="FG"||P.res.kind==="MISS"?"kick":P.res.kind==="DOWNS"?"go":"punt";
         if(choice===undefined||choice===null||choice==="normal")choice=rolled;
+        if(fb27()){ fb27Resolve.rng=rng; const eff=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
+          const r27=fb27Try(rng,fb27Resolve(choice,P.res,offE,defE,P.aggr,smOf(home)),mine+6-theirs,P.q,eff-i,offE,defE);
+          return {drive:push(home,P.q,P.start,r27,P.aggr),h:st.h,a:st.a} }
         if(choice===rolled&&P.res.kind!=="PUNT"){ res=Object.assign({},P.res); }
         else if(choice==="go"){
           const tg=P.res.togo||3;
@@ -663,7 +670,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         // fall through and play their drive against it
       } else if(stage==="two"){
         let res;
-        if(choice==="two"){
+        if(fb27()){ if(choice!=="two"&&choice!=="kick")choice=P.auto||"kick";
+          res=choice==="two"?(fb27TwoOk(rng,offE,defE)?{pts:8,kind:"TD",stall:100,note:"scored, and the two-point try was good"}:{pts:6,kind:"TD",stall:100,note:"scored, but the two-point try failed"})
+            :fb27Pat(rng)?{pts:7,kind:"TD",stall:100}:{pts:6,kind:"TD",stall:100,note:"scored, but missed the extra point"};
+          res.two=choice==="two"?1:undefined }
+        else if(choice==="two"){
           res = rng.r()<0.47 ? {pts:8,kind:"TD",stall:100,note:"scored, and the two-point try was good"}
                              : {pts:6,kind:"TD",stall:100,note:"scored, but the two-point try failed"};
         } else {
@@ -741,29 +752,35 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");
     if(st.onsideMiss){ st.onsideMiss=false; res.note=(res.note?res.note+"; ":"")+"after recovering the onside kick" }
 
+    // engine 27: a drive that died at fourth down: the coach's choice (yours if asked below, his otherwise)
+    const effT27=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
+    const auto4=fb27()&&fb27Stalled(res)?fb27Fourth(rng,res.stall,res.togo,mine-theirs,q,effT27-i,(res.kind==="FG"||res.kind==="MISS")&&res.att==null?0:FB27K()):null;
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
       // asked at every stall, a made kick too: asked only after a miss, a punt or a failed try, every call was a
       // second chance (round 43)
       if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS"||res.kind==="FG")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
-        if(dp)dp.rolled=res.kind==="FG"||res.kind==="MISS"?"kick":res.kind==="DOWNS"?"go":"punt";
+        if(dp)dp.rolled=auto4||(res.kind==="FG"||res.kind==="MISS"?"kick":res.kind==="DOWNS"?"go":"punt");
         if(dp&&dp.opts.some(o=>o[0]===dp.rolled)){
           used.fourth=(used.fourth||0)+1; called();
-          st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr};
+          st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr,auto:auto4};
           return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
       if(res.kind==="TD"&&(used.two||0)<2){
         const dp=twoPointCall(mine,theirs,q,late);
+        if(dp&&fb27()){ dp.auto=fb27TwoGo(rng,mine+6-theirs,q,effT27-i)?"two":"kick"; dp.rolled=dp.auto }
         if(dp){
           used.two=(used.two||0)+1; called();
-          st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr};
+          st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr,auto:dp.auto};
           if(home)st.h+=6; else st.a+=6;          // the touchdown is on the board while you decide
           return {ask:dp,mine:mine+6,theirs:theirs,q:q,side:side};
         }
       }
     }
+    if(fb27()){ fb27Resolve.rng=rng; const r3=fb27Try(rng,auto4?fb27Resolve(auto4,res,offE,defE,aggr,smOf(home)):res,mine+6-theirs,q,effT27-i,offE,defE);
+      return {drive:push(home,q,start,r3,aggr),h:st.h,a:st.a} }
     { const effT=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
       const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE,smOf(home));
       if(r2.kind==="TD"&&r2.pts===7&&twoChart(mine+6-theirs,q>=4||effT-i<=8)){
