@@ -57,6 +57,7 @@ add('players\' stats pages and leaders (all seven)',['stats.js'],{timeout:180000
 add('box scores, leaders and awards against the real leagues (all seven)',['boxscores.js'],{fast:true});   // round 2 (stats): ~55s; the award split test/calibrate.js only printed
 add('highlights keep the suspense (browser)',['hl-suspense.js'],{timeout:400000});
 add('saves survive the browser closing the database (all seven)',['idb-close.js']);
+add('a league code and a weekly challenge replay to the same result; a changed result code is refused; save files with a checksum; the season in review (all seven)',['share.js'],{timeout:1800000});   // review round 3 (share): ~3 min of CPU
 add('a backup downloads from inside a career and from the title screen, and reads back (all seven, laptop and phone, browser)',['backup-reach.js'],{fast:true,timeout:900000});
 add('a live plan change takes two taps on the same button (four games, laptop and phone, browser)',['plan-confirm.js'],{fast:true,timeout:900000});
 add('a tap on Skip as a game ends never starts the next (phone, browser)',['stray-tap.js'],{fast:true,timeout:900000});
