@@ -1,5 +1,5 @@
 {
- "fp": "095f36cc66b6046f",
+ "fp": "8172d22fd4b32b36",
  "log": [
   {
    "fp": "dc567a760422649a",
@@ -175,21 +175,26 @@
    "fp": "095f36cc66b6046f",
    "from": "cff8cc43147de1ef",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "8172d22fd4b32b36",
+   "from": "095f36cc66b6046f",
+   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
   }
  ],
  "result": {
   "Kansas City#1": [
    {
     "year": 2026,
-    "games": "6c0eba1dc40a57c2",
-    "post": "8ecce1b9f36d540a",
-    "champion": "Chicago",
-    "rec": "4161763e09ecf8e0",
-    "poll": "8847ab6e727dbc94",
-    "heis": "14204ca961df1856",
-    "history": "62548cd93b97045d",
-    "universe": "8f878d068874635b",
-    "screens": "0ec2b3d5e3e05bfa"
+    "games": "356ab6c61a1c98e9",
+    "post": "c68c2a02f41a6623",
+    "champion": "Tampa Bay",
+    "rec": "38981bf3ac0029bd",
+    "poll": "780f9a0542c60369",
+    "heis": "e3d937634ef0d1ce",
+    "history": "20769ce13f731397",
+    "universe": "31cd0b29b5e8bb53",
+    "screens": "f15949fc21ea56c3"
    }
   ]
  }

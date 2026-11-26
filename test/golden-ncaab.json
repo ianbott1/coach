@@ -1,5 +1,5 @@
 {
- "fp": "d0085cdbc17ea83a",
+ "fp": "fc55ac6ea5bb2649",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -645,6 +645,11 @@
    "fp": "d0085cdbc17ea83a",
    "from": "bbdb0e66ee53efd9",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "fc55ac6ea5bb2649",
+   "from": "d0085cdbc17ea83a",
+   "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (screens only, no result moves)"
   }
  ],
  "result": {
@@ -659,7 +664,7 @@
     "heis": "b947c74f5785b20e",
     "history": "f0d9bc28feb6f863",
     "universe": "3fdde69d1e03106c",
-    "screens": "1cfcf3a96bd6eec9"
+    "screens": "5b68f7bb7553a465"
    },
    {
     "year": 2027,
@@ -671,7 +676,7 @@
     "heis": "8482701919018f6c",
     "history": "beabc79eabf285d4",
     "universe": "0745438fa396f7fb",
-    "screens": "84ad2ab71ed0a6c7"
+    "screens": "6fe39b4cfbbaae73"
    }
   ],
   "Coppin State#2024": [
@@ -711,7 +716,7 @@
     "heis": "1da9d6984d7f1d36",
     "history": "b81fe18951c83e9b",
     "universe": "e8b1fd91e04bf105",
-    "screens": "ced1f52207297298"
+    "screens": "b5696c2a41786335"
    },
    {
     "year": 2027,
@@ -723,7 +728,7 @@
     "heis": "8f49872ed2fd2684",
     "history": "d5341de3f02cc0a7",
     "universe": "12c9ad2d3beddd5e",
-    "screens": "63083995ebb269cc"
+    "screens": "46c6502de080f30f"
    }
   ],
   "schedules#60": [

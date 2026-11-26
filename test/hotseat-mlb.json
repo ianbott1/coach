@@ -1,5 +1,5 @@
 {
- "fp": "9f38438e92ac83e1",
+ "fp": "fa09f4062e820c5a",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -195,6 +195,11 @@
    "fp": "9f38438e92ac83e1",
    "from": "1296628ab653cb8d",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "fa09f4062e820c5a",
+   "from": "9f38438e92ac83e1",
+   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
   }
  ],
  "out": [
@@ -217,7 +222,7 @@
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "3f046da415b8cd05"
+     "book": "a66f896b981afb1a"
     }
    ]
   },
@@ -227,20 +232,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "66-96",
+      "rec": "71-91",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "8d2b2d1fd6a93b08"
+     "book": "838e8796b85d373f"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "55-107",
+      "rec": "58-104",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "7572b1dd83e47419"
+     "book": "b900aa599ea2a790"
     }
    ]
   }

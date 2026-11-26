@@ -1,5 +1,5 @@
 {
- "fp": "1c3d2d255b410ee2",
+ "fp": "0bd09b0d2da6c46f",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -435,6 +435,11 @@
    "fp": "1c3d2d255b410ee2",
    "from": "d56afe564468b3ef",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "0bd09b0d2da6c46f",
+   "from": "1c3d2d255b410ee2",
+   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
   }
  ],
  "out": [
@@ -444,20 +449,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Won the Rate Bowl",
-      "grade": "B-"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "D"
      },
-     "book": "f32dff613d93ad70"
+     "book": "f3c97c9f6ed61acb"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "4-8",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "d5b726942ff7f5ff"
+     "book": "817f38096f437e5c"
     }
    ]
   },
@@ -467,20 +472,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "8-5",
-      "result": "Lost the Gator Bowl",
-      "grade": "C+"
+      "rec": "10-4",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A+"
      },
-     "book": "4dbd23e8237bd067"
+     "book": "6743ffaeb8b3cf72"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
+      "rec": "2-10",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "C"
      },
-     "book": "bf31ccef2dc530b5"
+     "book": "7a1d6ebbe006337c"
     }
    ]
   },
@@ -490,20 +495,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Texas Bowl",
-      "grade": "B"
+      "rec": "6-7",
+      "result": "Lost the Pop-Tarts Bowl",
+      "grade": "C-"
      },
-     "book": "14e9c1ba9645e993"
+     "book": "c94d4f3a12280f47"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
+      "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "554dd9fe2f5e5b4d"
+     "book": "c4847f97d581535e"
     }
    ]
   }

@@ -114,7 +114,10 @@ function bossWhy(team,H){
   const b=bossOf(team), r=bossRun(team,H), need=bossNeed(team,H), left=need-r.miss;
   const who=`${b.w==="athletic director"?"Your athletic director":"The "+b.w}, ${b.n}`;
   if(r.ten<1)return `${who}, gives every new coach a first season.`;
-  if(left<=1)return `${who}, has seen ${r.miss} season${r.miss===1?"":"s"} short of the target. Miss this one and the job goes.`;
+  // the target missed last season, by name (rv3/fixes-odds: engine 27's line dropped it, so a hot seat read as failure
+  // out of nowhere, Grokbot's complaint that seatWhy answered: "You missed last year's target (mid-table)")
+  const last=(H||[]).find(h=>h.team===team&&h.year===SEA.year-1), aim=last&&last.exp?String(last.exp).replace(/^Target:\s*/i,"").replace(/\.$/,"").replace(/^[A-Z](?=[a-z])/,c=>c.toLowerCase()):"";   // "Win in March": "win in March"
+  if(left<=1)return `${who}, has seen ${r.miss} season${r.miss===1?"":"s"} short of the target${aim?(r.miss===1?` (${aim})`:` (last season's: ${aim})`):""}. Miss this one and the job goes.`;
   if(b.pat===0&&!r.title)return `${who}, is impatient: a bad year costs the job, and two short of the target in a row do too.`;
   return `${who}, is ${bossWord(b)}: ${need} seasons in a row short of the target before a change${r.title?" (the title bought you one more)":""}.`;
 }

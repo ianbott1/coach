@@ -1,5 +1,5 @@
 {
- "fp": "0d4a1ea357564ae6",
+ "fp": "11a75dac43530d3e",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -455,6 +455,11 @@
    "fp": "0d4a1ea357564ae6",
    "from": "12f25479b979308c",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "11a75dac43530d3e",
+   "from": "0d4a1ea357564ae6",
+   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
   }
  ],
  "out": [
@@ -468,16 +473,16 @@
       "result": "Missed the playoffs",
       "grade": "B-"
      },
-     "book": "2e36cac813db3a21"
+     "book": "869bc1743107c268"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "3-14",
+      "rec": "5-12",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "B-"
      },
-     "book": "e7f6b6e93843b663"
+     "book": "3f84d4d25e42d423"
     }
    ]
   },
@@ -487,20 +492,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "12-5",
-      "result": "Lost the conference championship",
-      "grade": "A-"
+      "rec": "8-9",
+      "result": "Losing season",
+      "grade": "C-"
      },
-     "book": "266d29c91b3676eb"
+     "book": "90fb838e0bf1b140"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "4-13",
-      "result": "Losing season",
-      "grade": "C"
+      "rec": "9-8",
+      "result": "Lost in the wild card round",
+      "grade": "A-"
      },
-     "book": "d8cfe4b7ae062890"
+     "book": "9fd2017b801152e4"
     }
    ]
   },
@@ -510,20 +515,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "7-10",
+      "rec": "2-15",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "F"
      },
-     "book": "9c781159321ce3a1"
+     "book": "e29a1bcd496f25a4"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "6-11",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "9-8",
+      "result": "Lost the conference championship",
+      "grade": "B+"
      },
-     "book": "d8c082b1fd0b7ec6"
+     "book": "6e091684b6096e21"
     }
    ]
   }
