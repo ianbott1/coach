@@ -137,7 +137,13 @@ the win weights in `nbaFaPref` were raised after that run, as the bidding had sp
   draws. Old career (saved by the published build at the repo root, 30 days in): loads and replays exactly (ten deep,
   old cap, trade machine off), and after its summer is on the new rules (fifteen, every contract rescaled, cap
   164.961).
-- `node test/nba-screens.js`: MATCH 921 screens drew, none speaks football (run after step 3).
+- `node test/nba-screens.js`: MATCH 921 screens drew after step 3; MATCH 891 on the final build.
+- `node test/nba-playoffs.js 4`: MATCH all 490 checks (4 seasons).
+- `node test/reload.js dist/basketball-coach-pro.html`: MATCH 18 of 18 reloads.
+- Browser tests could not run here (Playwright's browser is not installed, and installing is off limits). The page
+  body of `test/hotseat-moves.js` run in node on the final build: two coaches each promote and trade (Boston and New
+  York each two-for-one), a reload gives the same season (same: true), 7 computer deadline deals, none with a coach's
+  club. `test/trades.js` and `test/picks.js` were only syntax-checked (`node -c`) after the skip was added.
 - Other leagues unchanged: `node test/golden.js dist/basketball-coach.html --fast --check` MATCH c81a35489f0479ac
   (college basketball shares `src/basketball`); `node test/golden.js dist/football-coach-pro.html --fast --check` MATCH
   f214c1e9bd9f5025 (pro football uses the core trade code I hooked).
