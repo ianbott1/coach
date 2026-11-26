@@ -295,7 +295,7 @@ function nflRun(u,rng,healthy,elo,rec,choices){
       const base=a<=22?3.4:a<=23?2.7:a<=24?1.9:a<=25?1.1:a<=26?0.4:a<=27?-0.2:a<=28?-0.8:a<=29?-1.5:a<=30?-2.3:a<=31?-3.3:a<=32?-4.3:-5.5;
       const side=(i%POS.length)<5?ocq*0.02:dcq*0.02;
       const org=a<=29?orgEdge(u,t)*0.75:0;
-      const g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i),2.0);
+      const g=rng.gauss(base+c.q*0.02+devMod+side+org+featDev(ch,i)+(typeof moraleDev==="function"?moraleDev(p):0),2.0);
       p.r=Math.round(Math.max(35,Math.min(g>0?p.pot:99,p.r+g)));
       if(a>=27)p.pot=Math.max(p.r,Math.min(p.pot,p.r+1));
       p.peak=Math.max(p.peak||0,p.r);

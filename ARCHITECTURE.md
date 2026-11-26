@@ -3461,6 +3461,45 @@ mechanic). Milestones per sport and level are in SPORT.milestones (college:
 milestonesCollege) and reach the weekly news. Pro careers count from the
 dynasty's first season (generated players have no earlier history).
 
+## The people (core/93_morale.js, engine 25)
+
+A living human layer under the numbers, the same in all seven games (small
+per-sport hooks only: veteran = college senior or pro 30+, staff job titles).
+
+- Traits: ambition, loyalty, temperament, professionalism, leadership, 1-20,
+  fixed by the player's name (traitsOf; no RNG, nothing saved).
+- Morale (p.mo, 3-97, words delighted/happy/settled/uneasy/unhappy/furious)
+  moves after each game: the result, starting or not, a backup who thinks he
+  should start, form, a pro's final year, a losing run on a short fuse, a
+  benching (more if the man who took the job is 4+ years younger), promises
+  kept or broken. It reverts toward each man's own base. Carried between
+  seasons through the banked roster (pl.moC, tr, mentor), 40% of the way.
+- Team morale (POS-weighted starters + the room's chemistry), centred on the
+  league's own mean, is worth at most MO_WP (2%) of a level game's chance;
+  the home crowd (fans 5-98) at most FAN_WP (0.8%) more. moraleEdge() adds
+  it in matchupElo and _resolve. Development: moraleDev() nudges the aging
+  gauss mean by at most +/-0.8 (a mentor +0.4). No extra RNG draws.
+- Conversations (talkNext/talkOpts/applyTalk): one question at a time, never
+  closer than the league's gap (2 steps of the schedule; 7 days in the daily leagues):
+  a trade request, a benched veteran, minutes, a bigger role, a rift after a
+  losing run, the press (capped: a few a season, two in a play-off run),
+  contract talk, a rookie's mentor, a captain. Answers are logged in
+  S.talks[year:step] and replayed by rebuild(); a question left alone is
+  answered by your assistant at your next game, and changes nobody's mood.
+  Shown in "Needs a decision" (class attn talk: sim doesn't stop for it).
+- Fans (P.fan) and the room (P.chem) on the team card's dressing-room line;
+  banked into U.fans and U.caps at season's end.
+- Storylines (S.saga, per coach): duels, captains, a title chase, bitter
+  departures and returns, into the season's history entry (entry.people),
+  its season story and the next opponent's line. Nothing there moves a game.
+- Staff room: realistic names and jobs (staffNameOf/staffFaceOf/staffLineOf)
+  by default in the pro leagues, the cast in college; Help's "Staff room"
+  sets S.staffReal. Only the voices change, never the advice.
+- Old saves: a season begun before engine 25 has no people (pplOn()); every
+  new field has a default. PEOPLE_ON=0 (env) turns the layer off for probes.
+- Tests: test/morale.js (questions, bounds, reloads, carry-over; per game),
+  test/probes/morale-calib.js (calibration against ENGINE_NOW=24).
+
 ## Real data
 
     college football  30_schedule2026: ~81% of the 2026 games, transcribed

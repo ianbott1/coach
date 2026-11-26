@@ -240,9 +240,9 @@ function liveCallView(){
     ${fbEvidenceHTML(g,my,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
+      `<div class="say"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${(dp.k==="prep"||dp.k==="read")&&FB_ANSWERS[o[0]]?`<small>${esc(FB_ANSWERS[o[0]].d)}</small>`:""}</button>`).join("")}</div>
     ${dp.k==="fourth"?`<div class="callnote">The percentages are the chance this play works. After the game, the call is graded on what wins the game: a likely conversion can still be the wrong choice, and a long kick the right one.</div>`:""}

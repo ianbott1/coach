@@ -205,9 +205,9 @@ function liveCallView(){
     ${evidenceHTML(g,my,last,dp)}
     <div class="grouphead staffhead">The staff room</div>
     <div class="staffroom">${staffAdvice(dp,{mine:mine,theirs:theirs,q:live.drives.length}).map(s=>
-      `<div class="say"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-        <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span>
-        <span class="saytext">${esc(s.line)}</span></div></div>`).join("")}</div>
+      `<div class="say"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+        <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span>
+        <span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`).join("")}</div>
     <div class="callopts">${dp.opts.map(o=>
       `<button class="advance callbtn" data-call="${esc(o[0])}">${esc(o[1])}${desc(o[0])?`<small>${esc(desc(o[0]))}</small>`:""}</button>`).join("")}</div>
     <div class="grouphead">Run of play</div>

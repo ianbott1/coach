@@ -26,8 +26,8 @@ function momentHTML(g,my,seed){
   const top=M[0], more=M.slice(1);
   const s=typeof staffAside==="function"?staffAside("m_"+top.k,(seed|0)+(g.hp|0)*7+(g.ap|0)*3):null;
   return `<div class="momentcard"><div class="mhead">${esc(top.h)}</div><div class="mline">${top.l}</div>${more.map(x=>`<div class="mline more"><b>${esc(x.h)}.</b> ${x.l}</div>`).join("")}</div>`
-    +(s?`<div class="say tight momentsay"><span class="facewrap ${s.who}">${staffFace(s.who)}</span>
-      <div class="saybody"><span class="sayname">${esc(STAFF[s.who].name)}</span><span class="saytext">${esc(s.line)}</span></div></div>`:"");
+    +(s?`<div class="say tight momentsay"><span class="facewrap ${s.who}">${staffFaceOf(s.who)}</span>
+      <div class="saybody"><span class="sayname">${esc(staffNameOf(s.who))}</span><span class="saytext">${esc(staffLineOf(s.who,s.line))}</span></div></div>`:"");
 }
 
 /* ============ the box score (round 73) ============

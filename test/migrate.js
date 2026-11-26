@@ -66,8 +66,9 @@ const play=api=>{while(api.SEA.phase!=='done'){api.doAdvance();let g=0;while(api
       // (the careers themselves can differ once the game's rules change)
       // the entry's own structure: top-level fields and the named sub-records
       // (not the per-team tables, whose keys are team names)
+      // story and people (round 111: the season's human stories) are written only when there is something to tell
       const SUB=['honours','group','coach','coaching','awards','league'];
-      const shape=o=>Object.keys(o).filter(k=>k!=='story').sort().map(k=>SUB.includes(k)&&o[k]&&typeof o[k]==='object'?k+'{'+Object.keys(o[k]).sort().join(',')+'}':k).join(',');
+      const shape=o=>Object.keys(o).filter(k=>k!=='story'&&k!=='people').sort().map(k=>SUB.includes(k)&&o[k]&&typeof o[k]==='object'?k+'{'+Object.keys(o[k]).sort().join(',')+'}':k).join(',');
       if(!strip)L.S.history.forEach((h,i)=>{const n=N.S.history[i]; if(!n||(n.teams===undefined)!==(h.teams===undefined))return;
         checks++; if(shape(h)!==shape(n)){bad++;console.log(`  ${team}#${seed} ${h.year}: migrated entry shape differs:\n    ${shape(h)}\n    ${shape(n)}`)}
         checks++; if(h.miss!==/Short of the mark|A bad year/.test(h.gradeLine||'')){bad++;console.log(`  ${team}#${seed} ${h.year}: miss flag disagrees with "${h.gradeLine}"`)}});

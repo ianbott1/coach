@@ -60,6 +60,7 @@ class Season{
     this.oc=u.oc?JSON.parse(JSON.stringify(u.oc)):null;
     this.dc=u.dc?JSON.parse(JSON.stringify(u.dc)):null;
     this.midFired={}; this._u=u; this.plan="balanced"; this.planLog={};
+    this.talkLog=null; if(typeof pplInit==="function")pplInit(this,u);   // round 111: the people (core 93_morale)
   }
   /* The regular season is the core's; everything after it is the league's,
      one phase per step, in the order LEAGUE.post.phases gives. */
@@ -84,9 +85,10 @@ class Season{
     // hockey: how you split the ice time (lines and pairings)
     if(typeof deployEdge==="function"&&(this.userTeam===a||this.userTeam===b))edge+=(this.userTeam===a?1:-1)*deployEdge(this,this.userTeam);
     const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
+    const mh=typeof moraleEdge==="function"?moraleEdge(this,a,!neutral):0, ma=typeof moraleEdge==="function"?moraleEdge(this,b,false):0;   // round 111
     return {
-      h:this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge,
-      a:this.talent.eff(b,w)+(this.staffAdj[b]||0)
+      h:this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge+mh,
+      a:this.talent.eff(b,w)+(this.staffAdj[b]||0)+ma
     };
   }
   /* Make a change now: the interim is worse, and you hire properly in the offseason. */
@@ -133,6 +135,9 @@ class Season{
     // a cup tie: a knockout, and nothing to do with anyone's league record
     const cup=!!(extra&&extra.cup); LOG_CUP=cup;
     if(this.userTeam===a||this.userTeam===b)this._userDrives=null;   // this game's drives only (see below)
+    // round 111: a question still open when your club next plays is settled first: your answer from the log, else your
+    // assistant's (a daily league plays its off days through without you, so it waits for your game, not the next day)
+    if((this.userTeam===a||this.userTeam===b)&&this.ppl&&typeof pplResolve==="function")pplResolve(this);
     if(this.userTeam===a||this.userTeam===b){
       const P=PLANS[this.plan]||PLANS.balanced;
       sd=P.sd;
@@ -148,8 +153,10 @@ class Season{
     }
     const venue=neutral?0:((this.hfa&&this.hfa[a])||LEAGUE.tuning.hfa)-LEAGUE.tuning.hfa;
     const w=Math.min(this.step,LEAGUE.weeks);
-    const eloH=this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge;
-    const eloA=this.talent.eff(b,w)+(this.staffAdj[b]||0);
+    // round 111 (engine 25): each side's dressing room and, at home, its crowd (core 93_morale; 0 on older engines)
+    const mh=typeof moraleEdge==="function"?moraleEdge(this,a,!neutral):0, ma=typeof moraleEdge==="function"?moraleEdge(this,b,false):0;
+    const eloH=this.talent.eff(a,w)+(this.staffAdj[a]||0)+(neutral?0:LEAGUE.tuning.hfa)+venue+edge+mh;
+    const eloA=this.talent.eff(b,w)+(this.staffAdj[b]||0)+ma;
     const isUser=(this.userTeam===a||this.userTeam===b);
     // engine 12 (round 89): "auto" is your assistant's pick (Sim ahead leaves it to him), the plan your roster suits. A
     // simmed game is played as the computer plays it (no person's path), so he picks by the computer's measure: simming
@@ -222,10 +229,10 @@ class Season{
         });
       }
       const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+fh+fa)%11)/34))));
-      return Object.assign({home:a,away:b,hp:fh,ap:fa,hh:hf(fh,fa),ah:hf(fa,fh),
+      return this._noted(Object.assign({home:a,away:b,hp:fh,ap:fa,hh:hf(fh,fa),ah:hf(fa,fh),
         neutral:neutral,winner:win,loser:lose,margin:Math.abs(fm),
         shift:Math.round(fsh),drives:F.drives},LEAGUE.tracksOT?{ot:F.ot||0,so:!!F.so}:{},
-        LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{});
+        LEAGUE.draws?{draw:fdraw,pens:fpens}:{},extra||{}));
     }
     let gopts=isUser&&this.decideHook?{decide:this.decideHook,userIsHome:this.userTeam===a}:null;
     if(LEAGUE.tracksOT||LEAGUE.draws||LEAGUE.postFull)gopts=Object.assign({},gopts||{},{playoff:this.phase!=="week"||cup});   // hockey: sudden death; soccer: extra time and penalties
@@ -278,12 +285,20 @@ class Season{
       });
     }
     const hf=(x,o)=>Math.max(0,Math.min(x,Math.round(x*(0.38+((x*7+o*3+hp+ap)%11)/34))));
-    return Object.assign({home:a,away:b,hp:hp,ap:ap,
+    return this._noted(Object.assign({home:a,away:b,hp:hp,ap:ap,
       hh:hf(hp,ap),ah:hf(ap,hp),neutral:neutral,
       winner:win,loser:lose,margin:Math.abs(m),shift:Math.round(sh)},LEAGUE.tracksOT?{ot:gs.ot||0,so:!!gs.so}:{},
-      LEAGUE.draws?{draw:draw,pens:pens}:{},extra||{});
+      LEAGUE.draws?{draw:draw,pens:pens}:{},extra||{}));
   }
+  /* round 111: every result to the people (core 93_morale), read at the step's end */
+  _noted(r){ if(this.ppl&&typeof pplNote==="function")pplNote(this,r); return r }
+  /* round 111: a step closes with the people's reckoning: morale, the fans, the room, and perhaps the next question
+     (core 93_morale). An open question is settled as your club's next game starts (_resolve) */
   advance(){
+    const ph=this.phase, st=this.step; this._adv();
+    if(this.ppl&&typeof pplStep==="function")pplStep(this,ph,st);
+  }
+  _adv(){
     this.prevRank=this.rankMap();
     const p=this.phase;
     if(p==="week"&&!this.half&&ENGINE_V>=9&&typeof cpuDeadline==="function")cpuDeadline(this);   // round 85: deadline day, before its games
@@ -377,6 +392,8 @@ class Season{
         // round 83: the same man wherever he finished the season: a promotion, a staff role or a trade moves him
         // to another slot (a promoted man's season went unbanked before: same man, same slot only)
         let li=live[i]&&live[i].n===pl.n?i:live.findIndex(x=>x&&x.n===pl.n); const src=li>=0?live[li]:null;
+        // round 111: how he ended the season (where he starts the next from), his trust in you, a mentor this year
+        if(src&&this.ppl&&src.mo!=null){ pl.moC=Math.round(src.mo); if(src.tr)pl.tr=src.tr; else delete pl.tr; if(src.mentor)pl.mentor=1; else delete pl.mentor }
         if(!src||!src.st2)return;
         if(!pl.car){pl.car=blankStats(POS[li%POS.length].p); pl.car.yrs=0}
         Object.keys(src.st2).forEach(k=>{ if(typeof src.st2[k]==="number")pl.car[k]=(pl.car[k]||0)+src.st2[k] });   // round 93: a season's totals (addStats adds one game per call: every banked season counted one game too many, all seven)
@@ -386,6 +403,8 @@ class Season{
       });
     });
   }
+  /* round 111: the crowds and the captains carry into next season (core 93_morale) */
+  bankPeople(u){ if(!this.ppl)return; u.fans={}; u.caps={}; NAMES.forEach(t=>{ u.fans[t]=Math.round(this.ppl.fan[t]); if(this.ppl.cap[t])u.caps[t]=this.ppl.cap[t] }) }
   healthy(){const h={};NAMES.forEach(t=>h[t]=this.talent.base[t]+this.talent.slope[t]*LEAGUE.weeks);return h}
   myGame(team,wk){
     const W=this.weeks[wk]; if(!W)return null;
