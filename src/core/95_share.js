@@ -328,7 +328,7 @@ function reviewPanelHTML(h){ const R=reviewOf(h); if(!R)return "";
   return `<div class="shbox" id="shreview"><div class="grouphead" style="border:none;padding-left:0">The season in review</div>
     <pre class="shtext">${esc(reviewText(R))}</pre>
     <div class="cardacts"><button class="wbtn" id="rvcopy">Copy the review</button><button class="wbtn" id="rvimg">Download it as a picture</button></div>
-    <div class="note" id="rvmsg"></div></div>` }
+    <div class="note" id="rvmsg"></div></div><!--/shreview-->` }
 
 /* ============ on the screens ============ */
 let SH_UI={panel:null,msg:"",check:null,code:"",busy:false};
@@ -402,11 +402,11 @@ function shareTeamHTML(my){
       :`<div class="note">So far: ${esc(chRecText(R))}.${C.tgt&&spec.kind==="wins"?` ${Math.max(0,C.tgt.w-R.w)} more wins to the target.`:""}</div>`}
       <details class="shmore" ${SH_UI.panel==="check"?"open":""}><summary>Check a friend's result</summary>${chCheckBoxHTML()}</details></div>`;
   }
-  if(SEA.phase==="done"&&!isHotSeat())h+=`<button class="cardbtn" id="shrv">The season in review &mdash; copy it or save it as a picture</button>`;
+  if(SEA.phase==="done"&&!isHotSeat())h+=`<button class="cardbtn" id="shrv">The season in review: copy it or save it as a picture</button>`;
   const code=careerCode();
   if(code)h+=`<details class="shmore"><summary>Share this league</summary><div class="note">League code <b class="shcode">${esc(code)}</b>. It starts this league from the beginning, on any device, with ${esc((S.coaches&&S.coaches[0]&&S.coaches[0].myTeam)||my)}.</div>
     <div class="cardacts"><button class="wbtn" id="shcopylc">Copy the league code</button></div><div class="note" id="shlcmsg"></div></details>`;
-  return h }
+  return h?`<div class="shteam">${h}<!--/shteam--></div>`:"" }
 function shareBind(){
   try{ if(typeof document==="undefined")return;
     const on=(id,f)=>{ const b=el(id); if(b)b.onclick=f };
