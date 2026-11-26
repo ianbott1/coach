@@ -55,6 +55,48 @@ const HK_BASE = {
   prepped:{own:1.05, opp:0.95}   // ...for the right one: drilled, sharper than a change made mid-game
 };
 const HK = Object.assign({}, HK_BASE, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.hk)||{}, (typeof HK_TRY!=="undefined"?HK_TRY:{}));
+
+/* ============ engine 26 (review round 2): hockey's game day ============
+   The goalie pull, the coach's call. On engine 25 the goalie came out in the last stretch only, for 1.6 minutes (3.2
+   early), on top of five full minutes of play, at 0.15 goals a minute for the extra attacker and 0.20 against: empty-net
+   goals were 0.14 a game (2.2% of goals), the league of 2005-06. Now the last minutes are played ten seconds at a time
+   (HK_GD.slice, as Asness and Brown's model), the goalie comes out when the bench says, and the time he's out is taken
+   out of the play, not added to it. Six on five: HK_GD.f6 goals a minute for (on HK_GD.s6 shots), HK_GD.ag empty-net
+   goals a minute against, tuned toward today's league: 0.30 empty-net goals a game, 4.9% of all goals, and 0.46
+   goals for the six for each one into the empty net (today about 0.34-0.40 a game, 6-7% of all goals: the rest of
+   them come from a pull down three and the delayed penalty, not modelled. NHL 2023-24, 13.8 a team: dailyfaceoff.com/news/how-empty-net-goals-have-changed-the-nhl; 2024-25 about 0.4 a game:
+   theringer.com/2025/03/03/nhl/how-hockeys-golden-age-of-goalie-goals-explains-sports), about one down-one pull in six
+   tied (13.5% in 2013-14 and 18.1% in 2021, Meghan Hall: spokesman.com/stories/2022/jun/21/heres-why-the-kraken-and-other-nhl-teams-are-pulli/).
+   Asness and Brown's 2015-16 rates were 0.071 a minute for and 0.155 against
+   (ushr.com/assets/docs/2018/Pulling-the-Goalie-2018-05-31-19-29-28.pdf). The computer pulls as the league does now:
+   down one with two and a quarter minutes left (1:13 in 2013-14, 1:46 in 2019-20 and rising: the same Hall figures;
+   goaliemonkey.com/learn/goalie-goals-becoming-more-common "around the 2-minute mark"), down two at three and a half. A person
+   decides: earlier at the call with five minutes left, or any time in the third from the live bar (Pull the goalie),
+   which keeps him out while you're behind by one to three, from the next stretch. Asness and Brown's best times are much
+   earlier (5:40 down one, 11:40 down two): pulling early is the right side of the bet more often than benches think. */
+const HK_GD_V=26;
+function hkGdV(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=HK_GD_V }
+const HK_GD=Object.assign({slice:1/6, tail:3, pullT:{1:2.25,2:3.5}, f6:0.12, s6:1.0, ag:0.26},
+  (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.hkgd)||{}, (typeof HK_GD_TRY!=="undefined"?HK_GD_TRY:{}));
+const PULL_AT={now:5, four:4, three:3};   // the person's call: minutes left when he comes out
+/* Tonight's lines (engine 26): how far down the bench you go from the next stretch, against the season's lines and ice
+   time (S.deploy, already in the strengths before the puck drops). The depth's share of the skaters' minutes: roll four
+   lines 0.40, lean on the top six 0.22, shorten the bench 0.14; as set is the season's (0.30 balanced). More of your top
+   line and pair on the ice is worth their gap over the depth behind them (rating points by position weight, R_SLOPE an
+   Elo a point, as the season's ice time); the minutes come back as tired legs (a stretch's load fades to HK_GD.decay
+   by the next: legs come back with rest): each stretch costs HK_GD.tire Elo for
+   every point of share leant on so far (fresh legs the other way). Set so a club with the league's usual gap (HK_GD.gMean,
+   measured over every roster) gains nothing leaning all game (a design choice, not a measured real figure: real
+   heavy-minute effects are small and hard to measure), so a thin roster wants it short, a deep one rolled, and anyone
+   wants the bench shortened late (the tiredness has no time to come). The timeout (one a game, NHL rule 87): rests
+   your legs (HK_GD.toRest of the share leant on) and, as the goalie comes out, a set play with the six on the ice
+   (HK_GD.toPull more six-on-five goals for a minute: a design choice). The computer, and your assistant, keep it for the
+   pull, as benches mostly do. */
+const LN_B={roll:0.40, top:0.22, short:0.14}, LN_L={roll:"Roll four lines", set:"As set", top:"Lean on the top six", short:"Shorten the bench"};
+Object.assign(HK_GD, {gMean:7.5, decay:0.75, toRest:0.3, toPull:0.20}, Object.assign({}, (typeof LEAGUE!=="undefined"&&LEAGUE.tuning&&LEAGUE.tuning.hkgd)||{}, (typeof HK_GD_TRY!=="undefined"?HK_GD_TRY:{})));
+// neutral at the league's gap over a whole game: twelve stretches' gain against the load they build (32.5 at 0.75)
+HK_GD.tire=HK_GD.tire||12*R_SLOPE_HK()*HK_GD.gMean*(1-HK_GD.decay)/(12-(1-Math.pow(HK_GD.decay,12))/(1-HK_GD.decay));
+function R_SLOPE_HK(){ return typeof R_SLOPE!=="undefined"?R_SLOPE:24.3 }
 /* ============ engine 12 (round 89): the attributes play ============
    The team's shape on the ice (hkShapeOf, through gameCtx sh): each skater's lean (an attribute against his own rating)
    weighed by his group's weight for it and his ice time (a position's share; the man behind him takes the depth's share,
@@ -207,6 +249,10 @@ function goalStartCall(G){
 function pullCall(lead,shortTo){
   // killing a penalty at the question (Grokbot: offered on a penalty kill, with no word of it)
   const pk=shortTo?`, a man short until ${Math.floor(shortTo)}:${String(Math.round((shortTo%1)*60)).padStart(2,"0")}`:"";
+  // engine 26: the league's habit is your assistant's (2:15 down one, 3:30 down two); the earlier times are yours
+  if(hkGdV())return {k:"pull",h:`Down ${-lead}, five minutes left${pk}`,q:pk?"When does the goalie come out? Out now would mean six against four.":"When does the goalie come out?",
+    opts:(lead<=-2?[["now","Now: five minutes left"],["four","At four minutes"]]:[["now","Now: five minutes left"],["three","At three minutes"]])
+      .concat([["normal",`Leave it to your assistant: at ${lead<=-2?"3:30":"2:15"}, the league's habit`]]), dn:-lead};
   return {k:"pull",h:`Down ${-lead}, late in the third${pk}`,q:pk?"When does the goalie come out? Early would mean six against four once he's out.":"When does the goalie come out?",
     opts:[["early","Early: over three minutes left"],["late","The usual: under two minutes"],ASSIST]};
 }
@@ -238,6 +284,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     mode:{home:planH,away:planA}, late:{home:null,away:null}, asked:{}, queue:[], ask:null,
     ot:0, so:false, done:false, playoff:!!playoff, S:{home:side0(),away:side0()}};
   st.gap=gap;
+  const GD=hkGdV(); st.pullOn={home:false,away:false}; st.out={home:false,away:false};
+  st.ln={home:"set",away:"set"}; st.lnX={home:0,away:0}; st.TO={home:1,away:1}; st.toAt={home:-9,away:-9}; st.toSet={home:-1,away:-1};
+  const useRest=sd=>{ if(st.lnX[sd]>0)st.lnX[sd]=Math.max(0,st.lnX[sd]-HK_GD.toRest) };
+  const LN=GD&&ctx.ln&&ctx.ln.home&&ctx.ln.away?ctx.ln:{home:{gf:0,gd:0,bf:0.3,bd:0.3},away:{gf:0,gd:0,bf:0.3,bd:0.3}};
+  // tonight's lines: the share leant on (f, d, and their average for the legs) and its Elo this stretch, tired legs and all
+  const lnD=sd=>{ const L=LN[sd], k=st.ln[sd], b=LN_B[k]; return b===undefined?{f:0,d:0,a:0}:{f:L.bf-b,d:L.bd-b,a:((L.bf-b)*0.43+(L.bd-b)*0.27)/0.70} };
+  const lnAdj=sd=>{ if(!GD)return 0; const L=LN[sd], D=lnD(sd); return R_SLOPE_HK()*(L.gf*D.f+L.gd*D.d)-HK_GD.tire*st.lnX[sd] };
   // tonight's form was drawn above; who starts only shifts it (no new dice)
   const startGoalie=(sd,who)=>{ const X=st.S[sd]; if(who==="starter")X.form+=HK.tired; else { X.backupIn=true; X.startedBk=true; X.form+=bkCost(sd) } };
   if(HK_GSTART)["home","away"].forEach(sd=>{ if(GK[sd]&&GK[sd].b2b&&!humans[sd])startGoalie(sd,"backup") });
@@ -284,43 +337,81 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
   const cpuGoalie=(side)=>{ const X=st.S[side]; if(!X.backupIn&&X.ga>=4)swapGoalie(side) };
   const swapGoalie=(side)=>{ const X=st.S[side]; X.backupIn=true; X.form=night()+bkCost(side); X.ga=0; X.xga=0; X.soft=0; X.sa=0;
     (st.pendEv=st.pendEv||[]).push({m:st.seg*5,side:side,k:"swap"}) };
+  // engine 26: minutes left when a side pulls its goalie, behind by d (the person's call or the league's habit)
+  const pullT=(sd,d)=>{ if(d<1||d>2)return 0; const c=HK_GD.pullT[d], h=humans[sd]&&st.late[sd+"pullT"]; return h?Math.max(h,c):c };
+  const wantsOut=(sd,left)=>{ const d=-lead(sd); return d>=1&&((d<=2&&left<=pullT(sd,d)+1e-9)||(st.pullOn[sd]&&d<=3)) };
+  /* engine 26: the minutes after span, ten seconds at a time. Each slice each side may shoot: at five on five at the
+     stretch's own rate (b: its shots a minute before score effects, which follow the score slice by slice) and chance;
+     with its goalie out, the extra attacker's shots (HK_GD.s6 a minute, scoring HK_GD.f6 a minute against an ordinary
+     goalie, his night counting as ever) while the other side shoots at the empty net (HK_GD.ag a minute: a shot at
+     an empty net is a goal). The edge counts as on any shot. A goalie comes out when his bench wants (wantsOut) and
+     goes back in when it's level, or out of reach. */
+  const tailPlay=(s,t0,span,ev,sv,b,k,e,shoot)=>{ const dt=HK_GD.slice, out={en:null,sh:{home:0,away:0}};
+    const n=Math.max(1,Math.round((5-span)/dt));
+    for(let i=0;i<n;i++){ const t=t0+span+i*dt, left=60-t;
+      ["home","away"].forEach(sd=>{ const w=wantsOut(sd,left);
+        if(w&&!st.out[sd]){ st.out[sd]=true; const cont=i===0&&span===0&&s>0&&st.wasOut&&st.wasOut[sd]; ev.push({m:t,side:sd,k:"pull",cont:cont});
+          // the timeout as he comes out: a set play for the six (yours too, if you've kept it: your assistant calls it)
+          if(!cont&&(st.TO[sd]>0||st.toSet[sd]===s)){ if(st.toSet[sd]!==s){ st.TO[sd]--; useRest(sd); ev.push({m:t,side:sd,k:"to"}) } st.toAt[sd]=t } }
+        else if(!w&&st.out[sd]){ st.out[sd]=false; ev.push({m:t,side:sd,k:"gback"}) } });
+      ["home","away"].forEach(sd=>{ const o=other(sd), L=lead(sd), ed=(sd==="home"?e:-e);
+        let g=0;
+        if(st.out[o]){ if(rng.r()<HK_GD.ag*dt*(1-(-ed)*HK.finishEdge)){ g=1; ev.push({m:t+dt/2,side:sd,k:"goal",en:true,u:rng.int(100)}); out.en={side:sd,kind:"empty"}; out.sh[sd]++ } }
+        else if(st.out[sd]){ if(rng.r()<HK_GD.s6*dt*(1+ed*HK.shotEdge)*(t<st.toAt[sd]+1?1+HK_GD.toPull:1)){ out.sh[sd]++;
+            g=shoot(sd,1,HK_GD.f6/HK_GD.s6*(1+ed*HK.finishEdge)+st.S[o].form,false,k[sd],t+dt/2,{extra:true}); if(g)out.en={side:sd,kind:"extra"} } }
+        else { const lam=b[sd]/5*(s>=8&&L!==0?(L<0?1+HK.scoreFx:1-HK.scoreFx*0.6):1);
+          if(rng.r()<lam*dt){ out.sh[sd]++; g=shoot(sd,1,HK.sh*(1+ed*HK.finishEdge)*(k[sd]+finG(sd))+st.S[o].form,false,k[sd],t+dt/2) } }
+        if(g){ if(sd==="home")st.h++; else st.a++ } });
+    }
+    st.lines.h.sog+=out.sh.home; st.lines.a.sog+=out.sh.away;
+    st.wasOut={home:st.out.home,away:st.out.away}; st.out={home:false,away:false};
+    return out };
   const segment=(s)=>{
+    // engine 26: the minutes of this stretch played the usual way (span); the rest ten seconds at a time (tailPlay):
+    // the last stretch's last three minutes always (a goal there can bring a pull), longer when a bench pulls earlier,
+    // and the whole stretch when a side's goalie is already out (the live bar's pull)
+    let span=5;
+    if(GD){ ["home","away"].forEach(sd=>{ const d=-lead(sd); if(st.pullOn[sd]&&(d<1||d>3)){ st.pullOn[sd]=false } });
+      if(st.pullOn.home||st.pullOn.away)span=0;
+      else if(s===SEGS-1)span=5-Math.max(HK_GD.tail,pullT("home",-lead("home")),pullT("away",-lead("away"))) }
     const mH=modeOf(s,"home"), mA=modeOf(s,"away");
     const AH=AGGR[mH]||AGGR.balanced, AA=AGGR[mA]||AGGR.balanced;
-    const e=gap, ev=(st.pendEv||[]).splice(0);
+    const e=gap+lnAdj("home")-lnAdj("away"), ev=(st.pendEv||[]).splice(0);
     const sysF=(side)=>{ const X=st.S[side], O=st.S[other(side)]; let f=SYSTEM[X.sys].own*SYSTEM[O.sys].opp;
       if(X.ans){ if(ANSWERS[X.ans].beats===O.sys)f*=HK.counter.own; else f*=HK.misread }
       if(O.ans&&ANSWERS[O.ans].beats===X.sys)f*=HK.counter.opp;
       if(X.prepd)f*=ANSWERS[X.ans].beats===O.sys?HK.prepped.own:HK.misprep.own;
       if(O.prepd)f*=ANSWERS[O.ans].beats===X.sys?HK.prepped.opp:HK.misprep.opp;
       return f };
-    let lamH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home")*shotF("home",mH,mA)*ampF("home",mH,mA);
-    let lamA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away")*shotF("away",mA,mH)*ampF("away",mA,mH);
+    const bH=HK.shots/SEGS*(1+e*HK.shotEdge)*AH.own*AA.opp*sysF("home")*shotF("home",mH,mA)*ampF("home",mH,mA);
+    const bA=HK.shots/SEGS*(1-e*HK.shotEdge)*AA.own*AH.opp*sysF("away")*shotF("away",mA,mH)*ampF("away",mA,mH);
+    let lamH=bH, lamA=bA;
     if(s>=8&&st.h!==st.a){ if(st.h<st.a){lamH*=1+HK.scoreFx;lamA*=1-HK.scoreFx*0.6} else {lamA*=1+HK.scoreFx;lamH*=1-HK.scoreFx*0.6} }
+    if(span<5){ lamH*=span/5; lamA*=span/5 }
     // a shot's chance: the shooter's edge, and the goalie it's against
     const kH=finSk("home",mH,mA), kA=finSk("away",mA,mH);
     const pH=HK.sh*(1+e*HK.finishEdge)*(kH+finG("home"))+st.S.away.form, pA=HK.sh*(1-e*HK.finishEdge)*(kA+finG("away"))+st.S.home.form;
-    const t0=s*5, minute=()=>t0+rng.r()*5;
+    const t0=s*5, minute=()=>t0+rng.r()*span;
     const sv=[];   // round 70: every shot stopped, for the highlights (Ian: "more saves"); placed by count, no draws
-    const shoot=(side,n,p,pp,xk)=>{ const G=st.S[other(side)]; let g=0;
+    const shoot=(side,n,p,pp,xk,tm,tag)=>{ const G=st.S[other(side)]; let g=0;
       for(let i=0;i<n;i++){ G.sa++; G.xga+=(pp?HK.ppSh:HK.sh)*(xk||1);
         // engine 20 (round 106): a power play's shots inside its two minutes (they were spread over the five, so the full
         // match drew a side short for up to five); no draw
-        const pm=pp&&ENGINE_V>=20&&st.penAt?st.penAt[other(side)]:null, at=pm!=null?Math.min(t0+4.99,pm+2*(i+0.5)/n):t0+5*(i+0.5)/n;
-        if(!(rng.r()<Math.max(0.01,p))){ sv.push({m:at,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100}); continue }
+        const pm=pp&&ENGINE_V>=20&&st.penAt?st.penAt[other(side)]:null, at=tm!=null?tm:pm!=null?Math.min(t0+span-0.01,pm+2*(i+0.5)/n):t0+span*(i+0.5)/n;
+        if(!(rng.r()<Math.max(0.01,p))){ sv.push(Object.assign({m:at,side:other(side),k:"sv",pp:!!pp,u:(s*31+i*13+sv.length*7+(side==="home"?3:5))%100},tag||{})); continue }
         { g++; G.ga++;
           // was it soft? A goalie on a bad night lets in more that he should stop
           const bad=G.form>HK.offBy/2, soft=rng.r()<(bad?HK.softBad:HK.softOk);
           if(soft){G.soft++; G.lastSoft=true} else G.lastSoft=false;
-          const gm=minute(); ev.push({m:pm!=null?Math.min(t0+4.99,pm+(gm-t0)/5*2):gm,side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)}) } }
+          const gm=tm!=null?tm:minute(); ev.push(Object.assign({m:pm!=null?Math.min(t0+span-0.01,pm+(gm-t0)/span*2):gm,side:side,k:"goal",pp:!!pp,soft:soft,u:rng.int(100)},tag||{})) } }
       return g };
     const sH=shotsIn(rng,lamH), sA=shotsIn(rng,lamA);
     let gH=shoot("home",sH,pH,false,kH), gA=shoot("away",sA,pA,false,kA);
     const Lh=st.lines.h, La=st.lines.a; let ppH=0,ppA=0;
     const penAt=(sd,m)=>{ (st.penAt=st.penAt||{})[sd]=m; return m };
-    if(rng.r()<HK.pens/SEGS){ ppH=shotsIn(rng,HK.ppShots); ev.push({m:penAt("away",minute()),side:"away",k:"pen",u:rng.int(100)});
+    if(rng.r()<HK.pens/SEGS*span/5){ ppH=shotsIn(rng,HK.ppShots); ev.push({m:penAt("away",minute()),side:"away",k:"pen",u:rng.int(100)});
       const g=shoot("home",ppH,HK.ppSh*(1+e*HK.finishEdge)*(kH+finG("home",true))+st.S.away.form,true,kH); gH+=g; Lh.ppg+=g; Lh.pp++; La.pim+=2 }
-    if(rng.r()<HK.pens/SEGS){ ppA=shotsIn(rng,HK.ppShots); ev.push({m:penAt("home",minute()),side:"home",k:"pen",u:rng.int(100)});
+    if(rng.r()<HK.pens/SEGS*span/5){ ppA=shotsIn(rng,HK.ppShots); ev.push({m:penAt("home",minute()),side:"home",k:"pen",u:rng.int(100)});
       const g=shoot("away",ppA,HK.ppSh*(1-e*HK.finishEdge)*(kA+finG("away",true))+st.S.home.form,true,kA); gA+=g; La.ppg+=g; La.pp++; Lh.pim+=2 }
     Lh.sog+=sH+ppH; La.sog+=sA+ppA;
     st.h+=gH; st.a+=gA;
@@ -333,8 +424,9 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
       if(rng.r()<0.3){ const k=rng.r()<HK.cueTrue?X.sys:rng.pick(SYSTEM_KEYS), u=rng.int(100);
         ev.push({m:minute(),side:sd,k:"cue",cue:k,u:u}); if(u%3===0)X.lastCue=k } });
     // the last spell: trailing by one or two, the goalie comes out
-    let en=null;
-    if(s===SEGS-1){
+    let en=null, tSh={home:0,away:0};
+    if(GD&&span<5){ const T=tailPlay(s,t0,span,ev,sv,{home:bH,away:bA},{home:kH,away:kA},e,shoot); en=T.en; tSh=T.sh }
+    if(!GD&&s===SEGS-1){
       const tr=st.h<st.a?"home":st.a<st.h?"away":null;
       if(tr&&Math.abs(st.h-st.a)<=2){
         const pick=humans[tr]&&st.late[tr+"pull"], when=pick==="early"?"early":"normal";
@@ -357,12 +449,13 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(ENGINE_V>=21){ const pens=ev.filter(x=>x.k==="pen").map(x=>({side:x.side,m:x.m})).concat(st.penCarry||[]);
       // by the minutes shown: a goal at the penalty's minute or the two after reads as inside it
       ev.forEach(x=>{ if(x.k!=="goal"||x.pp||x.en||x.extra)return; const F=Math.floor, pn=pens.find(q=>q.side!==x.side&&F(x.m)>=F(q.m)&&F(x.m)<=F(q.m)+2); if(!pn)return;
-        const b=F(pn.m)-0.5, a=F(pn.m)+3.5; if(b>=t0)x.m=b; else if(a<t0+5)x.m=a });
+        const b=F(pn.m)-0.5, a=F(pn.m)+3.5; if(b>=t0)x.m=b; else if(a<t0+(GD&&span<5?span:5))x.m=a });   // engine 26: not past the minutes played the usual way (the tail's own come after)
       st.penCarry=ev.filter(x=>x.k==="pen"&&x.m+2>t0+5).map(x=>({side:x.side,m:x.m})) }
     ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m))); sv.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
     const prev=st.drives.length?st.drives[st.drives.length-1]:{sh:0,sa:0};
-    const mom=Math.max(0.12,Math.min(0.88,(sH+ppH+0.5)/(sH+ppH+sA+ppA+1)+rng.gauss(0,0.05)));
-    const d={seg:s,h:st.h-prev.sh,a:st.a-prev.sa,sh:st.h,sa:st.a,shots:[sH+ppH,sA+ppA],pp:[ppH>0,ppA>0],en:en,ot:0,ev:ev,sv:sv,mom:mom,
+    const xH=sH+ppH+tSh.home, xA=sA+ppA+tSh.away;
+    const mom=Math.max(0.12,Math.min(0.88,(xH+0.5)/(xH+xA+1)+rng.gauss(0,0.05)));
+    const d={seg:s,h:st.h-prev.sh,a:st.a-prev.sa,sh:st.h,sa:st.a,shots:[xH,xA],pp:[ppH>0,ppA>0],en:en,ot:0,ev:ev,sv:sv,mom:mom,
       T:{home:Object.assign({},st.S.home.tell),away:Object.assign({},st.S.away.tell)},
       sog:[Lh.sog,La.sog]};
     // who started in goal, for the commentary (round 50: "your assistant's call: start Vann: fresh", and the starter's name
@@ -371,10 +464,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // who is in net now, for the highlights' rink (round 71, Muse: the rink showed the starter in all four games the backup played)
     if(st.S.home.backupIn||st.S.away.backupIn)d.gIn={home:!!st.S.home.backupIn,away:!!st.S.away.backupIn};
     if(ENGINE_V>=22)d.md={home:mH,away:mA};   // round 108: the mode each side played the stretch in, for the rink (no draws)
+    if(GD){ ["home","away"].forEach(sd=>{ st.lnX[sd]=HK_GD.decay*st.lnX[sd]+lnD(sd).a }); d.ln={home:st.ln.home,away:st.ln.away} }
     st.drives.push(d); return d;
   };
   const overtime=()=>{
-    const e=gap, pH=0.5+e*HK.finishEdge*2.2, ev=[];
+    const e=gap+lnAdj("home")-lnAdj("away"), pH=0.5+e*HK.finishEdge*2.2, ev=[];
     if(st.playoff){                                          // sudden death: 20-minute periods until a goal
       let k=0; while(k++<8){ st.ot=k;
         const lamH=HK.shots/3*(1+e*HK.shotEdge)*shotF("home","balanced","balanced"), lamA=HK.shots/3*(1-e*HK.shotEdge)*shotF("away","balanced","balanced");
@@ -411,7 +505,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     // right, then "Cooper Vann comes in for K. Igwe" at the next intermission with no call put to you)
     if(dp.k==="goalie"){ if(v==="keep")X.kept=true; if(v==="swap")swapGoalie(side); else if(v==="normal"){ if(!(ENGINE_V>=2&&X.kept))cpuGoalie(side); st.autoDid=ENGINE_V>=2&&X.kept?"kept him in, as you had":"made the computer's goalie call" } return }
     if(dp.k==="push"||dp.k==="lock"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":v==="keep"?st.mode[side]:"auto"; if(st.late[side]==="auto")st.autoDid="managed it by the score, as every computer coach does"; return }
-    if(dp.k==="pull")st.late[side+"pull"]=v==="early"?"early":"normal";
+    if(dp.k==="pull"){ st.late[side+"pull"]=v==="early"?"early":"normal"; if(GD)st.late[side+"pullT"]=PULL_AT[v]||0 }
     if(dp.k==="ot"){ st.late[side+"ot"]=v==="attack"||v==="hold"?v:null; return }
     if(dp.k==="gstart"){ startGoalie(side,v==="starter"?"starter":"backup"); return }
     if(dp.k==="final"){ st.late[side]=v==="push"?"push":v==="sit"?"sit":"auto"; if(st.late[side]==="auto")st.autoDid="managed it by the score, as every computer coach does"; return }
@@ -466,7 +560,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(s===10&&!st.t3q){st.t3q=true; ["home","away"].forEach(sd=>{ const O=st.S[other(sd)];
         if(humans[sd]&&O.t3&&Math.abs(lead(sd))<=1)queueCall(sd,thirdCall(lead(sd),O.tell,O.t3,st.S[sd].ans)) });
       if(st.queue.length)return st.next()}
-    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L,st.playoff)); if(L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js) */ const p=st.penAt&&st.penAt[sd]; const X=st.S[sd]; queueCall(sd,Object.assign(pullCall(L,p!==undefined&&p+2>s*5?p+2:0),{gn:{ga:X.ga,sa:X.sa,xga:X.xga,bk:!!X.backupIn}})) }   /* his night, on the card (round 47, Muse: the pull is a coin flip about a stranger) */ });
+    if(s===11&&!st.pl){st.pl=true; ["home","away"].forEach(sd=>{ const L=lead(sd); if(HK_FINAL&&(L===1||L===0))queueCall(sd,finalCall(L,st.playoff)); if(GD?(L===-1||L===-2)&&!st.pullOn[sd]:L===-1){   /* down two, early or normal moved nothing (0.0 points: test/call-weight.js); engine 26: down two is asked again, the choice now reaching five minutes */ const p=st.penAt&&st.penAt[sd]; const X=st.S[sd]; queueCall(sd,Object.assign(pullCall(L,p!==undefined&&p+2>s*5?p+2:0),{gn:{ga:X.ga,sa:X.sa,xga:X.xga,bk:!!X.backupIn}})) }   /* his night, on the card (round 47, Muse: the pull is a coin flip about a stranger) */ });
       if(st.queue.length)return st.next()}
     if(s>=SEGS&&HK_OTQ&&st.h===st.a&&!st.playoff&&!st.otq){ st.otq=true; ["home","away"].forEach(sd=>queueCall(sd,otCall())); if(st.queue.length)return st.next() }
     if(s>=SEGS){ if(st.h===st.a)overtime(); st.done=true; return fin() }
@@ -474,6 +568,27 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     return {drive:d,h:st.h,a:st.a};
   };
   st.reply=function(v){ st.answer=v; st.waiting=null };
+  /* engine 26: the live bar's buttons (core setLivePlan "act:<id>", made as a stretch starts). Pull the goalie: in the
+     third, behind by one to three, he's out from the next stretch while you stay behind by one to three; Goalie back in
+     undoes it. */
+  st.legs=function(side){ return Math.max(0,Math.min(100,Math.round(100-50*st.lnX[side]))) };
+  st.actsFor=function(side){ if(!GD||!humans[side]||st.done)return []; const A=[], d=-lead(side), lg=st.legs(side);
+    const legs=lg>=97?"fresh":lg>=90?"fine":lg>=80?"tiring":"tired";
+    if(st.seg<SEGS)["roll","set","top","short"].forEach(k=>A.push({id:"ln:"+k,l:LN_L[k],on:st.ln[side]===k,grp:`Lines tonight (your top line's legs: ${legs})`,pend:"From the next stretch"}));
+    if(st.seg<SEGS)A.push({id:"to",l:"Call your timeout",left:st.TO[side]>0&&st.toSet[side]<0?1:0,grp:"Your timeout (one a game; kept, your assistant calls it as the goalie comes out)",pend:"Called: at the next stretch"});
+    if(st.seg<SEGS&&!st.S[side].backupIn)A.push({id:"swap",l:"Put the backup in",grp:"Your goalie",pend:"In from the next stretch"});
+    if(st.seg>=8&&st.seg<SEGS-1&&(st.pullOn[side]||(d>=1&&d<=3)))A.push(st.pullOn[side]?{id:"back",l:"Goalie back in",grp:"Your goalie: out for an extra attacker",pend:"Back in from the next stretch"}
+      :{id:"pull",l:"Pull the goalie",grp:`Your goalie (down ${downWord(d)}: the league pulls with ${d===1?"about two":"three and a half"} minutes left${d>=3?", if at all":""})`,pend:"Out from the next stretch"});
+    return A };
+  st.act=function(side,id){ if(!GD||!humans[side]||st.done)return false;
+    if(id.indexOf("ln:")===0){ const k=id.slice(3); if(!LN_L[k]||st.ln[side]===k||st.seg>=SEGS)return false; st.ln[side]=k;
+      st.pendEv=(st.pendEv||[]).concat([{m:st.seg*5,side:side,k:"ln",ln:k}]); return true }
+    if(id==="to"){ if(!(st.TO[side]>0)||st.toSet[side]>=0||st.seg>=SEGS)return false; st.TO[side]--; st.toSet[side]=st.seg; useRest(side);
+      st.pendEv=(st.pendEv||[]).concat([{m:st.seg*5,side:side,k:"to"}]); return true }
+    if(id==="swap"){ if(st.S[side].backupIn||st.seg>=SEGS)return false; swapGoalie(side); return true }
+    if(id==="pull"){ const d=-lead(side); if(st.seg<8||st.seg>=SEGS||d<1||d>3||st.pullOn[side])return false; st.pullOn[side]=true; return true }
+    if(id==="back"){ if(!st.pullOn[side])return false; st.pullOn[side]=false; return true }
+    return false };
   return st;
 }
 /* A whole game at once: the same game, with the computer's calls, or
@@ -498,7 +613,17 @@ const HK_BK_ELO=4.45;
 function sportTonightEdge(t){ if(!planAmpV()||!HK_GSTART||typeof SEA==="undefined"||!SEA)return 0; const G=gkCtx(t,SEA.step); if(!G||!G.b2b)return 0;
   return -HK_BK_ELO*(G.gap!==undefined?Math.max(0,G.gap):HK.backup/HK.backupPer) }
 function gameCtx(h,a,year,step){ return {fav:{home:clubStyle(h,year),away:clubStyle(a,year)}, gk:HK_GSTART?{home:gkCtx(h,step),away:gkCtx(a,step)}:undefined, seed:strHash(h+"|"+a+"|"+year+"|"+step),
-  sh:hkV12()?{home:hkShapeT(h),away:hkShapeT(a)}:undefined} }
+  sh:hkV12()?{home:hkShapeT(h),away:hkShapeT(a)}:undefined, ln:hkGdV()?{home:hkLnT(h),away:hkLnT(a)}:undefined} }
+/* engine 26: what tonight's lines work with: the top line's and pair's gap over the men behind them (rating points by
+   position weight; a hurt man's place taken as his minutes are: the backup up, a walk-on behind him, POS drop down), and
+   the depth's share of the minutes as the season's lines set it */
+function hkLnOf(R,H,dep){ const o={gf:0,gd:0,bf:0.3,bd:0.3}; if(!R)return o;
+  for(let i=0;i<5;i++){ const P=POS[i], st=H&&H.has(i)?R[BK(i)]:R[i], bk=H&&(H.has(i)||H.has(BK(i)))?null:R[BK(i)];
+    if(!st)continue; const g=P.w*(bk?st.r-bk.r:P.drop); if(i<3)o.gf+=g; else o.gd+=g }
+  o.gf=Math.round(o.gf*100)/100; o.gd=Math.round(o.gd*100)/100;
+  if(dep&&typeof DEPLOY!=="undefined"){ if(dep.f&&DEPLOY.f.opts[dep.f])o.bf=DEPLOY.f.opts[dep.f].b; if(dep.d&&DEPLOY.d.opts[dep.d])o.bd=DEPLOY.d.opts[dep.d].b }
+  return o }
+function hkLnT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x=>x.idx)):null; return hkLnOf(SEA.roster[t],H,typeof deployOf==="function"?deployOf(SEA,t):null) }catch(e){ return hkLnOf(null) } }
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
   const humans=opts.decide?{home:!!opts.userIsHome,away:!opts.userIsHome}:{home:false,away:false};

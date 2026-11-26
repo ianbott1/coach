@@ -1,5 +1,5 @@
 {
- "fp": "8a7ce9c311be32a6",
+ "fp": "24f09140552c641b",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -170,21 +170,26 @@
    "fp": "8a7ce9c311be32a6",
    "from": "7db5d2fc482e864c",
    "note": "Review round (engine 25): merged front offices (NFL, NBA), basketball game-day calls, the people layer, calibration and the playtest bug sweep; each branch's own goldens matched before the merge"
+  },
+  {
+   "fp": "24f09140552c641b",
+   "from": "8a7ce9c311be32a6",
+   "note": "round 2 rv2/hockey (engine 26): the goalie pull at real benches' times (empty-net goals 0.14 to 0.29 a game), tonight's lines and legs, the timeout"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "e6c9649933e840c0",
-    "post": "822d828a30cc61d4",
-    "champion": "Los Angeles",
-    "rec": "babc9790fe42cb6a",
-    "poll": "c1091ba2a45e5f98",
-    "heis": "588a323304c4a9f0",
-    "history": "9a813fb1ad8da80c",
-    "universe": "196e395e262667c9",
-    "screens": "84cd1912218d521d"
+    "games": "b3bf7d190bfb41db",
+    "post": "a4ee0ca73e7f813f",
+    "champion": "Florida",
+    "rec": "902f1eb769a5db5d",
+    "poll": "4f1112accc775064",
+    "heis": "6dce2f0407b8509c",
+    "history": "8cdb6f24f7249c46",
+    "universe": "1b7edd0bc2177b35",
+    "screens": "254b9707cd3c2c32"
    }
   ]
  }
