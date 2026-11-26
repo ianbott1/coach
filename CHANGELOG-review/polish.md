@@ -30,3 +30,18 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js whole`: before, college 325 and pro 109 players with 10+ games and no rebound, backup
   centers 2.3 / 1.0 rpg; after, none, backup centers 2.0 / 2.9 rpg. A pro team's season (Boston, seed 5): starters'
   lines unchanged; backups now play 97 games at 4.2-8.6 ppg, the backup center 4.1 rpg, 0.9 bpg.
+
+## Football backups have whole lines; "Tight ends and backs" in the box score (college and pro)
+- What: the backup receivers play as the third and fourth wideouts (about a tenth and a twentieth of the team's catches,
+  taken from the catches the two starters don't make; their yards in proportion), and the backup corner and safety as
+  the nickel and dime backs (0-3 tackles a game, a pass broken up about one game in six), every game they're healthy
+  (fbBenchLines in src/football/10_players.js). A backup defender with a pick always has a tackle. The box score's row for
+  the catches the roster doesn't carry is labelled "Tight ends and backs", not "Other receivers".
+- Why: playtest: backup stats made of nothing but the log's named plays (a corner with 2 games, 2 interceptions, no
+  tackle; a receiver with 5 catches, all touchdowns), and "Other receivers" in every pro box score with 4-14 catches.
+- Games: pro and college football (shared layer).
+- Results: none move (draws after every other on the line generator; lines feed no result). Screens change.
+- Tested: `node test/polish.js "football backups"`: 1699 catches for 252 touchdowns by backup receivers league-wide,
+  64 nickel and dime backs with lines, no pick without a tackle, the box score reads "Tight ends and backs". Buffalo's
+  season (seed 5): WR3 39 catches 429 yards 4 TD over 17 games (was 4 games, 15 catches), backup CB 17 games 33
+  tackles 2 INT (was 2 games, 0 tackles, 2 INT); the tight-end-and-back row 3-10 catches a game (was 4-14).
