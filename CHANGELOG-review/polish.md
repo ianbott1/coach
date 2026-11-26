@@ -146,3 +146,12 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js "portal describes"` (Duke, Gonzaga, Dayton after a season): before, Gonzaga's cards
   named two graduating seniors ("back up Devonte Coleridge", "start over Keenan Dearborn"); after, 22 cards name a man,
   none leaving. MATCH.
+
+## A hired assistant keeps the name he was hired under (all seven; seen in college basketball)
+- What: when the offseason opens, assistant candidates whose first name clashes with the head coach's, an assistant
+  who stays, or another candidate's take another first name (by hash, as distinctStaff does: no draw moves), so the
+  staff rule against two first names never renames the man after you hire him (core/99_app.js, openOffseason).
+- Why: playtest: "Trent Tuiasosopo" was hired and appeared on the staff as "Wes Tuiasosopo".
+- Tested: `node test/polish.js "keeps the name"` (head coach named Trent, candidates forced to Trent): before, "Trent
+  Cristobal" was hired and joined as "Herman Cristobal"; after, the candidates are Andre Kiffin, Herman Cristobal, Cole
+  Bowden and the hire keeps his name. MATCH.

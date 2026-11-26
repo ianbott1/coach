@@ -190,5 +190,20 @@ check('the portal describes next season\'s depth chart (college basketball)',()=
   ok(named>5&&!bad.length,`${named} portal cards name the man a transfer would start over or back up, none of them leaving${bad.length?'; '+[...new Set(bad)].slice(0,3).join('; '):''}`);
 });
 
+// Playtest (college basketball): a hired assistant "Trent Tuiasosopo" joined the staff as "Wes Tuiasosopo" (the staff
+// rule against two first names renamed him after the hire). Candidates whose first names clash with the head coach's,
+// an assistant staying or each other are renamed before they're shown, so the man hired keeps his name.
+check('a hired assistant keeps the name he was hired under (college basketball)',()=>{
+  const api=load('ncaab'), ev=api.ev; api.newDynasty('Duke',5,'Trent Coach'); for(let i=0;i<4;i++)ev('simAdvance()');
+  ev('fireCoord("oc")'); let n=0; while(api.SEA.phase!=='done'&&n++<600)ev('simAdvance()');
+  ev('{ const _cc=coordCandidates; coordCandidates=function(){ const L=_cc.apply(null,arguments); L.forEach(c=>c.n="Trent "+c.n.split(" ").slice(1).join(" ")); return L } }');
+  ev('S.career.name="Trent Coach"'); api.openOffseason();
+  const C=(api.S.off.staff||{}).oc||[]; const firsts=C.map(c=>c.n.split(' ')[0]); const dc=api.U.dc[api.S.myTeam];
+  const pick=Math.min(1,C.length-1); const shown=C[pick]&&C[pick].n; api.S.off.picks.oc=pick;
+  if(api.S.off.act.userOpen&&api.S.off.move===null)api.S.off.move=api.S.myTeam; api.commitOffseason();
+  const hired=api.U.oc[api.S.myTeam]&&api.U.oc[api.S.myTeam].n;
+  ok(C.length>=2&&new Set(firsts).size===firsts.length&&firsts.indexOf('Trent')<0&&hired===shown,`${C.length} candidates (${C.map(c=>c.n).join(', ')}) beside the head coach Trent and ${dc&&dc.n}; hired "${shown}", on the staff as "${hired}"`);
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

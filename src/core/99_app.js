@@ -1235,6 +1235,15 @@ function openOffseason(){
     L.forEach((c,i)=>{ let k=0; while(seen.has(c.n)&&k<COACH_FIRST.length){ c.n=COACH_FIRST[(i*7+k++)%COACH_FIRST.length]+" "+c.n.split(" ").slice(1).join(" ") } seen.add(c.n) }) });
   ["oc","dc"].forEach(side=>{ if(SEA.midFired&&SEA.midFired[side]&&!staffCands[side]){
     staffCands[side]=coordCandidates(rng,U.program[my],side,C.rep); A.staffOpen=Object.assign({},A.staffOpen||{},{[side]:true}) } });
+  // review round (playtest: "Trent Tuiasosopo" was hired and joined the staff as "Wes Tuiasosopo"): the staff's rule
+  // (distinctStaff: no two first names among the head coach and his assistants) renamed him after the hire. The
+  // candidates take distinct first names now, against the head coach, an assistant staying and each other, so the man
+  // you hire keeps the name you hired. By hash, as distinctStaff does: no draw moves.
+  { const first=n=>n?String(n).split(" ")[0]:null, taken=new Set([first(C.name),first(U.coach[my]&&U.coach[my].n)].filter(Boolean));
+    ["oc","dc"].forEach(sd=>{ if(!staffCands[sd]&&U[sd]&&U[sd][my])taken.add(first(U[sd][my].n)) });
+    ["oc","dc"].forEach(sd=>(staffCands[sd]||[]).forEach(c=>{ if(!c||!c.n)return; let f=first(c.n);
+      if(taken.has(f)){ const h=strHash(c.n+"|"+my+"|"+sd); for(let k=0;k<FIRST.length&&taken.has(f);k++)f=FIRST[(h+k)%FIRST.length]; c.n=f+c.n.slice(c.n.indexOf(" ")) }
+      taken.add(f) })) }
   // a league can run its own market (soccer: relative to your club, not fixed bands)
   // a hot seat: another coach's program is never on your market, even when they were fired from it the same winter.
   // Round 49 (test/firing.js): both humans fired in one offseason, the first took the second's program off the market,
