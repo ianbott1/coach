@@ -182,5 +182,22 @@ All on the final build (engine 27 unless named):
 - Goldens and hot-seat baselines: not re-recorded. Screens with `ENGINE_NOW=26` on a scratch build: MATCH.
 
 ## Seen outside this branch
-- `leagues/mlb/25_schedule.js`: seed 11 (a career opened as Seattle) can't build its 2033 schedule ("could not fit
-  the baseball schedule"), on the engine-26 build too. `test/mlb-fo.js` uses seed 5.
+- `leagues/mlb/25_schedule.js`: seed 11 (a career opened as Seattle) couldn't build its 2033 schedule ("could not
+  fit the baseball schedule"), on the engine-26 build too. Fixed in the follow-up below; `test/mlb-fo.js` still uses
+  seed 5.
+
+## Follow-up: a season whose schedule won't pack
+- What: when the schedule builder gives up (its 200 tries to lay the series into the days all fail), the season's
+  series are drawn again from dice of their own (the year, the try, and where the failed builder left the season's
+  dice), up to eight times (`mlbScheduleSafe`, now `LEAGUE.buildSchedule`). Only a build that failed takes this path:
+  every schedule that built before is the same, and the season's dice go on from where they were. No engine gate:
+  the old path was a stopped career, on every engine.
+- Why: about one season in two hundred wouldn't pack, so a career had about a one-in-ten chance of stopping dead
+  within twenty seasons.
+- Game(s): pro baseball.
+- Tested: the builder from 60 dice states by 20 years (1,200 seasons): 6 failed before (0.5%; 2028, 2035 twice,
+  2037 twice, 2039), none after. The seed-11 Seattle career now plays through 2034. `test/mlb-fo.js` builds three of
+  the failing states (each gets 162 games a club, 81 at home) and three that built (the same schedule as before):
+  MATCH. `OLD=/home/claude/dist-e26 node test/engine-replay.js baseball`: MATCH. `node test/bs-calibrate.js`: MATCH.
+  `node test/migrate.js` and `node test/reload.js dist/baseball-coach-pro.html`: MATCH 2253 of 2253 and MATCH 18 of 18.
+- Not yet: why those series sets won't pack (the redraw goes round it rather than fixing the packer).

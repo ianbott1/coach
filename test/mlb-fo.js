@@ -27,7 +27,7 @@ const newF=process.argv[2]||path.join(__dirname,'..','dist','baseball-coach-pro.
 const oldF=process.argv[3]||path.join(__dirname,'..','baseball-coach-pro.html');   // the published build (engine 26 or before)
 const SEASONS=+(process.argv[4]||8);
 const EXPOSE=['S','SEA','U','NAMES','POS','LEAGUE','ENGINE_V','ENGINE_NOW','newDynasty','openOffseason','commitOffseason','rebuild','payroll',
-  'MLB$','mlbTaxPay','mlbTaxBill','mlbBudget','mlbClass','mlb40','mlbS2','mlbReservesHTML','payrollLine','KEYFOR','loadSlot','expectations','BK'];
+  'MLB$','mlbTaxPay','mlbTaxBill','mlbBudget','mlbClass','mlb40','mlbS2','mlbReservesHTML','payrollLine','KEYFOR','loadSlot','expectations','BK','mlbSchedule','RNG'];
 let bad=0; const ok=(c,m)=>{ if(!c){ bad++; console.log('  FAIL',m) } else console.log('  ok  ',m) };
 const q=(a,f)=>{ const s=a.slice().sort((x,y)=>x-y); return s[Math.min(s.length-1,Math.floor(f*s.length))] };
 const sd=a=>{ const m=a.reduce((s,x)=>s+x,0)/a.length; return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1)) };
@@ -129,6 +129,18 @@ if(fs.existsSync(oldF)){
   console.log('old career after its summer:',JSON.stringify(f));
   ok(f.fo===1&&f.farm&&f.full&&f.svc===26,'the old career comes onto the front office at its first summer on engine 27');
 } else console.log('(no old build at '+oldF+': the old-career part skipped)');
+// the schedule (Nov 2026: about one season in two hundred wouldn't pack, and the career stopped there; a scan of 60
+// dice states by 20 years found 6). A failed build redraws its series (LEAGUE.buildSchedule); one that built is unchanged.
+{ const dice=(s,y)=>new A.RNG((s*2654435761+y*40503)|0), gm=x=>JSON.stringify(x.map(g=>[g.week,g.home,g.away]));
+  const hard=[[1,2037],[8,2035],[44,2028]], easy=[[2,2030],[9,2041],[30,2026]];
+  let threw=0, fits=0, same=0;
+  hard.forEach(([s,y])=>{ try{ A.mlbSchedule(dice(s,y),{},y) }catch(e){ threw++ }
+    try{ const G=A.LEAGUE.buildSchedule(dice(s,y),{},y), n={}, h={}; G.forEach(g=>{ n[g.home]=(n[g.home]||0)+1; n[g.away]=(n[g.away]||0)+1; h[g.home]=(h[g.home]||0)+1 });
+      if(T.every(t=>n[t]===162&&h[t]===81))fits++ }catch(e){} });
+  easy.forEach(([s,y])=>{ if(gm(A.LEAGUE.buildSchedule(dice(s,y),{},y))===gm(A.mlbSchedule(dice(s,y),{},y)))same++ });
+  console.log('schedule:',JSON.stringify({threw,fits,same}));
+  ok(threw===hard.length&&fits===hard.length,'a season whose schedule would not pack gets one: 162 games a club, 81 at home');
+  ok(same===easy.length,'a schedule that built before builds the same'); }
 console.log(`(${Math.round((Date.now()-t0)/1000)}s)`);
 console.log(bad?'MISMATCH '+bad+' failed':'MATCH the front office works');
 })();
