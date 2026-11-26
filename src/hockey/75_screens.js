@@ -41,7 +41,7 @@ const hkV16=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=16;   // round 93: ever
    the star factor 0.35 (0.55), the depth share 0.3 shared evenly between a starter and the man behind him */
 const HK17C={s:+(HK13_ENV("HK17C_S")||1), d:+(HK13_ENV("HK17C_D")||1), ps:+(HK13_ENV("HK17C_PS")||0.35), un:+(HK13_ENV("HK17C_UN")||0.3), lk:+(HK13_ENV("HK17C_LK")||0.06), lmax:+(HK13_ENV("HK17C_LMAX")||1.2), dw:+(HK13_ENV("HK17C_DW")||1)};
 const hkV17=()=>typeof ENGINE_V!=="undefined"&&ENGINE_V>=17;
-const HK26_S=+(HK13_ENV("HK26_S")||0.35), HK26_R=+(HK13_ENV("HK26_R")||0.7), HK26_PS=+(HK13_ENV("HK26_PS")||0.35), HK26_A2=+(HK13_ENV("HK26_A2")||0.35);
+const HK26_S=+(HK13_ENV("HK26_S")||0.35), HK26_R=+(HK13_ENV("HK26_R")||0.7), HK26_PS=+(HK13_ENV("HK26_PS")||0.2), HK26_A2=+(HK13_ENV("HK26_A2")||0.35);
 /* round 89 (engine 12): who scores leans with Shooting, who assists with Passing (1.25x a spread, held to 0.6-1.6: at
    basketball's 1.4x, uncapped, a depth winger leaning hard to Shooting scored 103 goals; scratch r89, statsum) */
 function hkLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!k||typeof attrOf!=="function"||!p)return 1; const A=attrOf(p); if(!A||A[k]==null)return 1;
@@ -74,10 +74,13 @@ function hkGoalNames(tm,e){ if(e.nm)return {n:e.nm, a:e.an||null, a2:e.an2||null
   // flat, a man behind the starters three times a starter (r90/reg.js: star-weighted gave one backup 91; backups alone let
   // 50-rated men lead; 3:1 leaders 51-68, mean 60, points 110, a backup or two in the top ten)
   // engine 26 (stats): the bottom six's goals go mostly to the men behind the starters (HK26_S a starter's weight to
-  // their one), the better of them more (HK26_R): shared evenly, a top-line forward took a fifth of the depth goals on
-  // top of his own, and a 45-rated spare scored as often as a 60
-  const v26=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26, r26=o=>v26?Math.max(0.3,1+(o.p.r-60)/20*HK26_R):1;
-  const DB=hkV16()?D.map(o=>({n:o.n,w:hkV17()?(o.i>=6?HK17C.d*r26(o):(v26?HK26_S:HK17C.s)):(o.i>=6?3:1)})):[];
+  // their one; a spare playing for a hurt starter counts as the starter), the better of them more (HK26_R) and forwards
+  // more than defencemen: shared evenly, a top-line forward took a fifth of the depth goals on top of his own, and a
+  // 49-rated spare could lead the league
+  const v26=typeof ENGINE_V!=="undefined"&&ENGINE_V>=26, nP=POS.length;
+  const w26=o=>{ const second=o.i>=nP&&D.some(q=>q!==o&&q.i%nP===o.i%nP), u=POS[o.i%nP].p;
+    return (second?1:HK26_S)*Math.max(0.3,1+(o.p.r-60)/20*HK26_R)*(HK_GW[u]||HK_GW.C)/HK_GW.C };
+  const DB=hkV16()?D.map(o=>({n:o.n,w:v26?w26(o):hkV17()?(o.i>=6?HK17C.d:HK17C.s):(o.i>=6?3:1)})):[];
   if(x>=1-UN&&DB.length)n=hkWPick(DB,(x-(1-UN))/UN)||DB[0].n;
   else if(x>=1-UN||!D.length){ n=HK_DEPTH_WHO[u%HK_DEPTH_WHO.length]; depth=true } else n=hkWPick(D,x/(1-UN))||"a forward";
   const AW=(e.en||e.extra)?null:hkDressed(tm,HK_AW,"pas"), a=AW?hkWPick(AW,(((u*7+3)%100)+0.5)/100,n):null;

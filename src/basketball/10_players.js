@@ -219,9 +219,13 @@ function bbLines26(rng,c,M,O,L,sl,extra,at,line,t3,t2,t1){
   const fl=c.drives.filter(d=>d.fouls).slice(-1)[0], F=fl?fl.fouls[side]||0:0, ss=segs.slice(-1)[0], sF=ss&&ss.star&&ss.star[side]?ss.star[side][0]||0:0;
   const sx=P.find(x=>x.pl.n===starN), fw=P.map(x=>x===sx?0:x.min/tot*(BB_PFW[x.pos]||1)), fd=splitDraw(rng,Math.max(0,F-(sx?sF:0)),fw);
   const out=BB.foulOut||6; P.forEach((x,j)=>{ x.pf=x===sx?Math.min(out,sF):Math.min(out,fd[j]) });
+  // whole minutes that come to the game's 240 (a man rounded on his own left a side at 237 or 243): the largest remainders
+  // take the spare minutes
+  P.forEach(x=>{ x.mi=Math.floor(x.min) }); let spare=Math.round(tot)-P.reduce((t,x)=>t+x.mi,0);
+  P.map((x,j)=>j).sort((a,b)=>(P[b].min-P[b].mi)-(P[a].min-P[a].mi)||a-b).forEach(j=>{ if(spare>0){ P[j].mi++; spare-- } });
   const fin=x=>{ const l=x.L, fgm=l.f2+l.tpm; return {pts:2*l.f2+3*l.tpm+l.ft,reb:l.reb,ast:l.ast,stl:l.stl,blk:l.blk,tpm:l.tpm,
-    min:Math.round(x.min),fgm:fgm,fga:fgm+(x.mf2||0)+(x.mtpm||0),tpa:l.tpm+(x.mtpm||0),ftm:l.ft,fta:l.ft+(x.mft||0),to:x.to||0,pf:x.pf||0,pm:Math.round(x.pm)} };
-  const res=P.filter(x=>x.j>=0||x.min>=0.5||Object.keys(x.L).some(k=>x.L[k])).map(x=>({pl:x.pl,pos:x.pos,line:fin(x)}));
+    min:x.mi,fgm:fgm,fga:fgm+(x.mf2||0)+(x.mtpm||0),tpa:l.tpm+(x.mtpm||0),ftm:l.ft,fta:l.ft+(x.mft||0),to:x.to||0,pf:x.pf||0,pm:Math.round(x.pm)} };
+  const res=P.filter(x=>x.j>=0||x.mi>0||Object.keys(x.L).some(k=>x.L[k])).map(x=>({pl:x.pl,pos:x.pos,line:fin(x)}));
   // anyone the play-by-play named who isn't in the rotation above (a hurt man's line stays as it was named)
   const inP=new Set(P.map(x=>x.pl.n));
   Object.keys(extra).forEach(nm=>{ if(inP.has(nm)||!at[nm])return; const l=extra[nm], x=at[nm], fgm=l.f2+l.tpm;
