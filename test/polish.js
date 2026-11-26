@@ -158,5 +158,13 @@ check('pro basketball bracket fills as soon as a pairing is known (and hockey\'s
   ok(checked>0&&!bad.length,`${lg}: ${checked} looks between the rounds with the second round filled${bad.length?'; '+[...new Set(bad)].slice(0,3).join('; '):''}`);
 } });
 
+// Playtest (pro basketball): an assistant rated +45 beside a tooltip whose scale stopped at +40 ("+40 one of the best").
+// Ratings run from about -58 to +68; the scale says +40 or more is one of the best, as the grade words do.
+check('the staff rating\'s scale covers every rating shown (seven games)',()=>{
+  for(const lg of Object.keys(FILE)){ const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T');
+    const h=api.view('team'); const tips=h.match(/title="How good he is at the job:[^"]*"/g)||[]; const q=(h.match(/class="stq[^"]*"[^>]*>([+\-]?\d+)</g)||[]).map(x=>+x.replace(/.*>/,'').replace('<',''));
+    ok(tips.length>0&&tips.every(t=>/\+40 or more one of the best, -40 or less/.test(t)),`${lg}: ${tips.length} staff ratings (${q.join(', ')}), the scale open at both ends`) }
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

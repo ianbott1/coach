@@ -2216,7 +2216,7 @@ function teamCardHTML(my,rk,co){
       if(!O||!D)return "";
       const row=(lab,c)=>`<div class="stline"><span class="stlab">${lab}</span>
         <span class="stn">${esc(c.n)}</span><span class="sts">${esc(c.s)}</span>
-        <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}" title="How good he is at the job: 0 is an average ${esc(SPORT.staff.any||"coach")}, +40 one of the best, -40 in over his head">${c.q>0?"+":""}${c.q}</span></div>`;
+        <span class="stq ${c.q>=20?'up':c.q<=-20?'dn':''}" title="How good he is at the job: 0 is an average ${esc(SPORT.staff.any||"coach")}, +40 or more one of the best, -40 or less in over his head">${c.q>0?"+":""}${c.q}</span></div>`;
       return `<div class="staffbar">${row(SPORT.staff.oc.short,O)}${row(SPORT.staff.dc.short,D)}</div>
         <div class="stkey">${esc(SPORT.staff.oc.short)}, ${esc(SPORT.staff.dc.short)}: your two lead assistants. The number is how good each is at the job (0 average, +40 among the best); it shifts how your team plays and how fast players develop.</div>`})()}
     ${(()=>{const e=S.expNow||expectations();

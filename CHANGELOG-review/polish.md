@@ -118,3 +118,11 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
 - Tested: `node test/polish.js "bracket fills"`: before the fix, nba's columns read "Semifinals" and a series winner
   was missing from the next round's box (nhl the same: winners missing); after, nba 8 and nhl 8 looks between the
   rounds with every known winner in the next box and no "to be decided" once the round is over. MATCH.
+
+## The staff rating's scale is open at both ends (all seven)
+- What: the tooltip on an assistant's rating reads "0 is an average assistant, +40 or more one of the best, -40 or less
+  in over his head". Ratings run from about -58 to +68 (core/20_engine.js, basketball/21_coordinators.js clamp them
+  there) and the grade words already call anything at +40 or above "one of the best"; the display isn't clamped,
+  since a +45 is better than a +40 and the game uses the difference.
+- Why: playtest (pro basketball): OFF assistant Luis Chatman showed +45 beside a scale that stopped at +40.
+- Tested: `node test/polish.js "staff rating"`: every staff rating's tooltip in all seven games has the open scale. MATCH.
