@@ -15,7 +15,7 @@ const only=process.argv[2], speeds=process.argv[3]?[process.argv[3]]:['slow','no
     const ev=kind==='sc'||kind==='hk'; const D=live.drives.filter(d=>ev?(typeof d.seg==='number'&&!d.ot):Array.isArray(d.pl)&&d.pl.length).slice(0,ev?6:8);
     D.forEach(d=>{ let tot, span;
       if(ev){ const P=hlEvPlan(live,d); tot=P.seg.reduce((m,q)=>Math.max(m,q.at+q.ms),0); span=5; live.pb={d,at:0,ms:tot,frozen:0,h0:d.sh-d.h,a0:d.sa-d.a} }
-      else { tot=HL_SPORT.playback(live,d); span=(HL_SPORT.evPB&&HL_SPORT.evPB.span)?HL_SPORT.evPB.span(d):null; live.pb={d,at:0,ms:tot,frozen:0,h0:0,a0:0} }
+      else { tot=HL_SPORT.playback(live,d); span=HL_SPORT.pbSpan?HL_SPORT.pbSpan(d):(HL_SPORT.evPB&&HL_SPORT.evPB.span)?HL_SPORT.evPB.span(d):null; live.pb={d,at:0,ms:tot,frozen:0,h0:0,a0:0} }
       wall+=tot; if(span)gameMin+=span; msTot.push(tot);
       let prev=null; const hist={};
       for(let el=0;el<tot;el+=16){ live.pb.frozen=el; let pts={};
