@@ -85,5 +85,25 @@ check('a game is as long as its league plays it (basketball, hockey, soccer)',()
   for(const lg of Object.keys(want)){ const api=load(lg), d=api.ev('PLANS.safe.d'); ok(want[lg].test(d),`${lg}: "${d.slice(0,80)}"`) }
 });
 
+// Playtest (college basketball): "Cooper Achterberg buries a three" while he sat with three fouls; "heads to the bench
+// with 3 fouls" said again after half-time for the same man on the same fouls. A man named for a basket is on that team
+// and on the floor; a second sit on the same fouls says he stays on the bench.
+check('basketball play-by-play names men on the floor (college and pro)',()=>{
+  for(const lg of ['ncaab','nba']){
+    const api=load(lg), ev=api.ev; api.newDynasty(ev('NAMES[0]'),5,'T'); let games=0, named=0, offN=0, bad=[], sits=[], g=0;
+    while(games<(lg==='nba'?40:30)&&g++<400){ api.doAdvance(); let n=0;
+      while(api.live&&!api.live.done&&n++<800){ if(api.live.ask){ const o=api.live.ask.dp.opts; const sit=o.find(x=>x[0]!=='play'); api.answerLive((sit||o[0])[0]) } else api.liveTick() }
+      const L=api.live; if(!L||!L.done)continue; games++;
+      ev('live').drives.forEach(d=>{ (d.ev||[]).forEach(e=>{ const t=ev('bbEventText')(L.g,e,d), tm=e.side==='home'?L.g.home:L.g.away;
+        if(e.k==='sit')sits.push((e.again?'again ':'')+t.text);
+        if(e.k!=='three'&&e.k!=='inside')return; named++;
+        const roster=(api.SEA.roster[tm]||[]).map(p=>p&&p.n); const x=d.star&&d.star[e.side], off=x&&(x[1]===false||x[2])?ev('bbStar')(tm):null; if(off)offN++;
+        const who=(roster.find(n=>n&&t.text.includes(n.split(' ').slice(-1)[0]))||'');
+        if(t.team!==tm||!who)bad.push(`${tm}: "${t.text}" (not on its roster)`);
+        else if(off&&who===off)bad.push(`${tm}: "${t.text}" while ${off} sat`) }) }) }
+    ok(!bad.length&&named>50,`${lg}: ${named} baskets named in ${games} games (${offN} while a star sat), each by a man on the floor${bad.length?'; '+bad.slice(0,3).join('; '):''}; sits: ${sits.length} (${sits.filter(x=>x.startsWith('again')).length} "stays on the bench")`);
+  }
+});
+
 if(require.main===module){ (async()=>{ for(const [name,fn] of checks){ if(only&&!name.includes(only))continue; console.log('--',name); try{ await fn() }catch(e){ bad++; console.log('FAIL',name,'crashed:',e.stack.split('\n').slice(0,3).join(' | ')) } }
   console.log(bad?`MISMATCH ${bad} check(s) failed`:'MATCH every playtest slip stays fixed'); process.exit(bad?1:0) })() }

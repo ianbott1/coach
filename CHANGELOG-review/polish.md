@@ -66,5 +66,21 @@ each. The regression checks are in test/polish.js (registered in test/run-all.js
   Every "forty"/"40 minutes" string in all seven was checked: the only other game-length lines are hockey's sixty and
   soccer's ninety, both right.
 - Why: playtest: pro basketball said forty. NBA games are four 12-minute quarters
-  (https://official.nba.com/rule-no-5-scoring-and-timing/), college two 20-minute halves.
+  (https://official.nba.com/rule-no-5-scoring-and-timing), college two 20-minute halves.
 - Tested: `node test/polish.js "as long"`: ncaab forty, nba forty-eight, nhl sixty, epl ninety. MATCH.
+
+## Basketball play-by-play: no basket for a star on the bench; "stays on the bench" (college and pro)
+- What: a stretch's star sitting with foul trouble (or fouled out; the drive's own d.star record) is off the floor for
+  the names: the play-by-play's threes and buckets inside (bbPlayer's new `off`), the clips' and the full match's five
+  on the floor (onFloor), and the box score's named baskets go to his backup (or, with none, the next starter). A second
+  sit on the same fouls (he sat to the half on 3 and sits again after it) reads "stays on the bench to start the half,
+  still on 3 fouls" instead of a second "heads to the bench with 3 fouls" (sitEv in 50_game.js: no draw, so every game
+  plays the same).
+- Why: playtest (college basketball): "Cooper Achterberg buries a three" while he was on the bench with 3 fouls; "Heads
+  to the bench with 3 fouls" repeated after half-time. The wrong team label in the same report ("Dayton Cooper
+  Achterberg", a Virginia Tech player) did not reproduce: over 30 college and 40 pro live games every named man was on
+  his own team's roster; the likeliest reading is that he had moved in the transfer portal.
+- Games: college and pro basketball. Results don't move; screens and box-score lines do.
+- Tested: `node test/polish.js "names men"`: before the fix, ncaab 3 and nba 2 baskets named for a star while he sat
+  (e.g. "Damari Mancini buries a three" while Damari Mancini sat), 0 "stays" lines; after: none of 262 and 611 named
+  baskets, 3 and 1 second sits read "stays on the bench". MATCH.

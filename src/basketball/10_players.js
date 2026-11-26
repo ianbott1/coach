@@ -96,8 +96,9 @@ function teamLines(rng,c){
   c.drives.forEach(d=>{ if(!Array.isArray(d.pn))return; d.pn.forEach(q=>{ if(q[0]!==sd)return; const p=c.R[q[2]]; if(!p)return;
     if(q[1]===3&&t3>0){ named(p.n,"tpm"); t3-- } else if(q[1]===2&&t2>0){ named(p.n,"f2"); t2-- } else if(q[1]===1&&t1>0){ named(p.n,"ft"); t1-- } }) });
   c.drives.forEach(d=>!Array.isArray(d.pn)&&(d.ev||[]).forEach(e=>{ if(e.side!==c.side)return; const u=e.u||0, bn=!!(d.bn&&d.bn[c.side]);
-    if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u,bn),"tpm"); t3-- }
-    if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u,bn); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
+    const off=typeof bbOff==="function"?bbOff(d,c.side,tm):null;   // review round: not the star while he sits
+    if(e.k==="three"&&t3>0&&typeof bbPlayer==="function"){ named(bbPlayer(tm,[1,2,0,1,2][u%5],u,bn,off),"tpm"); t3-- }
+    if(e.k==="inside"&&t2>0&&typeof bbPlayer==="function"){ const nm=bbPlayer(tm,[4,3,4,2][u%4],u,bn,off); named(nm,"f2"); t2--; if(t1>0){ named(nm,"ft"); t1-- } } }));
   const bD={};   // the bench's share of each count (review round: it went to no one, so a backup's season line had only the points the play-by-play named him for)
   const share=(k,n)=>{ const sc=k==='tpm'||k==='pts2'||k==='pts1'; const w=sl.map(s=>(1-BENCH)*s.R[k]*(sc?Math.pow(s.star,ENGINE_V>=6&&LEAGUE.id==="ncaab"?BB_STARP6C:ENGINE_V>=5?BB_STARP5:BB_STARP4):s.star)*bbLean(s.x.pl,k)).concat([BENCH]); const d=splitDraw(rng,Math.max(0,n),w); sl.forEach((s,j)=>{ L[j][k==="pts2"?"f2":k==="pts1"?"ft":k]+=d[j] }); bD[k]=d[sl.length] };
   ROLE_FT(sl); share("tpm",t3); share("pts2",t2); share("pts1",t1);
