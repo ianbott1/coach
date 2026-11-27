@@ -1,5 +1,5 @@
 {
- "fp": "99de4eb245178b28",
+ "fp": "83776fe3edae7780",
  "log": [
   {
    "fp": "50b6ced4602cd001",
@@ -170,6 +170,11 @@
    "fp": "99de4eb245178b28",
    "from": "88a4e0afa777dc16",
    "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (text only)"
+  },
+  {
+   "fp": "83776fe3edae7780",
+   "from": "99de4eb245178b28",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "result": {
@@ -183,8 +188,8 @@
     "poll": "0a0138ce733562c1",
     "heis": "b947c74f5785b20e",
     "history": "f0d9bc28feb6f863",
-    "universe": "3fdde69d1e03106c",
-    "screens": "5b68f7bb7553a465"
+    "universe": "ca336e55cd763703",
+    "screens": "33729cdb9f572199"
    }
   ]
  }

@@ -1,5 +1,5 @@
 {
- "fp": "57ac9e3b0ac41b02",
+ "fp": "771755023c31b942",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -185,6 +185,11 @@
    "fp": "57ac9e3b0ac41b02",
    "from": "2f341c78ae4f3c9c",
    "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "771755023c31b942",
+   "from": "57ac9e3b0ac41b02",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "result": {
@@ -198,7 +203,7 @@
     "poll": "1db4dbdf2805a933",
     "heis": "c4c10d2c46c94b0e",
     "history": "d9b0843d041643d0",
-    "universe": "c7e298e104500ccc",
+    "universe": "f98cdfdf1ff2a15c",
     "screens": "b90c4f45ffdf56c4"
    }
   ]

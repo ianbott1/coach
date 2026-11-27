@@ -1,5 +1,5 @@
 {
- "fp": "66f9350f842e7cec",
+ "fp": "96a35d304b8dea24",
  "log": [
   {
    "fp": "7796a9d9893f209f",
@@ -185,6 +185,11 @@
    "fp": "66f9350f842e7cec",
    "from": "bbdda6b42598665f",
    "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
+  },
+  {
+   "fp": "96a35d304b8dea24",
+   "from": "66f9350f842e7cec",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "result": {
@@ -198,7 +203,7 @@
     "poll": "758c225bc2f2e407",
     "heis": "c4653bf4b546d7bf",
     "history": "d2495c8c6c967f04",
-    "universe": "4243a45b3b5622c8",
+    "universe": "0468b824da9d4294",
     "screens": "ae05ba76339a0052"
    }
   ]

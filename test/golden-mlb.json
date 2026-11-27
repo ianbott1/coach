@@ -1,5 +1,5 @@
 {
- "fp": "ccb09a4f2270dbe3",
+ "fp": "904787f8b36b82ef",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -305,59 +305,64 @@
    "fp": "ccb09a4f2270dbe3",
    "from": "f3a245c796f89a25",
    "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
+  },
+  {
+   "fp": "904787f8b36b82ef",
+   "from": "ccb09a4f2270dbe3",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "result": {
   "Seattle#1": [
    {
     "year": 2026,
-    "games": "dd170032864f09b7",
-    "post": "561d257d51b6f90b",
-    "champion": "NY Yankees",
-    "rec": "c66819d525412c7b",
-    "poll": "1fbef619e9248e15",
-    "heis": "79b5379ede74e6b1",
-    "history": "5b92ecc86380066c",
-    "universe": "1c63a04a1a53f0d1",
-    "screens": "c1e23a0861757d13"
+    "games": "8988f62c12e41eca",
+    "post": "9978098221f664ef",
+    "champion": "Milwaukee",
+    "rec": "b0610f659a5c8376",
+    "poll": "758c225bc2f2e407",
+    "heis": "c4653bf4b546d7bf",
+    "history": "d2495c8c6c967f04",
+    "universe": "0468b824da9d4294",
+    "screens": "ae05ba76339a0052"
    },
    {
     "year": 2027,
-    "games": "bc0458c04253057c",
-    "post": "88a3df65e38b0de1",
-    "champion": "NY Yankees",
-    "rec": "c385cd14557f2af3",
-    "poll": "61648bcef64638c7",
-    "heis": "8fdcd69765c2a59b",
-    "history": "88b47b9a360e9391",
-    "universe": "42b0b94f7f250645",
-    "screens": "b171c763fab06bed"
+    "games": "3fe79d3a7d557633",
+    "post": "e7fe77a3570874a8",
+    "champion": "Colorado",
+    "rec": "883e5fc70fb10245",
+    "poll": "36f17e8908c5e760",
+    "heis": "af72c428d10e4dfb",
+    "history": "816f176b4e84c3e0",
+    "universe": "de2cf228480e18d2",
+    "screens": "c7d0e416d213974d"
    }
   ],
   "Colorado#777": [
    {
     "year": 2026,
-    "games": "94d91feb0a0d956f",
-    "post": "3145bc4640403fcc",
-    "champion": "Philadelphia",
-    "rec": "5d3a6530c85a7beb",
-    "poll": "e69c01bcc481829d",
-    "heis": "e4588a93ae26b1ef",
-    "history": "ab21a833ef4dc0e3",
-    "universe": "15334184f09617b0",
-    "screens": "a8b918f745fe9e36"
+    "games": "ee7840f331f5e44f",
+    "post": "003c3a48087061dd",
+    "champion": "NY Mets",
+    "rec": "3e2482148f57a7ba",
+    "poll": "3b3e3fee63719fdc",
+    "heis": "194250ced519be9e",
+    "history": "85b593f1b10ecea1",
+    "universe": "76b83e30353ad67b",
+    "screens": "0787966ec3d038e0"
    },
    {
     "year": 2027,
-    "games": "eef275191e516212",
-    "post": "1f9f1a0c81d83b43",
-    "champion": "San Diego",
-    "rec": "22f3eeccd00ad2da",
-    "poll": "00969206c9e3e6b0",
-    "heis": "93c656778bfff325",
-    "history": "4e95a3aef1cd5707",
-    "universe": "cceabc7fdd60c9b3",
-    "screens": "5daf5e00c09f43c1"
+    "games": "4803e18137c3cf1d",
+    "post": "cf96690b53db8798",
+    "champion": "St. Louis",
+    "rec": "508ea77b8eba1fb4",
+    "poll": "628530fdc069fec5",
+    "heis": "e33d1eb41460d8ca",
+    "history": "741979b79b5d6677",
+    "universe": "28d688b91c5ab551",
+    "screens": "08dbab2f451e7f8e"
    }
   ],
   "schedules#60": [
