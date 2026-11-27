@@ -1,5 +1,5 @@
 {
- "fp": "12f25479b979308c",
+ "fp": "1b693222e70f8f89",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -450,6 +450,11 @@
    "fp": "12f25479b979308c",
    "from": "8dec97f4cb158ecd",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "1b693222e70f8f89",
+   "from": "12f25479b979308c",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -482,20 +487,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "5-12",
+      "rec": "8-9",
       "result": "Losing season",
-      "grade": "D"
+      "grade": "C-"
      },
-     "book": "6c26e050b54fe743"
+     "book": "2e5ec8a45913ee58"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "7-10",
+      "rec": "5-12",
       "result": "Losing season",
-      "grade": "B"
+      "grade": "C+"
      },
-     "book": "2197aa19df00111f"
+     "book": "6ce3b487efa81457"
     }
    ]
   },
@@ -505,20 +510,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
+      "rec": "10-7",
       "result": "Lost in the wild card round",
-      "grade": "C+"
+      "grade": "B"
      },
-     "book": "13a98cb724cf6a49"
+     "book": "7defe1ecb7230d19"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "12-5",
-      "result": "Lost in the divisional round",
-      "grade": "A+"
+      "rec": "7-10",
+      "result": "Losing season",
+      "grade": "B+"
      },
-     "book": "5863a9fb24cd9dcd"
+     "book": "50da8fcae3c8d1a1"
     }
    ]
   }

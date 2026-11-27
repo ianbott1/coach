@@ -1,5 +1,5 @@
 {
- "fp": "d56afe564468b3ef",
+ "fp": "809b727e31224331",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -430,6 +430,11 @@
    "fp": "d56afe564468b3ef",
    "from": "d56afe564468b3ef",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "809b727e31224331",
+   "from": "d56afe564468b3ef",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -466,7 +471,7 @@
       "result": "No bowl game",
       "grade": "C-"
      },
-     "book": "484a85f0c2e096bc"
+     "book": "c9e0e2678dee1b11"
     },
     {
      "team": "Rice",
@@ -475,7 +480,7 @@
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "94d3c9adf2c9a275"
+     "book": "50983ccf249a6035"
     }
    ]
   },
@@ -485,20 +490,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "9-4",
-      "result": "Won the Holiday Bowl",
-      "grade": "A-"
+      "rec": "7-6",
+      "result": "Lost the Las Vegas Bowl",
+      "grade": "C+"
      },
-     "book": "71d10fc91b9e09d0"
+     "book": "b2677a1e7adcb3ef"
     },
     {
      "team": "Rice",
      "last": {
       "rec": "4-8",
       "result": "No bowl game",
-      "grade": "B-"
+      "grade": "B"
      },
-     "book": "6972330da1c94550"
+     "book": "8ea38b1e867b5ec5"
     }
    ]
   }

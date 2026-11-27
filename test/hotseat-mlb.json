@@ -1,5 +1,5 @@
 {
- "fp": "1296628ab653cb8d",
+ "fp": "be000045aa5a67d3",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -190,6 +190,11 @@
    "fp": "1296628ab653cb8d",
    "from": "1296628ab653cb8d",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "be000045aa5a67d3",
+   "from": "1296628ab653cb8d",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -222,20 +227,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "70-92",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "83-79",
+      "result": "Missed the postseason",
+      "grade": "B"
      },
-     "book": "7c95626bc812ae73"
+     "book": "a941005748747c39"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "65-97",
+      "rec": "72-90",
       "result": "Losing season",
       "grade": "C+"
      },
-     "book": "b91ae711a8665314"
+     "book": "440d1bfd777745e9"
     }
    ]
   }

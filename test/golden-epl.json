@@ -1,5 +1,5 @@
 {
- "fp": "81a3e9c7c3acfef6",
+ "fp": "6bd928d0ca9625d2",
  "log": [
   {
    "fp": "9acb4f945f66e828",
@@ -620,6 +620,11 @@
    "fp": "81a3e9c7c3acfef6",
    "from": "81a3e9c7c3acfef6",
    "note": "Re-recorded once on the merged engine-26 build (round two)"
+  },
+  {
+   "fp": "6bd928d0ca9625d2",
+   "from": "81a3e9c7c3acfef6",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "result": {
@@ -633,20 +638,20 @@
     "poll": "22afaba90e26232e",
     "heis": "28c39ccccb0fc9da",
     "history": "156f903450ef3bc0",
-    "universe": "b85b1f9a4789199f",
-    "screens": "cd78f54f02f34476"
+    "universe": "c4189e0df897eabb",
+    "screens": "bfca100541334b47"
    },
    {
     "year": 2027,
-    "games": "135ad739218e0977",
-    "post": "0bbb2bdbbaf9b6f6",
-    "champion": "Manchester City",
-    "rec": "510fe36acc0a536c",
-    "poll": "563c00ed4da9ce25",
-    "heis": "c0d5224c937bec96",
-    "history": "f09dd821fa08edad",
-    "universe": "b19ae2cd9c2222d8",
-    "screens": "6a2306b24e7fc183"
+    "games": "32f88fab07f60a50",
+    "post": "9a17f76ed0411f16",
+    "champion": "Manchester United",
+    "rec": "2b9909f7859c8cad",
+    "poll": "b957a0e4b76a4334",
+    "heis": "c7d612f622a7837f",
+    "history": "cb70aadb26f7235e",
+    "universe": "33949bef78daa2af",
+    "screens": "14cc8d1d931ac305"
    }
   ],
   "Wrexham#777": [
@@ -659,20 +664,20 @@
     "poll": "24bde35888926797",
     "heis": "9dd9c7eb3630a848",
     "history": "463d1db1d05cc5bc",
-    "universe": "05150d30cf9df4ea",
-    "screens": "a20ed6205a2f2ad2"
+    "universe": "5ac24b206eca8ca7",
+    "screens": "c57b2e40e37bcc08"
    },
    {
     "year": 2027,
-    "games": "27f3c2f94665d3e2",
-    "post": "debd1faa3468158f",
-    "champion": "Arsenal",
-    "rec": "e321dd2508c2e5fd",
-    "poll": "6b81e00c82b13074",
-    "heis": "f92a4ae75dc121ae",
-    "history": "398f23ee5ce6252c",
-    "universe": "c91eabff7b48fd28",
-    "screens": "be60264918a24d7c"
+    "games": "ea168bf9ffcae17d",
+    "post": "a271b7f5a78a23bb",
+    "champion": "Manchester City",
+    "rec": "5b2974a21d7eac26",
+    "poll": "4539043d741c0aaa",
+    "heis": "bc8ae3e840a1b86a",
+    "history": "8ba5b698d09cff0c",
+    "universe": "3df91ea2cbc66104",
+    "screens": "576dfdb892dce361"
    }
   ],
   "schedules#60": [

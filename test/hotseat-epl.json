@@ -1,5 +1,5 @@
 {
- "fp": "6584d4848247387b",
+ "fp": "292a01da63f4503c",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -380,6 +380,11 @@
    "fp": "6584d4848247387b",
    "from": "6584d4848247387b",
    "note": "Re-recorded once on the merged engine-26 build (round two)"
+  },
+  {
+   "fp": "292a01da63f4503c",
+   "from": "6584d4848247387b",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -412,20 +417,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "19-8-11",
+      "rec": "16-11-11",
       "result": "Finished 5th in the Premier League",
       "grade": "B-"
      },
-     "book": "9e70090391ab517b"
+     "book": "7fe69c5b0125010c"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "8-12-18",
-      "result": "Relegated (19th)",
+      "rec": "9-10-19",
+      "result": "Relegated (18th)",
       "grade": "D"
      },
-     "book": "21f8db6723c51ec2"
+     "book": "7e601feb1f93df81"
     }
    ]
   },
@@ -435,20 +440,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-9-13",
-      "result": "Finished 7th in the Premier League",
-      "grade": "C"
+      "rec": "13-12-13",
+      "result": "Finished 12th in the Premier League",
+      "grade": "D"
      },
-     "book": "32376fa1b11b89c9"
+     "book": "89cedcc957c1f313"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "19-14-13",
-      "result": "Lost in the Championship play-offs (8th)",
-      "grade": "C"
+      "rec": "21-11-14",
+      "result": "Lost in the Championship play-offs (5th)",
+      "grade": "C+"
      },
-     "book": "0b07510a551092b8"
+     "book": "5a5fd7b1de723541"
     }
    ]
   }

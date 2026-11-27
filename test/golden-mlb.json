@@ -1,5 +1,5 @@
 {
- "fp": "f3a245c796f89a25",
+ "fp": "ccb09a4f2270dbe3",
  "log": [
   {
    "fp": "fd7d63d08d925ed3",
@@ -300,6 +300,11 @@
    "fp": "f3a245c796f89a25",
    "from": "f3a245c796f89a25",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "ccb09a4f2270dbe3",
+   "from": "f3a245c796f89a25",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "result": {
@@ -313,20 +318,20 @@
     "poll": "1fbef619e9248e15",
     "heis": "79b5379ede74e6b1",
     "history": "5b92ecc86380066c",
-    "universe": "12f1a8a433bbbbdb",
-    "screens": "2dfebd1e777a26dc"
+    "universe": "1c63a04a1a53f0d1",
+    "screens": "c1e23a0861757d13"
    },
    {
     "year": 2027,
-    "games": "50ca9fb83e5ff5e9",
-    "post": "d0ae2b627dea2177",
-    "champion": "Milwaukee",
-    "rec": "b537071d8dc655cb",
-    "poll": "15575c51d10c2a7a",
-    "heis": "5d0751e9079a81ac",
-    "history": "1c607d4cda66cb5a",
-    "universe": "17d7edcbb7819ccc",
-    "screens": "879ba144da3d9433"
+    "games": "bc0458c04253057c",
+    "post": "88a3df65e38b0de1",
+    "champion": "NY Yankees",
+    "rec": "c385cd14557f2af3",
+    "poll": "61648bcef64638c7",
+    "heis": "8fdcd69765c2a59b",
+    "history": "88b47b9a360e9391",
+    "universe": "42b0b94f7f250645",
+    "screens": "b171c763fab06bed"
    }
   ],
   "Colorado#777": [
@@ -339,20 +344,20 @@
     "poll": "e69c01bcc481829d",
     "heis": "e4588a93ae26b1ef",
     "history": "ab21a833ef4dc0e3",
-    "universe": "af5cc9cd60982fcb",
+    "universe": "15334184f09617b0",
     "screens": "a8b918f745fe9e36"
    },
    {
     "year": 2027,
-    "games": "986ed56d3f26ea08",
-    "post": "3582e36644b752b9",
+    "games": "eef275191e516212",
+    "post": "1f9f1a0c81d83b43",
     "champion": "San Diego",
-    "rec": "5919f057337e2e50",
-    "poll": "21583e33aaf15b13",
-    "heis": "37909452e89cb6cc",
-    "history": "e540e8870b6bd0f7",
-    "universe": "9fc24c5ddc9739b8",
-    "screens": "826ad48e5620afc8"
+    "rec": "22f3eeccd00ad2da",
+    "poll": "00969206c9e3e6b0",
+    "heis": "93c656778bfff325",
+    "history": "4e95a3aef1cd5707",
+    "universe": "cceabc7fdd60c9b3",
+    "screens": "5daf5e00c09f43c1"
    }
   ],
   "schedules#60": [

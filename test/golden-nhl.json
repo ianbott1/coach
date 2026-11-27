@@ -1,5 +1,5 @@
 {
- "fp": "59e1d056a68c44ff",
+ "fp": "9d50ff7c27f3c0d1",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -650,6 +650,11 @@
    "fp": "59e1d056a68c44ff",
    "from": "48dae326d4479307",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "9d50ff7c27f3c0d1",
+   "from": "59e1d056a68c44ff",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "result": {
@@ -663,20 +668,20 @@
     "poll": "d67349cf5478543e",
     "heis": "7d8cf393e386e237",
     "history": "c3bdaf62442bfd9c",
-    "universe": "985fdb3fc7753f36",
-    "screens": "da734f853cabdc9c"
+    "universe": "81cb8ae4eb3e526e",
+    "screens": "79d70f7cf9449624"
    },
    {
     "year": 2027,
-    "games": "65cc2a35b30b366e",
-    "post": "b2bca247ec58d5ea",
-    "champion": "Calgary",
-    "rec": "de6df8089d2d85a8",
-    "poll": "41d29ee1647cee6b",
-    "heis": "b79eb68aa519ff54",
-    "history": "5dcce0aa81482c3a",
-    "universe": "b35bf8a4cf56d3ba",
-    "screens": "f36598f925b9af8e"
+    "games": "8d62685be9570442",
+    "post": "36e26097877d84d7",
+    "champion": "Tampa Bay",
+    "rec": "6870e66b1b3369e9",
+    "poll": "8e45e6c6c44f388b",
+    "heis": "7c698c25baa0dcca",
+    "history": "b1ff2ed543c8d4e1",
+    "universe": "ddda4c0d9757401c",
+    "screens": "48427e4ae91ba9aa"
    }
   ],
   "Edmonton#777": [
@@ -689,20 +694,20 @@
     "poll": "eaf72ab98282dd51",
     "heis": "ffe500d38a462e5a",
     "history": "9ec46cf9948a4e85",
-    "universe": "09366723e7211939",
-    "screens": "6972ae70b71b55c8"
+    "universe": "433098be9c337481",
+    "screens": "5e3689698e239413"
    },
    {
     "year": 2027,
-    "games": "f4049cc6b22e1088",
-    "post": "9d62f97491d14bc0",
-    "champion": "Minnesota",
-    "rec": "371434d40b1fd172",
-    "poll": "ca4ae9ed97d834f7",
-    "heis": "cc6d91660c4bcf41",
-    "history": "de7a48f265a763be",
-    "universe": "80c76e04368edb20",
-    "screens": "96e76b291f49c252"
+    "games": "1e5c597546ef55be",
+    "post": "b73452cd5206ef26",
+    "champion": "Pittsburgh",
+    "rec": "cfd8254ddd36705b",
+    "poll": "464a502fdbb77478",
+    "heis": "5dbd9ccb1c70a14b",
+    "history": "a9f7773becce538b",
+    "universe": "4f695bd92f8a038e",
+    "screens": "a8d73d52e9ec3826"
    }
   ],
   "schedules#60": [

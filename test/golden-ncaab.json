@@ -1,5 +1,5 @@
 {
- "fp": "bbdb0e66ee53efd9",
+ "fp": "e734ee8ff673514c",
  "log": [
   {
    "fp": "753aede7d5ae4055",
@@ -640,6 +640,11 @@
    "fp": "bbdb0e66ee53efd9",
    "from": "3d172cb74e14ffdb",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "e734ee8ff673514c",
+   "from": "bbdb0e66ee53efd9",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "result": {
@@ -653,20 +658,20 @@
     "poll": "0a0138ce733562c1",
     "heis": "b947c74f5785b20e",
     "history": "0e89ee4981a10a84",
-    "universe": "9e6e49b4824aa151",
-    "screens": "a2b1a3e1cb674675"
+    "universe": "27bb4fe3c084ddd6",
+    "screens": "92b569a8dd014ab4"
    },
    {
     "year": 2027,
-    "games": "3c9494c60339af51",
-    "post": "7b28393529644fb4",
-    "champion": "BYU",
-    "rec": "db44903daea1a23b",
-    "poll": "6bd7eba3941df6f0",
-    "heis": "4f140d066779fefb",
-    "history": "f4118a6cf2a9e98e",
-    "universe": "a1a2caed94b6d4a7",
-    "screens": "2987138e182b873f"
+    "games": "39c79c1624ce745a",
+    "post": "d786dff8e16e9870",
+    "champion": "Houston",
+    "rec": "9f7fe71be61733b2",
+    "poll": "6d28ea3e8a94dd25",
+    "heis": "f722d845d2b69706",
+    "history": "9e3fa20420afb2c5",
+    "universe": "bd51558f9e251865",
+    "screens": "064a6281ee8c5b6c"
    }
   ],
   "Coppin State#2024": [
@@ -679,20 +684,20 @@
     "poll": "f408dfd729d9dbc9",
     "heis": "247f06f92cf20b76",
     "history": "09a7cf06830d6901",
-    "universe": "7328ace1705158d4",
-    "screens": "90496fe880d6dc47"
+    "universe": "cda9db733c6a402c",
+    "screens": "d3c432dfd112d936"
    },
    {
     "year": 2027,
-    "games": "6f3b363478db1c1a",
-    "post": "6775ccf208d87771",
-    "champion": "Arizona",
-    "rec": "0ce12f1d335a4108",
-    "poll": "762096877d172fef",
-    "heis": "6ca53d252ab831d0",
-    "history": "0d6b11f09c369f6b",
-    "universe": "90c72ad7355cec5c",
-    "screens": "96e41495f93e45f5"
+    "games": "ccb97b623924c4bc",
+    "post": "0bd9ad14b04ba45e",
+    "champion": "Kentucky",
+    "rec": "5a0e75b57dc8c7bc",
+    "poll": "a3b13dc0be073485",
+    "heis": "86aedfb0cefcb3a5",
+    "history": "9656ad7827b4a1c8",
+    "universe": "a1db48e7819a6bb6",
+    "screens": "8bd8955ce8af7d73"
    }
   ],
   "Gonzaga#777": [
@@ -705,20 +710,20 @@
     "poll": "6da299813247e9bd",
     "heis": "1da9d6984d7f1d36",
     "history": "6818b8080cc8b060",
-    "universe": "7b795250fa7536a6",
-    "screens": "dbfb91562ee76a02"
+    "universe": "b02b6b441414d4bd",
+    "screens": "77c185aff7761877"
    },
    {
     "year": 2027,
-    "games": "9b245aa194904522",
-    "post": "86a01fd0f36e4718",
-    "champion": "Arkansas",
-    "rec": "7e6f7b559f8b588a",
-    "poll": "bf9530ab96e77b9c",
-    "heis": "558baca26df13d09",
-    "history": "9406b7463c751370",
-    "universe": "9bc1ca03573fcd51",
-    "screens": "db6c7fea71615e24"
+    "games": "fe583f74268225b8",
+    "post": "6831157a91ddcf67",
+    "champion": "Houston",
+    "rec": "ffd359c06fba5120",
+    "poll": "016a6d15403f15b9",
+    "heis": "aca93f310d7d5029",
+    "history": "5283eea7dc4284c4",
+    "universe": "0dc7c5e0dfad03e4",
+    "screens": "371a290f6311e1c0"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "8c17f3940dfb150d",
+ "fp": "eb509cc048c1ace1",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -375,6 +375,11 @@
    "fp": "8c17f3940dfb150d",
    "from": "247584ca9044eeba",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "eb509cc048c1ace1",
+   "from": "8c17f3940dfb150d",
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -407,11 +412,11 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "33-49",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "40-42",
+      "result": "Lost in the first round",
+      "grade": "C"
      },
-     "book": "c6fac8a169c097af"
+     "book": "ab89fec1b663fb2b"
     },
     {
      "team": "New York",
@@ -420,7 +425,7 @@
       "result": "Losing season",
       "grade": "B-"
      },
-     "book": "d3f4682134a256eb"
+     "book": "faed1b5fc2e81980"
     }
    ]
   },
@@ -432,18 +437,18 @@
      "last": {
       "rec": "35-47",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "B-"
      },
-     "book": "354441612ab87f09"
+     "book": "7c0e2380c9a8819f"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "40-42",
-      "result": "Lost in the first round",
+      "rec": "42-40",
+      "result": "Lost in the play-in",
       "grade": "B+"
      },
-     "book": "b34ff4ba9cbaf3ab"
+     "book": "37aaeba3ae591c4e"
     }
    ]
   }
