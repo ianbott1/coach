@@ -29,11 +29,24 @@ function scLean(p,k){ if(typeof ENGINE_V==="undefined"||ENGINE_V<12||!p||typeof 
 /* engine 26 (stats): who scores, by unit: the striker's share 0.38 -> SC_GOAL26.ST (the Golden Boot averaged 34 and reached 58,
    where it has been 27-36 in the last three Premier League seasons), the rest to wingers, midfield and set pieces */
 const SC_GOAL26={ST:+((typeof process!=="undefined"&&process.env&&process.env.SC26_ST)||29),W:28,CM:23,CB:11,FB:9};
+/* engine 27 (soccer goals): one man's season is held to what one man scores. The unit shares above credit a whole
+   side's goals to one striker, one winger, one midfielder, so a club scoring 140 (the matchday's best sides can) gave
+   its striker 65 in a season (Manchester City, seed 1234, past the record of 36 by week 28). No Premier League player
+   has scored more than 36 in a 38-game season; the Golden Boot has been 18-36 since 1995-96, 26 on average
+   (https://en.wikipedia.org/wiki/Premier_League_Golden_Boot), and the best seasons run at about a goal a game
+   (Haaland 36 in 35). A man running ahead of SC_PACE27.p a game (after SC_PACE27.a goals' grace) sees his share of the
+   chances fall away (marked tighter, the chances to his team-mates): the side's goals are unchanged, only who scores.
+   The tally is his season's before this match (st2: league and cups), the same when the feed names a goal live and when
+   the season stamps it after, so the names still agree. */
+const SC_PACE27={p:+((typeof process!=="undefined"&&process.env&&process.env.SC27_P)||0.72),a:+((typeof process!=="undefined"&&process.env&&process.env.SC27_A)||3),k:+((typeof process!=="undefined"&&process.env&&process.env.SC27_K)||3)};
+function scPace(p){ if(typeof ENGINE_V==="undefined"||ENGINE_V<27||!p||!p.st2||!p.st2.g)return 1;
+  const x=(p.st2.goals||0)-SC_PACE27.p*p.st2.g-SC_PACE27.a; return x>0?Math.exp(-x/SC_PACE27.k):1 }
 function scScorer(team,u,on){
   // who scores: strikers most, then wingers, midfield, defenders off set pieces
   let x=u%100, unit=x<38?"ST":x<64?"W":x<84?"CM":x<92?"CB":"FB";
   if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=12&&SEA&&SEA.roster&&SEA.roster[team]){ const R=SEA.roster[team], B=ENGINE_V>=26?SC_GOAL26:{ST:38,W:26,CM:20,CB:8,FB:8};
-    const w=Object.keys(B).map(k=>[k,B[k]*scLean(R[Array.isArray(on)&&on[SC_UNIT[k]]?BK(SC_UNIT[k]):SC_UNIT[k]]||R[SC_UNIT[k]],"fin")]), T=w.reduce((t,o)=>t+o[1],0); let v=(x+0.5)/100*T;
+    const man=k=>R[Array.isArray(on)&&on[SC_UNIT[k]]?BK(SC_UNIT[k]):SC_UNIT[k]]||R[SC_UNIT[k]];
+    const w=Object.keys(B).map(k=>[k,B[k]*scLean(man(k),"fin")*scPace(man(k))]), T=w.reduce((t,o)=>t+o[1],0); let v=(x+0.5)/100*T;
     for(const [k,wk] of w){ v-=wk; if(v<0){ unit=k; break } } }
   return {n:scPlayer(team,unit,u,on)||"a forward", unit:unit};
 }

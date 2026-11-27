@@ -36,18 +36,20 @@ function cpuDeadline(sea){
   // engine 26 (round 112): a man traded with a coach this season isn't dealt on again at the deadline (Atlanta sent on to
   // Washington the man Kansas City had just traded them, test/trades.js); gated, as the deadline's deals move results
   const moved=new Set(); if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=26&&typeof tdAllTrades==="function")try{ tdAllTrades().forEach(x=>{ if(x&&!x.cpu&&(x.y===undefined||x.y===sea.year)){ moved.add(x.gn); moved.add(x.qn) } }) }catch(e){}
-  Object.keys(groups).sort().forEach(g=>{
+  Object.keys(groups).sort().forEach(g=>{ if(LEAGUE.trade.cpuSkip&&LEAGUE.trade.cpuSkip(g))return;   // a division whose January the league runs itself (soccer's top two, engine 27)
     const clubs=groups[g].filter(t=>humans.indexOf(t)<0&&sea.roster[t]).sort((a,b)=>pct(b)-pct(a)||(a<b?-1:1)), n=clubs.length;
     const buyers=clubs.slice(0,Math.round(n*0.3)), sellers=clubs.slice(n-Math.round(n*0.35));
     buyers.forEach(B=>{ if(out.length>=most||used[B])return; let best=null;
       sellers.forEach(Sl=>{ if(used[Sl]||Sl===B)return; const RB=sea.roster[B], RS=sea.roster[Sl];
         RB.forEach((p,a)=>{ if(!p||hurt(B,a)||moved.has(p.n))return; RS.forEach((q,b)=>{ if(!q||ctGrp(a)!==ctGrp(b)||hurt(Sl,b)||moved.has(q.n))return;
           const xb=ctScore(sea,B,p,a,q,CT_BUY); if(xb.s<CT_PREM)return; const xs=ctScore(sea,Sl,q,b,p,CT_SELL); if(xs.s<CT_PREM)return;
-          if(cap&&((ctPay(xb.R2)>cap&&ctPay(xb.R2)>ctPay(RB))||(ctPay(xs.R2)>cap&&ctPay(xs.R2)>ctPay(RS))))return;
-          const v=xb.s+xs.s; if(!best||v>best.v)best={v:v,B:B,Sl:Sl,a:a,b:b,gn:p.n,qn:q.n} }) }) });
+          const cf=LEAGUE.trade.capFit?LEAGUE.trade.capFit(sea,{my:B,t:Sl,M:RB,M2:xb.R2,T:RS,T2:xs.R2}):null;   // a league's own cap (pro hockey: the seller keeps salary)
+          if(cf?cf.over:cap&&((ctPay(xb.R2)>cap&&ctPay(xb.R2)>ctPay(RB))||(ctPay(xs.R2)>cap&&ctPay(xs.R2)>ctPay(RS))))return;
+          const v=xb.s+xs.s; if(!best||v>best.v)best={v:v,B:B,Sl:Sl,a:a,b:b,gn:p.n,qn:q.n,ret:cf&&cf.ret||null} }) }) });
       if(best){ used[best.B]=used[best.Sl]=1; const x={my:best.B,t:best.Sl,a:best.a,b:best.b,gn:best.gn,qn:best.qn,y:sea.year,d:(LEAGUE.dates||[])[sea.step]||"",cpu:1,step:sea.step};
+        if(best.ret)x.ret=best.ret;
         if(tdApply(sea,x))out.push(x) } }) });
-  sea.cpuTr=out }
+  sea.cpuTr=(sea.cpuTr||[]).concat(out) }
 // the deals of the day, for the news (a buyer's new man, his old club)
 function cpuTradesHTML(){ const L=((SEA&&SEA.cpuTr)||[]).filter(x=>!LEAGUE.trade.sameDiv||CONF[x.my]===CONF[S.myTeam]); if(!L.length)return "";   // soccer: your division's
   return `<div class="grouphead">Around the league: deadline deals</div><div class="card" style="padding:6px 12px">`+L.map(x=>{ const g=SEA.roster[x.my].find(p=>p&&p.n===x.qn), q=SEA.roster[x.t].find(p=>p&&p.n===x.gn);

@@ -1,5 +1,5 @@
 {
- "fp": "be000045aa5a67d3",
+ "fp": "e5e392c437276867",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -195,6 +195,11 @@
    "fp": "be000045aa5a67d3",
    "from": "1296628ab653cb8d",
    "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
+  },
+  {
+   "fp": "e5e392c437276867",
+   "from": "be000045aa5a67d3",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "out": [
@@ -208,16 +213,16 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "842d158a8e283294"
+     "book": "5aabc57aae3b7a6b"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "64-98",
+      "rec": "70-92",
       "result": "Losing season",
-      "grade": "F"
+      "grade": "C+"
      },
-     "book": "7e30e0cc4b170f6d"
+     "book": "a66f896b981afb1a"
     }
    ]
   },
@@ -227,20 +232,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "83-79",
-      "result": "Missed the postseason",
-      "grade": "B"
+      "rec": "66-96",
+      "result": "Losing season",
+      "grade": "C"
      },
-     "book": "a941005748747c39"
+     "book": "dc2f68c0918fa981"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "72-90",
+      "rec": "54-108",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "C"
      },
-     "book": "440d1bfd777745e9"
+     "book": "484af3460c45e00b"
     }
    ]
   }

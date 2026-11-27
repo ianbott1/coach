@@ -1,5 +1,5 @@
 {
- "fp": "292a01da63f4503c",
+ "fp": "48653f20e320b543",
  "log": [
   {
    "fp": "c1107982fbe7a3e2",
@@ -385,6 +385,11 @@
    "fp": "292a01da63f4503c",
    "from": "6584d4848247387b",
    "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
+  },
+  {
+   "fp": "48653f20e320b543",
+   "from": "292a01da63f4503c",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "out": [
@@ -394,20 +399,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "22-5-11",
-      "result": "Finished 2nd in the Premier League",
-      "grade": "B"
+      "rec": "18-6-14",
+      "result": "Finished 5th in the Premier League",
+      "grade": "B-"
      },
-     "book": "ebb7dce3220a9391"
+     "book": "570ef3ccbb007c5f"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "12-7-19",
-      "result": "Finished 17th in the Premier League",
-      "grade": "C-"
+      "rec": "13-9-16",
+      "result": "Finished 13th in the Premier League",
+      "grade": "C+"
      },
-     "book": "14f7bcfa0871c60e"
+     "book": "492d44513d098ee3"
     }
    ]
   },
@@ -417,20 +422,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "16-11-11",
-      "result": "Finished 5th in the Premier League",
-      "grade": "B-"
+      "rec": "14-8-16",
+      "result": "Finished 9th in the Premier League",
+      "grade": "C"
      },
-     "book": "7fe69c5b0125010c"
+     "book": "7d88643fcc7a1c65"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "9-10-19",
-      "result": "Relegated (18th)",
-      "grade": "D"
+      "rec": "10-6-22",
+      "result": "Finished 15th in the Premier League",
+      "grade": "C"
      },
-     "book": "7e601feb1f93df81"
+     "book": "7483dfa879543629"
     }
    ]
   },
@@ -440,20 +445,20 @@
     {
      "team": "Arsenal",
      "last": {
-      "rec": "13-12-13",
-      "result": "Finished 12th in the Premier League",
-      "grade": "D"
+      "rec": "18-9-11",
+      "result": "Finished 4th in the Premier League",
+      "grade": "B-"
      },
-     "book": "89cedcc957c1f313"
+     "book": "4a590a27bfbcb712"
     },
     {
      "team": "Tottenham Hotspur",
      "last": {
-      "rec": "21-11-14",
-      "result": "Lost in the Championship play-offs (5th)",
-      "grade": "C+"
+      "rec": "7-13-18",
+      "result": "Relegated (18th)",
+      "grade": "D"
      },
-     "book": "5a5fd7b1de723541"
+     "book": "48f46d9ef0656de1"
     }
    ]
   }

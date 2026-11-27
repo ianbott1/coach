@@ -80,15 +80,16 @@ function nflBoardHTML(P){
 function nflTargetsHTML(P,room){
   const pre=nflFreeAgentPreview(U,S.myTeam), byKey={}; pre.forEach(x=>byKey[x.key]=x);
   const mine=(P.targets||[]).filter(k=>byKey[k]);
-  let left=room-ROOKIE_ROOM;                        // leave room for the draft class
+  const FO=typeof mlbScreenOn==='function'&&mlbScreenOn();   // engine 27: the draft class goes to the farm, and costs nothing here
+  let left=room-(FO?0:ROOKIE_ROOM);                 // leave room for the draft class
   const seenPos={};
   const row=(x,on,i)=>{ let fit="";
       // the signing checks the cap after the draft, so the class is already paid for: there is no squeezing it
       // (Instinct: a "squeezing" target then had no room). This room is right on average, within about 5M either
       // way (measured, Nov 2026: the class and the fill-ins vary), so near the line it says so.
       // with the gap in money, so "won't fit" says why (Grokbot: it read "won't fit" with $10.4M of room)
-      if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=`after ~$${ROOKIE_ROOM}M kept for the draft class`;
-        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`probably won't fit: ${gap} short ${kept} (about half like this still sign: the class and the fill-ins vary)`;
+      if(on){left-=x.ask; const gap=`about $${Math.abs(left).toFixed(1)}M`, kept=FO?"inside the owner's limit":`after ~$${ROOKIE_ROOM}M kept for the draft class`;
+        fit=left>=2?"fits":left>=-3?`close: ${left>=0?gap+" spare":gap+" short"} ${kept}`:`probably won't fit: ${gap} short ${kept}${FO?"":" (about half like this still sign: the class and the fill-ins vary)"}`;
         if(seenPos[x.p])fit="you already want a "+x.p+": the second signs only if there is still room at "+x.p+" after the first"; seenPos[x.p]=1}
       // the list you choose from says it too, against what's left after the players you've already added
       // (Grokbot: "fits" only showed after adding)
@@ -96,7 +97,7 @@ function nflTargetsHTML(P,room){
       return `<div class="drow">
       <span class="dpick">${on?(i+1)+".":""}</span>
       <div class="fmain"><div class="fname">${esc(x.n)} <span class="dpos">${esc(x.p)}</span></div>
-        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${fit?" &middot; "+fit:""}</div></div>
+        <div class="fnote">${esc(x.team)} &middot; age ${x.age} &middot; rated ${x.r} &middot; about $${x.ask.toFixed(1)}M${fit?" &middot; "+fit:""}${x.qo?" &middot; turned down a qualifying offer: signing him costs you a draft pick":x.nt?" &middot; non-tendered":""}</div></div>
       <button class="skip small" ${on?`data-fatrm="${esc(x.key)}"`:`data-fatadd="${esc(x.key)}"`}>${on?"Remove":"Add"}</button></div>`};
   let h=`<div class="grouphead">Free agents you want</div>`;
   if(mine.length)h+=`<div class="note">Prices are this winter's asks plus about 10%; a player who improves over the winter can ask more by the time free agency opens.</div>`;
@@ -257,7 +258,7 @@ function offseasonScreen(){
   const step=(A.userOpen||S.off.poach.length)?1:0, n=k=>step+k;
   // the roster you'd carry into the new year, and what it costs
   const R=U.roster[S.myTeam], expiring=Object.keys(P.asks||{}).map(Number);
-  const pay=nflPlannedPay(), room=LEAGUE.cap-pay;
+  const FO=typeof mlbScreenOn==='function'&&mlbScreenOn(), pay=FO?mlbPlannedPay():nflPlannedPay(), room=FO?mlbRoomFor(U,S.myTeam,pay):LEAGUE.cap-pay;   // engine 27: the owner's limit, the tax inside it (99_fo_views)
   h+=staffPlanHTML(P);
   h+=`<div class="grouphead">${n(1)}. Expiring contracts</div>`;
   h+=coachMark("contracts","Players you don't re-sign go to free agency, where another team can take them. Rookies and free agents are added afterwards, inside whatever cap room you leave.");

@@ -60,8 +60,9 @@ function teamLines(rng,c){
   const dressed=hkDressed(tm,HK_SW,"sht"); if(!dressed.length)return statLinesOld(rng,c);
   const L={}; dressed.forEach(d=>L[d.n]={goals:0,ast:0,pts:0,sog:0});
   const ev=[]; c.drives.forEach(d=>(d.ev||[]).forEach(e=>{ if(e.k==="goal")ev.push(e) }));
-  let mine=0;
+  let mine=0; const XL={}; hkExtras(tm).forEach(o=>{ if(!L[o.p.n])XL[o.p.n]={pl:o.p,i:o.i,goals:0} });   // engine 27: the bottom six
   ev.filter(e=>e.side===c.side).forEach(e=>{ const N=hkGoalNames(tm,e); e.nm=N.n; if(N.a)e.an=N.a; if(N.a2)e.an2=N.a2; if(N.depth)e.dp=1;
+    if(!L[N.n]&&XL[N.n])XL[N.n].goals++;   // engine 27: a man of the bottom six
     if(L[N.n]){ L[N.n].goals++; if(!e.en&&!e.extra)mine++ } else if(!e.en&&!e.extra)mine++;
     if(N.a&&L[N.a])L[N.a].ast++; if(N.a2&&L[N.a2])L[N.a2].ast++ });
   const sv=k=>c.drives.reduce((t,d)=>t+(d.sv||[]).filter(x=>x.side===k).length,0);
@@ -71,7 +72,7 @@ function teamLines(rng,c){
   // round 101: a shot the full match showed is its shooter's (d.pn, roster slots); the rest shared as before
   const sd=c.side==="home"?0:1, shown={}; let nShown=0;
   c.drives.forEach(d=>(Array.isArray(d.pn)?d.pn:[]).forEach(q=>{ if(q[0]!==sd||q[1]!=="s")return; const p=c.R[q[2]]; if(p&&L[p.n]){ shown[p.n]=(shown[p.n]||0)+1; nShown++ } }));
-  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0), rest=Math.max(0,sog-credited-nShown);
+  const credited=dressed.reduce((t,d)=>t+L[d.n].goals,0)+Object.keys(XL).reduce((t,n)=>t+XL[n].goals,0), rest=Math.max(0,sog-credited-nShown);
   const n=splitDraw(rng,rest,dressed.map(d=>d.w).concat([0.08]));
   dressed.forEach((d,j)=>{ const l=L[d.n]; l.sog=l.goals+n[j]+(shown[d.n]||0); l.pts=l.goals+l.ast });
   /* round 107 (engine 21): the shooters' shots never come to more than the team's (Muse: 31 against 30 in a full match
@@ -81,6 +82,7 @@ function teamLines(rng,c){
   if(ENGINE_V>=21){ let over=dressed.reduce((t,d)=>t+L[d.n].sog,0)-sog; const floor=d=>L[d.n].goals+(shown[d.n]||0);
     while(over>0){ const x=dressed.filter(d=>L[d.n].sog>floor(d)).sort((a,b)=>(L[b.n].sog-floor(b))-(L[a.n].sog-floor(a)))[0]; if(!x)break; L[x.n].sog--; over-- } }
   const out=dressed.map(d=>({pl:d.p,pos:POS[d.i%POS.length].p,line:L[d.n]}));
+  Object.keys(XL).forEach(n=>{ const x=XL[n]; if(x.goals)out.push({pl:x.pl,pos:POS[x.i%POS.length].p,line:{goals:x.goals,ast:0,pts:x.goals,sog:x.goals}}) });   // engine 27: a goal of the bottom six on its scorer's line
   // the goalies: the man in net for each spell (the backup once he's in, or when he started) gets its saves and goals
   // against; an empty-net goal is nobody's
   const d0=c.drives[0]||{}, gi=POS.findIndex(P=>P.p==="G"), gAct=c.act.find(x=>x.i===gi), bkG=c.R[BK(gi)];

@@ -449,7 +449,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, playoff, ctx){
     if(ENGINE_V>=21){ const pens=ev.filter(x=>x.k==="pen").map(x=>({side:x.side,m:x.m})).concat(st.penCarry||[]);
       // by the minutes shown: a goal at the penalty's minute or the two after reads as inside it
       ev.forEach(x=>{ if(x.k!=="goal"||x.pp||x.en||x.extra)return; const F=Math.floor, pn=pens.find(q=>q.side!==x.side&&F(x.m)>=F(q.m)&&F(x.m)<=F(q.m)+2); if(!pn)return;
-        const b=F(pn.m)-0.5, a=F(pn.m)+3.5; if(b>=t0)x.m=b; else if(a<t0+(GD&&span<5?span:5))x.m=a });   // engine 26: not past the minutes played the usual way (the tail's own come after)
+        const b=F(pn.m)-0.5, a=F(pn.m)+3.5; if(b>=t0)x.m=b; else if(a<t0+(GD&&span<5?span:5))x.m=a;   // engine 26: not past the minutes played the usual way (the tail's own come after)
+        /* engine 27: a short stretch before the tail (55' to 57') with a penalty in it, or carried into it, has no minute
+           outside the penalty to move the goal to; scored with the man advantage, it is a power-play goal
+           (test/hk-pp-goal.js: a 55' goal inside a 55' penalty, Florida's 2026 season) */
+        else if(ENGINE_V>=27){ x.pp=true; (x.side==="home"?Lh:La).ppg++ } });
       st.penCarry=ev.filter(x=>x.k==="pen"&&x.m+2>t0+5).map(x=>({side:x.side,m:x.m})) }
     ev.sort((x,y)=>x.m-y.m); ev.forEach(x=>x.m=Math.min(59,Math.floor(x.m))); sv.forEach(x=>x.m=Math.min(59,Math.floor(x.m)));
     const prev=st.drives.length?st.drives[st.drives.length-1]:{sh:0,sa:0};

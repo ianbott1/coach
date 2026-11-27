@@ -1,5 +1,5 @@
 {
- "fp": "809b727e31224331",
+ "fp": "cab46790b66d2c52",
  "log": [
   {
    "fp": "f9076522cf8ba9ce",
@@ -435,6 +435,11 @@
    "fp": "809b727e31224331",
    "from": "d56afe564468b3ef",
    "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
+  },
+  {
+   "fp": "cab46790b66d2c52",
+   "from": "809b727e31224331",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "out": [
@@ -444,20 +449,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "11-3",
-      "result": "Eliminated in the quarterfinals",
-      "grade": "A+"
+      "rec": "5-7",
+      "result": "No bowl game",
+      "grade": "D"
      },
-     "book": "6f1b734bdf8dc584"
+     "book": "f3c97c9f6ed61acb"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "5-7",
+      "rec": "3-9",
       "result": "No bowl game",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "2c638003152bb981"
+     "book": "817f38096f437e5c"
     }
    ]
   },
@@ -467,20 +472,20 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "5-7",
-      "result": "No bowl game",
-      "grade": "C-"
+      "rec": "10-3",
+      "result": "Won the Citrus Bowl",
+      "grade": "A"
      },
-     "book": "c9e0e2678dee1b11"
+     "book": "4c0a4f34cc28da8f"
     },
     {
      "team": "Rice",
      "last": {
-      "rec": "3-9",
+      "rec": "4-8",
       "result": "No bowl game",
       "grade": "B-"
      },
-     "book": "50983ccf249a6035"
+     "book": "fec88a4a057dbe8b"
     }
    ]
   },
@@ -490,11 +495,11 @@
     {
      "team": "Alabama",
      "last": {
-      "rec": "7-6",
-      "result": "Lost the Las Vegas Bowl",
-      "grade": "C+"
+      "rec": "11-4",
+      "result": "Eliminated in the quarterfinals",
+      "grade": "A"
      },
-     "book": "b2677a1e7adcb3ef"
+     "book": "9371608c972a86c9"
     },
     {
      "team": "Rice",
@@ -503,7 +508,7 @@
       "result": "No bowl game",
       "grade": "B"
      },
-     "book": "8ea38b1e867b5ec5"
+     "book": "aa3a8b80ba4ef9d1"
     }
    ]
   }

@@ -42,7 +42,7 @@ for(let y=0;y<(LG==='mlb'?2:3);y++){
   api.openOffseason();
   for(let c=0;c<2;c++){
     const S=api.S; if(!S.off)break;
-    seen.push(S.off.act.fired.slice().sort().join(',')); if(c===0)var poachedN=(S.off.act.poached||[]).length+(S.off.act.coordMoves||[]).length;
+    seen.push(S.off.act.fired.slice().sort().join(',')); if(c===0)var poachedN=(S.off.act.poached||[]).length+(S.off.act.coordMoves||[]).length+(S.off.act.retired||[]).length;
     if(S.off.act.userOpen&&S.off.move===null)S.off.move=(S.off.jobs[0]&&S.off.jobs[0].team)||S.myTeam;
     api.commitOffseason();
   }
@@ -50,7 +50,8 @@ for(let y=0;y<(LG==='mlb'?2:3);y++){
   const changed=api.NAMES.filter(t=>humansNow.indexOf(t)<0&&api.U.coach[t]&&coachBefore[t]&&api.U.coach[t].n!==coachBefore[t]).length;
   const firedN=seen[0]?seen[0].split(',').filter(Boolean).length:0;
   // a team changes coach when it fires one, when its job is filled by poaching
-  // another team's coach, or when it promotes a coordinator from elsewhere
+  // another team's coach, or when it promotes a coordinator from elsewhere, or when its coach retires
+  // (college from engine 26, the pro leagues from engine 27)
   if(changed>firedN+poachedN)crashes.push(`year ${api.SEA.year-1}: ${changed} computer-coached teams changed coach, but one carousel accounts for ${firedN+poachedN}`);
   // every coach's Dynasty tabs and every team page must draw
   const activeBefore=api.S.turn||0;

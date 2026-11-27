@@ -24,7 +24,7 @@ const HL_SPORT=(function(){
     // clock went missing while plays ran: Muse)
     // round 110: what's left of a drive after a call goes on from the call's clock (the call reads the drive 0.7 of the way
     // through: 75_screens), not the drive's start (the clock stepped back about two minutes after every call: Muse, 10 of 10)
-    const di=n>=0?n:Math.max(0,(L.drives||[]).length-1), ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,di+(afterCall?0.7:0),DRIVES_PER_TEAM*2):"";
+    const di=n>=0?n:Math.max(0,(L.drives||[]).length-1), ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,di+(afterCall?0.7:0),fbTot(L)):"";
     out.forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+ck+" \u00b7 drive "+(di+1); c.scores=d.kind==="TD"||d.kind==="FG" }); return out }
   function clips0(L,d,mode){
     const k=d.kind; if(d.q===5&&!d.pts&&k==="TD")return [];
@@ -445,7 +445,7 @@ const HL_SPORT=(function(){
     const two=stg==="two", d={home:r.side==="home",q:P.q,start:P.start,n:st.i+1,kind:two?"TD":P.res.kind,pts:two?6:0,h:st.h,a:st.a,stall:two?100:P.res.stall,togo:two?null:(P.res.togo||3),aggr:P.aggr};
     if(!two&&P.res.kind!=="PUNT"&&P.res.kind!=="DOWNS"&&P.res.kind!=="FG"&&P.res.kind!=="MISS")return null;
     const L2={g:L.g,drives:(L.drives||[]).concat([d]),restAt:L.restAt}, out=clips0(L2,d,"full"), dc=mkDrive(L2,d,out); if(!dc)return null;
-    const n=L2.drives.length, ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,Math.max(0,n-1),DRIVES_PER_TEAM*2):""; [dc].concat(out).forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+ck+" \u00b7 drive "+n; c.scores=two });
+    const n=L2.drives.length, ck=typeof fbClock==="function"&&ENGINE_V>=7&&d.q<5?" "+fbClock(d.q,Math.max(0,n-1),fbTot(L)):""; [dc].concat(out).forEach(c=>{ c.hd=d.q>=5?"OT":"Q"+d.q+ck+" \u00b7 drive "+n; c.scores=two });
     const clips=two?[dc].concat(out.filter(c=>c.kind==="td")):[dc];
     if(!dc.plays.length&&!two)return null;
     return {clips:clips.filter(c=>c.kind!=="drive"||c.plays.length),hold:two,key:{n:d.n,start:d.start,home:d.home,k:dc.plays.length,all:two,plays:dc.plays,end:dc.plays.reduce((t,p)=>t+p.g,dc.start),left:dc.left,forced:dc.forced}} }

@@ -2,8 +2,8 @@
 /* Thirty clubs, named by city (two cities have two), in two leagues of three divisions. Players are fictional. The
    structure is the real league's: the balanced 162-game schedule, a twelve-team postseason (three division winners
    and three wild cards a league; the top two division winners sit out a best-of-three wild-card round, then a
-   best-of-five, a best-of-seven pennant and the World Series), a draft with a lottery, and payrolls (a hard limit of $165 million on
-   the players the game tracks; contracts are scaled from the real 2026 luxury-tax line, $244 million). */
+   best-of-five, a best-of-seven pennant and the World Series), a draft with a lottery, and payrolls (engine 27: the real front office, leagues/mlb 24_fo; before it, a hard limit of
+   $165 million on the players the game tracks, contracts scaled from the real 2026 luxury-tax line, $244 million). */
 const MLB_DATES=(()=>{const out=[], d=new Date(Date.UTC(2026,2,26));       // March 26 to September 27
   const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   for(let i=0;i<186;i++){out.push(M[d.getUTCMonth()]+" "+d.getUTCDate()); d.setUTCDate(d.getUTCDate()+1)}
@@ -108,7 +108,11 @@ const LEAGUE={
        "reputation. It moves over years and sets what's expected of you."],
       ["Rating (player)","0\u201399 scale. The rotation matters most: three starters, with the fourth and fifth behind them "+
        "taking about two starts in five. Bench players start about one game in eight."],
-      ["Payroll","A hard limit of $165M, on the players the game tracks. A max contract is about $49M."],
+      ["Payroll","No cap: each owner sets a limit, the tax included. Big markets spend past the tax line; small ones stay far under it. (A career from before engine 27 keeps a $165M limit until its first summer on the new rules.)"],
+      ["Competitive balance tax","$244M in 2026. A club over it pays 20% of the overage the first year, 30% the second and 50% after, more on each dollar past $20M, $40M and $60M over, and $40M over moves its top pick back ten places."],
+      ["Service time","172 days in the majors make a year. Under three years a player is paid near the $780K minimum; from three (two for the top 22% of that class, the super twos) he goes to arbitration, and his raise follows his season; after six he is a free agent."],
+      ["Qualifying offer","One year at $23.15M, made to a club's own free agent. Turn it down and sign elsewhere, and his new club gives up a draft pick to his old one."],
+      ["40-man roster","The 26 in the majors and the prospects protected in the minors. A man on it can be optioned down in three seasons; after that, or with five years of service, he goes down only through waivers (designated for assignment)."],
       ["Wild card","After the three division winners, the three best remaining records in each league get in."],
       ["Draft lottery","The teams that miss the postseason draw for the top picks; the worst records have the best odds."],
       ["Hot seat","Measured against your franchise's own expectations, not raw wins."]

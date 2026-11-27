@@ -98,4 +98,14 @@ function packSeries(rng,series){
   }
   throw new Error("could not fit the baseball schedule");
 }
-LEAGUE.buildSchedule=mlbSchedule;
+/* A season whose series won't pack (Nov 2026: about one in two hundred; a career opened as Seattle on seed 11 stopped
+   at 2033 with "could not fit the baseball schedule"): the series are drawn again from dice of their own (the year, the try
+   and where the failed builder left the season's dice), up to eight times, before giving up. Only a schedule that failed takes this path, so every schedule that
+   built before builds the same, and the season's dice go on from where the failed builder left them. */
+function mlbScheduleSafe(rng,R,year){
+  try{ return mlbSchedule(rng,R,year) }catch(e){ if(!/could not fit/.test(String(e&&e.message)))throw e }
+  const a0=rng.a;   // where the failed builder left the season's dice: the redraw is this career's own
+  for(let k=1;k<=8;k++){
+    try{ return mlbSchedule(new RNG((strHash("mlb-sched|"+year+"|"+k+"|"+a0)>>>0)||1),R,year) }catch(e){ if(!/could not fit/.test(String(e&&e.message)))throw e } }
+  throw new Error("could not fit the baseball schedule") }
+LEAGUE.buildSchedule=mlbScheduleSafe;

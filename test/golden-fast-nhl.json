@@ -1,5 +1,5 @@
 {
- "fp": "2f341c78ae4f3c9c",
+ "fp": "771755023c31b942",
  "log": [
   {
    "fp": "8dd825c749242721",
@@ -180,21 +180,31 @@
    "fp": "2f341c78ae4f3c9c",
    "from": "24f09140552c641b",
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
+  },
+  {
+   "fp": "57ac9e3b0ac41b02",
+   "from": "2f341c78ae4f3c9c",
+   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+  },
+  {
+   "fp": "771755023c31b942",
+   "from": "57ac9e3b0ac41b02",
+   "note": "Re-recorded after merging main's rounds 111 and 112 into the review branch (engine 27): main's engine-26 summer and deadline fixes apply on 27 too"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "677c3541db7e3248",
-    "post": "7e4deaf3ac246194",
-    "champion": "Washington",
-    "rec": "80e1e43dfb839dd1",
-    "poll": "d67349cf5478543e",
-    "heis": "7d8cf393e386e237",
-    "history": "c3bdaf62442bfd9c",
-    "universe": "985fdb3fc7753f36",
-    "screens": "da734f853cabdc9c"
+    "games": "cb200e9bee6aabf0",
+    "post": "971e1289af5a974c",
+    "champion": "Los Angeles",
+    "rec": "ffcd64d24cfbb9ed",
+    "poll": "1db4dbdf2805a933",
+    "heis": "c4c10d2c46c94b0e",
+    "history": "d9b0843d041643d0",
+    "universe": "f98cdfdf1ff2a15c",
+    "screens": "b90c4f45ffdf56c4"
    }
   ]
  }

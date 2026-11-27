@@ -23,7 +23,8 @@ const LEAGUE={
     // the engine's own strengths for this game, your lineup and featuring included (core: gameEdge), at the
     // balanced plan: the number doesn't move with the plan (Ian, round 33)
     const F=[0.86,1.07], e=gameEdge(me,opp,atHome,neutral)*SC.edge*F[1];
-    const lm=SC.goals*F[0]*Math.exp(e/2), lo=SC.goals*F[0]*Math.exp(-e/2), P=(l,k)=>{let p=Math.exp(-l);for(let i=1;i<=k;i++)p*=l/i;return p};
+    const sp=scSplit(e), lm=SC.goals*F[0]*sp[0], lo=SC.goals*F[0]*sp[1],   // engine 27: the engine's own split of the goals (soccer 50_game scSplit)
+      P=(l,k)=>{let p=Math.exp(-l);for(let i=1;i<=k;i++)p*=l/i;return p};
     let w=0,d=0; for(let i=0;i<10;i++)for(let j=0;j<10;j++){const p=P(lm,i)*P(lo,j); if(i>j)w+=p; else if(i===j)d+=p}
     return [w,d,1-w-d];
   },

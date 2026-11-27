@@ -688,6 +688,7 @@ function rebuild(){
     // round 84: every coach's promotions, trades and firings, in turn order (a shared seat dropped the other coach's
     // on a reload: measured, his strength came back 19 elo off in pro basketball)
     if(first)coachMoves().forEach(([tm,P,F])=>{ if(P&&P[i])P[i].forEach(k=>swapDepth(SEA,k,tm)); if(F&&F[i])F[i].forEach(sd=>SEA.fireCoordinator(tm,sd)) });
+    if(SHARE_RUN)shReplayStep(i);   // round 3 (share): a challenge checked by replaying it, its live games played again here
     const ans=(S.calls&&S.calls[callKey(i,SEA.year)+(SEA.half?"#1":"")])||[]; let ai=0;
     const pl=S.played&&S.played[callKey(i,SEA.year)];
     // recorded answers replay a game only for old saves that kept no live
@@ -816,6 +817,7 @@ function backupNagHTML(){ if(!S||!S.myTeam||S.h2h||S.backedUp===SEA.year||(S.his
 function staleTabHTML(){ return newerHTML()+saveFailHTML()+(staleTab?`<div class="staletab" id="staletab" role="alert">This career was changed in another tab or window, so this one has stopped saving.
   <button class="skip small" id="stalego">Reload to pick up where it is now</button></div>`:"") }
 function save(){
+  if(SHARE_QUIET)return Promise.resolve(false);
   if(savePending)return savePending;
   savePending=(async()=>{
     if(typeof requestAnimationFrame==="function")
@@ -826,7 +828,7 @@ function save(){
     // with no career it wrote an empty one over slot 1 (slot's default): the slot-1 wipes, found by
     // Grokbot in the code and reproduced in four games. Never again from anywhere.
     if(!S||!S.myTeam)return false;
-    if(staleTab)return false;
+    if(staleTab||SHARE_QUIET)return false;   // (a challenge being checked never saves)
     if(saveRev!==null&&S.myTeam){ const cur=await readRev(slot);
       if(cur!==null&&cur!==saveRev){ staleTab=true; render(); return false } }
     S.league=LEAGUE.id;                                   // every save says which game it's from
@@ -943,7 +945,7 @@ async function readCopy(){ try{ const r=await store.get(BAKKEY()); if(!r)return 
    browser's storage can be cleared; a file on your computer or phone can't. */
 function downloadBackup(){
   try{
-    const text=lzwPack(saveText(Object.assign({},S,{league:LEAGUE.id}))), blob=new Blob([text],{type:"text/plain"});
+    const text=saveFileText(Object.assign({},S,{league:LEAGUE.id})), blob=new Blob([text],{type:"text/plain"});   // round 3: a version and a checksum (95_share)
     const a=document.createElement("a"), yr=(SEA&&SEA.year)||"";
     a.href=URL.createObjectURL(blob); a.download=`${LEAGUE.id}-${(S.myTeam||"career").replace(/[^A-Za-z0-9]+/g,"-")}-${yr}.coach`;
     document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
@@ -954,20 +956,17 @@ function downloadBackup(){
 async function downloadSlot(n){
   try{ const r=await store.get(KEYFOR(n)); if(!r||!r.value)return false;
     const d=unsaveDup(JSON.parse(lzwUnpack(r.value))); if(!d||!d.myTeam)return false; d.league=saveLeague(d);
-    const text=lzwPack(saveText(d)), blob=new Blob([text],{type:"text/plain"});
+    const text=saveFileText(d), blob=new Blob([text],{type:"text/plain"});
     const a=document.createElement("a"), yr=(d.seasonNow&&d.seasonNow.year)||(d.uStart&&d.uStart.year)||"";
     a.href=URL.createObjectURL(blob); a.download=`${LEAGUE.id}-${String(d.myTeam).replace(/[^A-Za-z0-9]+/g,"-")}-${yr}.coach`;
     document.body.appendChild(a); a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href); a.remove()}catch(e){}},500);
     return true }catch(e){ return false }
 }
 /* a backup file's text to a career, or null if it isn't one of this game's */
-function readBackup(text){
-  try{ const d=unsaveDup(JSON.parse(lzwUnpack(String(text).trim())));
-    if(!d||!d.myTeam||saveLeague(d)!==LEAGUE.id)return null; return repairPlayed(migrateSave(d)) }catch(e){ return null }
-}
+function readBackup(text){ const r=readSaveFile(text); return r.d||null }
 async function restoreBackup(file,into){
-  const text=await file.text(), d=readBackup(text);
-  if(!d){ alert("That file isn't a backup from this game."); return false }
+  const text=await file.text(), r=readSaveFile(text), d=r.d;
+  if(!d){ alert(r.why||"That file isn't a backup from this game."); return false }
   slot=into; saveRev=null; staleTab=false; S=d; S.title=false; rebuild(); S.expNow=S.expNow||expectations(); await save(); render(); return true;
 }
 async function allSlots(){
@@ -993,7 +992,9 @@ async function allSlots(){
 
 const COACH_FIRST=["Ray","Mack","Dabo","Kirby","Lane","Deion","Marcus","Hugh","Bronco",
 "Kalani","Sonny","Jimbo","Willie","Herm","Brent","Curt","Vic","Sherrone","Fran","Bo"];
-function newDynasty(team,seed,coachName,roster){
+/* round 3 (share): a new career's state, nothing saved or drawn: newDynasty below, and a league code or a challenge
+   replayed from its seed (core 95_share) */
+function freshCareer(team,seed,coachName,roster){
   const rng0=new RNG(seed^0x5f3a);
   const people = (roster&&roster.length) ? roster
     : [{team:team, name:coachName||(rng0.pick(COACH_FIRST)+" "+rng0.pick(LAST))}];
@@ -1018,6 +1019,9 @@ function newDynasty(team,seed,coachName,roster){
   attrSync(u);                                           // round 87: every player's attributes (core 93_attrs)
   S.uStart=snap(u); S.origProgram=snap(u.program);
   S.seasonSeed=(seed*2654435761)>>>0 % 2147483647;
+}
+function newDynasty(team,seed,coachName,roster){
+  freshCareer(team,seed,coachName,roster);
   rebuild(); S.expNow=expectations(); skipOffDaysNow(); save(); view="team"; render();
 }
 
@@ -1404,6 +1408,7 @@ function endSeason(rng,choices,act,seasonTeam){
   if(typeof tdCarry==="function")tdCarry(U);   // round 83: the season's trades into next season's rosters, before the careers are banked
   SEA.bankCareers(U);
   SEA.bankPeople(U);   // round 111
+  if(typeof loreBank==="function")loreBank();   // engine 27: the record book, the champions, the awards (core 93_lore)
   if(S.calls){ const keep={}, pre=SEA.year+":";
     Object.keys(S.calls).forEach(k=>{if(k.indexOf(pre)===0)keep[k]=S.calls[k]});
     S.calls=keep;
@@ -1420,6 +1425,7 @@ function endSeason(rng,choices,act,seasonTeam){
   if(eng26())U.rc26=recentre26(U);   // engine 26: the league held to its opening level and spread (core 20_engine)
   if(typeof peopleDepart==="function"&&before)peopleDepart(before,entry,my);   // round 111: who left, and how
   const off=Object.assign({},act,B);
+  if(typeof loreSummer==="function")loreSummer(off);   // engine 27: who retired, the Hall of Fame, the carousel (core 93_lore)
   const exp=S.expNow||expectations();
   const miles=milestones(SEA.rec[my][0],SEA.rec[my][1],result,rk[my],my);
   S.history.push(Object.assign(entry,{
@@ -1919,6 +1925,7 @@ function gameEdge(me,opp,atHome,neutral){
     // round 89: the computer's club plays the plan its roster suits, and that fit is in the game too
     if(me===S.myTeam&&typeof sportPlanFit==="function"&&!(isHotSeat()&&coachIndexOf(opp)>=0)){ const op=cpuPlanOf(opp,hm?-d:d); if(op!=="balanced")x-=(typeof sportPlanFitC==="function"?sportPlanFitC(opp,op):sportPlanFit(opp,op))+(ENGINE_V>=15&&typeof sportPlanShift==="function"?sportPlanShift(op,hm?-d:d):0) }   // round 92: and that plan's own worth at their gap, as cpuPlanOf weighs it (an outgunned club taking risks: the chance read 81% where the engine won 70%)
     if(typeof sportTonightEdge==="function")x+=sportTonightEdge(me)-sportTonightEdge(opp);   // round 94: tonight's goalie (hockey's back-to-backs)
+    if(typeof sportPlanDayEdge==="function"){ const e0=sportPlanDayEdge(g.home,g.away,d); x+=hm?e0:-e0 }   // engine 27: football's weekly game plan, both clubs' assistants' (51_tactics; 0 before 27)
     return x }
   finally{ SEA.userTeam=ku; SEA.featured=kf; SEA.deploy=kd }
 }
@@ -2044,6 +2051,7 @@ function seasonMissed(h){return h.miss!==undefined?!!h.miss:/Short of the mark|A
 function missedTwiceFor(team,history,exp){
   const now=seasonGrade(SEA.rec[team][0],SEA.rec[team][1],SEA.seasonResult(team),exp);
   const prev=(history||[]).find(h=>h.year===SEA.year-1&&h.team===team);
+  if(typeof loreOn==="function"&&loreOn())return bossFires(team,history,now);   // engine 27: the owner's patience (core 93_lore)
   return !!(now.miss&&prev&&seasonMissed(prev));
 }
 function missedTwice(my,exp){return missedTwiceFor(my,S.history,exp)}
@@ -2061,7 +2069,8 @@ function seatVerdict(my){
     const g=seasonGrade(w,l,r,exp); if(!g||!g.g)return "";
     const aim=exp.l?String(exp.l).replace(/\.$/,""):"";
     return `The board's verdict so far: ${g.g}, ${String(g.l||"").replace(/\.$/,"").toLowerCase()}. It weighs the season together: ${w} wins${exp.w?` against the ${exp.w} it hoped for`:""}${r?`, and ${r.replace(/\.$/,"").replace(/^[A-Z](?=[a-z])/,c=>c.toLowerCase())}`:""}${aim?` against its aim (${aim})`:""}. ${g.miss?"That's short, and the job is under pressure.":"Taken together, the job is safe."}` }catch(e){ return "" } }
-function seatWhyNow(){ return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
+function seatWhyNow(){ if(typeof loreOn==="function"&&loreOn())return bossBrink(S.myTeam,S.history)?bossWhy(S.myTeam,S.history):"";   // engine 27 (core 93_lore)
+  return seatWhy((S.history||[]).find(h=>h.year===SEA.year-1&&h.team===S.myTeam)) }
 /* where you stand against that rule: missed last year here, you're on the
    hot seat all season; on pace to miss this year, you're under pressure */
 function seatBadge(){
@@ -2076,8 +2085,10 @@ function seatBadge(){
   // and names the target missed, so a second-round exit isn't read as failure out of nowhere (Grokbot, hockey)
   // just "HOT SEAT": the reason ran the badge onto three lines and over the coach's name at 390px (Ian,
   // Instinct); it's on hover and at the top of the board's objectives (seatWhy)
-  const hot=`<span class="seat hot" title="${esc(seatWhy(prev)||"You missed last season's target. Miss this one too and the job goes.")}">HOT SEAT</span>`;
-  if(w+l<4)return prev&&seasonMissed(prev)?hot:`<span class="seat cool">Secure</span>`;   // one calm word, not two (Instinct: "Settled" and "Secure" read as different)
+  // engine 27: the owner's patience decides when the seat is hot (core 93_lore bossBrink)
+  const lore27=typeof loreOn==="function"&&loreOn(), brink=lore27?bossBrink(my,S.history):!!(prev&&seasonMissed(prev));
+  const hot=`<span class="seat hot" title="${esc((lore27?bossWhy(my,S.history):seatWhy(prev))||"You missed last season's target. Miss this one too and the job goes.")}">HOT SEAT</span>`;
+  if(w+l<4)return brink?hot:`<span class="seat cool">Secure</span>`;   // one calm word, not two (Instinct: "Settled" and "Secure" read as different)
   const exp=S.expNow||expectations(), games=LEAGUE.schedule.games;
   const paceW=Math.round(w/(w+l)*games);
   // a league table grades by position, and a season without a result graded "on course" every week:
@@ -2097,7 +2108,7 @@ function seatBadge(){
     if(SEA.phase!=="week"&&typeof SEA.seasonResult==="function"){ let r2=""; try{ r2=SEA.seasonResult(my)||"" }catch(e){}
       g=seasonGrade(w,l,r2,exp) }
     else g=seasonGrade(paceW,games-paceW,res,exp) }
-  if(g.miss)return prev&&seasonMissed(prev)?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
+  if(g.miss)return brink?hot:`<span class="seat warm" title="On this pace you'd miss the board's target.">Under pressure &middot; behind target</span>`;
   return `<span class="seat cool"${seatVerdict()?` title="${esc(seatVerdict())}"`:""}>Secure</span>`;
 }
 
@@ -2238,13 +2249,14 @@ function myTeamView(){
   const inj=SEA.talent.active(my);
   let h=wide?"":heroResult();
   const co=U&&U.coach?U.coach[my]:null;
-  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].concat(LEAGUE.trade&&SEA.roster?[["trades","Trades"]]:[]).map(([k,l])=>
+  h+=`<div class="subtabs">${[["overview","Overview"],["roster","Roster"]].concat(LEAGUE.trade&&SEA.roster?[["trades",(LEAGUE.trade.tab&&LEAGUE.trade.tab())||"Trades"]]:[]).map(([k,l])=>
     `<button class="subtab" data-m="${k}" aria-pressed="${teamTab===k}">${l}</button>`).join("")}</div>`;
   if(teamTab==="roster")return h+rosterView();
   if(teamTab==="trades"&&LEAGUE.trade&&SEA.roster)return h+tradesView();
-  if(!wide){h+=teamCardHTML(my,rk,co)+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
+  const shr=typeof shareTeamHTML==="function"&&reveal!=="half"?shareTeamHTML(my):"";   // round 3: the weekly challenge, this league's code
+  if(!wide){h+=teamCardHTML(my,rk,co)+shr+(reveal==="half"?"":attentionHTML(my))+injuryHTML(inj)+
     (reveal==="half"?"":changedHTML(my)+nextUpHTML(my,rk)+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+(typeof peopleSeasonHTML==="function"?peopleSeasonHTML():"")+starsHTML(my))}
-  else if(reveal!=="half")h+=objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+(typeof peopleSeasonHTML==="function"?peopleSeasonHTML():"")+starsHTML(my);
+  else if(reveal!=="half")h+=shr+objectivesHTML(my)+tallyHTML()+(typeof whatIfHTML==="function"?whatIfHTML():"")+(typeof peopleSeasonHTML==="function"?peopleSeasonHTML():"")+starsHTML(my);
   h+=(reveal==="half"?"":seasonLogHTML(my));
   return h;
 }
@@ -2915,6 +2927,7 @@ function weekNews(W){
   }
   if(typeof milestoneNews==="function")milestoneNews(my).forEach(x=>items.push(x));
   if(typeof peopleNews==="function")peopleNews(my).forEach(x=>items.push(x));   // round 111: your dressing room
+  if(typeof loreWeekNews==="function")loreWeekNews(my).forEach(x=>items.push(x));   // engine 27: the league around you (core 93_lore)
   items.sort((x,y)=>(y.p||0)-(x.p||0));
   return items;
 }
@@ -3402,7 +3415,7 @@ function dynastyView(){
   let h=`<div class="dateline"><h2>Dynasty</h2>
     <span>${(()=>{ const n=historyNow().length; return n+" season"+(n===1?"":"s")+" done" })()}${SEA&&SEA.phase!=="done"&&!S.history.some(h=>h.year===SEA.year)&&(SEA.rec[S.myTeam][0]+SEA.rec[S.myTeam][1])>0?" &middot; "+SEA.year+" under way":""}</span></div>`;
   h+=`<div class="subtabs">${[["program","You"],["coaches","Coaches"],["teams","Teams"],
-    ["league","History"],["shared","Online"]].map(([k,l])=>
+    ["league","History"]].concat(LEAGUE.lore&&(U.lore||eng27())?[["records","Records"]]:[]).concat([["shared","Online"]]).map(([k,l])=>
     `<button class="subtab" data-d="${k}" aria-pressed="${dynTab===k}">${l}</button>`).join("")}</div>`;
 
   if(dynTab==="program"){
@@ -3427,6 +3440,7 @@ function dynastyView(){
         <span class="stopyr">${s.from}${s.to&&s.to>s.from?"\u2013"+s.to:s.to?"":"\u2013"}</span>
         <span class="stoprec">${careerRec(s,s.team,s.from,s.to)}${s.titles?" \u00b7 "+s.titles+"\u00d7":""}</span>
       </div>`}).join("")}</div>`;
+    if(typeof bossHTML==="function")h+=bossHTML();   // engine 27: your owner and his patience (core 93_lore)
     h+=yourSeasonsHTML();
     h+=filmRoomHTML();
     h+=cabinetHTML();
@@ -3465,6 +3479,7 @@ function dynastyView(){
   }
 
   if(dynTab==="coaches")return h+coachesView();
+  if(dynTab==="records"&&typeof loreBookHTML==="function")return h+loreBookHTML();   // engine 27 (core 93_lore)
   if(dynTab==="shared")return h+leagueView();
 
   // league history
@@ -3759,6 +3774,7 @@ function cardView(){
       <button class="wbtn" id="cback">Back</button>
     </div>
     ${cardMsg?`<div class="note center">${esc(cardMsg)}</div>`:""}
+    ${typeof reviewPanelHTML==="function"?reviewPanelHTML(h):""}
   </div>`;
 }
 
@@ -3819,7 +3835,7 @@ function miniBarShow(){ try{ const m=document.getElementById("minibar"), top=doc
   const R=sc.getBoundingClientRect(); m.classList.toggle("on",R.bottom<sb+Math.max(4,R.height*0.6)) }catch(e){} }   // most of it out of sight
 function finalIntoView(){ try{ if(typeof live==="undefined"||!live||!live.done||live._seen)return; live._seen=true;
   const t=document.querySelector(".wtop"); if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({block:"start",behavior:"auto"}) }catch(e){} }
-function render(){ SHEETS={}; WATCHG={}; try{ return render0() }finally{ bindSheets(); bindWatchG(); fitBar(); miniBar(); finalIntoView() } }
+function render(){ if(SHARE_QUIET)return; SHEETS={}; WATCHG={}; try{ return render0() }finally{ bindSheets(); bindWatchG(); fitBar(); miniBar(); finalIntoView(); if(typeof shareBind==="function")shareBind() } }
 function bindWatchG(){ try{ document.querySelectorAll("[data-watchg]").forEach(b=>b.onclick=()=>{ const x=WATCHG[b.dataset.watchg]; if(!x)return;
   const g=replayGame(x[0],x[1]); if(!g){ b.textContent="Can't replay this one"; b.disabled=true; return } startWatch(g); if(watch){ watch.step=x[1]; watch.other=true; try{ window.scrollTo(0,0) }catch(e){} } }) }catch(e){} }   // (the game opens at its top, not where Scores was scrolled)
 function render0(){
@@ -3992,8 +4008,8 @@ function render0(){
       <div class="sidebtn"><button class="advance ${done?'gold':''}" id="adv2">${
         advLabel()}${advPlanTag()}</button>${simGameButton("simone2")}${simTargets().length>1?`<button class="skip" id="skip2">Sim ahead&hellip;</button>`:""}
       </div></aside>`:""}
-    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+LEAGUE.ui.offseasonScreen():
-      (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner():
+    <main id="view">${staleTabHTML()}${(checkAchievements(),achToastHTML())}${inOff?backupNagHTML()+guideNote("offseason",GUIDE_OFF)+(typeof attrTrainHTML==="function"?attrTrainHTML():"")+(typeof loreNightHTML==="function"?loreNightHTML():"")+LEAGUE.ui.offseasonScreen():
+      (flash&&flash.type==="offseason"?LEAGUE.ui.offseasonBanner()+(typeof loreSummerHTML==="function"?loreSummerHTML():""):
        flash&&flash.type==="digest"?digestBlock():"")+
       (gameSel?gamePageView():playerSel?playerView():view==="team"?(teamTab==="overview"&&SEA.phase==="week"&&!(S.history&&S.history.length)&&!(SEA.rec[S.myTeam]||[]).some(x=>x>0)?guideNote("welcome",guideWelcome()):"")+myTeamView():view==="scores"?guideNote("scores",GUIDE_TABS.scores)+scoresView():
        view==="poll"?LEAGUE.ui.rankingView():view==="stand"?guideNote("stand",GUIDE_TABS.stand)+standingsView():guideNote("dyn",GUIDE_TABS.dyn)+dynastyView())}</main>
@@ -4022,6 +4038,7 @@ function render0(){
   document.querySelectorAll("[data-lead]").forEach(x=>x.onclick=()=>{ leadCat=+x.dataset.lead; render() });
   document.querySelectorAll(".subtab").forEach(b=>b.onclick=()=>{
     if(b.dataset.d){dynTab=b.dataset.d; dynTeam=null; dynCoach=null}
+    if(b.dataset.lt&&typeof loreTab!=="undefined"){loreTab=b.dataset.lt}
     else if(b.dataset.grp){grpTab=b.dataset.grp}
     else if(b.dataset.m){teamTab=b.dataset.m}
     else if(b.dataset.sttab){standTab=b.dataset.sttab}   // round 69
@@ -4333,6 +4350,7 @@ function renderTitle(){
         ? `<div class="note">Pick the career to replace. Replacing erases it: to keep it, open it and save a backup file first.</div>
            <button class="introskip wide" id="tnewx">Cancel</button>`
         : `<button class="introskip wide" id="tnew">Start a new career</button>` })()}
+    ${typeof shareTitleHTML==="function"?shareTitleHTML(slots):""}
     <button class="introskip wide" id="thow">How to play</button>
     <label class="introskip wide restorelbl">Restore a career from a backup file<input type="file" id="restorefile" accept=".coach,.txt,text/plain" hidden></label>
     <div class="buildid">Build ${typeof BUILD_ID!=="undefined"?BUILD_ID:"dev"}</div>
@@ -4372,6 +4390,7 @@ function renderTitle(){
     if(!free&&!confirm("Every slot is full. Replace the career in slot 1 with this backup?"))return;
     await restoreBackup(f,into) };
   const qs=el("qstart"); if(qs)qs.onclick=()=>quickStart(+qs.dataset.qs);
+  if(typeof shareTitleBind==="function")shareTitleBind(slots);   // round 3: the weekly challenge, a league code, a friend's result
   const ot=el("owltap");
   if(ot)ot.onclick=()=>{owlTaps++;
     ot.classList.remove("hoot"); void ot.offsetWidth; ot.classList.add("hoot");
@@ -4397,6 +4416,7 @@ function renderSetup(){
     <input id="cseed" class="seedbox" value="${S.setup.seed}">
     <span class="seedhint">Share this number and a friend gets the identical universe &mdash;
       same schedules, same injuries, same upsets.</span>
+    ${typeof shareSetupHTML==="function"?shareSetupHTML():""}
     <div class="grouphead" style="border:none;padding-left:0">Playing together</div>
     <div class="setrow" style="padding:0 0 8px">${[1,2,3,4].map(n=>`
       <button class="setbtn" data-nco="${n}" aria-pressed="${(S.setup.coaches||1)===n}"
@@ -4427,6 +4447,7 @@ function renderSetup(){
   document.querySelectorAll("[data-nco]").forEach(b=>b.onclick=()=>{
     grab(); S.setup.coaches=+b.dataset.nco; render();});
   el("cgo").onclick=()=>{
+    if(typeof shareSetupGo==="function"&&shareSetupGo(grab))return;   // round 3: a league code starts its league with its club
     grab();
     S.setup.names=S.setup.names||[];
     S.setup.names[0]=S.setup.name;

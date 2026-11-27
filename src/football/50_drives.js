@@ -86,6 +86,21 @@ const FB14=Object.assign({a:+(FB14_ENV("FB14_A")||2.5),
   g:+(FB14_ENV("FB14_G")||((LEAGUE.tuning&&LEAGUE.tuning.fb14g)||1)),
   gap:+(FB14_ENV("FB14_GAP")||((LEAGUE.tuning&&LEAGUE.tuning.fb14gap)||1)),
   pw:Object.assign({safe:{acc:1.5,hnd:1.5,blk:1.5,arm:0.6,spd:0.6}, aggressive:{arm:1.5,spd:1.5,acc:0.6,hnd:0.6,blk:0.6}}, FB14_ENV("FB14_PW")?JSON.parse(FB14_ENV("FB14_PW")):{})});
+/* engine 27 (rv3/fixes-odds): each term worth the same per point again. Engine 27's fourth downs (51_tactics) are decided
+   from where a drive stalls, so the yards a stalled drive gains (Blocking against Pass rush) became points: a point of
+   either was worth 113-125 Elo against about 39-63 for every other term (engine 26: all 45-64), and the turnover terms lost a
+   quarter (fb27To follows the gap less steeply). A roster's shape is meant to change how it plays, not what it's worth,
+   and the chance shown, the plan fits and the computer's plans are all read on that rule: college football's Alabama
+   was shown 48% against BYU and won 62% (their weak pass rush gave Alabama 18 more yards on every stalled drive). Each
+   attribute's terms are scaled on engine 27 by its worth on 26 over its worth on 27 (scratch odds/worth.js: home's lean
+   at +-1, 20,000 games a side on common dice, both builds), so a point is worth on 27 what it was on 26. */
+const FB27_CW=Object.assign({
+  nfl:{arm:1.165,acc:1.540,spd:1.127,hnd:1.540,blk:0.338,str:1.205,cov:1.413,tkl:1.373,rsh:0.331,strD:1.264,spdD:1.193},
+  cfb:{arm:1.12,acc:1.364,spd:1.092,hnd:1.364,blk:0.458,str:1.102,cov:1.308,tkl:1.40,rsh:0.438,strD:1.137,spdD:1.15}}[LEAGUE.id==="nfl"?"nfl":"cfb"],
+  FB14_ENV("FB27_CW")?JSON.parse(FB14_ENV("FB27_CW")):{});
+const FB27_CMAP={arm:["arm"],acc:["acc","accS"],spd:["spd"],hnd:["hnd","hndS"],blk:["blk"],str:["str"],cov:["covT","covI"],tkl:["tklB","tklF"],rsh:["rsh"],strD:["strD"],spdD:["spdD"]};
+const FB14_C27=(()=>{ const c=Object.assign({},FB14.c); Object.keys(FB27_CMAP).forEach(a=>FB27_CMAP[a].forEach(k=>{ c[k]*=FB27_CW[a]==null?1:FB27_CW[a] })); return c })();
+function fbC(){ return fb27()?FB14_C27:FB14.c }   // the terms a drive plays with (engine 27: FB14_C27)
 const FB_OK=["arm","acc","spd","hnd","blk","str"], FB_DK=["cov","tkl","rsh","str","spd"];
 const FB_VIS={QB:"acc",RB:"spd",WR:"hnd",OL:"blk",LB:"cov",DB:"cov"};
 function fbV14(){ return typeof ENGINE_V!=="undefined"&&ENGINE_V>=14 }
@@ -100,7 +115,7 @@ function fbShapeT(t){ try{ const H=SEA.talent?new Set(SEA.talent.active(t).map(x
 /* one side's drives against the other's defense: changes to the drive's rates (td, to: chance a drive; brk: touchdown
    chance at a 73-yard field, scaled by the field's length; sus: touchdowns and field goals both, as a share; gain: yards
    on a stalled drive). The plan realises some terms more than others (FB14.pw). */
-function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=FB14.c, w=FB14.pw[plan]||{}, m=k=>w[k]!=null?w[k]:1;
+function fbDriveMod(O,D,plan){ if(!O||!D)return null; const c=fbC(), w=FB14.pw[plan]||{}, m=k=>w[k]!=null?w[k]:1;
   return {td:c.arm*m("arm")*O.arm-c.covT*D.cov, to:-c.acc*m("acc")*O.acc-c.hnd*m("hnd")*O.hnd+c.covI*D.cov+c.tklF*D.tkl,
     brk:c.spd*m("spd")*O.spd-c.tklB*D.tkl-c.spdD*D.spd, gain:c.blk*m("blk")*O.blk-c.rsh*D.rsh,
     sus:c.str*m("str")*O.str+c.accS*m("acc")*O.acc+c.hndS*m("hnd")*O.hnd-c.strD*D.str} }
@@ -111,7 +126,7 @@ function fbSideMods(ctx,planH,planA,hum){ const S=ctx&&ctx.sh; if(!fbV14()||!S||
   // points: c.arm/(a R_SLOPE) a touchdown point per Elo; Accuracy's drives the same through c.accS)
   if(planAmpV())[["home",planH],["away",planA]].forEach(([sd,pl])=>{ if(!M[sd]||!pl||pl==="balanced")return;
     const F=fbLg(hum&&hum[sd]?FB14_FIT:FB14_FITC)[pl]; if(!F)return; const f=fbFitOf(F,S[sd]), o=sd==="home"?"away":"home", E=(hum&&hum[sd]&&planVsV()?planVsTot(planAmp(f,FB17),-fbVsOf(S[o].d,pl),FB17.cap):planAmp(f,FB17))-f, u=E/(FB14.a*R_SLOPE);   // engine 23 (round 109): a person's plan against their defence
-    if(pl==="aggressive")M[sd].td+=FB17.ga*u*FB14.c.arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*FB14.c.accS });
+    if(pl==="aggressive")M[sd].td+=FB17.ga*u*fbC().arm; else if(pl==="safe")M[sd].sus+=FB17.gs*u*fbC().accS });
   return M }
 /* the plan's fit: per point of lean, in rating points per point of FB14.a, on top of balanced. FB14_FIT on a person's
    path, FB14_FITC on the computer's (scratch r91 marg2.js, marg3.js) */
@@ -168,6 +183,7 @@ function driveOdds(offElo, defElo, startYd, aggr, dmode, sm){
   let to = 0.135 - x * 0.0339 + A.to;
   if(sm){ td+=sm.td+sm.brk*(100-startYd)/73; to+=sm.to; td*=1+sm.sus; fg*=1+sm.sus }
   if(sm||fbV14()){ td*=FB14.g; fg*=FB14.g; if(planAmpV()){ td*=FB17.g; fg*=FB17.g } }   // engine 17: suited plans everywhere score more; held to the league's level   // engine 14: the computer's clubs now pick plans, and taking risks scores more; held to the league's level
+  if(fb27()){ td*=FB27.tdK; fg*=FB27.fgK }   // engine 27: fourth downs gone for keep drives alive; held to the league's scoring
   td = Math.max(0.02, Math.min(0.62, td));
   fg = Math.max(0.03, Math.min(0.30, fg));
   to = Math.max(0.03, Math.min(0.30, to));
@@ -192,8 +208,9 @@ function rollDrive(rng, offElo, defElo, startYd, aggr, dmode, sm){
     // engine 20: the fourth and N a kick is asked at follows the drive too (it read "fourth and 3" whatever the drive; no draw)
     const kt=ENGINE_V>=20?fbTogo(3,startYd,stall):undefined;
     return rng.r()<fgOdds(stall)?{pts:3,kind:"FG",stall:stall,togo:kt}:{pts:0,kind:"MISS",stall:stall,togo:kt} }
-  if (r < o.td + o.fg + o.to) {
-    return {pts:0, kind: rng.r()<0.55 ? "INT" : "FUM",
+  const T27=fb27()?fb27To(o.to,sm):null;   // engine 27: picks and fumbles, each at the league's rate, following the gap less steeply
+  if (r < o.td + o.fg + (T27?T27[0]+T27[1]:o.to)) {
+    return {pts:0, kind: rng.r()<(T27?T27[0]/(T27[0]+T27[1]):0.55) ? "INT" : "FUM",
             stall:Math.min(96,startYd+Math.round(rng.range(0,42)))};
   }
   // the drive stalled: where it died, and how far short, decide the options
@@ -315,6 +332,7 @@ function nextStart(rng, prevKind, at){
    pause; otherwise the game runs start to finish. */
 function playGame(rng, eloH, eloA, planH, planA, opts){
   opts=opts||{};
+  if(fb27())return playGame27(rng,eloH,eloA,planH,planA,opts);   // engine 27: one engine for every game (51_tactics)
   const st={
     h:0, a:0, drives:[], prev:"TD", idx:0,
     total:DRIVES_PER_TEAM*2,
@@ -435,7 +453,8 @@ function sportSeasonNorms(sea){ const o={}; Object.keys(FB_ANS_TERM).forEach(a=>
   const m=v.reduce((x,y)=>x+y,0)/v.length; o[a]={m:m, s:Math.sqrt(v.reduce((x,y)=>x+(y-m)**2,0)/v.length)} }); return o }
 const sportStyleAttrs={blitz:"Pass rush",shell:"Coverage",box:"Strength and Tackling"};
 function sportStyleScores(R){ const T=fbShapeOf(R,null).d; return {blitz:T.rsh, shell:T.cov, box:T.str+T.tkl} }
-function gameCtx(h,a,year,step){ return {fav:{home:clubScheme(h,year),away:clubScheme(a,year)}, seed:strHash(h+"|"+a+"|"+year+"|"+step),
+function gameCtx(h,a,year,step,sea){ const fav={home:clubScheme(h,year),away:clubScheme(a,year)}, seed=strHash(h+"|"+a+"|"+year+"|"+step);
+  return {fav:fav, seed:seed, gp27:fb27()?fb27Ctx(h,a,year,step,fav,seed,sea):undefined,
   sh:fbV14()?{home:fbShapeT(h),away:fbShapeT(a)}:undefined, fbn:ENGINE_V>=15&&typeof SEA!=="undefined"&&SEA&&SEA._styles?SEA._styles.norm:undefined,
   kp:typeof fbKickCtx==="function"?fbKickCtx(h,a):undefined} }
 function fbReport(fav,seed){
@@ -538,7 +557,16 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(fav){ const w=SCHEME_KEYS.map(k=>k===fav?fbFavW():1); let x=rng.r()*w.reduce((a,b)=>a+b), i=0; while(x>w[i]){x-=w[i];i++} sch=SCHEME_KEYS[i] }
     else sch=SCHEME_KEYS[rng.int(3)];
     st.D[sd]={sch:sch,fav:fav,T:{bl:0,sh:0,bx:0,n:0},T2:{bl:0,sh:0,bx:0,n:0},last:null,asked:{}} });
-  const smOf=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA,humans); return home?M.home:M.away };   // engine 14 (the plan as it stands)
+  const smOf0=home=>{ const M=fbSideMods(ctx,st.baseH,st.baseA,humans); return home?M.home:M.away };   // engine 14 (the plan as it stands)
+  // engine 27: the weekly game plan (51_tactics): each side's levers, its drives' changes and Elo edge (st.m27), and the
+  // game's possessions from both offenses' mix and tempo
+  if(fb27()&&ctx.gp27&&ctx.gp27.g){ st.gp={home:gpOk(ctx.gp27.g.home),away:gpOk(ctx.gp27.g.away)}; st.u27=ctx.gp27.u||{};
+    ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(D){ const o=sd==="home"?"away":"home"; Object.assign(st.gp[o],fb27CpuDef(o==="home"?"h":"a",0,D.sch,st.u27[o],st.u27[sd]),{key:st.gp[o].key}) } });
+    st.total=2*fb27Drives(st.gp.home,st.gp.away,ctx.seed); fb27ClockInit(st) }
+  st.m27Now=()=>{ if(!st.gp)return null; const k=JSON.stringify(st.gp); if(st._m27k!==k){ st._m27k=k; st.m27={home:fb27Mods(st.gp.home,st.gp.away,st.u27.home,st.u27.away),away:fb27Mods(st.gp.away,st.gp.home,st.u27.away,st.u27.home)} } return st.m27 };
+  const smOf=home=>{ const b=smOf0(home), M=st.m27Now&&st.m27Now(); if(!M)return b; const p=M[home?"home":"away"];
+    const o=Object.assign({td:0,to:0,brk:0,gain:0,sus:0},b||{}); o.td+=p.td; o.brk+=p.brk; o.gain+=p.gain; o.sus+=p.sus; o.dInt=(o.dInt||0)+p.dInt; o.dFum=(o.dFum||0)+p.dFum; return o };
+  const eloOf=home=>{ const M=st.m27Now&&st.m27Now(); return M?M[home?"home":"away"].elo:0 };
   const readMod=sd=>{ const D=st.D[sd], a=st.ans[sd]; if(!D||!a||!FB_ANSWERS[a])return null; if(FB_ANSWERS[a].beats!==D.sch)return FB_READ.wrong;
     const f=fbReadFit(a,ctx,sd); return f===1?FB_READ.right:{td:FB_READ.right.td*f, fg:FB_READ.right.fg*f, to:FB_READ.right.to*f} };
   const tellDrive=sd=>{ const D=st.D[sd]; if(!D)return; const t=FB_TELL[D.sch], pz=l=>{ let k=0,p=Math.exp(-l),c=p,u=rng.r(); while(u>c&&k<12){k++;p*=l/k;c+=p} return k };
@@ -550,9 +578,12 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
                  h:st.h,a:st.a,n:st.i+1,aggr:aggr,note:res.note||null,
                  converted:(res.converted===undefined?null:res.converted),
                  togo:res.togo||null};
+    if(st.total!==DRIVES_PER_TEAM*2)drive.tot=st.total;
+    if(res.chal)drive.chal=res.chal;   // engine 27: the game's possessions follow both plans (the clock reads it)
     if(res.kind==="FG"||res.kind==="MISS")drive.stall=res.stall;   // where the kick was from: the box score says how long
     // round 101: where a turnover on downs happened and where a fourth down was made, for the full match's plays
     if(res.kind==="DOWNS"&&res.stall!=null)drive.stall=res.stall; if(res.cv)drive.cv=res.cv;
+    if(res.go)drive.go=1; if(res.two)drive.two=1; if(res.att!=null&&res.kind!=="FG"&&res.kind!=="MISS")drive.att=res.att;   // engine 27: a fourth down gone for, a two-point try
     /* round 80: a turnover's return is drawn with the next drive's start (nextStart, its first draw); for the clip, the
        same draw read ahead on a copy of the dice, so nothing the game draws moves (Ian: "no turnover returns"). Where
        the ball was lost (stall) and where they took over (retTo, from their own goal). */
@@ -571,7 +602,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
       // overtime, both teams from the opponent's 25
       st.otGuard=(st.otGuard||0)+1;
       const home=(st.otGuard%2===1); fbSpecSet(ctx,home);
-      const r=rollDrive(rng,home?eloH:eloA,home?eloA:eloH,75,"urgent",null,smOf(home));
+      const r=rollDrive(rng,(home?eloH:eloA)+eloOf(home),home?eloA:eloH,75,"urgent",null,smOf(home));
       if(home)st.h+=r.pts; else st.a+=r.pts;
       st.drives.push({home:home,q:5,start:75,pts:r.pts,kind:r.kind,
                       h:st.h,a:st.a,n:st.total+st.otGuard,aggr:"aggressive",
@@ -588,7 +619,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     const used=home?st.usedH:st.usedA;
     const calls=()=>home?st.callsH:st.callsA, called=()=>{if(home)st.callsH++;else st.callsA++};
     const late = i>=st.total-7;
-    const offE=home?eloH:eloA, defE=home?eloA:eloH;
+    const offE=(home?eloH:eloA)+eloOf(home), defE=home?eloA:eloH;
 
     // ---- resume from a decision ----
     if(st.stage){
@@ -601,6 +632,7 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         else if(choice==="sit"){
           if(home)st.aggrH="sit"; else st.aggrA="sit";
           st.endAfter=Math.min(st.total-1,i+3);
+          if(fb27()&&st.tos){ const o=home?"away":"home"; if(!humans[o]&&st.tos[o]>=2){ st.tos[o]-=2; st.endAfter=Math.min(st.total-1,st.endAfter+1) } }   // engine 27: their timeouts stop the clock
         } else { if(home)st.aggrH=st.baseH; else st.aggrA=st.baseA }
         // fall through and play the drive normally
       } else if(stage==="fourth"){
@@ -608,8 +640,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         // the call comes at the stall with the drive's end already rolled: choosing what was rolled keeps it. A missed
         // kick asked about and kicked again got a second try the computer never gets (round 43: +5.5 points a game
         // for leaving every call to your assistant)
-        const rolled=P.res.kind==="FG"||P.res.kind==="MISS"?"kick":P.res.kind==="DOWNS"?"go":"punt";
+        const rolled=fb27()&&P.auto?P.auto:P.res.kind==="FG"||P.res.kind==="MISS"?"kick":P.res.kind==="DOWNS"?"go":"punt";
         if(choice===undefined||choice===null||choice==="normal")choice=rolled;
+        if(fb27()){ fb27Resolve.rng=rng; const eff=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
+          const r27=fb27Try(rng,fb27Resolve(choice,P.res,offE,defE,P.aggr,smOf(home)),mine+6-theirs,P.q,eff-i,offE,defE);
+          return {drive:push(home,P.q,P.start,r27,P.aggr),h:st.h,a:st.a} }
         if(choice===rolled&&P.res.kind!=="PUNT"){ res=Object.assign({},P.res); }
         else if(choice==="go"){
           const tg=P.res.togo||3;
@@ -644,6 +679,14 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
           st.log.push({side:side,h:dp.h,k:"prep",pick:"wait",waited:true,fav:ks[0],truth:D.sch,right:ks[0]!==D.sch,unclear:dp.report[ks[0]]===dp.report[ks[1]]}) }
         // "leave it to your assistant": the plan stays as it is, as for the computer's offense (round 43)
         // fall through and play the drive
+      } else if(stage==="chal"){
+        st.stage=null; const sm0=smOf(home), sm1=P.tSus?Object.assign({td:0,to:0,brk:0,gain:0},sm0||{},{sus:((sm0&&sm0.sus)||0)+P.tSus}):sm0;
+        st.preRes=choice==="chal"?fb27ChalDo(st,rng,P.ch,P.res,()=>rollDrive(rng,offE,defE,P.start,P.aggr,P.dm,sm1)):P.res;
+        st.log.push({side:P.ch.side,k:"chal",pick:choice==="chal"?"chal":"no",unclear:true});
+        // fall through: the drive goes on from its result
+      } else if(stage==="half27"){
+        st.stage=null; fb27HalfApply(st.gp[side],choice); st.log.push({side:side,k:"half",pick:choice||"normal",unclear:true});
+        // fall through and play the drive
       } else if(stage==="rest"){
         st.stage=null;
         if(choice==="rest"){ st.rest=st.rest||{}; st.rest[side]=true; if(home)st.aggrH="sit"; else st.aggrA="sit" }
@@ -663,7 +706,11 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
         // fall through and play their drive against it
       } else if(stage==="two"){
         let res;
-        if(choice==="two"){
+        if(fb27()){ if(choice!=="two"&&choice!=="kick")choice=P.auto||"kick";
+          res=choice==="two"?(fb27TwoOk(rng,offE,defE)?{pts:8,kind:"TD",stall:100,note:"scored, and the two-point try was good"}:{pts:6,kind:"TD",stall:100,note:"scored, but the two-point try failed"})
+            :fb27Pat(rng)?{pts:7,kind:"TD",stall:100}:{pts:6,kind:"TD",stall:100,note:"scored, but missed the extra point"};
+          res.two=choice==="two"?1:undefined }
+        else if(choice==="two"){
           res = rng.r()<0.47 ? {pts:8,kind:"TD",stall:100,note:"scored, and the two-point try was good"}
                              : {pts:6,kind:"TD",stall:100,note:"scored, but the two-point try failed"};
         } else {
@@ -695,28 +742,37 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     if(!st.stage)st.lateAsked=false;
 
     const start=st.startHold!==undefined?st.startHold:nextStart(rng,st.prev,st.at); st.startHold=undefined;
+    const pre=st.preRes; st.preRes=null;   // engine 27: a drive already played, back from a challenge
 
     // ---- their defense: the half-time change, and your reads (before your drive) ----
     if(!st.stage&&i>=st.total/2){ ["home","away"].forEach(sd=>{ const D=st.D[sd]; if(!D||D.half)return; D.half=true;
         const behind=(sd==="home"?st.a-st.h:st.h-st.a)<0;   // their side behind
-        if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)] } }) }
-    if(isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
+        if(rng.r()<(behind?FB_READ.swBehind:FB_READ.sw)){ const ks=SCHEME_KEYS.filter(k=>k!==D.sch); D.sch=ks[rng.int(ks.length)];
+          if(st.gp){ const o=sd==="home"?"away":"home", G=GP_SCH[D.sch]; st.gp[o].cov=G.cov==="c2"&&st.gp[o].cov==="c2m"?"c2m":G.cov; st.gp[o].blitz=G.blitz } } }) }
+    // engine 27: the computer's offense at half-time: well behind it throws, well ahead it runs (no draw)
+    if(fb27()&&st.gp&&!st.stage&&i>=st.total/2&&!st.half27){ st.half27=true; ["home","away"].forEach(sd=>{ if(humans[sd])return; const d=sd==="home"?st.h-st.a:st.a-st.h;
+      if(d<=-11)st.gp[sd].mix="pass"; else if(d>=14)st.gp[sd].mix="run" }) }
+    if(!pre&&isUser&&!st.stage&&st.D[side]){ const D=st.D[side]; let dp=null;
       if(!D.asked.prep&&D.fav){ D.asked.prep=true; dp=fbPrepCall(fbReport(D.fav,(ctx.seed||0)+(side==="home"?2:1))); if(i>0)dp.h="Before your first drive: the scouting report" }   // round 79: they had the ball first ("Before kickoff" came after their score: Ian)
       else if(!D.asked.r1&&q>=2&&D.T.n>=2){ D.asked.r1=true; dp=fbReadCall(1,D.T,null,D.last,st.ans[side],q) }
       else if(!D.asked.r2&&D.half&&D.T2.n>=2&&callMatters(q,mine-theirs)){ D.asked.r2=true; dp=fbReadCall(2,D.T,D.T2,D.last,st.ans[side],q) }
       if(dp){ st.stage="fbread"; st.pend={q:q,dp:dp}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
 
+    // engine 27: half-time, your first ball after the break: the game plan for the second half, with the first half's film
+    if(!pre&&fb27()&&isUser&&!st.stage&&st.gp&&q<5&&i>=Math.floor(st.total/2)&&!used.half27){ used.half27=true;
+      const dp=fb27HalfCall(st,side,mine,theirs,possLeft(st.total-i,true));
+      if(dp){ st.stage="half27"; st.pend={q:q}; st.startHold=start; return {ask:dp,mine:mine,theirs:theirs,q:q,side:side} } }
     // ---- a decided game, your ball: rest the starters? (Muse: a 24-point fourth-quarter lead asked nothing) ----
     // ...and from the third quarter in a rout (Muse, round 39: a 61-17 win asked nothing after the second quarter)
     const RL=mine-theirs, restNow=(q>=4&&RL>=14&&RL<=24)||(q>=3&&RL>=21&&RL<=40);
-    if(isUser&&!st.stage&&restNow&&!(home?st.usedH:st.usedA).rest){
+    if(!pre&&isUser&&!st.stage&&restNow&&!(home?st.usedH:st.usedA).rest){
       (home?st.usedH:st.usedA).rest=true; st.stage="rest"; st.pend={q:q}; st.startHold=start;
       return {ask:{k:"rest",h:`Up ${mine-theirs} in the ${q>=4?"fourth":"third"} quarter`,
         b:`Rest your starters? The backups run the clock out: a lead this size usually holds, though not always, and nobody gets hurt on the sideline. ${possLeft(st.total-i,true)}`,
         opts:[["rest","Rest the starters"],["keep","Keep them in until it's safe"],["normal","Leave it to your assistant"]]},mine:mine,theirs:theirs,q:q,side:side} }
 
     // ---- strategic call before the snap ----
-    if(isUser&&calls()<MAX_CALLS&&!st.stage){
+    if(!pre&&isUser&&calls()<MAX_CALLS&&!st.stage){
       const ctx={q:q,idx:i,total:st.total,startYd:start,used:used,rng:rng,
                  mine:mine,theirs:theirs};
       const dp=decisionPoint(ctx,true);
@@ -736,34 +792,51 @@ function makeLiveGame(rng, eloH, eloA, planH, planA, humans, knock, ctx){
     // their drive against your rested starters: the backups give up more (the price of resting them)
     if(!isUser&&st.rest&&st.rest[home?"away":"home"]){ const D0=typeof dm==="string"?DEF_MODE[dm]:dm, R0=FB_REST_DEF;
       dm={td:(D0?D0.td:0)+R0.td, fg:(D0?D0.fg:0)+R0.fg, to:(D0?D0.to:0)+R0.to} }   // your defense, this drive only; your offense's answer, until you change it
-    const res=rollDrive(rng,offE,defE,start,aggr,dm,smOf(home));
+    // engine 27: timeouts (the last drive of a half without them scores less), then a close call and a challenge
+    const tSus=!pre&&fb27()&&st.tos?fb27Clock(st,rng,i,home,st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total):0;
+    const smD=()=>{ const m=smOf(home); return tSus?Object.assign({td:0,to:0,brk:0,gain:0},m||{},{sus:((m&&m.sus)||0)+tSus}):m };
+    let res=pre||rollDrive(rng,offE,defE,start,aggr,dm,smD());
+    if(!pre){
     if(isUser)tellDrive(side);
     if(dm&&!isUser)res.note=(res.note?res.note+"; ":"")+(dm==="prevent"?"against your prevent defense":"against your pressure");
     if(st.onsideMiss){ st.onsideMiss=false; res.note=(res.note?res.note+"; ":"")+"after recovering the onside kick" }
+    const ch=fb27()&&st.tos?fb27Close(st,rng,home,res):null;
+    if(ch){ const m2=ch.side==="home"?st.h:st.a, t2=ch.side==="home"?st.a:st.h;
+      if(humans[ch.side]&&ch.lv>=1&&callMatters(q,m2-t2)){   // a clear miss in a game in reach is yours; the rest, your assistant's
+        st.stage="chal"; st.pend={q:q,start:start,res:res,aggr:aggr,dm:dm,ch:ch,tSus:tSus}; st.startHold=start;
+        return {ask:fb27ChalCall(st,ch),mine:m2,theirs:t2,q:q,side:ch.side} }
+      if(fb27ChalGo(rng,ch))res=fb27ChalDo(st,rng,ch,res,()=>rollDrive(rng,offE,defE,start,aggr,dm,smD())) }
+    }
 
+    // engine 27: a drive that died at fourth down: the coach's choice (yours if asked below, his otherwise)
+    const effT27=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
+    const auto4=fb27()&&fb27Stalled(res)?fb27Fourth(rng,res.stall,res.togo,mine-theirs,q,effT27-i,(res.kind==="FG"||res.kind==="MISS")&&res.att==null?0:FB27K()):null;
     // ---- a call the situation creates ----
     if(isUser&&calls()<MAX_CALLS){
       // asked at every stall, a made kick too: asked only after a miss, a punt or a failed try, every call was a
       // second chance (round 43)
       if((res.kind==="PUNT"||res.kind==="DOWNS"||res.kind==="MISS"||res.kind==="FG")&&(used.fourth||0)<4&&callMatters(q,mine-theirs)&&inReach(q,mine-theirs,home?eloH-eloA:eloA-eloH)){
         const dp=fourthDownCall(res.stall,res.togo||3,offE,defE);
-        if(dp)dp.rolled=res.kind==="FG"||res.kind==="MISS"?"kick":res.kind==="DOWNS"?"go":"punt";
+        if(dp)dp.rolled=auto4||(res.kind==="FG"||res.kind==="MISS"?"kick":res.kind==="DOWNS"?"go":"punt");
         if(dp&&dp.opts.some(o=>o[0]===dp.rolled)){
           used.fourth=(used.fourth||0)+1; called();
-          st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr};
+          st.stage="fourth"; st.pend={q:q,start:start,res:res,aggr:aggr,auto:auto4};
           return {ask:dp,mine:mine,theirs:theirs,q:q,side:side};
         }
       }
       if(res.kind==="TD"&&(used.two||0)<2){
         const dp=twoPointCall(mine,theirs,q,late);
+        if(dp&&fb27()){ dp.auto=fb27TwoGo(rng,mine+6-theirs,q,effT27-i)?"two":"kick"; dp.rolled=dp.auto }
         if(dp){
           used.two=(used.two||0)+1; called();
-          st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr};
+          st.stage="two"; st.pend={q:q,start:start,res:res,aggr:aggr,auto:dp.auto};
           if(home)st.h+=6; else st.a+=6;          // the touchdown is on the board while you decide
           return {ask:dp,mine:mine+6,theirs:theirs,q:q,side:side};
         }
       }
     }
+    if(fb27()){ fb27Resolve.rng=rng; const r3=fb27Try(rng,auto4?fb27Resolve(auto4,res,offE,defE,aggr,smOf(home)):res,mine+6-theirs,q,effT27-i,offE,defE);
+      return {drive:push(home,q,start,r3,aggr),h:st.h,a:st.a} }
     { const effT=st.endAfter!==undefined?Math.min(st.total,st.endAfter+1):st.total;
       const r2=endgameDrive(rng,res,mine-theirs,effT-i,offE,defE,smOf(home));
       if(r2.kind==="TD"&&r2.pts===7&&twoChart(mine+6-theirs,q>=4||effT-i<=8)){

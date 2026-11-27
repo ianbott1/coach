@@ -7,7 +7,8 @@
    The season notes each player's games as it plays them (noteGame), on its
    own roster copy, so a reload rebuilds the same story. */
 const FORM_N=5;                                // games in the form line
-function careerOf(pl,key){ return ((pl.car&&pl.car[key])||0)+((pl.st2&&pl.st2[key])||0) }
+function careerOf(pl,key){ return ((pl.car&&pl.car[key])||0)+((pl.st2&&pl.st2[key])||0)
+  +(pl.pre&&typeof eng27==="function"&&eng27()?(pl.pre[key]||0):0) }   // engine 27: and the years before the game began (core 93_lore lorePre)
 function milestoneSpec(pos){
   const M=(LEAGUE.classes&&LEAGUE.classes.length&&SPORT.milestonesCollege)||SPORT.milestones;
   return M&&M[pos]||null }

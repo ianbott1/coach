@@ -92,9 +92,14 @@ extendSeason({
   postMatchup(team){return this._nextFor(team)},
   postNext(team){const m=this._nextFor(team); if(!m)return null; return {label:m.label,opp:m.home===team?m.away:m.home,neutral:m.neutral,home:m.home}},
   mySeries(){return null},
-  /* a club's season, frozen once the season is over */
+  /* a club's season, frozen once the season is over. Mid-season, where it stands: _result seeds the play-offs, which
+     keeps the table it reads (the champions, the seeds, regRec), so a call during the league season would have settled
+     the season then (round 3: no caller does today; every one waits for the season's end) */
   seasonResult(my){
     if(this._res&&this._res[my])return this._res[my];
+    if(this.phase==="week"&&!this._seeded){ const d=CONF[my], tb=this.table(d), n=tb.indexOf(my)+1, nm=LEAGUE.conf.names[d];
+      const ord=n+(n%100>10&&n%100<14?"th":["th","st","nd","rd"][n%10]||"th");
+      return `${ord} in ${/^League /.test(nm)?nm:"the "+nm} so far` }
     const r=this._result(my);
     if(this.phase==="done")(this._res=this._res||{})[my]=r;
     return r;
