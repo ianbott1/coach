@@ -200,6 +200,8 @@ const REF26={nfl:{m:66.7,s:5.85,t:81.6}, nba:{m:59.6,s:6.16,t:74.2}, nhl:{m:59.6
 const REFPOS26={nfl:{QB:-1.7,RB:0.9,WR:0.3,S:0.3}, cfb:{QB:0.4,RB:0.4,DT:-0.3,CB:-0.4,S:-0.3}, nba:{SF:0.3}, ncaab:{SG:0.3,C:-0.3},
   nhl:{D:-0.3}, epl:{}, mlb:{SS:-0.4,LF:-0.4,DH:-0.3,SP:0.3,CL:0.6}};
 function hash01(x){ return (strHash(x)%100003)/100003 }
+/* round 112: the clubs people coach (you, and each seat of a shared career) */
+function humanTeams26(){ const H=new Set(); if(typeof S!=="undefined"&&S){ if(S.myTeam)H.add(S.myTeam); (S.coaches||[]).forEach(c=>{ if(c&&c.myTeam)H.add(c.myTeam) }) } return H }
 function recentre26(u){
   const R=REF26[LEAGUE.id]; if(!R||!u||!u.roster)return null;
   const byDiv=R.m==null, groups={};
@@ -207,7 +209,10 @@ function recentre26(u){
   const lo=LEAGUE.id==="epl"?20:(LEAGUE.id==="cfb"||LEAGUE.id==="ncaab")?30:35, out={};
   Object.keys(groups).forEach(g=>{
     const ref=byDiv?R[g]:R, T=groups[g];
-    const st=[]; T.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p.r) }));
+    // round 112: the level read from the other clubs only, so your own summer (a recruiting board, a signing) moves no
+    // other club's ratings (test/recruiting.js); your club is still mapped with the rest
+    const own=t=>humanTeams26().has(t);
+    const st=[]; T.forEach(t=>{ if(own(t))return; (u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p.r) }) });
     if(st.length<10)return;
     const m=st.reduce((s,x)=>s+x,0)/st.length, s=Math.sqrt(st.reduce((q,x)=>q+(x-m)*(x-m),0)/st.length); if(!(s>0))return;
     // the level is held both ways; the spread only from above: never wider than it opened (a narrower league is the
@@ -220,7 +225,7 @@ function recentre26(u){
       if(p.cl!=null)p.cl=Math.min(99,Math.max(p.pot!=null?p.pot:p.r,map(p.cl,h))) }));
     // the top 1% held too, from above (each man's hidden ceiling made a few more stars than the opening league had: the
     // NBA's top three 74 to 78 in ten summers): what lies past the top tenth is drawn in toward it
-    if(ref.t){ const v=[]; T.forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)v.push(p.r) })); v.sort((a,b)=>b-a);
+    if(ref.t){ const v=[]; T.forEach(t=>{ if(own(t))return; (u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)v.push(p.r) }) }); v.sort((a,b)=>b-a);
       const n=Math.max(3,Math.round(v.length*0.01)), top=v.slice(0,n).reduce((a,b)=>a+b,0)/n, q=v[Math.floor(v.length*0.10)];
       if(top>ref.t&&top>q+1){ const k2=Math.max(0,(ref.t-q)/(top-q)), tm=(x,h)=>x>q?Math.floor(q+(x-q)*k2+h):x;
         T.forEach(t=>(u.roster[t]||[]).forEach(p=>{ if(!p||p.r==null)return; const h=hash01("rt|"+p.n+"|"+u.year);
@@ -229,7 +234,8 @@ function recentre26(u){
   // each position held at its opening place in the league (a later peak would otherwise lift a whole position: soccer's
   // keepers +2.3 against the field in six summers, its scoring 1.49 to 1.2 a side; pro football's quarterbacks likewise)
   const RP=REFPOS26[LEAGUE.id]||{}, res={}, gm={};
-  Object.keys(groups).forEach(g=>{ const st=[]; groups[g].forEach(t=>(u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p) }));
+  const own=t=>humanTeams26().has(t);   // round 112: read from the other clubs (above)
+  Object.keys(groups).forEach(g=>{ const st=[]; groups[g].forEach(t=>{ if(own(t))return; (u.roster[t]||[]).forEach((p,i)=>{ if(p&&p.r!=null&&i<POS.length)st.push(p) }) });
     if(!st.length)return; const m=st.reduce((a,p)=>a+p.r,0)/st.length;
     st.forEach(p=>{ const P=String(p.p).replace(/\d+$/,""), x=res[P]=res[P]||[0,0]; x[0]+=p.r-m; x[1]++ }) });
   const sh={}; Object.keys(res).forEach(P=>{ if(res[P][1]>=8)sh[P]=(RP[P]||0)-res[P][0]/res[P][1] }); out.pos=sh;

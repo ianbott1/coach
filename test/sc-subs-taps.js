@@ -1,6 +1,7 @@
 /* soccer (engine 22), in a browser: the change buttons. Two taps on "Fresh legs in midfield" (300 ms apart) during a
    running Full match make one change on the next stretch (d.sub lists it once, one left); the same at half-time, with
-   the call on screen before the stretch plays.   node test/sc-subs-taps.js [dist]   last line: MATCH or MISMATCH */
+   the call on screen before the stretch plays. Round 112: on engine 26 the buttons name the change ("Forsberg for
+   Kirkwood (midfield ...)", #ma-s3), so the same two taps on it must make one change: one fewer left, once.   node test/sc-subs-taps.js [dist]   last line: MATCH or MISMATCH */
 const {chromium}=require('playwright'), path=require('path');
 const DIST=process.argv[2]||path.join(__dirname,'..','dist');
 (async()=>{ const b=await chromium.launch(); let bad=0; const chk=(ok,m)=>{ console.log((ok?'  ok   ':'  FAIL ')+m); if(!ok)bad++ };
@@ -11,6 +12,16 @@ const DIST=process.argv[2]||path.join(__dirname,'..','dist');
     await p.evaluate(()=>{ live.paused=true; clearTimeout(live.timer); live.timer=null; render() }); await p.waitForTimeout(200);
     const ask0=await p.evaluate(()=>!!live.ask);
     if(ask0){ await p.evaluate(()=>{ live.ask=live.ask }) }
+    const V26=await p.evaluate(()=>ENGINE_V>=26), BID=V26?'#ma-s3':'#ms-1';
+    if(V26){ const before=await p.evaluate(()=>{ const sd=live.userIsHome?'home':'away'; return live.eng.subsLeft(sd) });
+      const b26=await p.$(BID); if(!b26){ chk(false,`stretch ${at}: no named change button (ask on screen: ${ask0})`); await p.close(); continue }
+      await b26.click(); await p.waitForTimeout(300); const b2=await p.$(BID); if(b2&&!(await b2.isDisabled()))await b2.click(); await p.waitForTimeout(200);
+      const pend=await p.evaluate(()=>{ const sd=live.userIsHome?'home':'away'; return (live.pm||[]).filter(x=>x[1]===sd&&x[2]==='act:s3').length });
+      await p.evaluate(()=>{ live.paused=false; if(!live.ask)liveTick() });
+      for(let i=0;i<4000;i++){ const st=await p.evaluate((at)=>{ if(live.ask){ answerLive(live.ask.dp.opts[0][0]); return 'ask' } if(live.drives.length>at)return 'done'; return 'go' },at); if(st==='done')break; await p.waitForTimeout(50) }
+      const R=await p.evaluate(()=>{ const sd=live.userIsHome?'home':'away'; return {left:live.eng.subsLeft(sd), chg:!!live.eng.S[sd].chg[3], n:live.drives.length} });
+      chk(pend===1&&R.left===before-1&&R.chg, `two taps on a named change at stretch ${at}${ask0?' (a call on screen)':''}: ${pend} called, ${before} left before and ${R.left} after, midfield changed: ${R.chg} (${R.n} stretches played)`);
+      await p.close(); continue }
     const btn=await p.$('#ms-1'); if(!btn){ chk(false,`stretch ${at}: no change button (ask on screen: ${ask0})`); await p.close(); continue }
     await btn.click(); await p.waitForTimeout(300); await (await p.$('#ms-1')).click(); await p.waitForTimeout(200);
     const left0=await p.evaluate(()=>liveSubsLeft());
