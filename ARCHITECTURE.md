@@ -556,6 +556,26 @@ Round 112, from the November 26 design review (merged from review-improvements; 
   answer plays it: foul (the old loop, the assistant's) or play it out (one possession each). Nothing is drawn while it
   waits, so the computer's games and an unasked game are as before.
 
+Round 112, integrating the review onto round 111 (merge 0bdef4d; the suite run in four legs, Nov 26-27):
+- Old seasons: four review changes moved lines or results of seasons begun before (bisected to 49623e9): football's and
+  basketball's bench lines, basketball's bbOff, football's pooch-punt range. Each is gated at ENGINE_V>=25;
+  engine-replay matches from d5adcd9 and from round 111 (c3bda9d).
+- Found by the suite: engine 26's summer (recentre26, attrRecentre26) read the league's level with your club in it, so
+  your recruiting board moved other programs' ratings by a point (75 of 130 rosters, test/recruiting.js). The level, the
+  top 1% and the positions are now read from the clubs no one coaches (humanTeams26, core 20_engine) and applied to all.
+- Found by the suite: a CPU deadline deal sent on the man Kansas City had just traded to Atlanta (test/trades.js).
+  Engine 26: a man traded with a coach this season isn't dealt on at the CPU deadline (98_trades_cpu).
+- Tests brought to engine 26: sc-subs-taps taps the named change (#ma-s3); polish reads the punt range at ENGINE_NOW;
+  nba-screens lets "video coordinator" stand (an NBA job); ot-wp's overtime seed is 31; skipfinish counts a close finish
+  already on screen when Skip is tapped as watched; full-order's cap is 30 minutes (a soccer match at Very fast runs
+  603 s). Loosened: bs-players judges the saves leader on two seasons' average (45 and 51 read; MLB's leaders reached
+  51-57 in 2015-18); regressions 37's baseball pair bound 0.08 with tonight's full context. Goldens and hotseat baselines
+  re-recorded for the two fixes (each matched on the build before them).
+- Open: longrun's hockey goals leader averages ~73 (six careers; band 45-72, NHL 44-69), the same at engine 25; MLB's
+  best HR season 77 once in 30 late seasons (record 73). Pro basketball's best record: 73+ wins in 10 of 150 seasons
+  (engine 24: 7, max 76; engine 26 max 82, an 82-0), from strength following results in-season (eloUpdate). full-order
+  sees no moments to check (want 0 in every game, as on round 111): vacuous. draft-labels as before.
+
 Round 110: the decision is the player's, and the game is trustworthy (engine 24; Ian's notes, Instinct and Muse, Nov 25).
 - Ian: "The player shouldn't be told which of these decisions is best." Before the game the plan card shows evidence, not
   the answer (planScoutHTML, core 99_app): for each plan, your roster's lean and the opponent's answer to it as league
