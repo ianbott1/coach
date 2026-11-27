@@ -420,26 +420,53 @@ const HL_SPORT=(function(){
     for(let s=0;s<2;s++){ const sd=s?"away":"home"; for(let u=0;u<3;u++)if(d.sub?d.sub[sd].indexOf(u)>=0:d.E[sd][u]-pv.E[sd][u]>12)return {t:"CHANGE: "+up(s)+", FRESH LEGS "+SP_UNITW[u].toUpperCase(),side:s} }
     if(pv.md&&d.md)for(let s=0;s<2;s++){ const sd=s?"away":"home", a=spMode(pv.md[sd]), b=spMode(d.md[sd]); if(a!==b&&SP_SAYS[b])return {t:SP_SAYS[b].replace("%s",up(s)).toUpperCase(),side:s} }
     return null }
+  const SP_VRUN=6.5;   // round 111: on real time, game time: an off-ball man shifts at up to 6.5 m a second (a team slides at a jog or a run, not at the ball's speed); the ball's men 1.55 times it (10 m/s), the keeper 0.7
   const SP_VMAX=1500;   // metres a stretch at most: 3 m a 500th of it (about a tenth of a second at Normal); it holds a man back only on a jump (5% of man-frames, 0.26 m behind on average; test/sc-motion.js)
+  /* round 111 (Ian: "jankiness in how the players move at times (stop and stutters) which makes it pretty unwatchable";
+     "Players should be able to dribble"): the ball moves at a pass's real speed and the man it reaches carries it on
+     toward his next pass in the time left (a dribble, up to 45% of the way, at running pace), so no touch eases the ball
+     and the shapes that follow it to a stop (they did at every touch: 18-28 stutters a man-minute measured). Speeds in
+     metres a second against the time the full match gives each touch (evPB.rt: a share of real time). */
+  const SP_V={pass:15,long:21,cross:18,corner:18,gk:22}, SP_DRIB=4.6;
+  function spMsF(d){ return evPB.span(d)*60000 }   // game time, a stretch's minutes: the speed setting only compresses the playback
+  function spDist(a,b){ return Math.hypot((b.x-a.x)*105,(b.y-a.y)*68) }
+  function spTravel(a,b,segMs){ const v=SP_V[a.k]||(a.lk?SP_V.long:SP_V.pass); return Math.max(150,Math.min(0.8*segMs,spDist(a,b)/v*1000+120)) }
+  // where the man who took touch i has carried it to when he plays it on (touch i's own spot for a move's first and last)
+  function spCarry(T,i,msF){ if(i<=0||i>=T.length-1)return {x:T[i].x,y:T[i].y}; const P=T[i], N=T[i+1], A=T[i-1], dd=spDist(P,N); if(dd<1)return {x:P.x,y:P.y};
+    const rem=Math.max(0,(P.f-A.f)*msF-spTravel(A,P,(P.f-A.f)*msF)), cd=Math.min(0.45*dd,SP_DRIB*rem/1000*0.8), w=cd/dd; return {x:hlLerp(P.x,N.x,w),y:hlLerp(P.y,N.y,w)} }
+  // the ball at f within a move: from the release point to the next touch at pass speed, then carried on
+  function spBall(T,k,f,msF){ const a=T[k], b=T[Math.min(T.length-1,k+1)], segMs=Math.max(1,(b.f-a.f)*msF), u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
+    const A=spCarry(T,k,msF), tf=b===a?1:spTravel({x:A.x,y:A.y,k:a.k,lk:a.lk},b,segMs)/segMs;
+    if(u<tf){ const q=u/tf, e=1-Math.pow(1-q,1.6); return {x:hlLerp(A.x,b.x,e),y:hlLerp(A.y,b.y,e),tr:q,A} }
+    const R=k+1<=T.length-1?spCarry(T,k+1,msF):{x:b.x,y:b.y}, y=Math.pow((u-tf)/Math.max(1e-6,1-tf),1.2); return {x:hlLerp(b.x,R.x,y),y:hlLerp(b.y,R.y,y),tr:1,A,carry:y} }
   function spDraw(x,W,H,d,f){
     const L=live, P=spPlan(L,d); spCtx=P.ctx||null; let mv=P.moves.find(m=>f>=m.f0&&f<=m.f1)||P.moves.filter(m=>m.f0<=f).pop()||P.moves[0]; if(!mv){ ambient(x,W,H); return }
     const T=mv.T; let k=0; while(k<T.length-2&&f>T[k+1].f)k++;
-    const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1;
+    const a=T[k], b=T[Math.min(T.length-1,k+1)], u=b.f>a.f?Math.max(0,Math.min(1,(f-a.f)/(b.f-a.f))):1, rt=SP2()&&evPB.rt, msF=spMsF(d);
     // the ball travels in the first part of the interval, then the man it reached carries it a little
-    const LOFT={long:0.05,cross:0.035,corner:0.035,gk:0.06}, lf=LOFT[a.k]||(a.lk?0.05:0), tr=Math.min(1,u/0.62), e=lf?tr:hlEase(tr), bx=hlLerp(a.x,b.x,e), by=hlLerp(a.y,b.y,e);
+    const LOFT={long:0.05,cross:0.035,corner:0.035,gk:0.06}, lf=LOFT[a.k]||(a.lk?0.05:0), B0=rt?spBall(T,k,f,msF):null, tr=rt?B0.tr:Math.min(1,u/0.62), e=lf?tr:hlEase(tr), bx=rt?B0.x:hlLerp(a.x,b.x,e), by=rt?B0.y:hlLerp(a.y,b.y,e);
     const z=lf&&tr<1?Math.sin(Math.PI*tr)*lf:0;
     const g=L.g, h2=d.seg>=9, toS=(X,Y)=>{ const sx=h2?1-X:X, sy=h2?1-Y:Y; return [W*PAD+sx*W*(1-2*PAD), H*PAD+sy*H*(1-2*PAD)] };
     // each side's shape, a moment behind the ball (players take a moment to react); the man on it, and the man it's going to
-    const lagS=(fq)=>{ let mm=P.moves.find(m=>fq>=m.f0&&fq<=m.f1)||mv, TT=mm.T, kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++; const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.62));
+    const lagS=(fq)=>{ let mm=P.moves.find(m=>fq>=m.f0&&fq<=m.f1)||mv, TT=mm.T, kk=0; while(kk<TT.length-2&&fq>TT[kk+1].f)kk++;
+      if(rt){ const q=spBall(TT,kk,fq,msF); return spShape(q.x,q.y,mm.side===0) }   // round 111: the shape follows the ball as it really moves
+      const A=TT[kk], B=TT[Math.min(TT.length-1,kk+1)], uu=B.f>A.f?Math.max(0,Math.min(1,(fq-A.f)/(B.f-A.f))):1, tt=hlEase(Math.min(1,uu/0.62));
       return spShape(hlLerp(A.x,B.x,tt),hlLerp(A.y,B.y,tt),mm.side===0) };
-    const sh=[[],[]]; const dq=SP2()?[0,0.003,0.006,0.009,0.012,0.015,0.018,0.021,0.024,0.027]:[0,0.006,0.012,0.018]; dq.forEach((dt,q)=>{ const w=SP2()?1:4-q, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sh[s][i])sh[s][i]=[0,0,0]; sh[s][i][0]+=p[0]*w; sh[s][i][1]+=p[1]*w; sh[s][i][2]+=w })) });
+    // round 111: on real time, the shape a moment behind the ball by time (the last second; two seconds read 0.61 m behind on average but 8.3 stutters a man-minute against 5.9), not by a share of the stretch
+    const sh=[[],[]]; const dq=rt?[0,1,2,3,4,5,6,7,8,9].map(q=>q*110/msF):SP2()?[0,0.003,0.006,0.009,0.012,0.015,0.018,0.021,0.024,0.027]:[0,0.006,0.012,0.018]; dq.forEach((dt,q)=>{ const w=SP2()?1:4-q, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sh[s][i])sh[s][i]=[0,0,0]; sh[s][i][0]+=p[0]*w; sh[s][i][1]+=p[1]*w; sh[s][i][2]+=w })) });
     let pos=[0,1].map(s=>sh[s].map(o=>[o[0]/o[2],o[1]/o[2]]));
+    // round 111: in real time nobody stands still: each outfield man drifts round his place on the game's clock (about 1 m/s; a frozen frame is still)
+    if(rt){ const gs=(d.seg*5+f*5)*60; pos=pos.map((A,s)=>A.map((q,i)=>i===0?q:[q[0]+Math.sin(gs*0.5+i*2.3+s*1.1)*0.016,q[1]+Math.sin(gs*0.65+i*1.9+s*0.6)*0.026])) }
     // round 108: tired legs are slow to get back into shape: a tired unit's men follow the play from further behind
     if(SP2()&&P.ctx&&P.ctx.E){ const tq=[0,1].map(s=>[0,1,2].map(u=>spTired(P.ctx,s,u)));
       if(tq.some(a=>a.some(v=>v>0.05))){ const sl=[[],[]]; [0.02,0.026,0.032,0.038,0.044,0.05,0.056].forEach((dt,q)=>{ const w=1, S=lagS(Math.max(0,f-dt)); [0,1].forEach(s=>S[s].forEach((p,i)=>{ if(!sl[s][i])sl[s][i]=[0,0,0]; sl[s][i][0]+=p[0]*w; sl[s][i][1]+=p[1]*w; sl[s][i][2]+=w })) });
         pos=pos.map((A,s)=>A.map((p,i)=>{ const u=SP_UNIT[i]==="GK"?-1:SP_UNIT[i]==="ST"?2:SP_UNIT[i]==="W"||SP_UNIT[i]==="CM"?1:0, t=u<0?0:tq[s][u]*0.85, o=sl[s][i]; return t?[hlLerp(p[0],o[0]/o[2],t),hlLerp(p[1],o[1]/o[2],t)]:p })) } }
-    const s=mv.side; if(u<0.62){ pos[s][a.s]=[hlLerp(pos[s][a.s][0],a.x,0.85*(1-tr)),hlLerp(pos[s][a.s][1],a.y,0.85*(1-tr))] }
-    { const wb=SP2()?0.95*hlEase(Math.min(1,u/0.62)):0.4+0.55*tr; pos[s][b.s]=[hlLerp(pos[s][b.s][0],b.x,wb),hlLerp(pos[s][b.s][1],b.y,wb)] }   // round 108: he moves to meet it from where he was (he jumped 40% of the way at each pass)
+    const s=mv.side;
+    if(rt){ // round 111: the passer at the spot he played it from, the man it reaches running onto it, then on it as he carries it
+      const A=B0.A; if(tr<1){ const wa=0.85*(1-tr); pos[s][a.s]=[hlLerp(pos[s][a.s][0],A.x,wa),hlLerp(pos[s][a.s][1],A.y,wa)] }
+      const wb=tr<1?0.95*hlEase(tr):1, tx=tr<1?b.x:bx-(b.s!=null&&s===0?0.006:-0.006), ty=tr<1?b.y:by; pos[s][b.s]=[hlLerp(pos[s][b.s][0],tx,wb),hlLerp(pos[s][b.s][1],ty,wb)] }
+    else { if(u<0.62){ pos[s][a.s]=[hlLerp(pos[s][a.s][0],a.x,0.85*(1-tr)),hlLerp(pos[s][a.s][1],a.y,0.85*(1-tr))] }
+    { const wb=SP2()?0.95*hlEase(Math.min(1,u/0.62)):0.4+0.55*tr; pos[s][b.s]=[hlLerp(pos[s][b.s][0],b.x,wb),hlLerp(pos[s][b.s][1],b.y,wb)] } }   // round 108: he moves to meet it from where he was (he jumped 40% of the way at each pass)
     if(k===T.length-2&&mv.m.by!=null&&mv.end!=="clip"&&tr>0.5){ const o=1-s; pos[o][mv.m.by]=[hlLerp(pos[o][mv.m.by][0],b.x,(tr-0.5)*1.6),hlLerp(pos[o][mv.m.by][1],b.y,(tr-0.5)*1.6)] }
     // round 108: off the ball the nearest man closes the ball down (two on a press), the next covers; on it a striker
     // runs in behind when the ball's in the middle third, a full back overlaps when it's wide in theirs
@@ -457,7 +484,7 @@ const HL_SPORT=(function(){
     // the ball is going to gets a little more. Seeking (a rewatch, a reload) starts afresh.
     if(SP2()){ const Q=spDraw.st, di=(L.drives||[]).indexOf(d); let df=-1;
       if(Q&&Q.d===d&&f>=Q.f)df=f-Q.f; else if(Q&&Q.di===di-1&&Q.f>0.97&&f<0.03&&d.seg!==9)df=f+1-Q.f;
-      let nCl=0, lagM=0; if(df>=0&&df<0.02){ const lim=SP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*105, dy=(q[1]-o[1])*68, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?2.2:1)*(i===0?0.7:1);
+      let nCl=0, lagM=0; if(df>=0&&df<0.02){ const lim=rt?SP_VRUN*df*msF/1000:SP_VMAX*df; pos=pos.map((A,si)=>A.map((q,i)=>{ const o=Q.pos[si][i], dx=(q[0]-o[0])*105, dy=(q[1]-o[1])*68, m=Math.hypot(dx,dy), L2=lim*(si===s&&(i===b.s||i===a.s)?(rt?1.55:2.2):1)*(i===0?0.7:1);
         if(m>L2&&m>0){ nCl++; lagM+=m-L2; return [o[0]+dx*L2/m/105,o[1]+dy*L2/m/68] } return q })) }
       spDraw.st={d,di,f,at:Date.now(),pos:pos.map(A=>A.map(q=>q.slice()))}; spDraw.cl={nCl,lagM} }
     spDraw.pos=pos; spDraw.dbg={mi:P.moves.indexOf(mv),k,as:a.s,bs:b.s,s:mv.side,tr,u,bx,by,cl:spDraw.cl};   // for test/sc-motion.js
@@ -486,7 +513,7 @@ const HL_SPORT=(function(){
     if(Date.now()-(spDraw.t||0)>500){ spDraw.t=Date.now(); try{ const els=document.querySelectorAll(".scstats"); if(els.length){ const di=(L.drives||[]).indexOf(d), h=spTallyHTML(spTally(L,di,d,f)); els.forEach(el=>el.innerHTML=h) } }catch(e){} }
   }
   /* round 101: the full match on a running clock (core hlEvPlan): five minutes a stretch, about twelve seconds of play */
-  const evPB={mode:"pb", t0:d=>d.seg*5, span:d=>5, ms:d=>(SP2()?40000:20000),   /* round 108: forty seconds a stretch at the base (Normal plays about 65s: a match in about twenty minutes, every pass at a pace you can follow; Ian: "I would watch full 90 minute matches in Football Manager") */   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
+  const evPB={mode:"pb", rt:true, t0:d=>d.seg*5, span:d=>5, ms:d=>(SP2()?40000:20000),   /* round 108: forty seconds a stretch at the base (Normal plays about 65s: a match in about twenty minutes, every pass at a pace you can follow; Ian: "I would watch full 90 minute matches in Football Manager") */   /* round 103: twenty seconds a stretch at Normal (was twelve), room for the touches */ clock:(d,f)=>Math.min(d.seg>=18?120:90,Math.max(1,Math.floor(d.seg*5+f*5)+1))+"'", skip:d=>!!d.ot};
   const NUM=[1,2,5,6,3,7,4,8,11,9,10];
   /* penalties and red cards: an open-play move first, played in the first part of the clip (pre), then the set piece */
   const openT=(c,t)=>Math.min(0.699,Math.max(0,t)*0.7/c.pre);
@@ -647,5 +674,12 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's minute
   const headClock=c=>c&&!c.so&&c.m!=null?c.m+"'":null;
-  return {reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, frameDbg:()=>frame.dbg||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
+  /* round 111: live player stats from the log, as far as the screen has shown: goals and shots */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
+    const one=(d,fl)=>{ if(!d||typeof d.seg!=="number"||d.so)return; let E=null; try{ E=hlEvPlan(L,d) }catch(e){ return } (E.clips||[]).forEach(c=>{ if(c.f>=fl||!c.who||!c.tm||c.kind==="red"||c.so)return; const key=c.tm+"|"+c.who, r=rows[key]=rows[key]||{tm:c.tm,nm:sur(c.who),g:0,s:0}; r.s++; if(c.kind==="goal")r.g++ }) };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,9));
+    const P=L.pb; if(P&&P.d&&!L.done)one(P.d,hlEvCurF(P.d));
+    return lsOut(rows,(a,b)=>b.g-a.g||b.s-a.s,r=>`${r.g?(r.g>1?r.g+" goals, ":"goal, "):""}${r.s} shot${r.s>1?"s":""}`) }
+  return {liveStats, reveal:0.85, ambient:true, aspect:0.62, clips, pitch, idle, frame, headClock, evPB, amb:(x,W,H,d,f)=>d&&f!=null&&d.seg!=null&&!d.ot?spDraw(x,W,H,d,f):ambient(x,W,H), playback:(L,d)=>hlEvPlayback(L,d), spPlan, spCounts, spShape, spCtxSet:c=>{ spCtx=c }, spDrawPos:()=>spDraw.pos||null, frameDbg:()=>frame.dbg||null, spDrawDbg:()=>spDraw.dbg, spXI, spTally, spTallyHTML};
 })();

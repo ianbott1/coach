@@ -156,7 +156,7 @@ const HL_SPORT=(function(){
     const sd=p[0], to=p[1], fta=p[2], ftm=p[3], tpa=p[4], tpm=p[5], fga2=p[6], fgm2=p[7], ob=p[8], late=p[9];
     const A=[], u=k=>pbSeed(d,i,k);
     let x3=tpa-tpm, x2=fga2-fgm2, k=0;
-    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; A.push({t:"miss",three:three,who:pickBy(three?W3:W2,u("s"+k)),reb:off?"off":"def",rb:pickBy(WRB,u("r"+k))}); k++ };
+    const miss=(off)=>{ const three=x3>0&&(x2<=0||u("m"+k)%2===0); if(three)x3--; else x2--; const who=pickBy(three?W3:W2,u("s"+k)); let rb=pickBy(WRB,u("r"+k)); if(off&&rb===who)rb=(rb+4)%5; A.push({t:"miss",three:three,who:who,reb:off?"off":"def",rb:rb}); k++ };   // round 111: not his own miss
     if(to&&!tpa&&!fga2&&!fta){ A.push({t:"to",who:pickBy(WTO,u("t")),st:pickBy(WST,u("st"))}); return A }
     for(let j=0;j<ob;j++)miss(true);
     if(tpm||fgm2){ const three=!!tpm; A.push({t:"make",three:three,who:pickBy(three?W3:W2,u("s"+k)),pts:three?3:2,and1:!three&&fta===1,ftm:ftm}); return A }
@@ -167,7 +167,11 @@ const HL_SPORT=(function(){
   function pbPlan(d){
     if(d._pb)return d._pb; const out=[]; let tot=0;
     (d.pl||[]).forEach((p,i)=>{ const acts=pbActs(d,i,p); let w=PB_W.base; acts.forEach(a=>{ w+=a.t==="to"?PB_W.to:a.t==="ft"?PB_W.ft:PB_W.att });
-      out.push({side:p[0],acts:acts,w:w,at:tot,pts:2*p[7]+3*p[5]+p[3]}); tot+=w });
+      // round 111 (Ian: "no transition play"): off a stop (a defensive board or a turnover), a side runs about two in three times (about 15% of trips, the NBA's share)
+      // when the trip ends in a shot from the floor: up the floor in about 3 s and straight at the rim, no half-court set
+      const pv=out[out.length-1], pe=pv&&pv.acts[pv.acts.length-1], stop=pe&&pv.side!==p[0]&&(pe.t==="to"||pe.t==="miss"&&pe.reb==="def"), a0=acts[0];
+      const trans=BB_RT&&!!stop&&a0&&(a0.t==="make"||a0.t==="miss")&&!a0.three&&pbSeed(d,i,"tr")%100<65; if(trans)w*=0.5;
+      out.push({side:p[0],acts:acts,w:w,at:tot,pts:2*p[7]+3*p[5]+p[3],trans}); tot+=w });
     return d._pb={P:out,tot:tot} }
   /* the men the screen showed scoring in a stretch it played back: [side 0/1, kind 3 / 2 / 1 (a free throw), roster slot],
      kept with the game so the box score credits them (teamLines) */
@@ -178,8 +182,19 @@ const HL_SPORT=(function(){
       else if(a.t==="ft"){ for(let z=0;z<a.m;z++)out.push([q.side,1,sl]) } }));
     return out }
   /* how long the stretch takes on screen (ms), or 0 where there's nothing to play back */
+  /* round 111 (Ian: "basketball is very fast ... Slow should be real time"): the full match in real time on Slow, half
+     of it on Normal (fullRT); a possession takes its share of the stretch's minutes, in game seconds (pbTimes) */
+  const BB_RT=true, BB_VRUN=7.5;
+  function spanOf(d){ return d.seg>=8?5:BB.quarters?6:5 }
   function playback(L,d){ if(!d||!Array.isArray(d.pl)||!d.pl.length)return 0;
+    if(BB_RT&&typeof fullRT==="function")return Math.round(spanOf(d)*60000*fullRT());
     const sp=typeof speedMult==="function"?speedMult():1; return Math.round(pbPlan(d).tot*700/Math.pow(Math.max(0.25,sp),0.75)) }
+  /* a possession's phases in game seconds: up the floor (about 5 s, less when short), the acts at their real lengths (a
+     shot's gather, flight and board about 2.6 s, a trip to the line 3 s a shot, a turnover 2 s), and the ball worked round
+     the floor in what's left, a pass every 2.4 s or so */
+  function pbTimes(G,acts,trans){ const per=a=>a.t==="ft"?3*a.n:a.t==="to"?2:2.6; let TA=acts.reduce((s,a)=>s+per(a),0), TB=trans?Math.max(0.3*G,G-TA):Math.min(5,0.3*G);
+    if(TB+TA>0.92*G&&!trans){ const k=0.92*G/(TB+TA); TB*=k; TA*=k } if(trans)return {tb:TB/G, tw:TB/G, np:1};
+    const TW=Math.max(0,G-TB-TA); return {tb:TB/G, tw:(TB+TW)/G, np:Math.max(1,Math.min(7,Math.round(TW/2.4)))} }
   // the clock at a fraction of a stretch (the full stretch, unclamped)
   const clockAt=(s,f)=>{ f=Math.max(0,Math.min(1,f)); const mm=x=>{ const t=Math.max(0,Math.round(x*60)), m=Math.floor(t/60), sec=t%60; return m+":"+(sec<10?"0":"")+sec };
     if(s>=8)return "OT"+(s-7>1?(s-7):"")+" "+mm(5*(1-f));
@@ -206,10 +221,11 @@ const HL_SPORT=(function(){
     const NM=pbDraw._n=pbDraw._n&&pbDraw._n.d===d?pbDraw._n:{d:d,home:hlNamed(g.home,onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"",bbOff(d,"home",g.home))),away:hlNamed(g.away,onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"",bbOff(d,"away",g.away)))};
     const an=home?NM.home:NM.away, dn=home?NM.away:NM.home;
     // phases: bring it up (to tb), work it round (to tw), then the possession's acts share the rest
-    const tb=0.22, tw=0.42, acts=cur.acts, na=acts.length;
+    const acts=cur.acts, na=acts.length, G=cur.w/plan.tot*spanOf(d)*60, gs=(d.seg*spanOf(d)+f*spanOf(d))*60, PT=BB_RT?pbTimes(G,acts,cur.trans):null, tb=PT?PT.tb:0.22, tw=PT?PT.tw:0.42;
     const seed=pbSeed(d,pi,"p"), rr=mulberry32(seed>>>0);
-    const passes=[]; { let h=0; const n=1+Math.floor(rr()*3); for(let k=0;k<n;k++){ let q=Math.floor(rr()*5); if(q===h)q=(q+1)%5; passes.push(q); h=q } }
-    const sway=(i)=>[Math.sin(Date.now()/700+i*1.7)*0.01,Math.cos(Date.now()/830+i*2.3)*0.016];
+    const passes=[]; { let h=0; const n=PT?PT.np:1+Math.floor(rr()*3); for(let k=0;k<n;k++){ let q=Math.floor(rr()*5); if(q===h)q=(q+1)%5; passes.push(q); h=q } }
+    const clkS=BB_RT?gs:Date.now()/1000;   // round 111: the men's drift on the game's clock (a frozen frame is still)
+    const sway=(i)=>[Math.sin(clkS*1000/700+i*1.7)*0.01,Math.cos(clkS*1000/830+i*2.3)*0.016];
     // the set they run: five out, four out and one in, horns, a post-up (from the possession's own hash; a side that
     // lives on threes spreads the floor more often)
     const SETS=[ATT,[[0.66,0.5],[0.8,0.06],[0.8,0.94],[0.72,0.2],[0.72,0.8]],[[0.64,0.5],[0.79,0.1],[0.79,0.9],[0.8,0.39],[0.8,0.61]],[[0.66,0.5],[0.78,0.12],[0.76,0.86],[0.84,0.7],[0.9,0.38]]];
@@ -217,7 +233,7 @@ const HL_SPORT=(function(){
     const setW=offK==="threes"?[20,45,15,20]:offK==="paint"?[25,10,25,40]:offK==="pnr"?[30,15,40,15]:[34,22,22,22];
     const SET=SETS[pickBy(setW,seed)];
     // off the ball: men cut and relocate through the half-court (a slow figure of eight round their spot)
-    const cutT=Date.now()/1000;
+    const cutT=clkS;
     let att=SET.map((p,i)=>{ const s=sway(i), cx=Math.sin(cutT*0.9+i*2.1+seed%7)*0.035, cy=Math.sin(cutT*1.8+i*1.3)*0.05; return [Math.min(0.95,p[0]+s[0]+cx),Math.max(0.03,Math.min(0.97,p[1]+s[1]+cy))] }), ball, held=true, lift=0, top="", end="", endInk=null;
     const defOf=(A,bi)=>A.map(([a,y],i)=>{ const dd=i===bi?0.3:0.22; return [hlLerp(a,RIM[0],dd),hlLerp(y,RIM[1],dd)] });
     const SH3=[[0.92,0.035],[0.77,0.14],[0.69,0.5],[0.77,0.86],[0.92,0.965]];
@@ -228,11 +244,13 @@ const HL_SPORT=(function(){
     if(u<tb){ // bring it up: from the other end, the defence getting back
       const e=hlEase(u/tb), mir=p=>[1-p[0],1-p[1]];
       att=att.map((p,i)=>{ const m=mir(defOf(ATT,-1)[i]); return [hlLerp(m[0],p[0],e),hlLerp(m[1],p[1],e)] });
-      def=defOf(att,0).map((p,i)=>{ const m=mir(ATT[i]); return [hlLerp(m[0],p[0],e),hlLerp(m[1],p[1],e)] });
-      ball=[att[0][0]-0.015,att[0][1]]; top=`${clk} · ${aT} bring it up`;
+      const ed=cur.trans?Math.pow(e,1.6):e;   // on the break the defence trails the ball up the floor
+      def=defOf(att,0).map((p,i)=>{ const m=mir(ATT[i]); return [hlLerp(m[0],p[0],ed),hlLerp(m[1],p[1],ed)] });
+      ball=[att[0][0]-0.015,att[0][1]]; top=cur.trans?`${clk} · ${aT} on the break`:`${clk} · ${aT} bring it up`;
     }else if(u<tw){ // the ball round the floor
       const v=(u-tb)/(tw-tb)*passes.length, k=Math.min(passes.length-1,Math.floor(v)), ph=v-k, from=k?passes[k-1]:0, to=passes[k];
-      if(ph<0.35){ const e=hlEase(ph/0.35), a=att[from], b=att[to]; ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)]; held=false; holder=-1 }
+      const pS=PT?(tw-tb)*G/passes.length:1, fl=PT?Math.min(0.6,Math.max(0.35,Math.hypot((att[to][0]-att[from][0])*28,(att[to][1]-att[from][1])*15)/11+0.1)/pS):0.35;
+      if(ph<fl){ const e=PT?ph/fl:hlEase(ph/fl), a=att[from], b=att[to]; ball=[hlLerp(a[0],b[0],e),hlLerp(a[1],b[1],e)]; held=false; holder=-1 }
       else { holder=to; ball=[att[to][0]-0.012,att[to][1]] }
       def=defOf(att,holder); top=`${clk} · ${aT} ball`;
     }else{ // the acts: shots, boards, the turnover, free throws
@@ -268,11 +286,11 @@ const HL_SPORT=(function(){
     if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=pbDraw.st, ab=p=>home?p:[1-p[0],1-p[1]], sA=home?0:1, sD=1-sA;
       const cur={}; att.forEach((p,i)=>cur[sA+"|"+i]=ab(p)); def.forEach((p,i)=>cur[sD+"|"+i]=ab(p));
       const dt=Q&&Q.d===d?el-Q.el:-1;
-      let lagM=0, nCl=0; if(dt>=0&&dt<400){ const lim=BB_VMAX*dt/Math.max(1,PB.ms)*plan.tot; Object.keys(cur).forEach(k=>{ const o=Q.pos[k]; if(!o)return; const q=cur[k], dx=(q[0]-o[0])*28, dy=(q[1]-o[1])*15, m=Math.hypot(dx,dy), L2=lim*28;
+      let lagM=0, nCl=0; if(dt>=0&&dt<400){ const lim=BB_RT?BB_VRUN*dt/Math.max(1,PB.ms)*spanOf(d)*60/28:BB_VMAX*dt/Math.max(1,PB.ms)*plan.tot; Object.keys(cur).forEach(k=>{ const o=Q.pos[k]; if(!o)return; const q=cur[k], dx=(q[0]-o[0])*28, dy=(q[1]-o[1])*15, m=Math.hypot(dx,dy), L2=lim*28;
         if(m>L2&&m>0){ cur[k]=[o[0]+dx*L2/m/28,o[1]+dy*L2/m/15]; nCl++; lagM+=m-L2 } });
         const back=p=>home?p:[1-p[0],1-p[1]]; att=att.map((p,i)=>back(cur[sA+"|"+i])); def=def.map((p,i)=>back(cur[sD+"|"+i]));
         if(held&&holder>=0&&att[holder])ball=[att[holder][0]-0.012,att[holder][1]] }
-      pbDraw.st={d,el,pos:cur}; pbDraw.pos={att:att.map(ab),def:def.map(ab),sA,ball:ab(ball),held,holder,nCl:typeof nCl==='number'?nCl:0,lagM:typeof lagM==='number'?lagM:0,upf:plan.tot/Math.max(1,PB.ms)} }
+      pbDraw.st={d,el,pos:cur}; pbDraw.pos={att:att.map(ab),def:def.map(ab),sA,ball:ab(ball),held,holder,nCl:typeof nCl==='number'?nCl:0,lagM:typeof lagM==='number'?lagM:0,upf:BB_RT?BB_VRUN*spanOf(d)*60/Math.max(1,PB.ms)/(BB_VMAX*28):plan.tot/Math.max(1,PB.ms)} }
     const ink=kits[home?0:1].fill, dink=kits[home?1:0].fill;
     const scr=att.map(p=>P(W,H,c,p[0],p[1])), crowd=(px,py)=>scr.some(q=>Math.abs(q[0]-px)<r*5&&Math.abs(q[1]-py)<r*2.6);
     def.forEach((p,i)=>{ const [px,py]=P(W,H,c,p[0],p[1]), q=dn[i]; hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",q?{num:q[0],sub:crowd(px,py)?"":q[1]}:null) });
@@ -284,6 +302,11 @@ const HL_SPORT=(function(){
     hlTicker(x,W,H,top,8.01);   // top right: the score bug has the left
     if(end){ const key=pi+"|"+end; if(pbDraw._b!==key){ pbDraw._b=key; pbDraw._b0=Date.now() } hlBanner(x,W,H,end,endInk&&endInk!=="#fff"?{fill:endInk}:null,Math.max(0,(Date.now()-pbDraw._b0)/1200)) }
     pbPatch(hs,as,clk);
+    // round 111 (Ian: a play by play in every sport, synced): each trip once it's over, by name
+    if(typeof hlFeedTick==="function")hlFeedTick(()=>{ const out=[]; plan.P.forEach((q2,j)=>{ if(q2.at+q2.w>T)return; const hm=q2.side===0, A=hm?NM.home:NM.away, Dn=hm?NM.away:NM.home, tm=hm?g.home:g.away, ot=hm?g.away:g.home, nm=k=>surname(A[k])||tm, dm=k=>surname(Dn[k])||ot;
+      const bits=q2.acts.map(a=>a.t==="to"?`${nm(a.who)} turns it over, ${dm(a.st)} with the steal`:a.t==="ft"?`${nm(a.who)} ${a.m} of ${a.n} at the line`:a.t==="make"?(a.three?`${nm(a.who)} from three`:a.and1?`${nm(a.who)} scores and one`:`${nm(a.who)} scores`)
+        :`${nm(a.who)} misses${a.three?" from three":""}, ${a.reb==="off"?nm(a.rb)+" offensive board":dm(a.rb)+" rebound"}`);
+      if(!bits.length)return; out.push({k:d.seg+"|b"+j,m:clockAt(d.seg,(q2.at+q2.w)/plan.tot),team:tm,text:(q2.trans?"On the break: ":"")+bits.join("; "),big:q2.acts.some(a=>a.t==="make"&&a.three)?"three":null}) }); return out });
     // the crowd, once a basket: your side's three, or a basket that takes the lead
     { const L0=pbDraw._sc; pbDraw._sc={d:d,h:hs,a:as};
       if(L0&&L0.d===d&&(hs!==L0.h||as!==L0.a)&&typeof sfx==="function"){ const meH=live.userIsHome, mineUp=meH?hs-L0.h:as-L0.a, my=meH?hs:as, th=meH?as:hs, was=meH?L0.h-L0.a:L0.a-L0.h;
@@ -313,5 +336,16 @@ const HL_SPORT=(function(){
   }
   // round 72: the header's clock while a clip plays: the clip's stretch, as the court shows it
   const headClock=c=>c?(c.last?"Last shot":c.m||null):null;
-  return {drawPos:()=>pbDraw.pos||null, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, allLabel:"Every big basket", fullLabel:"Full game", goalsLabel:"Crunch time"};
+  /* round 111: live player stats from the log, as far as the screen has shown: points, boards, steals, threes */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  function liveStats(L){ const g=L.g, rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
+    const add=(tm,sl,k,v)=>{ if(sl==null||sl<0)return; const key=tm+"|"+sl, R=(SEA.roster&&SEA.roster[tm])||[]; (rows[key]=rows[key]||{tm,nm:sur(R[sl]&&R[sl].n),pts:0,reb:0,stl:0,tpm:0})[k]+=v };
+    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+      plan.P.forEach(q=>{ if(Tl!=null&&q.at+q.w>Tl)return; const A=q.side, tA=A?g.away:g.home, tD=A?g.home:g.away, fa=five[A], fd=five[1-A];
+        q.acts.forEach(a=>{ if(a.t==="make"){ add(tA,fa[a.who],"pts",a.pts+(a.and1&&a.ftm?1:0)); if(a.three)add(tA,fa[a.who],"tpm",1) } else if(a.t==="ft")add(tA,fa[a.who],"pts",a.m);
+          else if(a.t==="miss"){ if(a.reb==="off")add(tA,fa[a.rb],"reb",1); else add(tD,fd[a.rb],"reb",1) } else if(a.t==="to")add(tD,fd[a.st],"stl",1) }) }) };
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>one(d,null));
+    const P=L.pb; if(P&&P.d&&!L.done&&Array.isArray(P.d.pl)){ const el=P.frozen!=null?P.frozen:Date.now()-P.at; one(P.d,Math.min(1,el/Math.max(1,P.ms))*pbPlan(P.d).tot) }
+    return lsOut(rows,(a,b)=>b.pts-a.pts||b.reb-a.reb,r=>r.pts||r.reb||r.stl?`${r.pts} pts, ${r.reb} reb${r.stl?", "+r.stl+" stl":""}${r.tpm?", "+r.tpm+" 3PM":""}`:"") }
+  return {liveStats, drawPos:()=>pbDraw.pos||null, pbSpan:spanOf, pbPlan, reveal:0.86, collapseIdle:true, ambient:true, leadIn:true, fullMs:13000, playback, namesOf, aspect:0.54, clips, pitch, idle, frame, headClock, allLabel:"Every big basket", fullLabel:"Full game", goalsLabel:"Crunch time"};
 })();

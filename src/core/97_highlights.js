@@ -13,7 +13,7 @@ function hlCan(){
   return true }
 /* the pitch box in the live view: a place for the canvas, which moves in after each redraw (the redraw replaces the
    page; the canvas, and a clip half played, carry on) */
-function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; return `<div id="hlpitch" class="hlpitch" aria-label="Highlights"></div>` }
+function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; const big=hlMode()==="full"&&typeof live!=="undefined"&&live&&!live.done; return `<div id="hlpitch" class="hlpitch${big?" big":""}" aria-label="Highlights"></div>` }   // round 111 (Ian: "a bigger field"): the full match breaks out of the page's column
 function hlMount(){
   if(!hlCan())return; const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return;
   if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
@@ -23,14 +23,16 @@ function hlMount(){
   if(HL.leg){ if(HL.leg.parentNode!==box){ try{ box.appendChild(HL.leg) }catch(e){} } HL.leg.innerHTML=HL.cur&&HL.cur.legend?hlLegendHTML(HL.cur.legend):""; HL.leg.style.display=HL.cur&&HL.cur.legend?"":"none" }
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
   // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
-  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
+  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur||(HL_SPORT.ambient&&hlMode()==="full")?"none":"" }   // round 111 (Grokbot: "a dim second field renders under the live one" after a switch to Full match): the full match keeps its own field up between drives, so the drive chart's stays hidden
   if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
   else if(HL_SPORT.collapseIdle)box.style.display=""
   // round 102: the whole surface above the action bar on a laptop (at 1280x800 the bar hid a quarter of baseball's field,
   // home plate and the batter, and soccer's near touchline): a surface too tall for the room left is drawn narrower, centred
   let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
-  try{ const bar=document.querySelector(".actionbar"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-top-6;
-    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
+  try{ const bar=document.querySelector(".actionbar"), big=box.classList&&box.classList.contains("big"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-(big?10:top)-6;
+    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect));
+    // round 111: the full match's surface as big as the window allows (its own bug carries the score and the clock); the page scrolls to it once a game, and again after each call (the call screen reflows the page: the field sat 34 px under the bar after one)
+    if(big&&HL.bigFor!==live&&top>8&&(live.pb||HL.cur)){ HL.bigFor=live; try{ window.scrollTo(0,Math.max(0,top-6)) }catch(e){} } }catch(e){}
   const H=Math.round(W*HL_SPORT.aspect);
   if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
   if(!HL.cur)hlDraw(null,0);
@@ -75,7 +77,7 @@ function hlPlay(L,drive){
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
-  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)) });
+  clips.forEach(c=>{ c.dur=c.rtS&&hlMode()==="full"&&typeof fullRT==="function"?Math.round(c.rtS*1000*fullRT()):Math.round(c.base*Math.min(1.6,k)) });   // round 111: a clip that knows its real seconds (football's drives) runs them on the full match's pace
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
@@ -159,12 +161,19 @@ function hlDraw(c,t){
    share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
    goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
    HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
+/* round 111 (Ian: "At slow full match the match should basically take as long as it would take to watch the match in
+   real time - for example, 90 minutes for a soccer game"; "Normal should feel like typical viewing pace"): a sport that
+   plays at real speeds (evPB.rt) runs the play between moments as a share of real time: Slow 1, Normal 1/2, Fast 1/4,
+   Very fast 1/10 (soccer measured 19 wall seconds a game minute on Slow, 14 on Normal). The moments keep their length. */
+const FULL_RT={slow:1,normal:0.5,fast:0.25,rapid:0.1};
+function fullRT(){ return FULL_RT[(typeof S!=="undefined"&&S&&S.watchSpeed)||"normal"]||0.5 }
+function hlEvAmb(d){ const E=HL_SPORT.evPB, sp=typeof speedMult==="function"?speedMult():1; return E.rt?E.span(d)*60000*fullRT():E.ms(d)/Math.pow(Math.max(0.25,sp),0.75) }
 function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,S.mode||"all")||[] }catch(e){}
   const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
   clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
   clips.sort((a,b)=>a.f-b.f);
   for(let i=1;i<clips.length;i++)if(clips[i].f<clips[i-1].f+0.04)clips[i].f=Math.min(0.985,clips[i-1].f+0.04);   // round 103: two in one minute, a moment apart (no play squeezed to nothing between them)
-  const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
+  const amb=hlEvAmb(d), seg=[]; let pf=0, at=0;
   clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
   const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
   return d._ev={seg:seg,tot:at,clips:clips} }
@@ -186,6 +195,7 @@ function hlEvDraw(x,W,H){
   P.seg.slice(0,i).forEach(z=>{ if(z.k==="clip")goal(z.c) });
   let clock;
   if(q.k==="clip"){ const t=Math.min(1,(el-q.at)/Math.max(1,q.ms)), rv=q.c.reveal!=null?q.c.reveal:HL_SPORT.reveal;
+    if(rv!=null&&t>=rv&&HL_SPORT.feedClips&&q.c.text&&typeof hlFeedTick==="function"){ const c0=q.c; hlFeedTick(()=>[{k:"c|"+d.seg+"|"+c0.f, m:S.clock(d,c0.f), team:c0.tm||"", text:c0.text, big:c0.kind==="goal"?"goal":null}]) }   // round 111: the clip's line in the play by play
     if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
     clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
@@ -368,6 +378,7 @@ function hlInks(home,away){
    second. Kept with the game on screen (live.feed). */
 let hlFeedT=0;
 function hlFeedTick(get){
+  if(typeof live!=="undefined"&&live&&Date.now()-hlStatT>1000){ hlStatT=Date.now(); try{ const el=document.getElementById("lstats"); if(el){ const h=hlStatRows(); if(h!==el.innerHTML)el.innerHTML=h } }catch(e){} }
   if(typeof live==="undefined"||!live||Date.now()-hlFeedT<250)return; hlFeedT=Date.now();
   let lines=[]; try{ lines=get()||[] }catch(e){ return }
   const F=live.feed=live.feed||[], seen=live.feedK=live.feedK||{}; let added=false;
@@ -375,8 +386,19 @@ function hlFeedTick(get){
   if(added){ try{ const el=document.getElementById("pbp"); if(el)el.innerHTML=hlFeedRows() }catch(e){} } }
 const PBP_SHOW=9;
 function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
-  if(!F.length)return `<div class="pbpe">Kick-off: the play by play follows the ball.</div>`;
-  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}'</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
-function hlFeedHTML(){ if(typeof pbOn!=="function"||!pbOn()||typeof live==="undefined"||!live)return "";
+  if(!F.length)return `<div class="pbpe">The play by play follows the action.</div>`;
+  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}${typeof x.m==="number"?"'":""}</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+/* ---- round 111: live player stats (Ian: "live player stats") ----
+   The game's own men, counted from the engine's log up to the point the screen has shown (HL_SPORT.liveStats: per
+   side, its men's lines, best first); patched in place with the play by play, about once a second. */
+let hlStatT=0;
+function hlEvCurF(d){ try{ const P=live.pb; if(!P||P.d!==d)return 1; const E=hlEvPlan(live,d), el=P.frozen!=null?P.frozen:Date.now()-P.at; let i=E.seg.findIndex(q=>el<q.at+q.ms+(q.k==="clip"?250:0)); if(i<0)return 1; const q=E.seg[i];
+  return q.k==="clip"?q.f-0.0001:q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)) }catch(e){ return 1 } }
+function hlStatRows(){ if(typeof live==="undefined"||!live||typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return "";
+  let T=null; try{ T=HL_SPORT.liveStats(live) }catch(e){ return "" } if(!T)return "";
+  const g=live.g, my=typeof S!=="undefined"?S.myTeam:null, n=typeof S!=="undefined"&&S.pbpOpen?8:4;
+  return [g.away,g.home].map(tm=>{ const R=(T[tm]||[]).slice(0,n); return `<div class="lsteam ${tm===my?"mine":""}"><b>${esc(tm)}</b>${R.length?R.map(r=>`<span class="lsrow"><i>${esc(r.nm)}</i> ${esc(r.line)}</span>`).join(""):`<span class="lsrow">&mdash;</span>`}</div>` }).join("") }
+function hlStatHTML(){ if(typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return ""; return `<div class="grouphead">Player stats, so far</div><div class="lstats" id="lstats">${hlStatRows()}</div>` }
+function hlFeedHTML(){ if(typeof live==="undefined"||!live||!((typeof pbOn==="function"&&pbOn())||(typeof hlMode==="function"&&hlMode()==="full"&&typeof hlCan==="function"&&hlCan())))return "";   // round 111: every sport's full match (football's drives aren't a playback)
   // round 108: the pitch tells it; the feed is one line, the latest, unless you open it (Ian: "I'm not sure how necessary the text is")
-  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }
+  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>${hlStatHTML()}` }

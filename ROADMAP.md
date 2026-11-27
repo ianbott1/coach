@@ -37,7 +37,14 @@ advice varied for a given roster (averaged over clubs, 56-75% "usual plan" hid r
   field (soccer's shape, hockey's log matching your system), pro basketball scoring (135-141; aim 110-118, 35-40 threes),
   soccer's odds too even, college basketball's schedule of mismatches.
 
-## Rounds 111-112: watching
+## Round 111 (built; see ARCHITECTURE.md): watching
+- Slow in real time (soccer, hockey, basketball on the game clock; baseball and football at real speed with shortened
+  waits), smooth soccer and hockey, baseball's plays as the log has them (bat, breaking balls, leads), basketball
+  transition, a play by play and live player stats in every sport, a bigger field, the run of play never ahead.
+- Moved to round 112: hockey's rink crowding one end, baseball's controls under the bar on a phone, Skip to next call
+  that skips, soccer's live stats beyond goals and shots.
+
+## Rounds 111-112: watching (the plan)
 - Pacing: Slow in real time (90 minutes a soccer match), Normal at a TV pace; basketball's Normal and Slow are far too
   fast. A bigger field. Player stats accumulating live (baseball's scoreboard stats as a batter comes up).
 - Movement: soccer and hockey smooth (no stops and stutters); hockey continuous, not restarting at centre; faceoffs at

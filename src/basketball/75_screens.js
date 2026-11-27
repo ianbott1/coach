@@ -183,9 +183,9 @@ function liveView(){
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   return `<div class="watchwrap">
     ${liveScoreboard()}
-    ${typeof hlBox==="function"?hlBox():""}
+    ${typeof hlBox==="function"?hlBox():""}${typeof hlFeedHTML==="function"?hlFeedHTML():""}
     <div class="grouphead">Run of play</div>
-    <div class="plays">${playsHTML(live.drives,my,g)||`<div class="empty">${owlMark(40)}<span>Tip-off at ${esc(venue)}&hellip;</span></div>`}</div>
+    <div class="plays">${playsHTML(liveShown(),my,g)||`<div class="empty">${owlMark(40)}<span>Tip-off at ${esc(venue)}&hellip;</span></div>`}</div>
     <div class="actionbar">
       <div class="wspeed">${SPEEDS.map(s=>`<button class="spbtn" data-speed="${s[0]}"
         aria-pressed="${(S.watchSpeed||"normal")===s[0]}">${s[2]}</button>`).join("")}</div>

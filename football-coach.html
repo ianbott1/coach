@@ -227,7 +227,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .linescore{overflow-x:auto;margin:10px 0 2px}.linescore table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px}
 .linescore th{text-align:left;font-weight:600;color:var(--bone);padding:2px 6px 2px 0;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
 .linescore td{text-align:center;padding:2px 3px;color:var(--muted);min-width:14px}.linescore td.b{color:var(--bone);font-weight:700}
-.hlpitch{margin:8px 0 6px}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
+.hlpitch{margin:8px 0 6px}.hlpitch.big{width:min(100vw,1240px);position:relative;left:50%;transform:translateX(-50%)}.hlcv{display:block;border-radius:4px;cursor:pointer;touch-action:manipulation}
 .wtop{margin:16px;padding:18px 16px;border:1px solid var(--vote);
  background:linear-gradient(180deg,rgba(139,159,232,.13),transparent)}
 .wtop.win{border-color:var(--turf);background:linear-gradient(180deg,rgba(70,181,131,.14),transparent)}
@@ -556,6 +556,7 @@ body{background:var(--ink);color:var(--bone);font-family:var(--body);
 .slotbk{top:auto;bottom:12px}
 .attnbtns{display:flex;flex-direction:column;gap:6px}
 /* round 108: the play by play */
+.lstats{margin:4px 16px 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13px;color:var(--muted)}.lsteam{display:flex;flex-direction:column;gap:3px}.lsteam b{color:var(--bone);font-weight:600;margin-bottom:2px}.lsteam.mine b{color:var(--sodium)}.lsrow i{font-style:normal;color:#E9ECF2}@media(max-width:480px){.lstats{grid-template-columns:1fr}}
 .pbp{margin:4px 16px 10px;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .pbpl{display:flex;gap:10px;padding:6px 10px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.35;color:var(--muted)}
 .pbpl:first-child{border-top:0}.pbpl b{color:var(--bone);font-weight:600}
@@ -1036,7 +1037,7 @@ details.audit{margin:12px 0 4px;text-align:left}details.audit>summary{cursor:poi
 }
 </style></head>
 <body><div id="app"></div>
-<script>const BUILD_ID="94c497e";
+<script>const BUILD_ID="1141dd4";
 /* ============ league: college football ============ */
 /* Everything that makes this game college football rather than some other
    league: who plays, how they are grouped, how long the season runs, where
@@ -5878,7 +5879,7 @@ const HL_SPORT=(function(){
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.tm} punt`, yds=Math.min(100,c.land)-c.los;
     const end=t>=tEnd?(c.tb?`PUNT, ${Math.min(99,yds)} yards: touchback`:c.fair?`PUNT, ${yds} yards: fair catch`:`PUNT, ${yds} yards: returned ${ret} yard${ret===1?"":"s"}`):null;
-    hlCaption(x,W,H,top,end,null) }
+    hlCaption(x,W,H,top,end,null); fbFeedEnd(c,end) }
   function kickFrame(x,W,H,c,t){
     const snap=0.15, kick=0.3, tEnd=c.reveal, r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
     const holder=[c.los-7,0.5], kicker=[c.los-9.5+Math.min(1,Math.max(0,(t-snap)/(kick-snap)))*2.3,0.47];
@@ -5910,7 +5911,7 @@ const HL_SPORT=(function(){
       x.beginPath(); x.ellipse(Math.max(X0+br,Math.min(X0+bw-br,bxI)),byI,br,br*0.7,0,0,Math.PI*2); x.fillStyle="#8A5428"; x.fill(); x.strokeStyle="#2a1406"; x.lineWidth=1; x.stroke(); x.restore() }
     const top=`${c.ot?"Overtime":"Q"+c.q} \u00b7 ${c.kicker?c.kicker+", ":""}${c.dist}-yard field goal try`;
     const end=t>=tEnd?(c.kind==="fg"?"IT'S GOOD!":"NO GOOD! Wide "+(c.wide*(c.home?-1:1)>0?"left":"right")):null;
-    hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null);
+    hlCaption(x,W,H,top,end,c.kind==="fg"?ink:null); fbFeedEnd(c,end);
   }
   /* ---- round 99 (Ian: "they should look like I showed up to watch the match"): in Full match every drive is played on
      the field, snap by snap, from where it started to where it ended (the spot its outcome clip starts from, or where it
@@ -6015,6 +6016,7 @@ const HL_SPORT=(function(){
     if(!P)return null;
     const nx=(next||[]).find(c=>c.kind==="downs"); if(nx&&P.left!=null&&P.left!==nx.togo){ nx.togo=P.left; nx.len=Math.min(nx.len,P.left-1) }   // (the engine's own fourth and N is what it left, unless the data can't get there)
     const c=Object.assign(B,{kind:"drive",plays:P.plays,start:P.start,end:P.end,left:P.left,forced:P.forced,conv:P.conv,base:Math.min(16500,Math.max(1,P.plays.length)*1100),reveal:0.999});
+    fbTimes(c);
     c.rec=record(B,P,next||[]); return c }
   const who=(c,pl)=>pl.alt?c.rb2nm||"#"+c.rb2n:c.onm&&c.onm[pl.rc]?c.onm[pl.rc]:(pl.rc===4?"tight end #":pl.rc===5?"slot receiver #":"#")+(c.offN?c.offN[pl.rc]:"");
   function playText(c,pl){ const g=pl.g, y=Math.abs(g)+" yard"+(Math.abs(g)===1?"":"s"), qb=c.onm&&c.onm[0]||"the quarterback";
@@ -6023,17 +6025,26 @@ const HL_SPORT=(function(){
       :pl.t==="pass"?(g>0?`${qb} to ${who(c,pl)}, ${y}`:g<0?`${qb} to ${who(c,pl)}, loss of ${y}`:`${qb} to ${who(c,pl)}, no gain`)
       :(g>0?`${who(c,pl)} runs for ${y}`:g<0?`${who(c,pl)} stopped for a loss of ${y}`:`${who(c,pl)}, no gain`);
     if(pl.fourth)s=`FOURTH DOWN, MADE! ${s}`; else if(pl.fd)s+=" · FIRST DOWN"; return s }
+  /* round 111 (Ian: "Slow should be real time"): each snap on real seconds: the men set and the snap (FB_PRE; the 25 to
+     40 seconds of a real huddle are the one thing not in real time), the play at real speed (a run about 2.5 s and a
+     second for every 7 yards, a pass about 3 s to the throw and a second for every 9 yards after, the incompletion 3.5 s),
+     then the whistle. The drive's clip runs the sum on the full match's pace (fullRT). */
+  const FB_PRE=4, FB_POST=1.2;
+  function fbPlayS(pl){ const g=Math.abs(pl.g||0); return pl.t==="pen"?2.4:pl.t==="run"?2.4+g/7:pl.t==="scr"?3.2+g/8:pl.t==="sack"?2.8:pl.t==="pass"?3+g/9:pl.t==="inc"?3.5:3 }
+  function fbTimes(c){ let at=0; c.pT=c.plays.map(pl=>{ const a=fbPlayS(pl), w=FB_PRE+a+FB_POST, o={at,w,snap:FB_PRE/w,done:(FB_PRE+a)/w}; at+=w; return o }); c.rtS=Math.max(1,at); c.pTot=at }
   function driveFrame(x,W,H,c,t){
     if(!c.plays.length)return;
-    const n=c.plays.length, f=Math.min(0.9999,t)*n, i=Math.floor(f), u=f-i, pl=c.plays[i], r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
-    const snap=0.18, done=0.84, s=Math.max(0,Math.min(1,(u-snap)/(done-snap))), e=hlEase(s), los=pl.from, gain=pl.g, tgt=los+gain, j=pl.rc==null?1:pl.rc, th=0.4;
+    let n=c.plays.length, f=Math.min(0.9999,t)*n, i=Math.floor(f), u=f-i;
+    if(c.pT){ const T=Math.min(0.9999,t)*c.pTot; i=c.pT.findIndex(q=>T<q.at+q.w); if(i<0)i=n-1; u=Math.max(0,Math.min(1,(T-c.pT[i].at)/c.pT[i].w)); f=i+u }
+    const pl=c.plays[i], r=Math.max(4.5,W/100), ink=c.inks[c.home?0:1], dink=c.inks[c.home?1:0];
+    const snap=c.pT?c.pT[i].snap:0.18, done=c.pT?c.pT[i].done:0.84, s=Math.max(0,Math.min(1,(u-snap)/(done-snap))), e=hlEase(s), los=pl.from, gain=pl.g, tgt=los+gain, j=pl.rc==null?1:pl.rc, th=0.4;
     { const a=P(W,H,c,los,0.02), b=P(W,H,c,los,0.98), g1=P(W,H,c,Math.min(100,los+pl.togo),0.02), g2=P(W,H,c,Math.min(100,los+pl.togo),0.98); x.save(); x.lineWidth=Math.max(2,W/260);
       x.strokeStyle="rgba(80,150,255,.85)"; x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); if(los+pl.togo<100){ x.strokeStyle="rgba(242,210,75,.9)"; x.beginPath(); x.moveTo(g1[0],g1[1]); x.lineTo(g2[0],g2[1]); x.stroke() } x.restore() }
     if(pl.t==="pen"){   // the snap, a whistle, a yellow flag at the line; the ball moves on and the chains with it
       const m=Math.min(1,s*3)*(1-Math.max(0,(s-0.5)*2)), bxp=los+(u>=done?gain:0);
       const dP=DEF.map((p,k)=>[bxp+p[0]+m*(k<4?-0.6:0.8),p[1]]), oP=OFF.map((p,k)=>[bxp+p[0]+m*(k>=6?0.6:k>=2?1.5:0),p[1]]);
       // round 108: a flag's men walk to their places too (the cap below), and leave the next play where they stood
-      if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=driveFrame.st, dt=Q&&Q.c===c&&t>=Q.t?(t-Q.t)*n:-1;
+      if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=driveFrame.st, dt=Q&&Q.c===c&&t>=Q.t?(c.pT?(t-Q.t)*c.pTot*FB_VRUN/FB_VMAX:(t-Q.t)*n):-1;
         if(dt>=0&&dt<0.25){ const lim=FB_VMAX*dt, cap=(o,q)=>{ const dx=q[0]-o[0], dy=(q[1]-o[1])*53.3, mm=Math.hypot(dx,dy); return mm>lim&&mm>0?[o[0]+dx*lim/mm,o[1]+dy*lim/mm/53.3]:q }; dP.forEach((q,k)=>dP[k]=cap(Q.def[k],q)); oP.forEach((q,k)=>oP[k]=cap(Q.off[k],q)) }
         driveFrame.st={c,t,off:oP.map(q=>q.slice()),def:dP.map(q=>q.slice())}; driveFrame.pos={off:oP,def:dP,nCl:0,lagM:0,n} }
       dP.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); hlDot(x,px,py,r,dink,"rgba(0,0,0,.6)","",c.defN?{num:c.defN[k]}:null) });
@@ -6042,7 +6053,7 @@ const HL_SPORT=(function(){
       if(u>=snap+0.08){ const k=Math.min(1,(u-snap-0.08)/0.25), [fx,fy]=P(W,H,c,los+1.5,hlLerp(0.15,0.42,k)); x.save(); x.fillStyle="#F2D24B"; x.strokeStyle="rgba(0,0,0,.5)"; x.lineWidth=1;
         const sz=Math.max(5,W/90); x.translate(fx,fy-Math.sin(k*Math.PI)*H*0.08); x.rotate(k*6); x.fillRect(-sz/2,-sz/2,sz,sz); x.strokeRect(-sz/2,-sz/2,sz,sz); x.restore() }
       const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
-      hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} \u00b7 ${c.tm} \u00b7 ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):u>=snap+0.08?"FLAG ON THE PLAY":null,null); return }
+      hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} \u00b7 ${c.tm} \u00b7 ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):u>=snap+0.08?"FLAG ON THE PLAY":null,null); fbFeed(c,i,u>=done); return }
     const st=OFF[j]||OFF[1], lane=0.5+((i*37)%5-2)*0.09, qbAt=[los-5-Math.min(1,s/th)*2,0.5];
     const deep=pl.t==="inc"?Math.min(99-los,8+((i*7)%11)):0;
     let carrier=null, bx=los, by=0.5, z=0;
@@ -6063,7 +6074,7 @@ const HL_SPORT=(function(){
     // round 108 (engine 22): between snaps the men walk back to the line and set (they were at the next snap in a frame:
     // the carrier forty yards downfield one frame, in the backfield the next); in a play nobody outruns his legs. The cap
     // is in yards a play of the drive's own clock, so every speed keeps up; seeking starts afresh.
-    if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=driveFrame.st, dt=Q&&Q.c===c&&t>=Q.t?(t-Q.t)*n:-1; let nCl=0, lagM=0;
+    if(typeof ENGINE_V==="undefined"||ENGINE_V>=22){ const Q=driveFrame.st, dt=Q&&Q.c===c&&t>=Q.t?(c.pT?(t-Q.t)*c.pTot*FB_VRUN/FB_VMAX:(t-Q.t)*n):-1; let nCl=0, lagM=0;
       if(dt>=0&&dt<0.25){ const lim=FB_VMAX*dt, cap=(o,q)=>{ const dx=q[0]-o[0], dy=(q[1]-o[1])*53.3, m=Math.hypot(dx,dy); if(m>lim&&m>0){ nCl++; lagM+=m-lim; return [o[0]+dx*lim/m,o[1]+dy*lim/m/53.3] } return q };
         off.forEach((p,k)=>{ off[k]=cap(Q.off[k],p) }); def.forEach((p,k)=>{ def[k]=cap(Q.def[k],p) });
         if(u>=snap&&(pl.t==="run"||pl.t==="scr"||pl.t==="sack"||(pl.t==="pass"&&s>=0.78))&&off[j]){ bx=off[j][0]; by=off[j][1] } }   // the ball stays in his hands
@@ -6072,8 +6083,11 @@ const HL_SPORT=(function(){
     off.forEach((p,k)=>{ const [px,py]=P(W,H,c,p[0],p[1]); const num=k===j&&pl.alt?c.rb2n:c.offN?c.offN[k]:null; hlDot(x,px,py,r,ink,"rgba(0,0,0,.6)","",num!=null?{num}:null) });
     const [qx,qy]=P(W,H,c,bx,by); hlBall(x,qx,qy,r*0.55,z*W,null,{kind:"oval",fill:"#8A5428",ring:"#2a1406"});
     const ord=["","1st","2nd","3rd","4th"][pl.down], spotTxt=los<50?"own "+Math.round(los):los===50?"midfield":"their "+Math.round(100-los), togo=los+pl.togo>=100?"goal":pl.togo;
-    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} · ${c.tm} · ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):null,null) }
-  const FB_VMAX=200;   // yards a play of the drive's clock at most (round 108)
+    hlCaption(x,W,H,`${c.ot?"OT":"Q"+c.q} · ${c.tm} · ${ord} & ${togo} at ${spotTxt}`,u>=done?playText(c,pl):null,null); fbFeed(c,i,u>=done); c._shownI=u>=done?i+1:i }
+  // round 111 (Ian: a play by play in every sport, synced): each snap once it's over, by name; a kick or the drive's end once shown
+  function fbFeedEnd(c,end){ if(!end||typeof hlFeedTick!=="function")return; hlFeedTick(()=>[{k:"fe|"+c.tm+"|"+c.q+"|"+c.kind+"|"+c.los,m:c.ot?"OT":"Q"+c.q,team:c.tm,text:end,big:c.kind==="td"||c.kind==="fg"?"score":null}]) }
+  function fbFeed(c,i,dn){ if(typeof hlFeedTick!=="function")return; hlFeedTick(()=>c.plays.slice(0,dn?i+1:i).map((pl,j)=>({k:"f|"+c.tm+"|"+c.q+"|"+c.start+"|"+j+"|"+c.plays.length,m:c.ot?"OT":"Q"+c.q,team:c.tm,text:playText(c,pl),big:pl.g>=20?"big":null}))) }
+  const FB_VMAX=200, FB_VRUN=11;   // yards a play of the drive's clock at most (round 108); round 111: yards a game second (real time)
   function frame(x,W,H,c,t){
     endZones(x,W,H,c);
     if(c.kind==="drive")return driveFrame(x,W,H,c,t);
@@ -6128,7 +6142,7 @@ const HL_SPORT=(function(){
     const te=c.kind==="fum"?c.reveal:tEnd;
     const end=t>=te&&c.kind==="conv"?`FIRST DOWN! ${c.len} yards on fourth and ${c.togo}`:t>=te&&c.kind==="int"&&c.ret!=null&&t>=0.97?`INTERCEPTED!${c.who?" "+c.who+",":""} ${c.ret?"returned "+c.ret+" yard"+(c.ret===1?"":"s"):"no return"}`:t>=te&&c.kind==="downs"?`STOPPED! ${c.len?c.len+" yard"+(c.len===1?"":"s")+",":"No gain,"} ${c.togo} needed`:t>=te?(c.kind==="int"?`INTERCEPTED!${c.who?" "+c.who:""}`:c.kind==="fum"?`FUMBLE!${c.who?" Recovered by "+c.who:""}`:`TOUCHDOWN! ${c.who?c.who+", ":""}${c.len}-yard ${c.pass?"pass":"run"}`):null;
     if(c.kind==="downs"||c.kind==="conv"){ const [mx,my]=P(W,H,c,Math.min(99.5,c.los+c.togo),0), [mx2,my2]=P(W,H,c,Math.min(99.5,c.los+c.togo),1); x.save(); x.strokeStyle="#F2D24B"; x.lineWidth=2; x.beginPath(); x.moveTo(mx,my); x.lineTo(mx2,my2); x.stroke(); x.restore() }   // the line to gain
-    hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink);
+    hlCaption(x,W,H,top,end,c.kind==="int"||c.kind==="fum"||c.kind==="downs"?dink:ink); fbFeedEnd(c,end);
   }
   /* round 101: the drive up to a call, before it's asked (core hlLeadUpStart): a fourth down's drive to the fourth down
      (the drive pushed after the answer starts from the same numbers, so its plays begin with these), or a touchdown's
@@ -6146,7 +6160,18 @@ const HL_SPORT=(function(){
   // the header's clock and drive set in place while the drive plays (a render would show the drive chart's result early)
   const headLive=(e,k)=>{ e.innerHTML='<span class="live"></span>'+esc(k)+(typeof fbVenueTag==="function"?fbVenueTag():"") };
   const footText=c=>c&&c.kind==="drive"&&c.start!=null&&c.tm?`${c.tm} ball \u00b7 started ${fbYd(c.start)}`:null;
-  return {drivePos:()=>driveFrame.pos||null, replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
+  /* round 111: live player stats from the drives as far as the screen has shown: passing, rushing, receiving */
+  const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
+  const FB_LS=new WeakMap();
+  function liveStats(L){ const rows={}, add=(tm,nm,k,v)=>{ if(!nm||/#/.test(nm))return; const key=tm+"|"+nm, r=rows[key]=rows[key]||{tm,nm,cmp:0,att:0,py:0,car:0,ry:0,rec:0,cy:0}; r[k]+=v };
+    const one=(c,upto)=>{ const qb=c.onm&&c.onm[0]; c.plays.slice(0,upto).forEach(pl=>{ const g0=pl.g||0;
+      if(pl.t==="pass"){ add(c.tm,qb,"cmp",1); add(c.tm,qb,"att",1); add(c.tm,qb,"py",g0); const w=who(c,pl); add(c.tm,w,"rec",1); add(c.tm,w,"cy",g0) } else if(pl.t==="inc")add(c.tm,qb,"att",1);
+      else if(pl.t==="run"){ const w=who(c,pl); add(c.tm,w,"car",1); add(c.tm,w,"ry",g0) } else if(pl.t==="scr"){ add(c.tm,qb,"car",1); add(c.tm,qb,"ry",g0) } }) };
+    const dc=d=>{ if(FB_LS.has(d))return FB_LS.get(d); let c=null; try{ c=(clips(L,d,"full")||[]).find(x=>x.kind==="drive")||null }catch(e){} FB_LS.set(d,c); return c };   // kept off the drive (it is saved with the game)
+    (typeof liveShown==="function"?liveShown():L.drives).forEach(d=>{ const c=dc(d); if(c)one(c,c.plays.length) });
+    const cur=typeof HL!=="undefined"&&HL.cur; if(cur&&cur.kind==="drive"&&!L.done&&cur._shownI!=null&&(typeof liveShown!=="function"||liveShown().indexOf(cur.d)<0))one(cur,cur._shownI);
+    return lsOut(rows,(a,b)=>(b.py+b.ry+b.cy)-(a.py+a.ry+a.cy),r=>[r.att?`${r.cmp}/${r.att}, ${r.py} yds passing`:"",r.car?`${r.car} car, ${r.ry} yds`:"",r.rec?`${r.rec} rec, ${r.cy} yds`:""].filter(Boolean).join("; ")) }
+  return {liveStats, drivePos:()=>driveFrame.pos||null, replaces:".field", collapseIdle:true, ambient:true, fullMs:700, aspect:0.46,   // round 99: Full match offered (each drive played snap by snap); nothing drawn between drives
            clips, pitch, idle, frame, headClock, footText, headLive, goalsLabel:"Late touchdowns",
            namesOf:(L,d)=>d&&Array.isArray(d._pb)?d._pb:null, playText, leadUp, playsFor:(L,d)=>{ const out=clips0(L,d,"full"); const c=mkDrive(L,d,out); return c?{plays:c.plays,start:c.start,end:c.end,left:c.left,forced:c.forced,conv:c.conv,rec:c.rec,next:out.map(o=>({kind:o.kind,los:o.los,togo:o.togo,len:o.len}))}:null }};
 })();
@@ -6356,19 +6381,19 @@ function liveScoreboard(){
 
 function liveView(){
   const g=live.g, my=S.myTeam;
-  const last=live.drives[live.drives.length-1]||null;
+  const shown=liveShown(), last=shown[shown.length-1]||null;   // round 111: the drives the screen has shown
   const venue=g.neutral?(g.site||"neutral site"):g.home;
   const OUT={TD:"TD",FG:"FG",PUNT:"PUNT",DOWNS:"DOWNS",MISS:"NO GOOD",INT:"INT",FUM:"FUMBLE"};
   const ballOf=d=>{const end=d.pts>0?100:Math.min(95,d.start+18);
     return d.home?100-end:end};
   return `<div class="watchwrap">
     ${liveScoreboard()}
-    ${typeof hlBox==="function"?hlBox():""}
+    ${typeof hlBox==="function"?hlBox():""}${typeof hlFeedHTML==="function"?hlFeedHTML():""}
     ${fieldSVG(g,last?{ball:ballOf(last)}:null,teamColor(g.home),teamColor(g.away),venue)}
     ${typeof HL!=="undefined"&&HL.foot&&HL.footG===g&&!live.done?`<div class="fpos">${esc(HL.foot)}</div>`:last?`<div class="fpos">${esc(last.home?g.home:g.away)} ball &middot; started ${fbYd(last.start)}</div>`
           :`<div class="fpos">Ready for kickoff at ${esc(venue)}</div>`}
     <div class="grouphead">Drive chart</div>
-    <div class="plays">${live.drives.slice().reverse().map(d=>{
+    <div class="plays">${shown.slice().reverse().map(d=>{
       const tm=d.home?g.home:g.away;
       return `<div class="play ${tm===my?'mine':''}">
         <span class="pq">Q${d.q} &middot; ${d.n}</span>
@@ -10071,7 +10096,7 @@ function hlCan(){
   return true }
 /* the pitch box in the live view: a place for the canvas, which moves in after each redraw (the redraw replaces the
    page; the canvas, and a clip half played, carry on) */
-function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; return `<div id="hlpitch" class="hlpitch" aria-label="Highlights"></div>` }
+function hlBox(){ if(!hlCan()||hlMode()==="off")return ""; const big=hlMode()==="full"&&typeof live!=="undefined"&&live&&!live.done; return `<div id="hlpitch" class="hlpitch${big?" big":""}" aria-label="Highlights"></div>` }   // round 111 (Ian: "a bigger field"): the full match breaks out of the page's column
 function hlMount(){
   if(!hlCan())return; const box=document.getElementById&&document.getElementById("hlpitch"); if(!box)return;
   if(!HL.cv){ const c=document.createElement("canvas"); if(!c||!c.getContext)return; HL.cv=c; HL.x=c.getContext("2d"); if(!HL.x){ HL.cv=null; return }
@@ -10081,14 +10106,16 @@ function hlMount(){
   if(HL.leg){ if(HL.leg.parentNode!==box){ try{ box.appendChild(HL.leg) }catch(e){} } HL.leg.innerHTML=HL.cur&&HL.cur.legend?hlLegendHTML(HL.cur.legend):""; HL.leg.style.display=HL.cur&&HL.cur.legend?"":"none" }
   // a sport with its own field on the live screen (football's, basketball's flow) shows the pitch only while a clip plays
   // football's replay plays on its own field: the drive chart steps aside while a clip runs (round 67)
-  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur?"none":"" }
+  if(HL_SPORT.replaces&&box.parentNode&&box.parentNode.querySelector){ const f=box.parentNode.querySelector(HL_SPORT.replaces); if(f)f.style.display=HL.cur||(HL_SPORT.ambient&&hlMode()==="full")?"none":"" }   // round 111 (Grokbot: "a dim second field renders under the live one" after a switch to Full match): the full match keeps its own field up between drives, so the drive chart's stays hidden
   if(HL_SPORT.collapseIdle&&!(HL_SPORT.ambient&&hlMode()==="full")){ box.style.display=HL.cur?"":"none"; if(!HL.cur)return }   // round 98: the full match keeps the court up between moments
   else if(HL_SPORT.collapseIdle)box.style.display=""
   // round 102: the whole surface above the action bar on a laptop (at 1280x800 the bar hid a quarter of baseball's field,
   // home plate and the batter, and soccer's near touchline): a surface too tall for the room left is drawn narrower, centred
   let W=Math.max(240,Math.round(box.clientWidth||320)); const dpr=Math.min(2,window.devicePixelRatio||1);
-  try{ const bar=document.querySelector(".actionbar"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-top-6;
-    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect)) }catch(e){}
+  try{ const bar=document.querySelector(".actionbar"), big=box.classList&&box.classList.contains("big"), top=box.getBoundingClientRect().top+(window.scrollY||0), room=(window.innerHeight||0)-(bar?bar.offsetHeight:0)-(big?10:top)-6;
+    if(room>0&&W*HL_SPORT.aspect>room)W=Math.max(Math.round(W*0.4),Math.floor(room/HL_SPORT.aspect));
+    // round 111: the full match's surface as big as the window allows (its own bug carries the score and the clock); the page scrolls to it once a game, and again after each call (the call screen reflows the page: the field sat 34 px under the bar after one)
+    if(big&&HL.bigFor!==live&&top>8&&(live.pb||HL.cur)){ HL.bigFor=live; try{ window.scrollTo(0,Math.max(0,top-6)) }catch(e){} } }catch(e){}
   const H=Math.round(W*HL_SPORT.aspect);
   if(HL.cv.width!==W*dpr||HL.cv.height!==H*dpr){ HL.cv.width=W*dpr; HL.cv.height=H*dpr; HL.cv.style.width=W+"px"; HL.cv.style.height=H+"px"; HL.cv.style.display="block"; HL.cv.style.margin="0 auto" }
   if(!HL.cur)hlDraw(null,0);
@@ -10133,7 +10160,7 @@ function hlPlay(L,drive){
   if(!clips.length)return 0;
   box.style.display=""; HL.cur={dur:1}; hlMount();
   const k=Math.sqrt(1/Math.max(0.2,speedMult()));   // slower watching, longer clips; never longer than half again
-  clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)) });
+  clips.forEach(c=>{ c.dur=c.rtS&&hlMode()==="full"&&typeof fullRT==="function"?Math.round(c.rtS*1000*fullRT()):Math.round(c.base*Math.min(1.6,k)) });   // round 111: a clip that knows its real seconds (football's drives) runs them on the full match's pace
   HL.clips=clips.slice(1); hlStart(clips[0]);
   return clips.reduce((t,c)=>t+c.dur+250,0);
 }
@@ -10217,12 +10244,19 @@ function hlDraw(c,t){
    share of the play (d.mom). The full match plays the stretch on a running clock: the play between moments, then each
    goal or chance as its clip at the minute it came, the clock stopped while it plays, the score moving as it goes in.
    HL_SPORT.evPB gives the sport's clock (t0, span, clock) and the between-moments length (ms). */
+/* round 111 (Ian: "At slow full match the match should basically take as long as it would take to watch the match in
+   real time - for example, 90 minutes for a soccer game"; "Normal should feel like typical viewing pace"): a sport that
+   plays at real speeds (evPB.rt) runs the play between moments as a share of real time: Slow 1, Normal 1/2, Fast 1/4,
+   Very fast 1/10 (soccer measured 19 wall seconds a game minute on Slow, 14 on Normal). The moments keep their length. */
+const FULL_RT={slow:1,normal:0.5,fast:0.25,rapid:0.1};
+function fullRT(){ return FULL_RT[(typeof S!=="undefined"&&S&&S.watchSpeed)||"normal"]||0.5 }
+function hlEvAmb(d){ const E=HL_SPORT.evPB, sp=typeof speedMult==="function"?speedMult():1; return E.rt?E.span(d)*60000*fullRT():E.ms(d)/Math.pow(Math.max(0.25,sp),0.75) }
 function hlEvPlan(L,d){ if(d._ev)return d._ev; const S=HL_SPORT.evPB; let clips=[]; try{ clips=HL_SPORT.clips(L,d,S.mode||"all")||[] }catch(e){}
   const sp=typeof speedMult==="function"?speedMult():1, k=Math.sqrt(1/Math.max(0.2,sp)), t0=S.t0(d), span=S.span(d);
   clips.forEach(c=>{ c.dur=Math.round(c.base*Math.min(1.6,k)); const m=c.e&&c.e.m; c.f=m!=null&&!(c.e&&c.e.so)?Math.max(0.03,Math.min(0.97,(m-t0-0.5)/span)):0.9 });
   clips.sort((a,b)=>a.f-b.f);
   for(let i=1;i<clips.length;i++)if(clips[i].f<clips[i-1].f+0.04)clips[i].f=Math.min(0.985,clips[i-1].f+0.04);   // round 103: two in one minute, a moment apart (no play squeezed to nothing between them)
-  const amb=S.ms(d)/Math.pow(Math.max(0.25,sp),0.75), seg=[]; let pf=0, at=0;
+  const amb=hlEvAmb(d), seg=[]; let pf=0, at=0;
   clips.forEach(c=>{ const a=Math.max(0,(c.f-pf)*amb); seg.push({k:"amb",f0:pf,f1:c.f,at:at,ms:a}); at+=a; seg.push({k:"clip",c:c,at:at,ms:c.dur,f:c.f}); at+=c.dur+250; pf=c.f });
   const a=(1-pf)*amb; seg.push({k:"amb",f0:pf,f1:1,at:at,ms:a}); at+=a;
   return d._ev={seg:seg,tot:at,clips:clips} }
@@ -10244,6 +10278,7 @@ function hlEvDraw(x,W,H){
   P.seg.slice(0,i).forEach(z=>{ if(z.k==="clip")goal(z.c) });
   let clock;
   if(q.k==="clip"){ const t=Math.min(1,(el-q.at)/Math.max(1,q.ms)), rv=q.c.reveal!=null?q.c.reveal:HL_SPORT.reveal;
+    if(rv!=null&&t>=rv&&HL_SPORT.feedClips&&q.c.text&&typeof hlFeedTick==="function"){ const c0=q.c; hlFeedTick(()=>[{k:"c|"+d.seg+"|"+c0.f, m:S.clock(d,c0.f), team:c0.tm||"", text:c0.text, big:c0.kind==="goal"?"goal":null}]) }   // round 111: the clip's line in the play by play
     if(rv!=null&&t>=rv){ goal(q.c); if(q.c.after&&!q.c._snd){ q.c._snd=1; try{ if(HL_SPORT.sound)HL_SPORT.sound(q.c); else if(typeof sfx==="function"){ const mine=(q.c.e&&q.c.e.side==="home")===(live.g.home===S.myTeam); sfx(mine?"score":"against") } }catch(e){} } }
     clock=(HL_SPORT.headClock&&HL_SPORT.headClock(q.c))||S.clock(d,q.f);
     if(live.hold){ live.hold.h=h; live.hold.a=a; live.hold.clock=clock }
@@ -10426,6 +10461,7 @@ function hlInks(home,away){
    second. Kept with the game on screen (live.feed). */
 let hlFeedT=0;
 function hlFeedTick(get){
+  if(typeof live!=="undefined"&&live&&Date.now()-hlStatT>1000){ hlStatT=Date.now(); try{ const el=document.getElementById("lstats"); if(el){ const h=hlStatRows(); if(h!==el.innerHTML)el.innerHTML=h } }catch(e){} }
   if(typeof live==="undefined"||!live||Date.now()-hlFeedT<250)return; hlFeedT=Date.now();
   let lines=[]; try{ lines=get()||[] }catch(e){ return }
   const F=live.feed=live.feed||[], seen=live.feedK=live.feedK||{}; let added=false;
@@ -10433,11 +10469,22 @@ function hlFeedTick(get){
   if(added){ try{ const el=document.getElementById("pbp"); if(el)el.innerHTML=hlFeedRows() }catch(e){} } }
 const PBP_SHOW=9;
 function hlFeedRows(){ const F=(typeof live!=="undefined"&&live&&live.feed)||[], my=typeof S!=="undefined"?S.myTeam:null;
-  if(!F.length)return `<div class="pbpe">Kick-off: the play by play follows the ball.</div>`;
-  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}'</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
-function hlFeedHTML(){ if(typeof pbOn!=="function"||!pbOn()||typeof live==="undefined"||!live)return "";
+  if(!F.length)return `<div class="pbpe">The play by play follows the action.</div>`;
+  return F.slice(-(typeof S!=="undefined"&&S.pbpOpen?PBP_SHOW:1)).reverse().map((x,i)=>`<div class="pbpl ${x.team===my?"mine":""} ${x.big?"b-"+x.big:""} ${i===0?"now":""}"><span class="pbpm">${esc(String(x.m))}${typeof x.m==="number"?"'":""}</span><span class="pbpt"><b>${esc(x.team)}</b> ${esc(x.text)}</span></div>`).join("") }
+/* ---- round 111: live player stats (Ian: "live player stats") ----
+   The game's own men, counted from the engine's log up to the point the screen has shown (HL_SPORT.liveStats: per
+   side, its men's lines, best first); patched in place with the play by play, about once a second. */
+let hlStatT=0;
+function hlEvCurF(d){ try{ const P=live.pb; if(!P||P.d!==d)return 1; const E=hlEvPlan(live,d), el=P.frozen!=null?P.frozen:Date.now()-P.at; let i=E.seg.findIndex(q=>el<q.at+q.ms+(q.k==="clip"?250:0)); if(i<0)return 1; const q=E.seg[i];
+  return q.k==="clip"?q.f-0.0001:q.f0+(q.f1-q.f0)*Math.min(1,(el-q.at)/Math.max(1,q.ms)) }catch(e){ return 1 } }
+function hlStatRows(){ if(typeof live==="undefined"||!live||typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return "";
+  let T=null; try{ T=HL_SPORT.liveStats(live) }catch(e){ return "" } if(!T)return "";
+  const g=live.g, my=typeof S!=="undefined"?S.myTeam:null, n=typeof S!=="undefined"&&S.pbpOpen?8:4;
+  return [g.away,g.home].map(tm=>{ const R=(T[tm]||[]).slice(0,n); return `<div class="lsteam ${tm===my?"mine":""}"><b>${esc(tm)}</b>${R.length?R.map(r=>`<span class="lsrow"><i>${esc(r.nm)}</i> ${esc(r.line)}</span>`).join(""):`<span class="lsrow">&mdash;</span>`}</div>` }).join("") }
+function hlStatHTML(){ if(typeof HL_SPORT==="undefined"||typeof HL_SPORT.liveStats!=="function")return ""; return `<div class="grouphead">Player stats, so far</div><div class="lstats" id="lstats">${hlStatRows()}</div>` }
+function hlFeedHTML(){ if(typeof live==="undefined"||!live||!((typeof pbOn==="function"&&pbOn())||(typeof hlMode==="function"&&hlMode()==="full"&&typeof hlCan==="function"&&hlCan())))return "";   // round 111: every sport's full match (football's drives aren't a playback)
   // round 108: the pitch tells it; the feed is one line, the latest, unless you open it (Ian: "I'm not sure how necessary the text is")
-  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>` }
+  return `<div class="grouphead" style="display:flex;justify-content:space-between;align-items:center">Play by play<button class="spbtn" data-pbp="1" style="flex:0 0 auto;padding:2px 10px">${S.pbpOpen?"Just the latest":"Show more"}</button></div><div class="pbp" id="pbp" aria-live="polite">${hlFeedRows()}</div>${hlStatHTML()}` }
 /* ============ screens: college football ============ */
 /* The views only college football has: the Top 25 and the playoff picture
    under the ranking tab, and the bracket, selection field and bowls under
@@ -11406,6 +11453,7 @@ function presentAsk(r,floorCall){
       live.ff=false;                            // skipping stops at your next call
       // round 100: the score a call showed, for the stretch it came in (baseball asks inside an inning)
       if(r.mine!=null&&r.theirs!=null)live.askScore={n:live.drives.length,h:live.userIsHome?r.mine:r.theirs,a:live.userIsHome?r.theirs:r.mine};
+      if(typeof HL!=="undefined")HL.bigFor=null;   /* round 111: the call screen reflows the page; the full match scrolls back to its field after it */
       live.ask={dp:r.ask, mine:r.mine, theirs:r.theirs, q:r.q,
                 team:r.side?(r.side==="home"?live.g.home:live.g.away):S.myTeam, at:Date.now(), floor:!!floorCall};
       render();
@@ -11415,6 +11463,19 @@ function presentAsk(r,floorCall){
 }
 /* round 101: the full match plays back what the engine logged (HL_SPORT.playback gives its length on screen). A stretch
    whose start was already shown (a call came inside it) plays on from where it stopped (live.pbSeen). */
+/* round 111: a speed change inside a stretch takes hold at once. A stretch now runs minutes on Slow; the old length ran on
+   to its end. The stretch keeps its place: the same point of the same clip, or the same share of the play. */
+function pbRescale(){ const P=live&&live.pb; if(!P||live.done||!P.d||typeof HL_SPORT==="undefined")return;
+  const el=P.frozen!=null?P.frozen:Date.now()-P.at, d=P.d; let el2, ms2;
+  if(HL_SPORT.evPB&&d._ev&&typeof hlEvPlan==="function"){ const o=d._ev, i0=o.seg.findIndex(q=>el<q.at+q.ms), i=i0<0?o.seg.length-1:i0, q=o.seg[i], t=q.ms?Math.max(0,Math.min(1,(el-q.at)/q.ms)):1;
+    delete d._ev; const n=hlEvPlan(live,d), q2=n.seg[i]||n.seg[n.seg.length-1]; el2=q2.at+t*q2.ms; ms2=n.tot }
+  else { const m=HL_SPORT.playback(live,d,P.from,P.to); if(!m)return; el2=el/Math.max(1,P.ms)*m; ms2=m }
+  P.ms=ms2; if(P.frozen!=null)P.frozen=el2; else { P.at=Date.now()-el2; if(live.timer&&!live.paused){ clearTimeout(live.timer); live.timer=setTimeout(liveTick,Math.max(0,ms2-el2)) } } }
+/* round 111 (Muse: "the live scoreboard read 22-10 at 13:02 while Run of Play already listed 29-13 at 10:00"): the run of
+   play lists what the screen has shown, not the stretch still playing or the ones held behind it */
+function liveShown(){ if(typeof live==="undefined"||!live)return []; let n=live.drives.length;
+  if(!live.done){ if(live.pb&&live.pb.d){ const i=live.drives.indexOf(live.pb.d); if(i>=0)n=Math.min(n,i) } if(live.hold&&typeof live.hold.n==="number")n=Math.min(n,live.hold.n) }
+  return live.drives.slice(0,n) }
 function pbOn(){ return typeof hlMode==="function"&&hlMode()==="full"&&typeof HL_SPORT!=="undefined"&&typeof HL_SPORT.playback==="function"&&typeof hlCan==="function"&&hlCan() }
 function pbFrom(d){ const S0=live.pbSeen; return S0&&S0.seg===d.seg?S0.n:0 }
 function pbScoreAt(d,i,h,a){ const q=i>0&&d.pl&&d.pl[i-1]; return q&&q.h!=null?[q.h,q.a]:[h,a] }
@@ -15052,7 +15113,7 @@ function render0(){
       document.querySelectorAll("[data-pbp]").forEach(x=>onPress(x,()=>{ S.pbpOpen=!S.pbpOpen; save(); render() }));
       document.querySelectorAll("[data-hlm]").forEach(x=>onPress(x,()=>{ PLAN_ARM=null; S.highlights=x.dataset.hlm; save(); render(); if(typeof hlMount==="function")hlMount() }));
       document.querySelectorAll("[data-speed]").forEach(x=>onPress(x,()=>{
-        S.watchSpeed=x.dataset.speed;save();render()}));
+        S.watchSpeed=x.dataset.speed;pbRescale();save();render()}));
     }
     return;
   }
@@ -15744,7 +15805,7 @@ window.addEventListener("keydown",e=>{
     if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();live.paused=true;liveTick();return}
     if(e.key==="Enter"){e.preventDefault();skipLive();return}
     if(["1","2","3","4"].indexOf(e.key)>=0){e.preventDefault();
-      S.watchSpeed=SPEEDS[+e.key-1][0];save();render();return}
+      S.watchSpeed=SPEEDS[+e.key-1][0];pbRescale();save();render();return}
     return;
   }
   if(watch){
