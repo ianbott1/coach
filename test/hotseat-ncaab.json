@@ -1,5 +1,5 @@
 {
- "fp": "cffbb1fccb3fc520",
+ "fp": "b917eeb6d6a36d2e",
  "log": [
   {
    "fp": "2995a68c0033645a",
@@ -387,9 +387,9 @@
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   },
   {
-   "fp": "cffbb1fccb3fc520",
+   "fp": "b917eeb6d6a36d2e",
    "from": "b4b323afc23491d6",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -403,7 +403,7 @@
       "result": "Lost in the Sweet 16",
       "grade": "A-"
      },
-     "book": "eddc06ff83cd8258"
+     "book": "837f216917139aad"
     },
     {
      "team": "North Carolina",
@@ -412,7 +412,7 @@
       "result": "Lost in the Final Four",
       "grade": "A"
      },
-     "book": "9f68c128a8d09c8b"
+     "book": "19e5b3b271bc4ffb"
     }
    ]
   },
@@ -422,20 +422,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "30-6",
+      "rec": "26-7",
       "result": "Lost in the Second Round",
       "grade": "B+"
      },
-     "book": "f586dd908670207b"
+     "book": "2fde5f8563232580"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "24-9",
+      "rec": "25-10",
       "result": "Lost in the Second Round",
       "grade": "B+"
      },
-     "book": "cd5bbb2fd6a48a3c"
+     "book": "f87264cc71a4015c"
     }
    ]
   },
@@ -445,20 +445,20 @@
     {
      "team": "Duke",
      "last": {
-      "rec": "31-6",
-      "result": "Lost in the Sweet 16",
-      "grade": "A"
+      "rec": "18-14",
+      "result": "Missed the NCAA tournament",
+      "grade": "C-"
      },
-     "book": "74c903675e5e1e88"
+     "book": "894074fa96ee7aad"
     },
     {
      "team": "North Carolina",
      "last": {
-      "rec": "28-11",
-      "result": "NATIONAL CHAMPIONS",
-      "grade": "A+"
+      "rec": "31-4",
+      "result": "Lost in the Second Round",
+      "grade": "A-"
      },
-     "book": "3c7e1b0de93d2fff"
+     "book": "b8f35dca5685d617"
     }
    ]
   }

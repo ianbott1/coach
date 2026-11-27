@@ -25,7 +25,7 @@ function bbPlayer(team,i,u,bn,off){
 }
 /* the star a stretch has on the bench (foul trouble, fouled out), by name: the engine's star sits from the stretch it is
    called to the half (d.star: fouls, on the floor, fouled out) */
-function bbOff(d,side,team){ try{ const x=d&&d.star&&d.star[side]; return x&&(x[1]===false||x[2])?bbStar(team):null }catch(e){ return null } }
+function bbOff(d,side,team){ if(ENGINE_V<25)return null; try{ const x=d&&d.star&&d.star[side]; return x&&(x[1]===false||x[2])?bbStar(team):null }catch(e){ return null } }
 function bbStar(team){ const R=SEA.roster&&SEA.roster[team]; if(!R)return "his star";
   const hurt=new Set(SEA.talent?SEA.talent.active(team).map(x=>x.idx):[]);
   let best=-1; for(let i=0;i<5;i++)if(R[i]&&!hurt.has(i)&&(best<0||R[i].r>R[best].r))best=i; return best>=0?R[best].n:"his star" }

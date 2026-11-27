@@ -1,5 +1,5 @@
 {
- "fp": "6bf921962d34e36e",
+ "fp": "eb509cc048c1ace1",
  "log": [
   {
    "fp": "1357dacd5f6141d6",
@@ -377,9 +377,9 @@
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   },
   {
-   "fp": "6bf921962d34e36e",
+   "fp": "eb509cc048c1ace1",
    "from": "8c17f3940dfb150d",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -393,7 +393,7 @@
       "result": "Lost in the conference semifinals",
       "grade": "B+"
      },
-     "book": "cc695bba4fccf910"
+     "book": "e56fdad271bf8b47"
     },
     {
      "team": "New York",
@@ -402,7 +402,7 @@
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "4757e7dda68059c5"
+     "book": "f592afbf244863d2"
     }
    ]
   },
@@ -412,20 +412,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "39-43",
+      "rec": "40-42",
       "result": "Lost in the first round",
-      "grade": "C-"
+      "grade": "C"
      },
-     "book": "f0e9c572b8ce85e3"
+     "book": "ab89fec1b663fb2b"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "21-61",
+      "rec": "27-55",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "b11dd07205442a27"
+     "book": "faed1b5fc2e81980"
     }
    ]
   },
@@ -435,20 +435,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-51",
+      "rec": "35-47",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "B-"
      },
-     "book": "4fed2704581bcc2a"
+     "book": "7c0e2380c9a8819f"
     },
     {
      "team": "New York",
      "last": {
-      "rec": "29-53",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "42-40",
+      "result": "Lost in the play-in",
+      "grade": "B+"
      },
-     "book": "bd2258e5ba18dd54"
+     "book": "37aaeba3ae591c4e"
     }
    ]
   }

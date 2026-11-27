@@ -1,5 +1,5 @@
 {
- "fp": "a341c29c2f93bbc2",
+ "fp": "61bb8ff824ef2a2f",
  "log": [
   {
    "fp": "53981de08c69aade",
@@ -407,9 +407,9 @@
    "note": "Re-recorded once on the merged engine-26 build (round two)"
   },
   {
-   "fp": "a341c29c2f93bbc2",
+   "fp": "61bb8ff824ef2a2f",
    "from": "971fa75188a62ca2",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -419,11 +419,11 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "37-39-8",
+      "rec": "34-39-11",
       "result": "Losing season",
-      "grade": "B"
+      "grade": "B-"
      },
-     "book": "893b8fd78d4c2138"
+     "book": "61d7b770962e94cc"
     },
     {
      "team": "Montreal",
@@ -432,7 +432,7 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "9e5307bf00bd82c0"
+     "book": "c3bfa820626cf985"
     }
    ]
   },
@@ -442,20 +442,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "25-52-7",
+      "rec": "34-43-7",
       "result": "Losing season",
       "grade": "C"
      },
-     "book": "648b5ce92025f3bc"
+     "book": "cc3c7685508af31a"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "45-32-7",
-      "result": "Lost in the first round",
+      "rec": "42-33-9",
+      "result": "Lost in the second round",
       "grade": "A-"
      },
-     "book": "67c8a1081fad6ba6"
+     "book": "3dd88aae0f086d4e"
     }
    ]
   },
@@ -465,20 +465,20 @@
     {
      "team": "Boston",
      "last": {
-      "rec": "31-41-12",
+      "rec": "34-37-13",
       "result": "Losing season",
-      "grade": "C-"
+      "grade": "C+"
      },
-     "book": "dae5addd597bcc70"
+     "book": "ef3b231d090fe860"
     },
     {
      "team": "Montreal",
      "last": {
-      "rec": "23-49-12",
+      "rec": "33-45-6",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "4d58ca86fa705a34"
+     "book": "15725bf0eac244f4"
     }
    ]
   }

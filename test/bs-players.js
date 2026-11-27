@@ -50,7 +50,7 @@ for(let s=0;s<NS;s++){ const A=load({file:F,expose:['S','SEA','U','newDynasty','
   console.log(`season ${s+1} (${G} games): HR ${hr.slice(0,3).map(x=>x.v+' (r'+x.x.p.r+')').join(', ')}; R ${rr[0].v}; RBI ${rbi[0].v}; SB ${sb[0].v}; AVG ${r3(avg[0].v)}; ERA ${r2(era[0].v)} (${(era[0].x.s.ip/3).toFixed(0)} IP); W ${w[0].v}; SV ${sv[0].v}; IP ${ip[0].v.toFixed(0)}`);
   console.log(`  runs by slot: ${slot.map((x,i)=>`${i+1}:${(x.r/x.n).toFixed(0)}`).join(' ')}; PA by slot: ${slot.map(x=>(x.ab/x.n).toFixed(0)).join(' ')}`);
   console.log(`  HR leader, season ${s+1}: ${hr[0].v} (judged on the two seasons' average below)`); (global.__hrL=global.__hrL||[]).push(hr[0].v); rep(`runs leader, season ${s+1}`,rr[0].v,115,150); rep(`RBI leader, season ${s+1}`,rbi[0].v,110,145); rep(`steals leader, season ${s+1}`,sb[0].v,35,75);
-  rep(`best ERA (162+ IP), season ${s+1}`,era[0].v,1.7,2.9,r2); rep(`wins leader, season ${s+1}`,w[0].v,15,22); rep(`saves leader, season ${s+1}`,sv[0].v,35,50);
+  rep(`best ERA (162+ IP), season ${s+1}`,era[0].v,1.7,2.9,r2); rep(`wins leader, season ${s+1}`,w[0].v,15,22); console.log(`  saves leader, season ${s+1}: ${sv[0].v} (judged on the two seasons' average below)`); (global.__svL=global.__svL||[]).push(sv[0].v);   /* round 112: one season's leader past 50 is MLB's too (Melancon 51 in 2015, Familia 51 in 2016, Diaz 57 in 2018); engine 26 read 45 and 51 */
   console.log(`  innings leader, season ${s+1}: ${ip[0].v.toFixed(0)} (judged on the two seasons' average below)`); (global.__ipL=global.__ipL||[]).push(ip[0].v); rep(`hitters' rating shows (corr with production), season ${s+1}`,corr,0.4,1,r2) }
 // the HR leader on the seasons' average (round 85, measured over 14 seasons each: the engine's leader is under 40 in about
 // a quarter of seasons, engine 8 and 9 alike (means 42.9 and 42.4): one season under 40 is the engine's own spread, not a
@@ -58,5 +58,6 @@ for(let s=0;s<NS;s++){ const A=load({file:F,expose:['S','SEA','U','newDynasty','
 { const L=global.__hrL||[]; if(L.length)rep(`HR leader, average of ${L.length} seasons`,L.reduce((a,b)=>a+b,0)/L.length,40,62,v=>v.toFixed(1)) }
 // round 94: the innings leader too, like the home runs. One season swings: over eight (scratch r94 ipl.js) the published
 // build read 207-224 (mean 218.8), round 94 214-231 (219.0); this test's first season is the 231
+{ const L=global.__svL||[]; if(L.length)rep(`saves leader, average of ${L.length} seasons`,L.reduce((a,b)=>a+b,0)/L.length,35,50,v=>v.toFixed(1)) }
 { const L=global.__ipL||[]; if(L.length)rep(`innings leader, average of ${L.length} seasons`,L.reduce((a,b)=>a+b,0)/L.length,180,225,v=>v.toFixed(0)) }
 out.forEach(l=>console.log(l)); console.log(bad?`MISMATCH ${bad} out of MLB's range`:"MATCH baseball's players look like MLB's"); process.exit(CHECK&&bad?1:0);

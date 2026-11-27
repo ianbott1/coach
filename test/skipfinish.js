@@ -16,7 +16,8 @@ for(const [f,t] of GAMES){ const A=load({file:path.join(DIR,f),expose:['S','SEA'
   A.newDynasty(t,5,'T'); let close=0, stopped=0, games=0;
   for(let w=0;w<10;w++){ A.doAdvance(); if(!A.live)continue; games++; let wasStop=false, sawClose=false, jumped=false, m=0;
     while(A.live&&!A.live.done&&m++<3000){ if(A.live.ask){ A.answerLive(A.live.ask.dp.opts[0][0]); continue }
-      if(!A.live.ffLate){ const L=A.live; A.skipLive();
+      if(!A.live.ffLate){ const L=A.live; if(lateClose(A,L))wasStop=true;   /* round 112: the close finish already on screen, played without Skip (baseball's 9th after a call in the 8th): watched, and a tap now is yours */
+        A.skipLive();
         if(!L.done&&(L.ask||L.ffLate)&&lateClose(A,L))wasStop=true;   // stopped in the late window, close: by the finish rule or a call
         else if(L.done&&!wasStop){ const D=L.drives, d=D[D.length-1], F=A.SPORT.lateFloor; if(d&&Math.abs(((d.sh!==undefined?d.sh:d.h)||0)-((d.sa!==undefined?d.sa:d.a)||0))<=F.close){ sawClose=true; jumped=true } } }
       else A.liveTick();

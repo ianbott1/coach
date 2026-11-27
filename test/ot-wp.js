@@ -1,7 +1,7 @@
 /* Pro basketball's win chance follows the score shown in overtime, in the full match (round 107, Grokbot: OT 2:16, down
-   107-114, "Orlando: 53% to win"; the bar was drawn at the start of the stretch). Seed 75's first game goes to overtime.
+   107-114, "Orlando: 53% to win"; the bar was drawn at the start of the stretch). Seed 75's first game went to overtime; on engine 26 (round 112) seed 31's does.
      node test/ot-wp.js [distDir]      last line: MATCH or MISMATCH */
-const {chromium}=require('playwright'), path=require('path'); const HLM='full', SEED=+(process.argv[4]||75);
+const {chromium}=require('playwright'), path=require('path'); const HLM='full', SEED=+(process.argv[4]||31);
 (async()=>{ const b=await chromium.launch(); const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  await p.goto('file://'+path.join(process.argv[2]&&!/^(full|key|all)$/.test(process.argv[2])?process.argv[2]:path.join(__dirname,'..','dist'),'basketball-coach-pro.html')); await p.waitForTimeout(300);
  await p.evaluate(([h,s])=>{ newDynasty('Orlando',s,'T'); S.title=false; S.guide=false; S.watchSpeed='rapid'; S.highlights=h; render(); for(let k=0;k<3&&!live;k++)doAdvance() },[HLM,SEED]);

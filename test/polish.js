@@ -246,7 +246,7 @@ check('the welcome note is for a career\'s first season only (all seven)',()=>{
 check('no "Pin them deep" inside their 35 (college and pro football)',()=>{
   for(const lg of ['cfb','nfl']){
     const api=load(lg), ev=api.ev; const offered=[];
-    for(let stall=62;stall<=79;stall++){ const dp=ev(`fourthDownCall(${stall},4,1500,1500)`);
+    for(let stall=62;stall<=79;stall++){ const dp=ev(`atEngine(ENGINE_NOW,()=>fourthDownCall(${stall},4,1500,1500))`);   /* round 112: at the engine a new season plays (gated at 25 so old seasons replay) */
       if(dp&&dp.opts.some(o=>o[0]==='punt'))offered.push(100-stall) }
     ok(offered.length&&Math.min(...offered)>=35,`${lg}: punt offered from their ${offered.join(', ')}`);
   }

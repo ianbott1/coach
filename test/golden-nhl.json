@@ -1,5 +1,5 @@
 {
- "fp": "1caeb51121d24eb1",
+ "fp": "9d50ff7c27f3c0d1",
  "log": [
   {
    "fp": "63ab31cc9ed9a902",
@@ -652,67 +652,62 @@
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   },
   {
-   "fp": "4ec2632811ce6fd7",
+   "fp": "9d50ff7c27f3c0d1",
    "from": "59e1d056a68c44ff",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
-  },
-  {
-   "fp": "1caeb51121d24eb1",
-   "from": "4ec2632811ce6fd7",
-   "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (screens only, no result moves)"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "result": {
   "Boston#1": [
    {
     "year": 2026,
-    "games": "cb200e9bee6aabf0",
-    "post": "971e1289af5a974c",
-    "champion": "Los Angeles",
-    "rec": "ffcd64d24cfbb9ed",
-    "poll": "1db4dbdf2805a933",
-    "heis": "c4c10d2c46c94b0e",
-    "history": "d9b0843d041643d0",
-    "universe": "c7e298e104500ccc",
-    "screens": "b90c4f45ffdf56c4"
+    "games": "677c3541db7e3248",
+    "post": "7e4deaf3ac246194",
+    "champion": "Washington",
+    "rec": "80e1e43dfb839dd1",
+    "poll": "d67349cf5478543e",
+    "heis": "7d8cf393e386e237",
+    "history": "c3bdaf62442bfd9c",
+    "universe": "81cb8ae4eb3e526e",
+    "screens": "79d70f7cf9449624"
    },
    {
     "year": 2027,
-    "games": "10a740ea4c9b95d2",
-    "post": "df87f232780619af",
-    "champion": "Toronto",
-    "rec": "5487cadbb2a22041",
-    "poll": "c7c4922c07bace38",
-    "heis": "64c97b4a3c514d62",
-    "history": "887ed5e333bcfa56",
-    "universe": "792a7a4e86c4133f",
-    "screens": "7206e49811d11cb1"
+    "games": "8d62685be9570442",
+    "post": "36e26097877d84d7",
+    "champion": "Tampa Bay",
+    "rec": "6870e66b1b3369e9",
+    "poll": "8e45e6c6c44f388b",
+    "heis": "7c698c25baa0dcca",
+    "history": "b1ff2ed543c8d4e1",
+    "universe": "ddda4c0d9757401c",
+    "screens": "48427e4ae91ba9aa"
    }
   ],
   "Edmonton#777": [
    {
     "year": 2026,
-    "games": "780039c4fd2a864c",
-    "post": "edfb4dd7ff6941f3",
-    "champion": "Carolina",
-    "rec": "c302204d9700b073",
-    "poll": "d5554e59f26aab0d",
-    "heis": "5fc420f36f7be3b3",
-    "history": "d7ad22569417e39e",
-    "universe": "1d620e551570f653",
-    "screens": "e1a9971a27e4ecd7"
+    "games": "ba8cf3e41ca3ea7e",
+    "post": "44da587cf5eb06a7",
+    "champion": "Los Angeles",
+    "rec": "d4b68b112d3e460f",
+    "poll": "eaf72ab98282dd51",
+    "heis": "ffe500d38a462e5a",
+    "history": "9ec46cf9948a4e85",
+    "universe": "433098be9c337481",
+    "screens": "5e3689698e239413"
    },
    {
     "year": 2027,
-    "games": "a5bfe90f655726c1",
-    "post": "28ebdb4237597589",
-    "champion": "Vancouver",
-    "rec": "2f6aa7c54183ba90",
-    "poll": "fabc02649e10f9fc",
-    "heis": "831e79806fcb8f4f",
-    "history": "61c58fc45c771ec5",
-    "universe": "d5ff87e78e312584",
-    "screens": "b7e7ab013f7fd11b"
+    "games": "1e5c597546ef55be",
+    "post": "b73452cd5206ef26",
+    "champion": "Pittsburgh",
+    "rec": "cfd8254ddd36705b",
+    "poll": "464a502fdbb77478",
+    "heis": "5dbd9ccb1c70a14b",
+    "history": "a9f7773becce538b",
+    "universe": "4f695bd92f8a038e",
+    "screens": "a8d73d52e9ec3826"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "11a75dac43530d3e",
+ "fp": "1b693222e70f8f89",
  "log": [
   {
    "fp": "a2e304f6a00408fd",
@@ -452,14 +452,9 @@
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   },
   {
-   "fp": "0d4a1ea357564ae6",
+   "fp": "1b693222e70f8f89",
    "from": "12f25479b979308c",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
-  },
-  {
-   "fp": "11a75dac43530d3e",
-   "from": "0d4a1ea357564ae6",
-   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -469,20 +464,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "9-8",
-      "result": "Missed the playoffs",
-      "grade": "B-"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "D"
      },
-     "book": "869bc1743107c268"
+     "book": "759f9c10f6c26d44"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "5-12",
+      "rec": "4-13",
       "result": "Losing season",
-      "grade": "B-"
+      "grade": "C+"
      },
-     "book": "3f84d4d25e42d423"
+     "book": "c32290e761cc7df0"
     }
    ]
   },
@@ -496,16 +491,16 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "90fb838e0bf1b140"
+     "book": "2e5ec8a45913ee58"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "Lost in the wild card round",
-      "grade": "A-"
+      "rec": "5-12",
+      "result": "Losing season",
+      "grade": "C+"
      },
-     "book": "9fd2017b801152e4"
+     "book": "6ce3b487efa81457"
     }
    ]
   },
@@ -515,20 +510,20 @@
     {
      "team": "Kansas City",
      "last": {
-      "rec": "2-15",
-      "result": "Losing season",
-      "grade": "F"
+      "rec": "10-7",
+      "result": "Lost in the wild card round",
+      "grade": "B"
      },
-     "book": "e29a1bcd496f25a4"
+     "book": "7defe1ecb7230d19"
     },
     {
      "team": "Tennessee",
      "last": {
-      "rec": "9-8",
-      "result": "Lost the conference championship",
+      "rec": "7-10",
+      "result": "Losing season",
       "grade": "B+"
      },
-     "book": "6e091684b6096e21"
+     "book": "50da8fcae3c8d1a1"
     }
    ]
   }

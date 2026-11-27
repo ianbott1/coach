@@ -1,5 +1,5 @@
 {
- "fp": "4ba1c0ba8791b199",
+ "fp": "cac416f6667d6f35",
  "log": [
   {
    "fp": "264aba29be257fe4",
@@ -617,14 +617,9 @@
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   },
   {
-   "fp": "edf9496069051884",
+   "fp": "cac416f6667d6f35",
    "from": "cd65e7fb1e461f4c",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
-  },
-  {
-   "fp": "4ba1c0ba8791b199",
-   "from": "edf9496069051884",
-   "note": "rv3/fixes-odds: the board's hot-seat line names the target missed (screens only, no result moves)"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "result": {
@@ -637,21 +632,21 @@
     "rec": "b5dc1a1f90b036d1",
     "poll": "41d6363b0bdc54f5",
     "heis": "d2a779e43b634a3c",
-    "history": "b42db59cfb4fe518",
-    "universe": "039091495088e3c2",
-    "screens": "b10791249c6f09fc"
+    "history": "78d87833f5bff51a",
+    "universe": "d847037dd60e5af2",
+    "screens": "c3f03a6569610723"
    },
    {
     "year": 2027,
-    "games": "24e10bfb4c1a95a0",
-    "post": "3b9f621d1390e8ca",
-    "champion": "Oklahoma City",
-    "rec": "384b77d1d5d07348",
-    "poll": "b0d881b79aaa7285",
-    "heis": "150c6a4ff7cd9002",
-    "history": "fba05d03078c61f0",
-    "universe": "b25350c682f61def",
-    "screens": "85206d11cbdbdd06"
+    "games": "9a1e4b1983e14747",
+    "post": "493f397003add7a2",
+    "champion": "Sacramento",
+    "rec": "0220205e6ed66d14",
+    "poll": "65de7c3b6972aed3",
+    "heis": "e7de6b0360337ee2",
+    "history": "49d120f6e7eb02fb",
+    "universe": "2ef58638e92cd9f7",
+    "screens": "fedd69adfe6d3e5f"
    }
   ],
   "Detroit#777": [
@@ -663,21 +658,21 @@
     "rec": "e52a5b79944a871b",
     "poll": "ebd0109f707c4331",
     "heis": "827255945f877f5b",
-    "history": "0285076455345b22",
-    "universe": "3f3dbc4d96c8527b",
-    "screens": "ac3879218752457c"
+    "history": "5c302e87d48138b6",
+    "universe": "9f3eb935c5b61a54",
+    "screens": "3002199bce648c27"
    },
    {
     "year": 2027,
-    "games": "146781770c0439f3",
-    "post": "e5b56094a0542c4f",
+    "games": "58b1bfdeaeb5d6a6",
+    "post": "87028fc21026d4ed",
     "champion": "Oklahoma City",
-    "rec": "bc262713e86bbec8",
-    "poll": "86d6ce2b13fe69bc",
-    "heis": "89e38a1bb8ed1ce1",
-    "history": "c743fdb6013c0c90",
-    "universe": "15bfcb42d5b1d986",
-    "screens": "92d8d5546a448108"
+    "rec": "7d0af1c71a0f740b",
+    "poll": "55412e5fd0319721",
+    "heis": "0fe562761f57b5f4",
+    "history": "54dd51d9e94b910e",
+    "universe": "4fc02256b391d8bf",
+    "screens": "c79c0f366c6e14b6"
    }
   ],
   "schedules#60": [

@@ -1,5 +1,5 @@
 {
- "fp": "fa09f4062e820c5a",
+ "fp": "be000045aa5a67d3",
  "log": [
   {
    "fp": "7f1e7a94492ca973",
@@ -192,14 +192,9 @@
    "note": "Re-recorded once on the merged engine-26 build (round two: careers, stats, game day, college economy, baseball re-tune)"
   },
   {
-   "fp": "9f38438e92ac83e1",
+   "fp": "be000045aa5a67d3",
    "from": "1296628ab653cb8d",
-   "note": "Re-recorded on the merged engine-27 build (round three: front offices, football game plan, league life, sharing, soccer fixes)"
-  },
-  {
-   "fp": "fa09f4062e820c5a",
-   "from": "9f38438e92ac83e1",
-   "note": "rv3/fixes-odds (engine 27): football's shape terms each worth the same per point again, college's chance counts the weekly game plans; baseball's chance counts tonight's starter at his engine-27 worth"
+   "note": "round 112: engine 26's summer reads the league's level from the clubs no one coaches (your recruiting board moved other programs' ratings), and a man traded with a coach isn't dealt on at the CPU deadline"
   }
  ],
  "out": [
@@ -213,16 +208,16 @@
       "result": "Losing season",
       "grade": "C-"
      },
-     "book": "5aabc57aae3b7a6b"
+     "book": "842d158a8e283294"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "70-92",
+      "rec": "64-98",
       "result": "Losing season",
-      "grade": "C+"
+      "grade": "F"
      },
-     "book": "a66f896b981afb1a"
+     "book": "7e30e0cc4b170f6d"
     }
    ]
   },
@@ -232,20 +227,20 @@
     {
      "team": "NY Yankees",
      "last": {
-      "rec": "71-91",
-      "result": "Losing season",
-      "grade": "C+"
+      "rec": "83-79",
+      "result": "Missed the postseason",
+      "grade": "B"
      },
-     "book": "838e8796b85d373f"
+     "book": "a941005748747c39"
     },
     {
      "team": "Boston",
      "last": {
-      "rec": "58-104",
+      "rec": "72-90",
       "result": "Losing season",
-      "grade": "C"
+      "grade": "C+"
      },
-     "book": "b900aa599ea2a790"
+     "book": "440d1bfd777745e9"
     }
    ]
   }

@@ -231,7 +231,7 @@ function teamLines(rng,c){
     const rc=[2,3].filter(has);
     rc.forEach(i=>{ const need=(tdY[i]||0)+2*Math.max(0,(L[i].rec||0)-(L[i].ctd||0)); if(L[i].cyd<need)L[i].cyd=need });
     if(has(0)){ const Q=L[0], got=rc.reduce((t,i)=>t+L[i].cyd,0)+bkYd; if(got>Q.pyd)Q.pyd=got } }
-  fbBenchLines(rng,c,L,X);
+  if(ENGINE_V>=25)fbBenchLines(rng,c,L,X);   /* merge fix: an older season replays as played (these draws moved its lines and, in the pro game, its results) */
   return c.act.map(x=>({pl:x.pl,pos:x.P,line:L[x.i]})).concat(Object.values(X));
 }
 /* review round (playtest: a backup's season line was only the plays the log named him for: a corner with 2 games, 2

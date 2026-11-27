@@ -102,7 +102,7 @@ const HL_SPORT=(function(){
      strike three (swinging or looking), a walk on ball four, a ball in play or a hit batter on the pitch the count
      leaves; fouls with two strikes keep it going. From the at-bat's own hash, no game dice (MLB: about 3.9 pitches a
      plate appearance, a quarter of strikeouts looking). */
-  function bsPitches(q,z){ return q.ibb?["B4"]:bsPitchSeq(q,z) }   // (round 112: the engine counts the same pitches, 50_game; an intentional walk is signalled, not pitched)
+  function bsPitches(q,z){ return q.ibb?["B4"]:bsPitchSeq(q,z) }   // (review round: the engine counts the same pitches, 50_game; an intentional walk is signalled, not pitched)
   const bsCount=(P,j)=>{ let b=0,s=0; for(let i=0;i<j;i++){ const c=P[i]; if(c==="B")b++; else if(c==="F"){ if(s<2)s++ } else if(c==="C"||c==="W")s++ } return [b,s] };
   /* round 111 (Ian: "Slow should be real time"; "a groundout where the runner was clearly safe", "singles no fielder gets
      to", "a sac fly with no tag", "no bat", "no curveballs", "runners don't lead off"): every play on real seconds, its

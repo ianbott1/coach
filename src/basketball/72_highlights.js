@@ -340,7 +340,7 @@ const HL_SPORT=(function(){
   const lsOut=(rows,key,line)=>{ const T={}; Object.values(rows).forEach(r=>{ (T[r.tm]=T[r.tm]||[]).push(r) }); Object.keys(T).forEach(tm=>{ T[tm]=T[tm].sort(key).map(r=>({nm:r.nm,line:line(r)})).filter(r=>r.line) }); return T };
   function liveStats(L){ const g=L.g, rows={}, sur=n=>n?String(n).split(" ").slice(-1)[0]:"?";
     const add=(tm,sl,k,v)=>{ if(sl==null||sl<0)return; const key=tm+"|"+sl, R=(SEA.roster&&SEA.roster[tm])||[]; (rows[key]=rows[key]||{tm,nm:sur(R[sl]&&R[sl].n),pts:0,reb:0,stl:0,tpm:0})[k]+=v };
-    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,""),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"")};
+    const one=(d,Tl)=>{ if(!d||!Array.isArray(d.pl)||!d.pl.length)return; const plan=pbPlan(d), five={0:onFloor(g.home,"f",d.seg,!!(d.bn&&d.bn.home),-1,"",bbOff(d,"home",g.home)),1:onFloor(g.away,"f",d.seg,!!(d.bn&&d.bn.away),-1,"",bbOff(d,"away",g.away))};
       plan.P.forEach(q=>{ if(Tl!=null&&q.at+q.w>Tl)return; const A=q.side, tA=A?g.away:g.home, tD=A?g.home:g.away, fa=five[A], fd=five[1-A];
         q.acts.forEach(a=>{ if(a.t==="make"){ add(tA,fa[a.who],"pts",a.pts+(a.and1&&a.ftm?1:0)); if(a.three)add(tA,fa[a.who],"tpm",1) } else if(a.t==="ft")add(tA,fa[a.who],"pts",a.m);
           else if(a.t==="miss"){ if(a.reb==="off")add(tA,fa[a.rb],"reb",1); else add(tD,fd[a.rb],"reb",1) } else if(a.t==="to")add(tD,fd[a.st],"stl",1) }) }) };

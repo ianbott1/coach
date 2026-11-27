@@ -33,12 +33,15 @@ function cpuDeadline(sea){
   const hurt=(t,i)=>sea.talent.active(t).some(e=>e.idx===i);
   const groups={}; NAMES.forEach(t=>{ const g=LEAGUE.trade.sameDiv?CONF[t]:"all"; (groups[g]=groups[g]||[]).push(t) });
   const out=[], used={}, most=Math.max(1,Math.round(NAMES.length/CT_PER));
+  // engine 26 (round 112): a man traded with a coach this season isn't dealt on again at the deadline (Atlanta sent on to
+  // Washington the man Kansas City had just traded them, test/trades.js); gated, as the deadline's deals move results
+  const moved=new Set(); if(typeof ENGINE_V!=="undefined"&&ENGINE_V>=26&&typeof tdAllTrades==="function")try{ tdAllTrades().forEach(x=>{ if(x&&!x.cpu&&(x.y===undefined||x.y===sea.year)){ moved.add(x.gn); moved.add(x.qn) } }) }catch(e){}
   Object.keys(groups).sort().forEach(g=>{ if(LEAGUE.trade.cpuSkip&&LEAGUE.trade.cpuSkip(g))return;   // a division whose January the league runs itself (soccer's top two, engine 27)
     const clubs=groups[g].filter(t=>humans.indexOf(t)<0&&sea.roster[t]).sort((a,b)=>pct(b)-pct(a)||(a<b?-1:1)), n=clubs.length;
     const buyers=clubs.slice(0,Math.round(n*0.3)), sellers=clubs.slice(n-Math.round(n*0.35));
     buyers.forEach(B=>{ if(out.length>=most||used[B])return; let best=null;
       sellers.forEach(Sl=>{ if(used[Sl]||Sl===B)return; const RB=sea.roster[B], RS=sea.roster[Sl];
-        RB.forEach((p,a)=>{ if(!p||hurt(B,a))return; RS.forEach((q,b)=>{ if(!q||ctGrp(a)!==ctGrp(b)||hurt(Sl,b))return;
+        RB.forEach((p,a)=>{ if(!p||hurt(B,a)||moved.has(p.n))return; RS.forEach((q,b)=>{ if(!q||ctGrp(a)!==ctGrp(b)||hurt(Sl,b)||moved.has(q.n))return;
           const xb=ctScore(sea,B,p,a,q,CT_BUY); if(xb.s<CT_PREM)return; const xs=ctScore(sea,Sl,q,b,p,CT_SELL); if(xs.s<CT_PREM)return;
           const cf=LEAGUE.trade.capFit?LEAGUE.trade.capFit(sea,{my:B,t:Sl,M:RB,M2:xb.R2,T:RS,T2:xs.R2}):null;   // a league's own cap (pro hockey: the seller keeps salary)
           if(cf?cf.over:cap&&((ctPay(xb.R2)>cap&&ctPay(xb.R2)>ctPay(RB))||(ctPay(xs.R2)>cap&&ctPay(xs.R2)>ctPay(RS))))return;

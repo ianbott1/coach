@@ -70,9 +70,12 @@ function attrRecentre26(u){
   Object.keys(u.roster).forEach(t=>{ const R=u.roster[t]; if(!Array.isArray(R))return;
     R.forEach(p=>{ if(!p||p.r==null||!Array.isArray(p.at))return; const g=attrGrp(p), K=attrKeys(g); if(!K.length||p.at.length!==K.length)return;
       (by[g]=by[g]||[]).push(p) }) });
+  // round 112: the shift read from the other clubs only (as recentre26), and made to every man
+  const mine=new Set(); if(typeof humanTeams26==="function")humanTeams26().forEach(t=>{ if(Array.isArray(u.roster[t]))u.roster[t].forEach(p=>{ if(p)mine.add(p) }) });
   Object.keys(by).forEach(g=>{
     const K=attrKeys(g), W=ATTRS.w[g], M=(ATTRS.lean&&ATTRS.lean[g])||{}, P=by[g]; if(P.length<8)return;
-    const mw=K.reduce((s,k)=>s+W[k]*(M[k]||0),0), sh=K.map((k,j)=>P.reduce((s,p)=>s+p.at[j]-p.r,0)/P.length-((M[k]||0)-mw));
+    const O=P.filter(p=>!mine.has(p)); if(O.length<8)return;
+    const mw=K.reduce((s,k)=>s+W[k]*(M[k]||0),0), sh=K.map((k,j)=>O.reduce((s,p)=>s+p.at[j]-p.r,0)/O.length-((M[k]||0)-mw));
     if(sh.every(x=>Math.abs(x)<0.02))return;
     P.forEach(p=>{ const v=p.at.map((x,j)=>Math.max(1,Math.floor(x-sh[j]+hash01("lean|"+p.n+"|"+K[j]+"|"+u.year))));
       p.at=attrFix(v,W,K,p.r); p.ar=p.r }) }) }
